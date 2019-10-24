@@ -1,17 +1,13 @@
 N = gets.to_i
-A = Array.new(N){gets.split.map(&:to_i)}
-A.unshift([0,0,0])
+S = gets.chomp.split(//)
 
-ans = true
-A.each_cons(2) do |a1,a2|
-  dt = a2[0] - a1[0]
-  dx = (a2[1] - a1[1]).abs
-  dy = (a2[2] - a1[2]).abs
-  dl = dx + dy
-  if dl <= dt && (dt - dl).even?
-  else
-    ans = false
-  end
-end
+E = S.grep("E").size
+W = S.grep("W").size
 
-puts ans ? "Yes" : "No"
+EAST = 0
+WEST = 1
+
+LEFT = [0,0]
+LEADER = S[0] == "E" ? [1,0] : [0,1]
+
+1..
