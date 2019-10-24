@@ -1,30 +1,36 @@
 require "benchmark"
-require "set"
 
-h = Hash.new(false)
-s = Set.new
+N = 10_000_000
 
-Benchmark.bm 10 do |r|
-    r.report "hash" do
-        3000.times do |i|
-            3000.times do |j|
-                key = i * 10000 + j
-                if h[key]
-                    h[key] = true
-                end
-            end
-        end
+class A
+    attr_accessor :a
+    def initialize(a)
+        @a = a
     end
-    r.report "set" do
-        3000.times do |i|
-            3000.times do |j|
-                key = i * 10000 + j
-                unless s.include? key
-                    s << key
-                end
-            end
-        end
+    def double
+        a*2
     end
 end
 
+B = Struct.new(:a) do
+    def double
+        a*2
+    end
+end
 
+Benchmark.bm 10 do |r|
+    r.report "library" do
+        s = 0
+        N.times do
+            a = A.new(N)
+            s += a.double
+        end
+    end
+    r.report "library" do
+        s = 0
+        N.times do
+            a = B.new(N)
+            s += a.double
+        end
+    end
+end
