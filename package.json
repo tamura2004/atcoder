@@ -1,0 +1,11 @@
+{
+  "name": "atcoder",
+  "version": "1.0.0",
+  "main": "index.js",
+  "repository": "git@github.com:tamura2004/atcoder.git",
+  "author": "tamura <tamura2004@gmail.com>",
+  "license": "MIT",
+  "dependencies": {
+    "chokidar": "^3.2.3"
+  }
+}
