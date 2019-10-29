@@ -1,19 +1,14 @@
-N, K = gets.split.map(&:to_i)
-A = gets.split.map(&:to_i).sort
-F = gets.split.map(&:to_i).sort_by{|v|-v}
+N = gets.to_i
+L = gets.split.map(&:to_i)
+K = gets.to_i
 
-T = A.zip(F).map{|a,f|[a*f,a,f]}.sort_by{|v|-v[0]}
+MAX = L.max
+DIG = 10**15
 
 def query(n)
-    k = 0
-    T.each do |t|
-        break if t[0] <= n
-        k += -(-(t[0] - n)/t[2])
-        return false if k > K
-    end
-    true
+    L.map{|l| l * DIG / n }.inject(:+) - K
 end
 
-puts (0..10**12).bsearch{ |n|
-    query(n)
-}
+ANS = (1..(MAX*DIG)).bsearch{|n| query(n)}
+printf("%d\n", ANS)
+printf("%d.%08d\n", ANS / DIG, ANS % DIG)
