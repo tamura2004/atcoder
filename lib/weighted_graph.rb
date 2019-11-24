@@ -1,9 +1,10 @@
 class WeightedGraph
-  attr_reader :g
+  attr_reader :g, :n
   INF = 99999
   def initialize(degree)
-    @g = Array.new(degree){Array.new(degree, INF)}
-    degree.times do |i|
+    @n = degree
+    @g = Array.new(@n){Array.new(@n, INF)}
+    @n.times do |i|
       @g[i][i] = 0
     end
   end
@@ -15,6 +16,17 @@ class WeightedGraph
 
   def get_weight(from, to)
     @g[from][to]
+  end
+
+  def warshall_floyd
+    @n.times do |k|
+      @n.times do |i|
+        @n.times do |j|
+          len = @g[i][k] + @g[k][j]
+          @g[i][j] = len if len < @g[i][j]
+        end
+      end
+    end
   end
 end
 
@@ -28,4 +40,5 @@ end
 require "pp"
 
 pp g.g
-
+g.warshall_floyd
+pp g.g
