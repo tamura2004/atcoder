@@ -27,6 +27,7 @@ class UnionFind
   end
 end
 
+# sample ABC49_D
 N,K,L = gets.split.map &:to_i
 
 UnionFind.new(N) do
