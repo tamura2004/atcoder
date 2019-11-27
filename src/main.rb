@@ -1,18 +1,31 @@
 def r;gets.split.map &:to_i;end
-def rr(n);n.times.map{r};end
-N,M = r
-S = rr(N)
-S.sort_by! &:first
+def rr(n);n.times{yield r};end
 
-c = M
-m = 0
-S.each do |(a,b)|
-  if b < c
-    c -= b
-    m += b * a
-  else
-    m += c * a
-    p m
-    exit
+N,Q = r
+G = Array.new(N){[]}
+CNT = Array.new(N,0)
+
+rr(N-1) do |a,b|
+  a-=1;b-=1
+  G[a] << b
+  G[b] << a
+end
+
+rr(Q) do |v,x|
+  v-=1
+  CNT[v] += x
+end
+
+visited = Array.new(N)
+queue = [[0,0]] # idx,weight
+while queue.size > 0
+  i,w = queue.shift
+  visited[i] = true
+  CNT[i] += w
+  G[i].each do |j|
+    next if visited[j]
+    queue << [j, CNT[i]]
   end
 end
+
+puts CNT.join(" ")
