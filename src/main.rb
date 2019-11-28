@@ -1,31 +1,42 @@
-def r;gets.split.map &:to_i;end
-def rr(n);n.times{yield r};end
-
-N,Q = r
-G = Array.new(N){[]}
-CNT = Array.new(N,0)
-
-rr(N-1) do |a,b|
-  a-=1;b-=1
-  G[a] << b
-  G[b] << a
+N,M,L = gets.split.map &:to_i
+INF = 1_000_000_001
+G = Array.new(N){|i| Array.new(N){|j| i == j ? 0 : INF}}
+M.times do |i|
+  a,b,c = gets.split.map &:to_i
+  a -= 1; b -= 1
+  G[a][b] = c
+  G[b][a] = c
 end
 
-rr(Q) do |v,x|
-  v-=1
-  CNT[v] += x
-end
-
-visited = Array.new(N)
-queue = [[0,0]] # idx,weight
-while queue.size > 0
-  i,w = queue.shift
-  visited[i] = true
-  CNT[i] += w
-  G[i].each do |j|
-    next if visited[j]
-    queue << [j, CNT[i]]
+N.times do |k|
+  N.times do |i|
+    N.times do |j|
+      len = G[i][k] + G[k][j]
+      G[i][j] = len if len < G[i][j]
+    end
   end
 end
 
-puts CNT.join(" ")
+H = Array.new(N){|i| Array.new(N){|j| i==j ? 0 : (G[i][j] <= L ? 1 : INF)}}
+N.times do |k|
+  N.times do |i|
+    N.times do |j|
+      len = H[i][k] + H[k][j]
+      H[i][j] = len if len < H[i][j]
+    end
+  end
+end
+
+Q = gets.to_i
+Q.times do
+  a,b = gets.split.map &:to_i
+  a -= 1; b -= 1
+  ans = H[a][b]
+  if ans == INF
+    puts -1
+  else
+    puts ans - 1
+  end
+end
+
+
