@@ -1,44 +1,20 @@
-parseInt(x) = parse(Int, x)
-parseMap(x::Array{SubString{String},1}) = map(parseInt, x)
+r() = [parse(Int,x) for x in readline() |> split]
 
 function main()
-    n,m,l = readline() |> split |> parseMap
-    g = 10^12*ones(Int,n,n)
-    for i in 1:n
-        g[i,i] = 0
-    end
-    for i in 1:m
-        a,b,c = readline() |> split |> parseMap
-        g[a,b] = c
-        g[b,a] = c
-    end
-    for k in 1:n
-        for i in 1:n
-            for j in 1:n
-                g[i,j] = min(g[i,j],g[i,k]+g[k,j])
+    N,W = r()
+    DP = zeros(Int,N+1,W+1)
+    for i in 2:N+1
+        w,v = r()
+        for j in 1:W
+            if j >= w
+                DP[i,j+1] = max(DP[i-1,j+1], DP[i-1,j+1-w] + v)
+            else
+                DP[i,j+1] = DP[i-1,j+1]
             end
         end
+        # println("DP = $DP")
     end
-    h = 10^12*ones(Int,n,n)
-    for i in 1:n
-        for j in 1:n
-            if g[i,j] <= l
-                h[i,j] = 1
-            end
-        end
-    end
-    for k in 1:n
-        for i in 1:n
-            for j in 1:n
-                h[i,j] = min(h[i,j],h[i,k]+h[k,j])
-            end
-        end
-    end
-    q = readline() |> parseInt
-    for i in 1:q
-        s,t = readline() |> split |> parseMap
-        println(h[s,t] < 10^11 ? h[s,t] - 1 : -1)
-    end
+    println(maximum(DP))
 end
 
 main()

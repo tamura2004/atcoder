@@ -1,35 +1,32 @@
 require "benchmark/ips"
 require "prime"
 
-class A
-  def initialize(a)
-    @a = a
-  end
-
-  def x
-    @a * 2
-  end
-end
-
-class B
-  attr_accessor :b
-  def initialize(a)
-    @b = a
-  end
-
-  def x
-    b * 2
-  end
-end
+S = Array.new(100000){rand < 0.5 ? "L" : "R"}.join
 
 Benchmark.ips do |x|
   x.report("a") {
-    a = A.new(10)
-    a.x
+    count = 0
+    ans = Array.new(100000)
+    S.chars.each_with_index do |a,i|
+      if a == "R"
+        ans[i] = count
+        count = 0
+      else
+        count += 1
+      end
+    end
   }
   x.report("b") {
-    a = B.new(10)
-    a.x
+    S.size.times do |i|
+      count = 0
+      ans = Array.new(100000)
+      if S[i] == "R"
+        ans[i] = count
+        count = 0
+      else
+        count += 1
+      end
+    end
   }
   x.compare!
 end
