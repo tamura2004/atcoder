@@ -1,26 +1,24 @@
-def r;gets.split.map &:to_i;end
+N = gets.to_i
+S = gets.chomp.chars.map &:to_i
+count = 0
 
-N,W = r
-DP = [[0,0]] # weight, value
+10.times do |i|
+  10.times do |j|
+    10.times do |k|
+      ix = S.index(i)
+      next unless ix
 
-N.times do
-  w,v = r
-  DP.size.times do |i|
-    next if DP[i][0] + w > W
-    DP << [DP[i][0] + w, DP[i][1] + v]
-  end
+      s = S[ix+1,S.size-ix+1]
+      iy = s.index(j)
+      next unless iy
 
-  DP.sort!
+      s = s[iy+1,s.size-iy+1]
+      iz = s.index(k)
+      next unless iz
 
-  i = 0
-  while i < DP.size - 1
-    unless DP[i][1] < DP[i+1][1]
-      DP.delete_at(i+1)
-    else
-      i += 1
+      count += 1
     end
   end
 end
 
-p DP[-1][1]
-
+p count

@@ -1,24 +1,24 @@
 #include <bits/stdc++.h>
+#define rep(i, n) for (int i = 0; i < n; i++)
 using namespace std;
-#define rep(i, n) for (int i = 0; i < (n); i++)
 typedef long long ll;
-const int INF = 1e9+5;
-int n,m,l,a,b,c,d[305][305];
-void wf(){rep(k,n) rep(i,n) rep(j,n) d[i][j] = min(d[i][j], d[i][k] + d[k][j]);}
+bool DP[30001][4][1000];
 
 int main() {
-  cin >> n >> m >> l; n++;
-  fill(d[0],d[n],INF);
-  rep(i,m) {
-    cin >> a >> b >> c;
-    d[a][b] = d[b][a] = c;
+  int N; cin >> N; 
+  string S; cin >> S;
+  DP[0][0][0] = true;
+  rep(i,N) rep(j,4) rep(k,1000) {
+    if (DP[i][j][k] == false) continue;
+    DP[i+1][j][k] = true;
+    if (j < 3) {
+      DP[i+1][j+1][k*10+(S[i]-'0')] = true;
+    }
   }
-  wf();
-  rep(i,n) rep(j,n) d[i][j] = d[i][j] <= l ? 1 : INF;
-  wf();
-  cin >> c;
-  rep(i,c) {
-    cin >> a >> b;
-    cout << (d[a][b] == INF ? -1 : d[a][b] - 1) << endl;
+  int cnt = 0;
+  rep(i,1000) {
+    if (DP[N][3][i]) cnt++;
   }
+  cout << cnt << endl;
+  return 0;
 }
