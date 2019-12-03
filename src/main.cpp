@@ -1,40 +1,36 @@
 #include <bits/stdc++.h>
-#define rep(i, s, n) for (int i = s; i < n; i++)
+#define rep(i, n) for (int i = 0; i < n; i++)
 using namespace std;
 typedef long long ll;
 template<class T>bool chmax(T &a, const T &b) { if (a<b) { a=b; return 1; } return 0; }
 template<class T>bool chmin(T &a, const T &b) { if (b<a) { a=b; return 1; } return 0; }
 
-const int L = 3000;
-int dp[L+1][L+1];
+const ll INF = 1LL<<60;
+int N,M;
+vector<vector<int>> G;
+
+int dp[100100];
+int rec(int v) {
+  if (dp[v] != -1) return dp[v];
+  int res = 0;
+  for (auto nv : G[v]) {
+    chmax(res, rec(nv) + 1);
+  }
+  return dp[v] = res;
+}
 
 int main() {
-  string s,t;
-  cin >> s >> t;
-  int n = s.size() + 1; int m = t.size() + 1;
-
-  rep(i,1,n) rep(j,1,m) {
-    if (s[i-1] == t[j-1]) {
-      dp[i][j] = dp[i-1][j-1] + 1;
-    } else {
-      chmax(dp[i][j], dp[i-1][j]);
-      chmax(dp[i][j], dp[i][j-1]);
-    }
+  cin >> N >> M;
+  G.assign(N, vector<int>());
+  rep(i,M) {
+    int x,y; cin >> x >> y;
+    --x; --y;
+    G[x].push_back(y);
   }
 
-  int idx = n;
-  while (dp[idx][m] != 0) {
-    if (dp[idx][m] == dp[idx-1][m]) {
-      idx--;
-    } else {
-      cout << s[dp[idx][m]] << ",";
-    }
-  }
-  cout << endl;
+  rep(v,N) dp[v] = -1;
 
-  // rep(i,0,n) {
-  //   rep(j,0,m) cout << dp[i][j] << ",";
-  //   cout << "\n";
-  // }
-  return 0;
+  int res = 0;
+  rep(v,N) chmax(res, rec(v));
+  cout << res << endl;
 }
