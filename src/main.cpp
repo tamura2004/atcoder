@@ -21,15 +21,15 @@ void init() {
 void disp() {
   cout << "N = " << N << endl;
   rep(i,N) {
-    cout << "A[" << i << "]=" << A[i] << endl;
+    // cout << "A[" << i << "]=" << A[i] << endl;
     rep(j,A[i]) cout << "X=" << X[i][j] << ", Y=" << Y[i][j] << endl;
   }
 }
 
 bool valid(int bit, int i, int j) {
-  bool ans = Y[i][j] ^ (1 << X[i][j]);
-  cout << "i=" << i << ",j=" << j << ",bit=" << bit << ",ans=" << !ans << endl;
-  return !ans;
+  bool ans = !((bit & 1<<X[i][j]) ^ (Y[i][j] << X[i][j]));
+  cout << "bit=" << bit << ",X=" << X[i][j] << ",Y=" << Y[i][j] << ",Y<<X=" << (Y[i][j] << X[i][j]) << ",ans=" << ans << endl;
+  return ans;
 }
 
 bool all_of(int bit) {
@@ -46,7 +46,7 @@ int count(int bit) {
 
 int main() {
   init();
-  disp();
+  // disp();
   repi(bit,1<<N) {
     if(all_of(bit)) {
       cout << count(bit) << endl;
