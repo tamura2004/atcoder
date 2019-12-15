@@ -42,7 +42,6 @@ int main() {
       if (h[i] == 0 && L < H) valid = false;
       if (h[i] != 0 && L != H) valid = false;
       if (!valid) break;
-    }
 
     if (valid) {
       cout << cx << " " << cy << " " << H << endl;
