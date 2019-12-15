@@ -1,9 +1,12 @@
 #include <bits/stdc++.h>
-#define rep(i, n) for (int i = 0; i < (n); i++)
-#define repi(i, n) for (int i = (n)-1; i >= 0; i--)
-#define pp(v) cout << #v "=" << (v) << endl;
-#define div_ceil(a,b) ((a) + ((b) - 1)) / (b)
 using namespace std;
+#define ALL(a) (a).begin(), (a).end()
+#define FOR(i, s, n) for (int i = (s); i < (n); i++)
+#define rep(i, n) FOR(i, 0, n)
+#define repi(i, n) FOR(i, 1, n + 1)
+#define pp(v) cout << #v "=" << (v) << endl;
+#define ppa(v) cout << "----\n"; rep(i,v.size()) cout << #v << "[" << i << "] = " << v[i] << endl;
+#define div_ceil(a,b) ((a) + ((b) - 1)) / (b)
 
 int main() {
   int d,g; cin >> d >> g; g /= 100;

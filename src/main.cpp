@@ -1,36 +1,52 @@
 #include <bits/stdc++.h>
-#define rep(i, n) for (int i = 0; i < (n); i++)
-#define repi(i, n) for (int i = (n)-1; i >= 0; i--)
-#define pp(v) cout << #v "=" << (v) << endl;
-#define div_ceil(a,b) ((a) + ((b) - 1)) / (b)
 using namespace std;
+#define ALL(a) (a).begin(), (a).end()
+#define FOR(i, s, n) for (int i = (s); i < (n); i++)
+#define rep(i, n) FOR(i, 0, n)
+#define repi(i, n) FOR(i, 1, n + 1)
+#define pp(v) cout << #v "=" << (v) << endl;
+#define ppa(v) cout << "----\n"; rep(i,v.size()) cout << #v << "[" << i << "] = " << v[i] << endl;
+#define div_ceil(a,b) ((a) + ((b) - 1)) / (b)
+
+int center_height(int x, int y, int cx, int cy, int h) {
+  return abs(x-cx) + abs(y-cy) + h;
+}
+
+// ABC112C Pyramid 方針
+// cx,cyで全探索
+// 全座標が1万以上、観測地点100以下より、高度が0でない観測地点が一つ以上ある
+// 高度が0でない観測地点を一つ選び、頂上の高さHを算出
+// 観測地点の頂上からのマンハッタン距離をLとする
+// 観測地点の高度が0の時、L < Hなら矛盾
+// 観測地点の高度altが0以外の時、L + alt <> Hなら矛盾
 
 int main() {
-  int d,g; cin >> d >> g; g /= 100;
-  vector<int> p(d), c(d);
-  rep(i,d) {
-    cin >> p[i] >> c[i];
-    c[i] /= 100;
-  }
+  int a;
+  cout << a << endl;
+  exit(0);
+  int n; cin >> n;
+  vector<int> x(n),y(n),h(n);
+  rep(i,n) cin >> x[i] >> y[i] >> h[i];
 
-  int ans = 1e9;
-  rep(bit, 1<<d) {
-    int sum = 0, cnt = 0, rest = -1;
-    rep(i,d) if (bit >> i & 1) {
-      sum += p[i] * (i + 1) + c[i];
-      cnt += p[i];
-    } else {
-      rest = i;
+  rep(cx,101) rep(cy,101) {
+    bool valid = true;
+    int H, L;
+    rep(i,n) {
+      if (h[i] == 0) continue;
+      H = center_height(x[i],y[i],cx,cy,h[i]);
+      break;
     }
 
-    if (sum < g) {
-      if (rest == -1) continue;
-      int need = div_ceil(g - sum, rest);
-      // int need = (g - sum + rest) / (rest + 1);
-      if (need >= p[rest]) continue;
-      cnt += need;
+    rep(i,n) {
+      L = center_height(x[i],y[i],cx,cy,h[i]);
+      if (h[i] == 0 && L < H) valid = false;
+      if (h[i] != 0 && L != H) valid = false;
+      if (!valid) break;
     }
-    ans = min(ans, cnt);
+
+    if (valid) {
+      cout << cx << " " << cy << " " << H << endl;
+      exit(0);
+    }
   }
-  cout << ans << endl;
 }
