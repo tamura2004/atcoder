@@ -6,15 +6,33 @@
 #define pp(v) cout << #v "=" << (v) << endl;
 #define ppa(v) cout << "----\n"; rep(i,v.size()) cout << #v << "[" << i << "] = " << v[i] << endl;
 #define div_ceil(a,b) ((a) + ((b) - 1)) / (b)
-#define UNIQUE(v) v.erase( unique(v.begin(), v.end()), v.end() );
 using namespace std;
 using Graph = vector<vector<int>>;
-using ll = long long;
 
 int main() {
-  string s;cin>>s;
-  int len = s.size();
-  UNIQUE(s);
-  bool ans = len == s.size();
-  cout << (ans?"Yes":"No") << endl;
+  int n,m;cin>>n>>m;
+  Graph g(n);
+  rep(i,m) {
+    int a,b;cin>>a>>b;
+    g[a].push_back(b);
+    g[b].push_back(a);
+  }
+  vector<int> dist(n,-1);
+  queue<int> que;
+
+  dist[0] = 0;
+  que.push(0);
+
+  while (!que.empty()) {
+    int v = que.front();
+    que.pop();
+
+    for (auto nv: g[v]) {
+      if (dist[nv] != -1) continue;
+      
+      dist[nv] = dist[v] + 1;
+      que.push(nv);
+    }
+  }
+  ppa(dist);
 }
