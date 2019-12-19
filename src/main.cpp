@@ -11,30 +11,28 @@ using namespace std;
 using Graph = vector<vector<int>>;
 using ll = long long;
 
-int n,m;
-
-vector<bool> seen;
-void dfs(Graph &g, int v, int depth) {
-  seen[v] = true;
-  if (depth > 2) return;
-  if (depth <= 2 && (v + 1) == n) {
-    cout << "POSSIBLE" << endl;
-    exit(0);
-  }
-  for (auto next_v : g[v]) {
-    if (seen[next_v]) continue;
-    dfs(g, next_v, depth+1);
-  }
-}
+// abc067c 方針
+// 累積和をpair<sum,index>で作成（単調性なし）
+// sumでソート（単調性あり）
+// 総合計Nに対し、N/2以下、以上で二分探索
+// どちらかのみ見つかればそちらを
+// 両方見つかれば差の小さい方を回答とする
 
 int main() {
-  cin>>n>>m;
-  Graph g(n);rep(i,m) {
-    int a,b;cin>>a>>b;a--;b--;
+  int n,m;cin>>n>>m;
+  vector<vector<int>> g(n+1);
+  repi(i,m) {
+    int a,b;cin>>a>>b;
+    if (a!=1&&a!=n&&b!=1&&b!=n) continue;
     g[a].push_back(b);
     g[b].push_back(a);
   }
-  seen.assign(n,false);
-  dfs(g, 0, 0);
-  cout << "IMPOSSIBLE" << endl;
+
+  bool ans = false;
+  for (int x : g[1]) {
+    for (int y : g[x]) {
+      if (y == n) ans = true;
+    }
+  }
+  cout << (ans?"POSSIBLE":"IMPOSSIBLE") << endl;
 }
