@@ -11,10 +11,30 @@ using namespace std;
 using Graph = vector<vector<int>>;
 using ll = long long;
 
+int n,m;
+
+vector<bool> seen;
+void dfs(Graph &g, int v, int depth) {
+  seen[v] = true;
+  if (depth > 2) return;
+  if (depth <= 2 && (v + 1) == n) {
+    cout << "POSSIBLE" << endl;
+    exit(0);
+  }
+  for (auto next_v : g[v]) {
+    if (seen[next_v]) continue;
+    dfs(g, next_v, depth+1);
+  }
+}
+
 int main() {
-  string s;cin>>s;
-  int len = s.size();
-  UNIQUE(s);
-  bool ans = len == s.size();
-  cout << (ans?"Yes":"No") << endl;
+  cin>>n>>m;
+  Graph g(n);rep(i,m) {
+    int a,b;cin>>a>>b;a--;b--;
+    g[a].push_back(b);
+    g[b].push_back(a);
+  }
+  seen.assign(n,false);
+  dfs(g, 0, 0);
+  cout << "IMPOSSIBLE" << endl;
 }
