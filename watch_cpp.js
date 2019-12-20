@@ -15,7 +15,10 @@ watcher.on("ready", () => {
             if (err) {
                 log(err);
             } else {
+                log("=== stdout ===");
                 log(stdout);
+                log("=== stderr ===");
+                log(stderr);
             }
         });
     })
