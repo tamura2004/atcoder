@@ -1,2 +1,2 @@
-a,b = gets.chomp.split
-puts %w(= > <)[a<=>b]
+a,b = gets.split.map &:to_i
+puts a.lcm(b);
