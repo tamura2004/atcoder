@@ -8,9 +8,10 @@ using namespace std;
 #define pp(v) cerr << #v "=" << (v) << endl;
 #define ppa(v) cerr << "- " << #v << endl; rep(i,v.size()) cerr << #v << "[" << i << "] = " << v[i] << endl;
 #define div_ceil(a,b) ((a) + ((b) - 1)) / (b)
-#define UNIQUE(v) v.erase( unique(v.begin(), v.end()), v.end() );
+#define UNIQUE(v) v.erase( unique(ALL(v)), v.end() );
 #define INF 0x3f3f3f3f
 #define LLINF 1000111000111000111LL
+#define MOD 1000000007
 #define TIME system("date +%M:%S.%N")
 using Graph = vector<vector<int>>;
 using ll = long long;
@@ -18,7 +19,11 @@ template<class T> T gcd(const T &a, const T &b) { return a < b ? gcd(b, a) : b ?
 template<class T> T lcm(const T &a, const T &b) { return a / gcd(a, b) * b; }
 
 int main() {
-  int a,d;cin>>a>>d;
-  int ans = a > d ? a*(d+1) : (a+1)*d;
+  string s;cin>>s;
+  int k;cin>>k;
+  set<string> p;
+  int n = s.size() - k + 1;
+  rep(i,n) p.insert(s.substr(i,k));
+  int ans = p.size();
   cout << ans << endl;
 }

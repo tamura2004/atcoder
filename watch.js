@@ -11,12 +11,14 @@ watcher.on("ready", () => {
     log("==================================================");
     log("Watching, ready for change.");
     watcher.on("change", () => {
-        // exec("cat src/input.txt | ruby src/main.rb", (err, stdout, stderr) => {
         exec("g++ src/main.cpp && cat src/input.txt | ./a.out", (err, stdout, stderr) => {
             if (err) {
                 log(err);
             } else {
+                log("=== stdout ===");
                 log(stdout);
+                log("=== stderr ===");
+                log(stderr);
             }
         });
     })
