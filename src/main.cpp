@@ -1,4 +1,5 @@
 #include <bits/stdc++.h>
+#include <cmath>
 using namespace std;
 
 #define ALL(a) (a).begin(), (a).end()
@@ -18,12 +19,38 @@ using ll = long long;
 template<class T> T gcd(const T &a, const T &b) { return a < b ? gcd(b, a) : b ? gcd(b, a % b) : a; }
 template<class T> T lcm(const T &a, const T &b) { return a / gcd(a, b) * b; }
 
+struct Counter {
+  map<int,int> acc;
+  priority_queue<pair<int,int>> pq;
+  void add(int a) {
+    acc[a]++;
+  }
+  void collect() {
+    for (auto p : acc) pq.push(make_pair(p.second,p.first));
+  }
+  int cnt() {
+    return pq.empty() ? 0 : pq.top().first;
+  }
+  int num() {
+    return pq.top().second;
+  }
+};
+
 int main() {
-  string s;cin>>s;
-  int k;cin>>k;
-  set<string> p;
-  int n = s.size() - k + 1;
-  rep(i,n) p.insert(s.substr(i,k));
-  int ans = p.size();
+  int n;cin>>n;
+  Counter a,b;
+  rep(i,n/2) {
+    int x,y;cin>>x>>y;
+    a.add(x); b.add(y);
+  }
+  a.collect(); b.collect();
+  if (a.cnt() < b.cnt()) swap(a,b);
+
+  int ans = n/2 - a.cnt();
+  if (a.num() == b.num()) b.pq.pop();
+  pp(ans);
+  pp(a.cnt());pp(b.cnt());
+  pp(a.num());pp(b.num());
+  ans += n/2 - b.cnt(); 
   cout << ans << endl;
 }
