@@ -1,9 +1,10 @@
 #include <bits/stdc++.h>
 #include <cmath>
 using namespace std;
+using ll = long long;
 
 #define ALL(a) (a).begin(), (a).end()
-#define FOR(i, s, n) for (int i = (s); i < (n); i++)
+#define FOR(i, s, n) for (ll i = (s); i < (n); i++)
 #define rep(i, n) FOR(i, 0, n)
 #define repi(i, n) FOR(i, 1, n + 1)
 #define pp(v) cerr << #v "=" << (v) << endl;
@@ -15,42 +16,38 @@ using namespace std;
 #define MOD 1000000007
 #define TIME system("date +%M:%S.%N")
 using Graph = vector<vector<int>>;
-using ll = long long;
 template<class T> T gcd(const T &a, const T &b) { return a < b ? gcd(b, a) : b ? gcd(b, a % b) : a; }
 template<class T> T lcm(const T &a, const T &b) { return a / gcd(a, b) * b; }
 
-struct Counter {
-  map<int,int> acc;
-  priority_queue<pair<int,int>> pq;
-  void add(int a) {
-    acc[a]++;
-  }
-  void collect() {
-    for (auto p : acc) pq.push(make_pair(p.second,p.first));
-  }
-  int cnt() {
-    return pq.empty() ? 0 : pq.top().first;
-  }
-  int num() {
-    return pq.top().second;
-  }
-};
+#define mp make_pair
+
+int score_index(char c) {
+  if (c == 'r') return 0;
+  if (c == 's') return 1;
+  if (c == 'p') return 2;
+}
+
+ll query(ll x) {
+  
+}
 
 int main() {
-  int n;cin>>n;
-  Counter a,b;
-  rep(i,n/2) {
-    int x,y;cin>>x>>y;
-    a.add(x); b.add(y);
+  ll n,m;cin>>n>>m;
+  vector<ll> a(n);rep(i,n) cin>>a[i];
+  sort(ALL(a));
+  reverse(ALL(a));
+  ll ok = 0, ng = 1e6;
+  while (ng - ok > 1) {
+    ll mid = (ok + ng) / 2;
+    ll cnt = 0;
+    int j = n - 1;
+    rep(i,n) {
+      while (j >= 0 && a[i] + a[j] < mid) j--;
+      cnt += j + 1;
+    }
+    if (cnt >= m) ok = mid;
+    else ng = mid;
   }
-  a.collect(); b.collect();
-  if (a.cnt() < b.cnt()) swap(a,b);
-
-  int ans = n/2 - a.cnt();
-  if (a.num() == b.num()) b.pq.pop();
-  pp(ans);
-  pp(a.cnt());pp(b.cnt());
-  pp(a.num());pp(b.num());
-  ans += n/2 - b.cnt(); 
-  cout << ans << endl;
+  pp(ok);
+  pp(ng);
 }

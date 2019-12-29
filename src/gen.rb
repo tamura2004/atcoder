@@ -1,6 +1,9 @@
+W = %w(M A R C H)
 open("src/input.txt", "w") do |f|
-    f.puts "100000 1 2"
-    99999.times do |i|
-        f.puts "#{i+1} #{i+2}"
+    f.puts "100000"
+    5.times do |i|
+        20000.times do
+            f.puts W[i]
+        end
     end
 end

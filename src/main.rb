@@ -1,2 +1,3 @@
-a,b = gets.split.map &:to_i
-puts a.lcm(b);
+require "prime"
+x = gets.to_i
+p Prime.find {|p| p >= x }
