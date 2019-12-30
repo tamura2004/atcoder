@@ -1,56 +1,68 @@
 #include <bits/stdc++.h>
-#include <cmath>
 using namespace std;
 
-#define ALL(a) (a).begin(), (a).end()
+// #define int long long
+struct Fast {Fast(){std::cin.tie(0);ios::sync_with_stdio(false);}} fast;
+
+/* short */
+#define pb push_back
+#define eb emplace_back
+#define mp make_pair
+#define fst first
+#define snd second
+#define ALL(v) begin(v), end(v)
+
+/* REPmacro */
 #define FOR(i, s, n) for (int i = (s); i < (n); i++)
 #define rep(i, n) FOR(i, 0, n)
 #define repi(i, n) FOR(i, 1, n + 1)
+
+/* debug */
 #define pp(v) cerr << #v "=" << (v) << endl;
-#define ppa(v) cerr << "- " << #v << endl; rep(i,v.size()) cerr << #v << "[" << i << "] = " << v[i] << endl;
+
+/* alias */
+using ll = long long;
+using ull = unsigned long long;
+using vi = vector<int>;
+using vvi = vector<vi>;
+using vvvi = vector<vvi>;
+using pii = pair<int, int>;
+using vs = vector<string>;
+using Graph = vvi;
+template <typename T> using PQ = priority_queue<T>;
+template <typename T> using minPQ = priority_queue<T, vector<T>, greater<T>>;
+
+/* iostream */
+template<typename T> istream &operator>>(istream &is, vector<T> &vec){ for (auto &v : vec) is >> v; return is; }
+template<typename T> ostream &operator<<(ostream &os, const vector<T> &vec){ os << "["; for (auto v : vec) os << v << ","; os << "]"; return os; }
+template<typename T> ostream &operator<<(ostream &os, const deque<T> &vec){ os << "deq["; for (auto v : vec) os << v << ","; os << "]"; return os; }
+template<typename T> ostream &operator<<(ostream &os, const set<T> &vec){ os << "{"; for (auto v : vec) os << v << ","; os << "}"; return os; }
+template<typename T> ostream &operator<<(ostream &os, const unordered_set<T> &vec){ os << "{"; for (auto v : vec) os << v << ","; os << "}"; return os; }
+template<typename T> ostream &operator<<(ostream &os, const multiset<T> &vec){ os << "{"; for (auto v : vec) os << v << ","; os << "}"; return os; }
+template<typename T> ostream &operator<<(ostream &os, const unordered_multiset<T> &vec){ os << "{"; for (auto v : vec) os << v << ","; os << "}"; return os; }
+template<typename T1, typename T2> ostream &operator<<(ostream &os, const pair<T1, T2> &pa){ os << "(" << pa.first << "," << pa.second << ")"; return os; }
+template<typename TK, typename TV> ostream &operator<<(ostream &os, const map<TK, TV> &mp){ os << "{"; for (auto v : mp) os << v.first << "=>" << v.second << ","; os << "}"; return os; }
+template<typename TK, typename TV> ostream &operator<<(ostream &os, const unordered_map<TK, TV> &mp){ os << "{"; for (auto v : mp) os << v.first << "=>" << v.second << ","; os << "}"; return os; }
+
+/* const */
+const int INF = 1001001001;
+const ll LINF = 1001001001001001001ll;
+const int MOD = 1e9 + 7;
+const int dx[] = {0, 1, 0, -1, 1, -1, 1, -1}, dy[] = {1, 0, -1, 0, 1, -1, -1, 1};
+
+/* func */
 #define div_ceil(a,b) ((a) + ((b) - 1)) / (b)
 #define UNIQUE(v) v.erase( unique(ALL(v)), v.end() );
-#define INF 0x3f3f3f3f
-#define LLINF 1000111000111000111LL
-#define MOD 1000000007
 #define TIME system("date +%M:%S.%N")
-using Graph = vector<vector<int>>;
-using ll = long long;
+inline bool inside(int y, int x, int H, int W) {return y >= 0 && x >= 0 && y < H && x < W;}
+template <typename T> inline bool chmin(T& a, const T& b) {if (a > b) a = b; return a > b;}
+template <typename T> inline bool chmax(T& a, const T& b) {if (a < b) a = b; return a < b;}
 template<class T> T gcd(const T &a, const T &b) { return a < b ? gcd(b, a) : b ? gcd(b, a % b) : a; }
 template<class T> T lcm(const T &a, const T &b) { return a / gcd(a, b) * b; }
 
-struct Counter {
-  map<int,int> acc;
-  priority_queue<pair<int,int>> pq;
-  void add(int a) {
-    acc[a]++;
-  }
-  void collect() {
-    for (auto p : acc) pq.push(make_pair(p.second,p.first));
-  }
-  int cnt() {
-    return pq.empty() ? 0 : pq.top().first;
-  }
-  int num() {
-    return pq.top().second;
-  }
-};
+signed main() {
+  map<int,int> s;
+  rep(i,10) s[i] = i*i;
+  pp(s);
 
-int main() {
-  int n;cin>>n;
-  Counter a,b;
-  rep(i,n/2) {
-    int x,y;cin>>x>>y;
-    a.add(x); b.add(y);
-  }
-  a.collect(); b.collect();
-  if (a.cnt() < b.cnt()) swap(a,b);
-
-  int ans = n/2 - a.cnt();
-  if (a.num() == b.num()) b.pq.pop();
-  pp(ans);
-  pp(a.cnt());pp(b.cnt());
-  pp(a.num());pp(b.num());
-  ans += n/2 - b.cnt(); 
-  cout << ans << endl;
 }

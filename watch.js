@@ -15,6 +15,7 @@ watcher.on("ready", () => {
             if (err) {
                 log(err);
             } else {
+                log(Date.now());
                 log("=== stdout ===");
                 log(stdout);
                 log("=== stderr ===");
