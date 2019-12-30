@@ -13,8 +13,11 @@ struct Fast {Fast(){std::cin.tie(0);ios::sync_with_stdio(false);}} fast;
 
 /* REPmacro */
 #define FOR(i, s, n) for (int i = (s); i < (n); i++)
+#define RFOR(i, s, n) for (int i = (s); i >= (n); i--)
 #define rep(i, n) FOR(i, 0, n)
 #define repi(i, n) FOR(i, 1, n + 1)
+#define rrep(i, n) RFOR(i, n - 1, 0)
+#define rrepi(i, n) RFOR(i, n, 1)
 
 /* debug */
 #define pp(v) cerr << #v "=" << (v) << endl;
@@ -36,12 +39,9 @@ template<typename T> istream &operator>>(istream &is, vector<T> &vec){ for (auto
 template<typename T> ostream &operator<<(ostream &os, const vector<T> &vec){ os << "["; for (auto v : vec) os << v << ","; os << "]"; return os; }
 template<typename T> ostream &operator<<(ostream &os, const deque<T> &vec){ os << "deq["; for (auto v : vec) os << v << ","; os << "]"; return os; }
 template<typename T> ostream &operator<<(ostream &os, const set<T> &vec){ os << "{"; for (auto v : vec) os << v << ","; os << "}"; return os; }
-template<typename T> ostream &operator<<(ostream &os, const unordered_set<T> &vec){ os << "{"; for (auto v : vec) os << v << ","; os << "}"; return os; }
 template<typename T> ostream &operator<<(ostream &os, const multiset<T> &vec){ os << "{"; for (auto v : vec) os << v << ","; os << "}"; return os; }
-template<typename T> ostream &operator<<(ostream &os, const unordered_multiset<T> &vec){ os << "{"; for (auto v : vec) os << v << ","; os << "}"; return os; }
 template<typename T1, typename T2> ostream &operator<<(ostream &os, const pair<T1, T2> &pa){ os << "(" << pa.first << "," << pa.second << ")"; return os; }
 template<typename TK, typename TV> ostream &operator<<(ostream &os, const map<TK, TV> &mp){ os << "{"; for (auto v : mp) os << v.first << "=>" << v.second << ","; os << "}"; return os; }
-template<typename TK, typename TV> ostream &operator<<(ostream &os, const unordered_map<TK, TV> &mp){ os << "{"; for (auto v : mp) os << v.first << "=>" << v.second << ","; os << "}"; return os; }
 
 /* const */
 const int INF = 1001001001;
@@ -60,5 +60,15 @@ template<class T> T lcm(const T &a, const T &b) { return a / gcd(a, b) * b; }
 template<class T> T div_ceil(const T &a, const T &b) { return (a + b - 1) / b; }
 
 int main() {
-  rep(i,4) cout << dx[i] << endl;
+  int n;cin>>n;
+  vvi dp(n+1,vi(3,-1));rep(i,3) dp[0][i]=0;
+  rep(i,n) {
+    int a,b,c;cin>>a>>b>>c;
+    dp[i+1][0] = max(dp[i][1],dp[i][2]) + a;
+    dp[i+1][1] = max(dp[i][0],dp[i][2]) + b;
+    dp[i+1][2] = max(dp[i][1],dp[i][0]) + c;
+  }
+  int ans = -1;
+  rep(i,3) chmax(ans, dp[n][i]);
+  cout << ans << endl;
 }
