@@ -6,7 +6,6 @@ struct Fast {Fast(){std::cin.tie(0);ios::sync_with_stdio(false);}} fast;
 
 /* short */
 #define pb push_back
-#define eb emplace_back
 #define mp make_pair
 #define fst first
 #define snd second
@@ -51,7 +50,6 @@ const int MOD = 1e9 + 7;
 const int dx[] = {0, 1, 0, -1, 1, -1, 1, -1}, dy[] = {1, 0, -1, 0, 1, -1, -1, 1};
 
 /* func */
-#define div_ceil(a,b) ((a) + ((b) - 1)) / (b)
 #define UNIQUE(v) v.erase( unique(ALL(v)), v.end() );
 #define TIME system("date +%M:%S.%N")
 inline bool inside(int y, int x, int H, int W) {return y >= 0 && x >= 0 && y < H && x < W;}
@@ -59,10 +57,8 @@ template <typename T> inline bool chmin(T& a, const T& b) {if (a > b) a = b; ret
 template <typename T> inline bool chmax(T& a, const T& b) {if (a < b) a = b; return a < b;}
 template<class T> T gcd(const T &a, const T &b) { return a < b ? gcd(b, a) : b ? gcd(b, a % b) : a; }
 template<class T> T lcm(const T &a, const T &b) { return a / gcd(a, b) * b; }
+template<class T> T div_ceil(const T &a, const T &b) { return (a + b - 1) / b; }
 
-signed main() {
-  map<int,int> s;
-  rep(i,10) s[i] = i*i;
-  pp(s);
-
+int main() {
+  rep(i,4) cout << dx[i] << endl;
 }

@@ -6,7 +6,6 @@ struct Fast {Fast(){std::cin.tie(0);ios::sync_with_stdio(false);}} fast;
 
 /* short */
 #define pb push_back
-#define eb emplace_back
 #define mp make_pair
 #define fst first
 #define snd second
