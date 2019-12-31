@@ -1,7 +1,7 @@
 #include <bits/stdc++.h>
 using namespace std;
 
-// #define int long long
+#define int long long
 struct Fast {Fast(){std::cin.tie(0);ios::sync_with_stdio(false);}} fast;
 
 /* short */
@@ -59,16 +59,24 @@ template<class T> T gcd(const T &a, const T &b) { return a < b ? gcd(b, a) : b ?
 template<class T> T lcm(const T &a, const T &b) { return a / gcd(a, b) * b; }
 template<class T> T div_ceil(const T &a, const T &b) { return (a + b - 1) / b; }
 
-int main() {
-  int n;cin>>n;
-  vvi dp(n+1,vi(3,-1));rep(i,3) dp[0][i]=0;
+signed main() {
+  string s;cin>>s;
+  int n = s.size();
+  int m;cin>>m;
+  bitset<10> bit;
+  int diff = 0;
+
   rep(i,n) {
-    int a,b,c;cin>>a>>b>>c;
-    dp[i+1][0] = max(dp[i][1],dp[i][2]) + a;
-    dp[i+1][1] = max(dp[i][0],dp[i][2]) + b;
-    dp[i+1][2] = max(dp[i][1],dp[i][0]) + c;
+    int D = s[i]-'0';
+    diff *= 10;
+    if (bit.test(D) || bit.count() < m) {
+      bit.set(D,1);
+      continue;
+    }
+    int a = LINF;
+    rep(i,10) if (bit.test(i)) chmin(a, abs(D-i));
+    diff += a;
   }
-  int ans = -1;
-  rep(i,3) chmax(ans, dp[n][i]);
+  int ans = diff;
   cout << ans << endl;
 }
