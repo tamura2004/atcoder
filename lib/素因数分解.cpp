@@ -71,6 +71,7 @@ void prime_factor(int n, mii &p) {
   if (n != 1) p[n]++; // nは素数
 }
 
+// ABC052C
 signed main() {
   int n;cin>>n;
   mii c;

@@ -29,6 +29,7 @@ using vi = vector<int>;
 using vvi = vector<vi>;
 using vvvi = vector<vvi>;
 using pii = pair<int, int>;
+using mii = map<int, int>;
 using vs = vector<string>;
 using Graph = vvi;
 template <typename T> using PQ = priority_queue<T>;
@@ -59,24 +60,25 @@ template<class T> T gcd(const T &a, const T &b) { return a < b ? gcd(b, a) : b ?
 template<class T> T lcm(const T &a, const T &b) { return a / gcd(a, b) * b; }
 template<class T> T div_ceil(const T &a, const T &b) { return (a + b - 1) / b; }
 
-signed main() {
-  string s;cin>>s;
-  int n = s.size();
-  int m;cin>>m;
-  bitset<10> bit;
-  int diff = 0;
-
-  rep(i,n) {
-    int D = s[i]-'0';
-    diff *= 10;
-    if (bit.test(D) || bit.count() < m) {
-      bit.set(D,1);
-      continue;
+// 素因数分解
+void prime_factor(int n, mii &p) {
+  for (int i = 2, _n = n; i*i <= _n; i++) {
+    while (n % i == 0) {
+      p[i]++;
+      n /= i;
     }
-    int a = LINF;
-    rep(i,10) if (bit.test(i)) chmin(a, abs(D-i));
-    diff += a;
   }
-  int ans = diff;
+  if (n != 1) p[n]++; // nは素数
+}
+
+signed main() {
+  int n;cin>>n;
+  mii c;
+  repi(i,n) prime_factor(i,c);
+
+  int ans = 1;
+  for (auto v : c) {
+    ans = ans * (v.snd+1) % MOD;
+  }
   cout << ans << endl;
 }
