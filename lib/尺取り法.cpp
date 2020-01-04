@@ -47,8 +47,8 @@ template<typename T1, typename T2> ostream &operator<<(ostream &os, const pair<T
 template<typename TK, typename TV> ostream &operator<<(ostream &os, const map<TK, TV> &mp){ os << "{"; for (auto v : mp) os << v.first << "=>" << v.second << ","; os << "}"; return os; }
 
 /* const */
-// const int INF = 1001001001;
-const ll INF = 1001001001001001001ll;
+const int INF = 1001001001;
+const ll LINF = 1001001001001001001ll;
 const int MOD = 1e9 + 7;
 const int dx[] = {0, 1, 0, -1, 1, -1, 1, -1}, dy[] = {1, 0, -1, 0, 1, -1, -1, 1};
 
@@ -64,31 +64,37 @@ template<class T> T div_ceil(const T &a, const T &b) { return (a + b - 1) / b; }
 template<class T> bool by_snd(const T &a, const T &b) { return a.snd < b.snd; }
 // usage: vpii a(n);rep(i,n) cin>>a[i]; sort(ALL(a),by_snd<pii>);
 
-pii calc(vi &a, int lo, int hi) {
-  int x = 0,y = 0;
-  rep(i,hi-lo+1) {
-    (i%2 == 0 ? x : y) += a[lo+i];
-  }
-  return mp(x,y);
-}
-
 signed main() {
-  int n;cin>>n;
-  bitset<19> a(n),b;
-  int pos = 18;
-  while (!a.test(pos)) pos--;
-  pp(pos);
-  if (pos%2==0) { // 先手：高橋
-    while (pos > 0) {
-      b.set(pos);
-      pos -= 2;
-    }
-  } else {
-    b.set(pos--);
-    while (pos > 0) {
-      b.set(pos);
-      pos -= 2;
+  int n,k;cin>>n>>k;
+  vi s(n);cin>>s;
+
+  bool zero = false;
+  rep(i,n) if (s[i]==0) zero = true;
+  if (zero) {
+    cout << n << endl;
+    exit(0);
+  }
+
+  int lo = 0, hi = 0, ans = 0;
+  int len = 0;
+  int cp = 1;
+  while (lo < n) {
+    if (cp * s[hi] <= k) { // 伸ばす
+      cp *= s[hi];
+      len++;
+      hi++;
+    } else {
+      chmax(ans,len);
+      while (lo <= hi && cp * s[hi] > k) { // 縮める
+        len--;
+        cp /= s[lo];
+        lo++;
+      }
+      if (lo > hi) {
+        cp = 1;
+        hi++;
+      }
     }
   }
-  pp(b);
+  cout << max(ans,len) << endl;
 }
