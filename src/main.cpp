@@ -46,6 +46,15 @@ template<typename T> ostream &operator<<(ostream &os, const multiset<T> &vec){ o
 template<typename T1, typename T2> ostream &operator<<(ostream &os, const pair<T1, T2> &pa){ os << "(" << pa.first << "," << pa.second << ")"; return os; }
 template<typename TK, typename TV> ostream &operator<<(ostream &os, const map<TK, TV> &mp){ os << "{"; for (auto v : mp) os << v.first << "=>" << v.second << ","; os << "}"; return os; }
 
+#define _overload(_1,_2,_3,_4,_5,_6,name,...) name
+#define _g1(a) int a;cin>>a;
+#define _g2(a,b) int a,b;cin>>a>>b;
+#define _g3(a,b,c) int a,b,c;cin>>a>>b>>c;
+#define _g4(a,b,c,d) int a,b,c,d;cin>>a>>b>>c>>d;
+#define _g5(a,b,c,d,e) int a,b,c,d,e;cin>>a>>b>>c>>d>>e;
+#define _g6(a,b,c,d,e,f) int a,b,c,d,e,f;cin>>a>>b>>c>>d>>e>>f;
+#define gets(...) _overload(__VA_ARGS__,_g6,_g5,_g4,_g3,_g2,_g1)(__VA_ARGS__)
+
 /* const */
 // const int INF = 1001001001;
 const ll INF = 1001001001001001001ll;
@@ -64,31 +73,9 @@ template<class T> T div_ceil(const T &a, const T &b) { return (a + b - 1) / b; }
 template<class T> bool by_snd(const T &a, const T &b) { return a.snd < b.snd; }
 // usage: vpii a(n);rep(i,n) cin>>a[i]; sort(ALL(a),by_snd<pii>);
 
-pii calc(vi &a, int lo, int hi) {
-  int x = 0,y = 0;
-  rep(i,hi-lo+1) {
-    (i%2 == 0 ? x : y) += a[lo+i];
-  }
-  return mp(x,y);
-}
+#include <complex>
 
 signed main() {
-  int n;cin>>n;
-  bitset<19> a(n),b;
-  int pos = 18;
-  while (!a.test(pos)) pos--;
-  pp(pos);
-  if (pos%2==0) { // 先手：高橋
-    while (pos > 0) {
-      b.set(pos);
-      pos -= 2;
-    }
-  } else {
-    b.set(pos--);
-    while (pos > 0) {
-      b.set(pos);
-      pos -= 2;
-    }
-  }
-  pp(b);
+  gets(a,b,c,d,e,f);
+  cout << f << endl;
 }
