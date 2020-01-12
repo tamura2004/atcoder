@@ -19,9 +19,6 @@ struct Fast {Fast(){std::cin.tie(0);ios::sync_with_stdio(false);}} fast;
 #define rrep(i, n) RFOR(i, n - 1, 0)
 #define rrepi(i, n) RFOR(i, n, 1)
 
-/* debug */
-#define pp(v) cerr << #v "=" << (v) << endl;
-
 /* alias */
 using ll = long long;
 using ull = unsigned long long;
@@ -46,6 +43,7 @@ template<typename T> ostream &operator<<(ostream &os, const multiset<T> &vec){ o
 template<typename T1, typename T2> ostream &operator<<(ostream &os, const pair<T1, T2> &pa){ os << "(" << pa.first << "," << pa.second << ")"; return os; }
 template<typename TK, typename TV> ostream &operator<<(ostream &os, const map<TK, TV> &mp){ os << "{"; for (auto v : mp) os << v.first << "=>" << v.second << ","; os << "}"; return os; }
 
+/* input */
 #define _overload(_1,_2,_3,_4,_5,_6,name,...) name
 #define _g1(a) int a;cin>>a;
 #define _g2(a,b) int a,b;cin>>a>>b;
@@ -53,7 +51,17 @@ template<typename TK, typename TV> ostream &operator<<(ostream &os, const map<TK
 #define _g4(a,b,c,d) int a,b,c,d;cin>>a>>b>>c>>d;
 #define _g5(a,b,c,d,e) int a,b,c,d,e;cin>>a>>b>>c>>d>>e;
 #define _g6(a,b,c,d,e,f) int a,b,c,d,e,f;cin>>a>>b>>c>>d>>e>>f;
-#define gets(...) _overload(__VA_ARGS__,_g6,_g5,_g4,_g3,_g2,_g1)(__VA_ARGS__)
+#define in(...) _overload(__VA_ARGS__,_g6,_g5,_g4,_g3,_g2,_g1)(__VA_ARGS__)
+
+/* debug */
+#define _pp_overload(_1,_2,_3,_4,_5,_6,name,...) name
+#define _p1(a) cerr << #a "=" << (a) << endl;
+#define _p2(a,b) cerr << #a "=" << (a) << "," #b "=" << (b) << endl;
+#define _p3(a,b,c) cerr << #a "=" << (a) << "," #b "=" << (b) << "," #c "=" << (c) << endl;
+#define _p4(a,b,c,d) cerr << #a "=" << (a) << "," #b "=" << (b) << "," #c "=" << (c) << "," #d "=" << (d) << endl;
+#define _p5(a,b,c,d,e) cerr << #a "=" << (a) << "," #b "=" << (b) << "," #c "=" << (c) << "," #d "=" << (d) << "," #e "=" << (e) << endl;
+#define _p6(a,b,c,d,e,f) cerr << #a "=" << (a) << "," #b "=" << (b) << "," #c "=" << (c) << "," #d "=" << (d) << "," #e "=" << (e) << "," #f "=" << (f) << endl;
+#define pp(...) _pp_overload(__VA_ARGS__,_p6,_p5,_p4,_p3,_p2,_p1)(__VA_ARGS__)
 
 /* const */
 // const int INF = 1001001001;
@@ -71,11 +79,13 @@ template<class T> T gcd(const T &a, const T &b) { return a < b ? gcd(b, a) : b ?
 template<class T> T lcm(const T &a, const T &b) { return a / gcd(a, b) * b; }
 template<class T> T div_ceil(const T &a, const T &b) { return (a + b - 1) / b; }
 template<class T> bool by_snd(const T &a, const T &b) { return a.snd < b.snd; }
-// usage: vpii a(n);rep(i,n) cin>>a[i]; sort(ALL(a),by_snd<pii>);
-
-#include <complex>
 
 signed main() {
-  gets(a,b,c,d,e,f);
-  cout << f << endl;
+  in(z,a,q,w,s,x);
+  pp(z);
+  pp(z,a);
+  pp(z,a,q);
+  pp(z,a,q,w);
+  pp(z,a,q,w,s);
+  pp(z,a,q,w,s,x);
 }
