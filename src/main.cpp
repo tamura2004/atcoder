@@ -29,6 +29,7 @@ using pii = pair<int, int>;
 using vpii = vector<pii>;
 using mii = map<int, int>;
 using vs = vector<string>;
+using vb = vector<bool>;
 using Graph = vvi;
 template <typename T> using PQ = priority_queue<T>;
 template <typename T> using minPQ = priority_queue<T, vector<T>, greater<T>>;
@@ -73,6 +74,11 @@ const int dx[] = {0, 1, 0, -1, 1, -1, 1, -1}, dy[] = {1, 0, -1, 0, 1, -1, -1, 1}
 #define UNIQUE(v) v.erase( unique(ALL(v)), v.end() );
 #define TIME system("date +%M:%S.%N")
 inline bool inside(int y, int x, int H, int W) {return y >= 0 && x >= 0 && y < H && x < W;}
+inline bool odd(int x) { return x & 1;}
+inline bool even(int x) { return x & 1 == 0;}
+inline int sum(vi a) { return accumulate(ALL(a),0); }
+inline void yn(bool ans) { cout << (ans?"Yes":"No") << endl; }
+inline void YN(bool ans) { cout << (ans?"YES":"NO") << endl; }
 template <typename T> inline bool chmin(T& a, const T& b) {if (a > b) a = b; return a > b;}
 template <typename T> inline bool chmax(T& a, const T& b) {if (a < b) a = b; return a < b;}
 template<class T> T gcd(const T &a, const T &b) { return a < b ? gcd(b, a) : b ? gcd(b, a % b) : a; }
@@ -80,12 +86,55 @@ template<class T> T lcm(const T &a, const T &b) { return a / gcd(a, b) * b; }
 template<class T> T div_ceil(const T &a, const T &b) { return (a + b - 1) / b; }
 template<class T> bool by_snd(const T &a, const T &b) { return a.snd < b.snd; }
 
+// stl::
+// int ans = accumulate(ALL(a),a[0],[](int a, int b){return gcd(a,b);});
+// bool ans = all_of(ALL(a),odd);
+// bool ans = any_of(ALL(a),odd);
+// bool ans = none_of(ALL(a),odd);
+// transform(ALL(a),a.begin(),[](int x) {return x - 10;});
+// fill(ALL(seen),false);
+
+// 青木君(=v)から見た各ノードの距離
+void a_dfs(int v, int d, vi &dist, vb &seen, Graph &g) {
+  seen[v] = true;
+  dist[v] = d;
+  for (int nv : g[v]) {
+    if (seen[nv]) continue;
+    a_dfs(nv, d+1, dist, seen, g);
+  }
+}
+
+// 高橋君(=u)が移動できる場所
+void t_dfs(int v, int d, vi &dist, vb &seen, Graph &g) {
+  seen[v] = true;
+  for (int nv : g[v]) {
+    if (seen[nv] || d >= dist[nv]) continue;
+    t_dfs(nv, d+1, dist, seen, g);
+  }
+}
+
 signed main() {
-  in(z,a,q,w,s,x);
-  pp(z);
-  pp(z,a);
-  pp(z,a,q);
-  pp(z,a,q,w);
-  pp(z,a,q,w,s);
-  pp(z,a,q,w,s,x);
+  in(n,u,v);u--;v--;
+  Graph g(n);rep(i,n-1) {
+    in(a,b);a--;b--;
+    g[a].pb(b);
+    g[b].pb(a);
+  }
+
+  // 青木君(=v)から見た各ノードの距離
+  vi dist(n, -1);
+  vb seen(n,false);
+  a_dfs(v,0,dist,seen,g);
+
+  // 高橋君が移動できる場所
+  fill(ALL(seen),false);
+  t_dfs(u,0,dist,seen,g);
+
+  // 高橋君が移動できる場所で、青木君からの距離の最大値－１
+  int ans = 0;
+  rep(i,n) {
+    if (seen[i]) chmax(ans,dist[i]);
+  }
+  cout << ans - 1 << endl;
+
 }
