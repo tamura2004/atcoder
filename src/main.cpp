@@ -37,9 +37,6 @@ using Graph = vvi;
 template <typename T> using PQ = priority_queue<T>;
 template <typename T> using minPQ = priority_queue<T, vector<T>, greater<T>>;
 
-#define vv(n,m) vvi(n,vi(m,0))
-#define vvv(a,b,c) vvvi(a,vvi(b,vi(c0,0)))
-
 /* iostream */
 template<typename T> istream &operator>>(istream &is, vector<T> &vec){ for (auto &v : vec) is >> v; return is; }
 template<typename T> istream &operator>>(istream &is, pair<T,T> &p){ int a,b;is>>a>>b;p=mp(a,b);return is;}
@@ -74,7 +71,6 @@ template<typename TK, typename TV> ostream &operator<<(ostream &os, const map<TK
 // const int INF = 1001001001;
 const ll INF = 1001001001001001001ll;
 const int MOD = 1e9 + 7;
-const int dx[] = {0, 1, 0, -1, 1, -1, 1, -1}, dy[] = {1, 0, -1, 0, 1, -1, -1, 1};
 
 /* func */
 #define UNIQUE(v) v.erase( unique(ALL(v)), v.end() );
@@ -92,13 +88,43 @@ template<class T> T lcm(const T &a, const T &b) { return a / gcd(a, b) * b; }
 template<class T> T div_ceil(const T &a, const T &b) { return (a + b - 1) / b; }
 template<class T> bool by_snd(const T &a, const T &b) { return a.snd < b.snd; }
 inline void print_and_exit(int x) { cout << x << endl; exit(0);}
+const int dx[] = {0, 1, 0, -1, 1, -1, 1, -1}, dy[] = {1, 0, -1, 0, 1, -1, -1, 1};
+
+int solve(int black, int h, int w, vs &s) {
+  int n = h * w;
+  vvi g(n,vi(n,INF));
+  int start,goal;
+
+  rep(i,h) rep(j,w) {
+    int from = i * w + j;
+    if (s[i][j] == 'S') start = from;
+    if (s[i][j] == 'G') goal = from;
+
+    rep(k,4) {
+      int x = j + dx[k];
+      int y = i + dy[k];
+      if (!inside(y,x,h,w)) continue;
+
+      int to = y * w + x;
+      int dist = (s[y][x] == '#') ? black : 1;
+      g[from][to] = dist;
+      g[to][from] = dist;
+    }
+  }
+  // wf
+  rep(k,n) rep(i,n) rep(j,n) chmin(g[i][j], g[i][k]+g[k][j]);
+
+  int dist = g[start][goal];
+  return dist;
+}
 
 signed main() {
-  in(n,k);
-  vi a(n);cin>>a;
-  vi dig(42,0);
-  rep(i,n) rep(j,42) {
-    if (a[i]>>j&1) dig[j]++;
+  in(h,w,t);
+  vs s(h);cin>>s;
+  int ans = 0;
+  repi(i,20) {
+    int res = solve(i,h,w,s);
+    if (res <= t) ans = res;
   }
-  pp(dig);
+  cout << ans << endl;
 }
