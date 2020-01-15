@@ -25,6 +25,9 @@ using ull = unsigned long long;
 using vi = vector<int>;
 using vvi = vector<vi>;
 using vvvi = vector<vvi>;
+using vd = vector<double>;
+using vvd = vector<vd>;
+using vvvd = vector<vvd>;
 using pii = pair<int, int>;
 using vpii = vector<pii>;
 using mii = map<int, int>;
@@ -33,6 +36,9 @@ using vb = vector<bool>;
 using Graph = vvi;
 template <typename T> using PQ = priority_queue<T>;
 template <typename T> using minPQ = priority_queue<T, vector<T>, greater<T>>;
+
+#define vv(n,m) vvi(n,vi(m,0))
+#define vvv(a,b,c) vvvi(a,vvi(b,vi(c0,0)))
 
 /* iostream */
 template<typename T> istream &operator>>(istream &is, vector<T> &vec){ for (auto &v : vec) is >> v; return is; }
@@ -74,8 +80,8 @@ const int dx[] = {0, 1, 0, -1, 1, -1, 1, -1}, dy[] = {1, 0, -1, 0, 1, -1, -1, 1}
 #define UNIQUE(v) v.erase( unique(ALL(v)), v.end() );
 #define TIME system("date +%M:%S.%N")
 inline bool inside(int y, int x, int H, int W) {return y >= 0 && x >= 0 && y < H && x < W;}
-inline bool odd(int x) { return x & 1;}
-inline bool even(int x) { return x & 1 == 0;}
+inline bool odd(int x) { return x % 2 == 1;}
+inline bool even(int x) { return x % 2 == 0;}
 inline int sum(vi a) { return accumulate(ALL(a),0); }
 inline void yn(bool ans) { cout << (ans?"Yes":"No") << endl; }
 inline void YN(bool ans) { cout << (ans?"YES":"NO") << endl; }
@@ -85,56 +91,14 @@ template<class T> T gcd(const T &a, const T &b) { return a < b ? gcd(b, a) : b ?
 template<class T> T lcm(const T &a, const T &b) { return a / gcd(a, b) * b; }
 template<class T> T div_ceil(const T &a, const T &b) { return (a + b - 1) / b; }
 template<class T> bool by_snd(const T &a, const T &b) { return a.snd < b.snd; }
-
-// stl::
-// int ans = accumulate(ALL(a),a[0],[](int a, int b){return gcd(a,b);});
-// bool ans = all_of(ALL(a),odd);
-// bool ans = any_of(ALL(a),odd);
-// bool ans = none_of(ALL(a),odd);
-// transform(ALL(a),a.begin(),[](int x) {return x - 10;});
-// fill(ALL(seen),false);
-
-// 青木君(=v)から見た各ノードの距離
-void a_dfs(int v, int d, vi &dist, vb &seen, Graph &g) {
-  seen[v] = true;
-  dist[v] = d;
-  for (int nv : g[v]) {
-    if (seen[nv]) continue;
-    a_dfs(nv, d+1, dist, seen, g);
-  }
-}
-
-// 高橋君(=u)が移動できる場所
-void t_dfs(int v, int d, vi &dist, vb &seen, Graph &g) {
-  seen[v] = true;
-  for (int nv : g[v]) {
-    if (seen[nv] || d >= dist[nv]) continue;
-    t_dfs(nv, d+1, dist, seen, g);
-  }
-}
+inline void print_and_exit(int x) { cout << x << endl; exit(0);}
 
 signed main() {
-  in(n,u,v);u--;v--;
-  Graph g(n);rep(i,n-1) {
-    in(a,b);a--;b--;
-    g[a].pb(b);
-    g[b].pb(a);
+  in(n,k);
+  vi a(n);cin>>a;
+  vi dig(42,0);
+  rep(i,n) rep(j,42) {
+    if (a[i]>>j&1) dig[j]++;
   }
-
-  // 青木君(=v)から見た各ノードの距離
-  vi dist(n, -1);
-  vb seen(n,false);
-  a_dfs(v,0,dist,seen,g);
-
-  // 高橋君が移動できる場所
-  fill(ALL(seen),false);
-  t_dfs(u,0,dist,seen,g);
-
-  // 高橋君が移動できる場所で、青木君からの距離の最大値－１
-  int ans = 0;
-  rep(i,n) {
-    if (seen[i]) chmax(ans,dist[i]);
-  }
-  cout << ans - 1 << endl;
-
+  pp(dig);
 }
