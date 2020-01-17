@@ -90,41 +90,61 @@ template<class T> bool by_snd(const T &a, const T &b) { return a.snd < b.snd; }
 inline void print_and_exit(int x) { cout << x << endl; exit(0);}
 const int dx[] = {0, 1, 0, -1, 1, -1, 1, -1}, dy[] = {1, 0, -1, 0, 1, -1, -1, 1};
 
-int solve(int black, int h, int w, vs &s) {
-  int n = h * w;
-  vvi g(n,vi(n,INF));
-  int start,goal;
+inline void pp2d(vvi a) { for (auto v : a) { cout << v << endl; } cout << "---\n";}
 
-  rep(i,h) rep(j,w) {
-    int from = i * w + j;
-    if (s[i][j] == 'S') start = from;
-    if (s[i][j] == 'G') goal = from;
-
-    rep(k,4) {
-      int x = j + dx[k];
-      int y = i + dy[k];
-      if (!inside(y,x,h,w)) continue;
-
-      int to = y * w + x;
-      int dist = (s[y][x] == '#') ? black : 1;
-      g[from][to] = dist;
-      g[to][from] = dist;
-    }
+vi string_mp(string &s) {
+  int n = s.size();
+  vi a(n+1);
+  a[0] = -1;
+  int j = -1;
+  rep(i,n) {
+    while (j >= 0 && s[i] != s[j]) j = a[j];
+    j++;
+    a[i+1] = j;
   }
-  // wf
-  rep(k,n) rep(i,n) rep(j,n) chmin(g[i][j], g[i][k]+g[k][j]);
+  return a;
+}
 
-  int dist = g[start][goal];
-  return dist;
+vi string_manachar(string &s) {
+  int n = s.size();
+  vi a(n);
+  int i = 0, j = 0;
+  while (i < n) {
+    while (0 <= i-j && i+j < n && s[i-j] == s[i+j]) j++;
+    a[i] = j;
+    int k = 1;
+    while (0 <= i-k && i+k < n && k + a[i-k] < j) a[i+k] = a[i-k], k++;
+    i += k; j -= k;
+  }
+  return a;
+}
+
+vi string_z_algorithm(string &s) {
+  int n = s.size();
+  vi a(n);
+  a[0] = n;
+  int i = 1, j = 0;
+  while (i < n) {
+    while (i+j < n && s[j] == s[i+j]) j++;
+    a[i] = j;
+    if (j == 0) { i++; continue; }
+    int k = 1;
+    while (i+k < n && k + a[k] < j) a[i+k] = a[k], k++;
+    i += k; j -= k;
+  }
+  return a;
 }
 
 signed main() {
-  in(h,w,t);
-  vs s(h);cin>>s;
+  in(n);
+  string s;cin>>s;
   int ans = 0;
-  repi(i,20) {
-    int res = solve(i,h,w,s);
-    if (res <= t) ans = res;
+  rep(i,n) {
+    string ss = s.substr(i,n-i);
+    vi a = string_z_algorithm(ss);
+    int m = a.size();
+    // pp(i,m,ss,a);
+    rep(j,m) chmax(ans,min(j,a[j]));
   }
   cout << ans << endl;
 }
