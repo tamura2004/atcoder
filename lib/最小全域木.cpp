@@ -92,6 +92,75 @@ const int dx[] = {0, 1, 0, -1, 1, -1, 1, -1}, dy[] = {1, 0, -1, 0, 1, -1, -1, 1}
 
 inline void pp2d(vvi a) { for (auto v : a) { cout << v << endl; } cout << "---\n";}
 
+struct UnionFind {
+  vector<int> par;
+  vector<int> sizes;
+
+  UnionFind(int n) : par(n), sizes(n, 1) { rep(i,n) par[i] = i; }
+
+  int find(int x) {
+    if (x == par[x]) return x;
+    return par[x] = find(par[x]);
+  }
+
+  void unite(int x, int y) {
+    x = find(x);
+    y = find(y);
+    if (x == y) return;
+    if (sizes[x] < sizes[y]) swap(x, y);
+    par[y] = x;
+    sizes[x] += sizes[y];
+  }
+
+  bool same(int x, int y) { return find(x) == find(y); }
+  int size(int x) { return sizes[find(x)]; }
+};
+
+struct Edge {
+  int a, b, cost;
+  bool operator<(const Edge& o) const { return cost < o.cost; }
+};
+
+ostream &operator<<(ostream &os, const Edge &e){ os << "{ a=" << e.a << ",b=" << e.b << ",cost=" << e.cost << " }" << endl; return os; }
+
+struct Graph {
+  int n;
+  vector<Edge> es;
+
+  Graph(int n) : n(n) {}
+
+  // クラスカル法で無向最小全域木のコストの和を計算する
+  // グラフが非連結のときは最小全域森のコストの和となる
+  int kruskal() {
+    // コストが小さい順にソート
+    sort(es.begin(), es.end());
+
+    UnionFind uf(n);
+    int min_cost = 0;
+
+    rep(ei, es.size()) {
+      Edge& e = es[ei];
+      if (!uf.same(e.a, e.b)) {
+        // 辺を追加しても閉路ができないなら、その辺を採用する
+        min_cost += e.cost;
+        uf.unite(e.a, e.b);
+      }
+    }
+
+    return min_cost;
+  }
+};
+
 signed main() {
-  cout << -10 % 7 << endl;
+  in(n,d);
+  vi a(n);cin>>a;
+  Graph g(n);
+  rep(i,n-1) FOR(j,i+1,n) {
+    Edge e = { i, j, abs(i-j) * d + a[i] + a[j] };
+    g.es.pb(e);
+  }
+  // pp(g.es);
+
+  int ans = g.kruskal();
+  ANS(ans);
 }

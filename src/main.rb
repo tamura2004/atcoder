@@ -1,13 +1,9 @@
-s = gets.chomp
-if s =~ /^.*keyence$/ ||
-    s =~ /^k.*eyence$/ ||
-    s =~ /^ke.*yence$/ ||
-    s =~ /^key.*ence$/ ||
-    s =~ /^keye.*nce$/ ||
-    s =~ /^keyen.*ce$/ ||
-    s =~ /^keyenc.*e$/ ||
-    s =~ /^keyence.*$/
-    puts "YES"
-else
-    puts "NO"
+d,p = gets.split.map &:to_i
+DIR_NAMES = %w(N NNE NE ENE E ESE SE SSE S SSW SW WSW W WNW NW NNW)
+UNIT = 36000 / 32
+
+def deg2dir(d)
+    DIR_NAMES[(d+UNIT)%36000/2/UNIT]
 end
+
+puts deg2dir(12375)
