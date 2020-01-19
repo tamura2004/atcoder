@@ -9,6 +9,8 @@ struct Fast {Fast(){std::cin.tie(0);ios::sync_with_stdio(false);}} fast;
 #define mp make_pair
 #define fst first
 #define snd second
+#define F first
+#define S second
 #define ALL(v) begin(v), end(v)
 
 /* REPmacro */
@@ -30,6 +32,7 @@ using vvd = vector<vd>;
 using vvvd = vector<vvd>;
 using pii = pair<int, int>;
 using vpii = vector<pii>;
+using vvpii = vector<pii>;
 using mii = map<int, int>;
 using vs = vector<string>;
 using vb = vector<bool>;
@@ -80,7 +83,6 @@ inline bool even(int x) { return x % 2 == 0;}
 inline int sum(vi a) { return accumulate(ALL(a),0); }
 inline void yn(bool ans) { cout << (ans?"Yes":"No") << endl; }
 inline void YN(bool ans) { cout << (ans?"YES":"NO") << endl; }
-inline void ANS(int ans) { cout << ans << endl; }
 template <typename T> inline bool chmin(T& a, const T& b) {if (a > b) a = b; return a > b;}
 template <typename T> inline bool chmax(T& a, const T& b) {if (a < b) a = b; return a < b;}
 template<class T> T gcd(const T &a, const T &b) { return a < b ? gcd(b, a) : b ? gcd(b, a % b) : a; }
@@ -90,8 +92,42 @@ template<class T> bool by_snd(const T &a, const T &b) { return a.snd < b.snd; }
 inline void print_and_exit(int x) { cout << x << endl; exit(0);}
 const int dx[] = {0, 1, 0, -1, 1, -1, 1, -1}, dy[] = {1, 0, -1, 0, 1, -1, -1, 1};
 
-inline void pp2d(vvi a) { for (auto v : a) { cout << v << endl; } cout << "---\n";}
+struct Graph {
+  int n;
+  vector<vector<pair<int,int>>> edges;
+  Graph(int n) : n(n),edges(n,vpii()) {}
+
+  vi dijkstra(int s) {
+    vi d(n, INF);
+    priority_queue<pii,vpii,greater<pii>> q;
+    d[s] = 0;
+    q.push(pii(0,s));
+
+    while (!q.empty()) {
+      pii p = q.top(); q.pop();
+      int v = p.S;
+      if (d[v] < p.F) continue;
+      for (auto e : edges[v]) {
+        if (d[e.S] > d[v] + e.F) {
+          d[e.S] = d[v] + e.F;
+          q.push(mp(d[e.S],e.S));
+        }
+      }
+    }
+
+    return d;
+  }
+};
 
 signed main() {
-  cout << -10 % 7 << endl;
+  in(n,m);
+  Graph g(n);
+  rep(i,m) {
+    in(a,b,c);a--;b--;
+    g.edges[a].pb(mp(c,b));
+    g.edges[b].pb(mp(c,a));
+  }
+  vi d = g.dijkstra(0);
+  pp(d);
+  // cout << ans << endl;
 }
