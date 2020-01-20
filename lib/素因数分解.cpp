@@ -15,3 +15,19 @@ mii prime_factor(int n) {
   if (n != 1) ans[n] = 1;
   return ans;
 }
+
+// 自然数の素因数分解表示
+// 大きなＬＣＭの計算用
+struct PrimeFactorInt {
+  int n;
+  mii m;
+  PrimeFactorInt(int n) : n(n) {
+    m = prime_factor(n);
+  }
+  PrimeFactorInt(mii m) : m(m) {
+    n = 0;
+    for (auto v : m) {
+      n += v.first * v.second;
+    }
+  }
+};

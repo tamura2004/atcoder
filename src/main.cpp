@@ -92,42 +92,69 @@ template<class T> bool by_snd(const T &a, const T &b) { return a.snd < b.snd; }
 inline void print_and_exit(int x) { cout << x << endl; exit(0);}
 const int dx[] = {0, 1, 0, -1, 1, -1, 1, -1}, dy[] = {1, 0, -1, 0, 1, -1, -1, 1};
 
-struct Graph {
+mii prime_factor(int n) {
+  mii ans;
+  for (int i = 2; i * i <= n; i++) {
+    while (n % i == 0) { ans[i]++; n /= i; }
+  }
+  if (n != 1) ans[n] = 1;
+  return ans;
+}
+
+// 自然数の素因数分解表示
+// PrimeFactorInt
+// 大きなＬＣＭの計算用
+struct PFI {
   int n;
-  vector<vector<pair<int,int>>> edges;
-  Graph(int n) : n(n),edges(n,vpii()) {}
-
-  vi dijkstra(int s) {
-    vi d(n, INF);
-    priority_queue<pii,vpii,greater<pii>> q;
-    d[s] = 0;
-    q.push(pii(0,s));
-
-    while (!q.empty()) {
-      pii p = q.top(); q.pop();
-      int v = p.S;
-      if (d[v] < p.F) continue;
-      for (auto e : edges[v]) {
-        if (d[e.S] > d[v] + e.F) {
-          d[e.S] = d[v] + e.F;
-          q.push(mp(d[e.S],e.S));
-        }
-      }
+  mii m;
+  PFI(int n) : n(n) {
+    m = prime_factor(n);
+  }
+  PFI(mii m) : m(m) {
+    n = 0;
+    for (auto v : m) {
+      n += v.first * v.second;
     }
-
-    return d;
+  }
+  PFI lcm(PFI &o) {
+    mii ans = m;
+    for (auto v : o.m) {
+      chmax(ans[v.F], v.S);
+    }
+    return PFI(ans);
+  }
+  PFI div(PFI &o) {
+    mii ans = m;
+    for (auto v : o.m) {
+      ans[v.F] -= v.S;
+    }
+    return PFI(ans);
+  }
+  int val() {
+    int ans = 1;
+    for (auto v : m) {
+      rep(i,v.S) ans *= v.F;
+    }
+    return ans;
   }
 };
 
 signed main() {
-  in(n,m);
-  Graph g(n);
-  rep(i,m) {
-    in(a,b,c);a--;b--;
-    g.edges[a].pb(mp(c,b));
-    g.edges[b].pb(mp(c,a));
+  in(n);
+  vi a(n);
+  vector<PFI> pfi(n,1);
+  rep(i,n) {
+    cin >> a[i];
+    PFI m(a[i]);
+    pfi[i] = m;
+    // pp(m.m,m.val());
   }
-  vi d = g.dijkstra(0);
-  pp(d);
-  // cout << ans << endl;
+  PFI lcm(1);
+  rep(i,n) lcm = lcm.lcm(pfi[i]);
+  // pp(lcm.m);
+
+  int ans = 0;
+  int lcmv = lcm.val();
+  rep(i,n) (ans += lcmv) %= MOD;
+  cout << ans << endl;
 }
