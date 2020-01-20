@@ -1,7 +1,7 @@
 #include <bits/stdc++.h>
 using namespace std;
 
-#define int long long
+// #define int long long
 struct Fast {Fast(){std::cin.tie(0);ios::sync_with_stdio(false);}} fast;
 
 /* short */
@@ -92,69 +92,23 @@ template<class T> bool by_snd(const T &a, const T &b) { return a.snd < b.snd; }
 inline void print_and_exit(int x) { cout << x << endl; exit(0);}
 const int dx[] = {0, 1, 0, -1, 1, -1, 1, -1}, dy[] = {1, 0, -1, 0, 1, -1, -1, 1};
 
-mii prime_factor(int n) {
-  mii ans;
-  for (int i = 2; i * i <= n; i++) {
-    while (n % i == 0) { ans[i]++; n /= i; }
-  }
-  if (n != 1) ans[n] = 1;
-  return ans;
-}
+#include <boost/graph/adjacency_list.hpp>
+#include <boost/graph/graph_utility.hpp>
 
-// 自然数の素因数分解表示
-// PrimeFactorInt
-// 大きなＬＣＭの計算用
-struct PFI {
-  int n;
-  mii m;
-  PFI(int n) : n(n) {
-    m = prime_factor(n);
-  }
-  PFI(mii m) : m(m) {
-    n = 0;
-    for (auto v : m) {
-      n += v.first * v.second;
-    }
-  }
-  PFI lcm(PFI &o) {
-    mii ans = m;
-    for (auto v : o.m) {
-      chmax(ans[v.F], v.S);
-    }
-    return PFI(ans);
-  }
-  PFI div(PFI &o) {
-    mii ans = m;
-    for (auto v : o.m) {
-      ans[v.F] -= v.S;
-    }
-    return PFI(ans);
-  }
-  int val() {
-    int ans = 1;
-    for (auto v : m) {
-      rep(i,v.S) ans *= v.F;
-    }
-    return ans;
-  }
-};
+typedef boost::adjacency_list<boost::listS, boost::vecS, boost::directedS> Graph;
+typedef std::pair<int, int> Edge;
 
-signed main() {
-  in(n);
-  vi a(n);
-  vector<PFI> pfi(n,1);
-  rep(i,n) {
-    cin >> a[i];
-    PFI m(a[i]);
-    pfi[i] = m;
-    // pp(m.m,m.val());
-  }
-  PFI lcm(1);
-  rep(i,n) lcm = lcm.lcm(pfi[i]);
-  // pp(lcm.m);
+enum { A, B, C, D, E, N };
+const std::string name = "ABCDE";
 
-  int ans = 0;
-  int lcmv = lcm.val();
-  rep(i,n) (ans += lcmv) %= MOD;
-  cout << ans << endl;
+signed main()
+{
+    const std::vector<Edge> edges = {
+        {A, B}, {A, C}, {A, D},
+        {B, E}, {C, E}, {D, E}
+    };
+
+    const Graph g(edges.begin(), edges.end(), N);
+
+    boost::print_graph(g, name.c_str());
 }

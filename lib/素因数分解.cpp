@@ -17,17 +17,39 @@ mii prime_factor(int n) {
 }
 
 // 自然数の素因数分解表示
+// PrimeFactorInt
 // 大きなＬＣＭの計算用
-struct PrimeFactorInt {
+struct PFI {
   int n;
   mii m;
-  PrimeFactorInt(int n) : n(n) {
+  PFI(int n) : n(n) {
     m = prime_factor(n);
   }
-  PrimeFactorInt(mii m) : m(m) {
+  PFI(mii m) : m(m) {
     n = 0;
     for (auto v : m) {
       n += v.first * v.second;
     }
+  }
+  PFI lcm(PFI &o) {
+    mii ans = m;
+    for (auto v : o.m) {
+      chmax(ans[v.F], v.S);
+    }
+    return PFI(ans);
+  }
+  PFI div(PFI &o) {
+    mii ans = m;
+    for (auto v : o.m) {
+      ans[v.F] -= v.S;
+    }
+    return PFI(ans);
+  }
+  int val() {
+    int ans = 1;
+    for (auto v : m) {
+      rep(i,v.S) ans *= v.F;
+    }
+    return ans;
   }
 };
