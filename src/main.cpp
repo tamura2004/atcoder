@@ -92,23 +92,41 @@ template<class T> bool by_snd(const T &a, const T &b) { return a.snd < b.snd; }
 inline void print_and_exit(int x) { cout << x << endl; exit(0);}
 const int dx[] = {0, 1, 0, -1, 1, -1, 1, -1}, dy[] = {1, 0, -1, 0, 1, -1, -1, 1};
 
-#include <boost/graph/adjacency_list.hpp>
-#include <boost/graph/graph_utility.hpp>
+struct Problem {
+  int n,w; // n:個数、w:重量上限
+  vi a,b; // a:重さ、b:価値　ダメージ、マナ
+  vvi dp;
 
-typedef boost::adjacency_list<boost::listS, boost::vecS, boost::directedS> Graph;
-typedef std::pair<int, int> Edge;
+  Problem(int n, int w) : n(n),w(w),a(n),b(n),dp(n+1,vi(w+1,INF)) {}
 
-enum { A, B, C, D, E, N };
-const std::string name = "ABCDE";
+  int solve() {
+    rep(i,n) rep(j,w+1) {
+      
+      // i番目の呪文を使用しない
+      chmin(dp[i+1][j], dp[i][j]);
 
-signed main()
-{
-    const std::vector<Edge> edges = {
-        {A, B}, {A, C}, {A, D},
-        {B, E}, {C, E}, {D, E}
-    };
+      // ひとつ前の呪文のマナ
+      int mana = 0;
+      if (j - a[i] > 0) mana = dp[i+1][j - a[i]];
 
-    const Graph g(edges.begin(), edges.end(), N);
+      // 前に加えて選ぶ
+      chmin(dp[i+1][j],mana + b[i]);
+    }
 
-    boost::print_graph(g, name.c_str());
+    // n番目まで選んだ時の、重量w*以下*の価値の最大値
+    return dp[n][w];
+  }
+
+  void inspect() {
+    rep(i,n+1) pp(dp[i]);
+  }
+};
+
+signed main() {
+  in(h,n);
+  Problem p(n,h);
+  rep(i,n) cin>>p.a[i]>>p.b[i];
+  int ans = p.solve();
+  // p.inspect();
+  cout << ans << endl;
 }
