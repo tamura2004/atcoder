@@ -1,1 +1,42 @@
-100
+10
+5 4
+9 10
+3 7
+3 1
+2 6
+4 5
+
+
+
+// 分割数
+// dp[n][m] nをm個の非負整数の和に表す組合せの数
+// dp[n][m] = dp[n-1][m] + dp[n-m][m]
+//          = ゼロを含む組合せ + ゼロを含まない組合せ
+struct Problem {
+  int n,k,w;
+  vvvi dp;
+  vi a,b;
+
+  Problem(int n, int k, int w) : n(n),k(k),w(w),a(n),b(n),dp(n+1,vvi(k+1,vi(w+1,0))) {}
+
+  void solve() {
+    rep(i,n) rep(j,k+1) rep(h,w+1) {
+      chmax(dp[i+1][j][h], dp[i][k-1][w - a[i]] + b[i]);
+      chmax(dp[i+1][j][h], dp[i][k][w]);
+    }
+  }
+
+  void inspect() {
+    pp(n,k,w);
+    rep(i,n+1) rep(j,k+1) pp(dp[i][j]);
+  }
+};
+
+signed main() {
+  in(w,n,k);
+  Problem p(n,k,w);
+  rep(i,n) cin>>p.a[i]>>p.b[i];
+  p.solve();
+  p.inspect();
+  // cout << ans << endl;
+}

@@ -92,33 +92,35 @@ template<class T> bool by_snd(const T &a, const T &b) { return a.snd < b.snd; }
 inline void print_and_exit(int x) { cout << x << endl; exit(0);}
 const int dx[] = {0, 1, 0, -1, 1, -1, 1, -1}, dy[] = {1, 0, -1, 0, 1, -1, -1, 1};
 
-// 分割数
-// dp[n][m] nをm個の非負整数の和に表す組合せの数
-// dp[n][m] = dp[n-1][m] + dp[n-m][m]
-//          = ゼロを含む組合せ + ゼロを含まない組合せ
 struct Problem {
-  int n;
-  vvi dp;
+  int n,k,w;
+  vvvi dp;
+  vi a,b;
 
-  Problem(int n) : n(n),dp(n+1,vi(n+1,0)) {}
+  Problem(int n, int k, int w) : n(n),k(k),w(w),a(n),b(n),dp(n+1,vvi(k+1,vi(w+1,0))) {}
 
   void solve() {
-    rep(i,n) dp[0][i] = 1;
-
-    repi(i,n) repi(j,n) {
-      int a = i < j ? 0 : dp[i-j][j];
-      dp[i][j] = dp[i][j-1] + a;
+    rep(i,n) repi(j,k) rep(h,w+1) {
+      pp(i,j,h);
+      if (w-a[i] >= 0) chmax(dp[i+1][j][h], dp[i][j-1][w - a[i]] + b[i]);
+      chmax(dp[i+1][j][h], dp[i][j][h]);
     }
   }
 
   void inspect() {
-    rep(i,n+1) pp(dp[i][i]);
+    pp(n,k,w);
+    pp(a,b);
+    rep(i,n+1) {
+      pp("----");
+      rep(j,k+1) pp(dp[i][j]);
+    }
   }
 };
 
 signed main() {
-  in(n);
-  Problem p(n);
+  in(w,n,k);
+  Problem p(n,k,w);
+  rep(i,n) cin>>p.a[i]>>p.b[i];
   p.solve();
   p.inspect();
   // cout << ans << endl;
