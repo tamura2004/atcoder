@@ -92,36 +92,19 @@ template<class T> bool by_snd(const T &a, const T &b) { return a.snd < b.snd; }
 inline void print_and_exit(int x) { cout << x << endl; exit(0);}
 const int dx[] = {0, 1, 0, -1, 1, -1, 1, -1}, dy[] = {1, 0, -1, 0, 1, -1, -1, 1};
 
-struct Problem {
-  int n,k,w;
-  vvvi dp;
-  vi a,b;
-
-  Problem(int n, int k, int w) : n(n),k(k),w(w),a(n),b(n),dp(n+1,vvi(k+1,vi(w+1,0))) {}
-
-  void solve() {
-    rep(i,n) repi(j,k) rep(h,w+1) {
-      pp(i,j,h);
-      if (w-a[i] >= 0) chmax(dp[i+1][j][h], dp[i][j-1][w - a[i]] + b[i]);
-      chmax(dp[i+1][j][h], dp[i][j][h]);
-    }
-  }
-
-  void inspect() {
-    pp(n,k,w);
-    pp(a,b);
-    rep(i,n+1) {
-      pp("----");
-      rep(j,k+1) pp(dp[i][j]);
-    }
-  }
-};
-
 signed main() {
-  in(w,n,k);
-  Problem p(n,k,w);
-  rep(i,n) cin>>p.a[i]>>p.b[i];
-  p.solve();
-  p.inspect();
-  // cout << ans << endl;
+  in(n);
+  vi a(n);cin>>a;
+  auto lo = a.begin();
+  auto hi = a.begin();
+  int cnt = 0;
+  int ans = 0;
+  while (hi <= a.end()) {
+    if (cnt < n) cnt += *hi++;
+    else cnt -= *lo++;
+
+    if (cnt == n) ans++;
+    pp(lo-a.begin(),hi-a.begin(),ans,cnt);
+  }
+  cout << ans << endl;
 }
