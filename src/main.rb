@@ -1,3 +1,3 @@
-n = gets.to_i
-ans = n
-puts ans
+s = gets.chomp
+n = s.scan(/\d+/).first.to_i
+puts n
