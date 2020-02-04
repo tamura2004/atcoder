@@ -48,6 +48,7 @@ template<typename T> ostream &operator<<(ostream &os, const set<T> &vec){ os << 
 template<typename T> ostream &operator<<(ostream &os, const multiset<T> &vec){ os << "{"; for (auto v : vec) os << v << ","; os << "}"; return os; }
 template<typename T1, typename T2> ostream &operator<<(ostream &os, const pair<T1, T2> &pa){ os << "(" << pa.first << "," << pa.second << ")"; return os; }
 template<typename TK, typename TV> ostream &operator<<(ostream &os, const map<TK, TV> &mp){ os << "{"; for (auto v : mp) os << v.first << "=>" << v.second << ","; os << "}"; return os; }
+template<typename T> istream &operator>>(istream &is, complex<T> &c){ T x,y;is>>x>>y;c=complex<T>(x,y);return is;}
 
 /* input */
 #define _overload(_1,_2,_3,_4,_5,_6,name,...) name
@@ -92,21 +93,44 @@ template<class T> bool by_snd(const T &a, const T &b) { return a.snd < b.snd; }
 inline void print_and_exit(int x) { cout << x << endl; exit(0);}
 const int dx[] = {0, 1, 0, -1, 1, -1, 1, -1}, dy[] = {1, 0, -1, 0, 1, -1, -1, 1};
 
-// 素因数分解
-// usage:
-// mii p = prime_factor(12);
-// { 2 => 2, 3 => 1 }
-//
-void prime_factor(int n, mii &ans) {
-  for (int i = 2; i * i <= n; i++) {
-    while (n % i == 0) { ans[i]++; n /= i; }
+struct Problem {
+  vi e;
+  Problem(int n) : e(n+1,0) {
+    FOR(i,2,n+1) {
+      int cur = i;
+      FOR(j,2,i+1) {
+        while (cur % j == 0) {
+          e[j]++;
+          cur /= j;
+        }
+      } 
+    }
   }
-  if (n != 1) ans[n] += 1;
-}
+
+  // eのうち、m-1以上のものの個数
+  int num(int m) {
+    int ans = 0;
+    for (auto v : e) if (v >= m - 1) ans++;
+    return ans;
+  }
+
+  int solve() {
+    int x = num(75);
+    int y = num(25) * (num(3) - 1);
+    int z = num(15) * (num(5) - 1);
+    int w = num(5) * (num(5) - 1) * (num(3) - 2) / 2;
+    return x + y + z + w;
+  }
+  
+  void inspect() {
+    pp(e);
+  }
+};
 
 signed main() {
-  mii ans;
-  repi(i,100) prime_factor(i, ans);
-  pp(ans);
+  in(n);
+  Problem p(n);
+  int ans = p.solve();
+  cout << ans << endl;
 }
 

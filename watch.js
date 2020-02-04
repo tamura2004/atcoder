@@ -11,6 +11,8 @@ watcher.on("ready", () => {
     log("==================================================");
     log("Watching, ready for change.");
     watcher.on("change", () => {
+        log("==================================================");
+        log("Change detected.");
         exec("g++ src/main.cpp && cat src/input.txt | ./a.out", (err, stdout, stderr) => {
             if (err) {
                 log(err);
