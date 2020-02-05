@@ -93,44 +93,77 @@ template<class T> bool by_snd(const T &a, const T &b) { return a.snd < b.snd; }
 inline void print_and_exit(int x) { cout << x << endl; exit(0);}
 const int dx[] = {0, 1, 0, -1, 1, -1, 1, -1}, dy[] = {1, 0, -1, 0, 1, -1, -1, 1};
 
-struct Problem {
-  vi e;
-  Problem(int n) : e(n+1,0) {
-    FOR(i,2,n+1) {
-      int cur = i;
-      FOR(j,2,i+1) {
-        while (cur % j == 0) {
-          e[j]++;
-          cur /= j;
-        }
-      } 
-    }
-  }
+// https://gist.github.com/ttsuki/f3bb54694c90fa9031a7
+// Mod な n! nCr nPr nHr を求める。
+// 初期化に O(n) sizeof(ll) * n * 3 のメモリを要する 1000万(10^7)で256MBギリ
+// 初期化してしまえば、あとは O(1)
+struct ModCombination
+{
+	// modFact[n] = MODを法とした n!
+	vector<ll> modFact{};
+	void initModFact(int N, ll MOD)
+	{
+		modFact.clear();
+		modFact.reserve(N + 1);
+		ll r = 1;
+		modFact.push_back(r);
+		FOR(i, 1, N + 1)
+		{
+			r = r * i % MOD;
+			modFact.push_back(r);
+		}
+	}
 
-  // eのうち、m-1以上のものの個数
-  int num(int m) {
-    int ans = 0;
-    for (auto v : e) if (v >= m - 1) ans++;
-    return ans;
-  }
+	// modInv[n] = MODを法とした n の逆元
+	vector<ll> modInv{};
+	void initModInv(int N, ll MOD)
+	{
+		modInv.clear();
+		modInv.reserve(N + 1);
+		modInv.push_back(0);
+		modInv.push_back(1);
+		FOR(i, 2, N + 1)
+		{
+			modInv.push_back(modInv[MOD % i] * (MOD - MOD / i) % MOD);
+		}
+	}
 
-  int solve() {
-    int x = num(75);
-    int y = num(25) * (num(3) - 1);
-    int z = num(15) * (num(5) - 1);
-    int w = num(5) * (num(5) - 1) * (num(3) - 2) / 2;
-    return x + y + z + w;
-  }
-  
-  void inspect() {
-    pp(e);
-  }
+	// modFactInv[n] = MODを法とした n! の逆元
+	vector<ll> modFactInv{};
+	void initModFactInv(int N, ll MOD)
+	{
+		modFactInv.clear();
+		modFactInv.reserve(N + 1);
+		ll r = 1;
+		modFactInv.push_back(r);
+		FOR(i, 1, N + 1)
+		{
+			r = r * modInv[i] % MOD;
+			modFactInv.push_back(r);
+		}
+	}
+
+	int N;
+	ll MOD;
+	ModCombination(int N, ll MOD) : N(N), MOD(MOD)
+	{
+		initModFact(N + 1, MOD);
+		initModInv(N + 1, MOD);
+		initModFactInv(N + 1, MOD);
+	}
+
+	ll Fact(int n) { return modFact[n]; }
+	ll Permutation(int n, int k) { return k >= 0 && n >= k ? modFact[n] * modFactInv[n - k] % MOD : 0; }
+	ll Combination(int n, int k) { return k >= 0 && n >= k ? Permutation(n, k) * modFactInv[k] % MOD : 0; }
+	ll HomogeneousProduct(int n, int k) { return n == 0 && k == 0 ? 1 : Combination(n + k - 1, k); }
 };
 
 signed main() {
-  in(n);
-  Problem p(n);
-  int ans = p.solve();
-  cout << ans << endl;
+  in(n,k);
+  ModCombination m(3000,MOD);
+  repi(i,k) {
+    int ans = m.Combination(n-k+1, i) * m.Combination(k-1, i-1) % MOD;
+    cout << ans << endl;
+  }
 }
 
