@@ -93,44 +93,42 @@ template<class T> bool by_snd(const T &a, const T &b) { return a.snd < b.snd; }
 inline void print_and_exit(int x) { cout << x << endl; exit(0);}
 const int dx[] = {0, 1, 0, -1, 1, -1, 1, -1}, dy[] = {1, 0, -1, 0, 1, -1, -1, 1};
 
-struct Problem {
-  vi e;
-  Problem(int n) : e(n+1,0) {
-    FOR(i,2,n+1) {
-      int cur = i;
-      FOR(j,2,i+1) {
-        while (cur % j == 0) {
-          e[j]++;
-          cur /= j;
-        }
-      } 
-    }
+vi split(string &s) {
+  vi a;
+  auto lo = s.begin();
+  auto hi = s.begin();
+  while (lo != s.end()) *lo == *hi ? hi++ : (a.push_back(hi - lo), lo = hi);
+  return a;
+}
+
+struct CumulativeSum {
+  int n;
+  vi s;
+  CumulativeSum(vi a) : n(a.size()), s(n+1,0) {
+    repi(i,n) s[i] = s[i-1] + a[i-1];
   }
 
-  // eのうち、m-1以上のものの個数
-  int num(int m) {
-    int ans = 0;
-    for (auto v : e) if (v >= m - 1) ans++;
-    return ans;
+  int range_sum(int a, int b) {
+    return s[b] - s[a-1];
   }
 
-  int solve() {
-    int x = num(75);
-    int y = num(25) * (num(3) - 1);
-    int z = num(15) * (num(5) - 1);
-    int w = num(5) * (num(5) - 1) * (num(3) - 2) / 2;
-    return x + y + z + w;
-  }
-  
   void inspect() {
-    pp(e);
+    pp(n,s);
   }
 };
 
 signed main() {
-  in(n);
-  Problem p(n);
-  int ans = p.solve();
+  in(n,k);
+  string s;cin>>s;
+  vi a = split(s);
+  CumulativeSum csum(a);
+  pp(a);
+  csum.inspect();
+  int ans = 0;
+  int len = k * 2 + 1;
+  if (s[0] == '0') k--;
+  for (int i = 1; i <= n - len + 1; i += 2) {
+    chmax(ans, csum.range_sum(i, i+len));
+  }
   cout << ans << endl;
 }
-
