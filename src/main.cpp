@@ -93,42 +93,6 @@ template<class T> bool by_snd(const T &a, const T &b) { return a.snd < b.snd; }
 inline void print_and_exit(int x) { cout << x << endl; exit(0);}
 const int dx[] = {0, 1, 0, -1, 1, -1, 1, -1}, dy[] = {1, 0, -1, 0, 1, -1, -1, 1};
 
-vi split(string &s) {
-  vi a;
-  auto lo = s.begin();
-  auto hi = s.begin();
-  while (lo != s.end()) *lo == *hi ? hi++ : (a.push_back(hi - lo), lo = hi);
-  return a;
-}
-
-struct CumulativeSum {
-  int n;
-  vi s;
-  CumulativeSum(vi a) : n(a.size()), s(n+1,0) {
-    repi(i,n) s[i] = s[i-1] + a[i-1];
-  }
-
-  int range_sum(int a, int b) {
-    return s[b] - s[a-1];
-  }
-
-  void inspect() {
-    pp(n,s);
-  }
-};
-
 signed main() {
   in(n,k);
-  string s;cin>>s;
-  vi a = split(s);
-  CumulativeSum csum(a);
-  pp(a);
-  csum.inspect();
-  int ans = 0;
-  int len = k * 2 + 1;
-  if (s[0] == '0') k--;
-  for (int i = 1; i <= n - len + 1; i += 2) {
-    chmax(ans, csum.range_sum(i, i+len));
-  }
-  cout << ans << endl;
 }
