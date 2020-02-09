@@ -9,8 +9,6 @@ struct Fast {Fast(){std::cin.tie(0);ios::sync_with_stdio(false);}} fast;
 #define mp make_pair
 #define fst first
 #define snd second
-#define F first
-#define S second
 #define ALL(v) begin(v), end(v)
 
 /* REPmacro */
@@ -93,6 +91,29 @@ template<class T> bool by_snd(const T &a, const T &b) { return a.snd < b.snd; }
 inline void print_and_exit(int x) { cout << x << endl; exit(0);}
 const int dx[] = {0, 1, 0, -1, 1, -1, 1, -1}, dy[] = {1, 0, -1, 0, 1, -1, -1, 1};
 
+// ARC042A
+// 方針
+// pa
+// stackから順に取り出して表示
+// 1-n のうち、setに該当が無いものを表示
 signed main() {
-  in(n,k);
+  in(n,m);
+  vi a(m);cin>>a;
+
+  stack<int> S;
+  set<int> done;
+
+  rep(i,m) {
+    S.push(a[i]);
+  }
+
+  while (!S.empty()) {
+    int v = S.top(); S.pop();
+    if (!done.count(v)) cout << v << endl;
+    done.insert(v);
+  }
+
+  repi(i,n) if (!done.count(i)) {
+    cout << i << endl;
+  }
 }

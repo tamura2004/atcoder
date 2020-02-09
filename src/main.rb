@@ -1,17 +1,17 @@
+def dist(a,b,c)
+    return ((c-a)*((b-a).conj)/((b-a).abs)).imag.abs
+end
+
+o = Complex.rect(*gets.split.map(&:to_i))
 n = gets.to_i
-$e = Array.new(n+1,0)
-2.upto(n) do |i|
-    cur = i
-    2.upto(i) do |j|
-        while cur % j == 0
-            $e[j] += 1
-            cur /= j
-        end
-    end
+c = n.times.map do |i|
+    Complex.rect(*gets.split.map(&:to_i))
 end
 
-def num(m)
-    $e.count{|v| v >= m - 1}
+ans = 1000
+n.times do |i|
+    j = (i + 1) % n
+    d = dist(c[i],c[j],o)
+    ans = d if ans > d
 end
-
-puts num(75) + num(25) * (num(3)-1) + num(15) * (num(5)-1) + num(5) * (num(5)-1) * (num(3)-2) / 2
+printf("%.12f\n", ans)
