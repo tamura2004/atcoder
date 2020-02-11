@@ -1,7 +1,6 @@
 #include <bits/stdc++.h>
 using namespace std;
 
-// #define int long long
 struct Fast {Fast(){std::cin.tie(0);ios::sync_with_stdio(false);}} fast;
 
 /* short */
@@ -160,9 +159,10 @@ Mint nCk(int n, int k) {
 
 Mint F(int r, int c) { return nCk(r+c, c); }
 
+#define int long long
+
 signed main() {
-  init();
-  in(r1,c1,r2,c2);
-  Mint ans = F(r2+1,c2+1) - F(r1,c2+1) - F(r2+1,c1) + F(r1,c1);
-  cout << ans.geti() << endl;
+  in(x1,y1,x2,y2);
+  int ans = gcd(abs(x2-x1),abs(y2-y1)) - 1;
+  cout << ans << endl;
 }
