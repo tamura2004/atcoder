@@ -2,12 +2,9 @@
 using namespace std;
 
 struct Fast {Fast(){std::cin.tie(0);ios::sync_with_stdio(false);}} fast;
+#define int long long
 
 /* short */
-#define pb push_back
-#define mp make_pair
-#define fst first
-#define snd second
 #define ALL(v) begin(v), end(v)
 
 /* REPmacro */
@@ -38,7 +35,7 @@ template <typename T> using minPQ = priority_queue<T, vector<T>, greater<T>>;
 
 /* iostream */
 template<typename T> istream &operator>>(istream &is, vector<T> &vec){ for (auto &v : vec) is >> v; return is; }
-template<typename T> istream &operator>>(istream &is, pair<T,T> &p){ int a,b;is>>a>>b;p=mp(a,b);return is;}
+template<typename T> istream &operator>>(istream &is, pair<T,T> &p){ int a,b;is>>a>>b;p=make_pair(a,b);return is;}
 template<typename T> ostream &operator<<(ostream &os, const vector<T> &vec){ os << "["; for (auto v : vec) os << v << ","; os << "]"; return os; }
 template<typename T> ostream &operator<<(ostream &os, const deque<T> &vec){ os << "deq["; for (auto v : vec) os << v << ","; os << "]"; return os; }
 template<typename T> ostream &operator<<(ostream &os, const set<T> &vec){ os << "{"; for (auto v : vec) os << v << ","; os << "}"; return os; }
@@ -90,79 +87,146 @@ template<class T> bool by_snd(const T &a, const T &b) { return a.snd < b.snd; }
 inline void print_and_exit(int x) { cout << x << endl; exit(0);}
 const int dx[] = {0, 1, 0, -1, 1, -1, 1, -1}, dy[] = {1, 0, -1, 0, 1, -1, -1, 1};
 
-template<unsigned MOD_> struct ModInt {
-  static const unsigned MOD = MOD_;
-  unsigned x;
-  void undef() { x = (unsigned)-1; }
-  bool isnan() const { return x == (unsigned)-1; }
-  inline int geti() const { return (int)x; }
-  ModInt() { x = 0; }
-  ModInt(const ModInt &y) { x = y.x; }
-  ModInt(int y) { if (y<0 || (int)MOD<=y) y %= (int)MOD; if (y<0) y += MOD; x=y; }
-  ModInt(unsigned y) { if (MOD<=y) x = y % MOD; else x = y; }
-  ModInt(long long y) { if (y<0 || MOD<=y) y %= MOD; if (y<0) y += MOD; x=y; }
-  ModInt(unsigned long long y) { if (MOD<=y) x = y % MOD; else x = y; }
-  ModInt &operator+=(const ModInt y) { if ((x += y.x) >= MOD) x -= MOD; return *this; }
-  ModInt &operator-=(const ModInt y) { if ((x -= y.x) & (1u<<31)) x += MOD; return *this; }
-  ModInt &operator*=(const ModInt y) { x = (unsigned long long)x * y.x % MOD; return *this; }
-  ModInt &operator/=(const ModInt y) { x = (unsigned long long)x * y.inv().x % MOD; return *this; }
-  ModInt operator-() const { return (x ? MOD-x: 0); }
+/* 基本要素 */
 
-  ModInt inv() const { return pow(MOD-2); }
-  ModInt pow(long long y) const {
-    ModInt b = *this, r = 1;
-    if (y < 0) { b = b.inv(); y = -y; }
-    for (; y; y>>=1) {
-      if (y&1) r *= b;
-      b *= b;
-    }
-    return r;
-  }
- 
-  ModInt extgcd() const {
-    unsigned a = MOD, b = x; int u = 0, v = 1;
-    while (b) {
-        int t = a / b;
-        a -= t * b; swap(a, b);
-        u -= t * v; swap(u, v);
-    }
-    if (u < 0) u += MOD;
-    return ModInt(u);
-  }
- 
-  friend ModInt operator+(ModInt x, const ModInt y) { return x += y; }
-  friend ModInt operator-(ModInt x, const ModInt y) { return x -= y; }
-  friend ModInt operator*(ModInt x, const ModInt y) { return x *= y; }
-  friend ModInt operator/(ModInt x, const ModInt y) { return x *= y.inv(); }
-  friend bool operator<(const ModInt x, const ModInt y) { return x.x < y.x; }
-  friend bool operator==(const ModInt x, const ModInt y) { return x.x == y.x; }
-  friend bool operator!=(const ModInt x, const ModInt y) { return x.x != y.x; }
-};
- 
-typedef ModInt<MOD> Mint;
+typedef double D;      // 座標値の型。doubleかlong doubleを想定
+typedef complex<D> P;  // Point
+typedef pair<P, P> L;  // Line
+typedef vector<P> VP;
+const D EPS = 1e-9;    // 許容誤差。問題によって変える
+#define X real()
+#define Y imag()
+#define LE(n,m) ((n) < (m) + EPS)
+#define GE(n,m) ((n) + EPS > (m))
+#define EQ(n,m) (abs((n)-(m)) < EPS)
 
-const int MAX = 2000011;
-Mint inv[MAX], fact[MAX], fact_inv[MAX];
- 
-void init() {
-  fact[0] = 1;
-  for (int i=1; i<MAX; i++) fact[i] = fact[i-1] * i;
-  fact_inv[MAX-1] = fact[MAX-1].inv();
-  for (int i=MAX-2; i>=0; i--) fact_inv[i] = fact_inv[i+1] * (i+1);
-  inv[0] = 0;
-  for (int i=1; i<MAX; i++) inv[i] = fact_inv[i] * fact[i-1];
+// 内積　dot(a,b) = |a||b|cosθ
+D dot(P a, P b) {
+  return (conj(a)*b).X;
 }
- 
-Mint nCk(int n, int k) {
-  return fact[n] * fact_inv[k] * fact_inv[n-k];
+// 外積　cross(a,b) = |a||b|sinθ
+D cross(P a, P b) {
+  return (conj(a)*b).Y;
 }
 
-Mint F(int r, int c) { return nCk(r+c, c); }
+// 点の進行方向
+int ccw(P a, P b, P c) {
+  b -= a;  c -= a;
+  if (cross(b,c) >  EPS) return +1;  // counter clockwise
+  if (cross(b,c) < -EPS) return -1;  // clockwise
+  if (dot(b,c)   < -EPS) return +2;  // c--a--b on line
+  if (norm(b) < norm(c)) return -2;  // a--b--c on line or a==b
+  return 0;                          // a--c--b on line or a==c or b==c
+}
 
-#define int long long
+/* 交差判定　直線・線分は縮退してはならない。接する場合は交差するとみなす。isecはintersectの略 */
+
+// 直線と点
+bool isecLP(P a1, P a2, P b) {
+  return abs(ccw(a1, a2, b)) != 1;  // return EQ(cross(a2-a1, b-a1), 0); と等価
+}
+
+// 直線と直線
+bool isecLL(P a1, P a2, P b1, P b2) {
+  return !isecLP(a2-a1, b2-b1, 0) || isecLP(a1, b1, b2);
+}
+
+// 直線と線分
+bool isecLS(P a1, P a2, P b1, P b2) {
+  return cross(a2-a1, b1-a1) * cross(a2-a1, b2-a1) < EPS;
+}
+
+// 線分と線分
+bool isecSS(P a1, P a2, P b1, P b2) {
+  return ccw(a1, a2, b1)*ccw(a1, a2, b2) <= 0 &&
+         ccw(b1, b2, a1)*ccw(b1, b2, a2) <= 0;
+}
+
+// 線分と点
+bool isecSP(P a1, P a2, P b) {
+  return !ccw(a1, a2, b);
+}
+
+
+/* 距離　各直線・線分は縮退してはならない */
+
+// 点pの直線aへの射影点を返す
+P proj(P a1, P a2, P p) {
+  return a1 + dot(a2-a1, p-a1)/norm(a2-a1) * (a2-a1);
+}
+
+// 点pの直線aへの反射点を返す
+P reflection(P a1, P a2, P p) {
+  return 2.0*proj(a1, a2, p) - p;
+}
+
+D distLP(P a1, P a2, P p) {
+  return abs(proj(a1, a2, p) - p);
+}
+
+D distLL(P a1, P a2, P b1, P b2) {
+  return isecLL(a1, a2, b1, b2) ? 0 : distLP(a1, a2, b1);
+}
+
+D distLS(P a1, P a2, P b1, P b2) {
+  return isecLS(a1, a2, b1, b2) ? 0 : min(distLP(a1, a2, b1), distLP(a1, a2, b2));
+}
+
+D distSP(P a1, P a2, P p) {
+  P r = proj(a1, a2, p);
+  if (isecSP(a1, a2, r)) return abs(r-p);
+  return min(abs(a1-p), abs(a2-p));
+}
+
+D distSS(P a1, P a2, P b1, P b2) {
+  if (isecSS(a1, a2, b1, b2)) return 0;
+  return min(min(distSP(a1, a2, b1), distSP(a1, a2, b2)),
+             min(distSP(b1, b2, a1), distSP(b1, b2, a2)));
+}
+
+// 2直線の交点
+P crosspointLL(P a1, P a2, P b1, P b2) {
+  D d1 = cross(b2-b1, b1-a1);
+  D d2 = cross(b2-b1, a2-a1);
+  if (EQ(d1, 0) && EQ(d2, 0)) return a1;  // same line
+  if (EQ(d2, 0)) throw "kouten ga nai";   // 交点がない
+  return a1 + d1/d2 * (a2-a1);
+}
+
+
+/* 円 */
+
+D distLC(P a1, P a2, P c, D r) {
+  return max(distLP(a1, a2, c) - r, 0.0);
+}
+
+D distSC(P a1, P a2, P c, D r) {
+  D dSqr1 = norm(c-a1), dSqr2 = norm(c-a2);
+  if (dSqr1 < r*r ^ dSqr2 < r*r) return 0;  // 円が線分を包含するとき距離0ならここをORに変える
+  if (dSqr1 < r*r & dSqr2 < r*r) return r - sqrt(max(dSqr1, dSqr2));
+  return max(distSP(a1, a2, c) - r, 0.0);
+}
+
+VP crosspointLC(P a1, P a2, P c, D r) {
+  VP ps;
+  P ft = proj(a1, a2, c);
+  if (!GE(r*r, norm(ft-c))) return ps;
+
+  P dir = sqrt(max(r*r - norm(ft-c), 0.0)) / abs(a2-a1) * (a2-a1);
+  ps.push_back(ft + dir);
+  if (!EQ(r*r, norm(ft-c))) ps.push_back(ft - dir);
+  return ps;
+}
+
+// 三角形の外心。点a,b,cは同一線上にあってはならない
+P circumcenter(P a, P b, P c) {
+  a = (a-c)*0.5;
+  b = (b-c)*0.5;
+  return c + crosspointLL(a, a*P(1,1), b, b*P(1,1));
+}
 
 signed main() {
-  in(x1,y1,x2,y2);
-  int ans = gcd(abs(x2-x1),abs(y2-y1)) - 1;
-  cout << ans << endl;
+  P a(0,0),b(9,1),c(1,9);
+  P ans = circumcenter(a,b,c);
+  pp(ans);
 }

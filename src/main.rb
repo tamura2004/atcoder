@@ -1,20 +1,21 @@
-def combi(n,m)
-  (1..m).inject(1){ |acc,i| acc = acc * (n - m + i) / i }
+class Gcd
+  attr_accessor :ans
+  def initialize
+    @ans = 0
+  end
+
+  def solve(a,b)
+    if b == 0
+      return self
+    elsif a < b
+      return solve(b,a)
+    else
+      q,r = a.divmod(b)
+      @ans += b * q
+      return solve(b, r)
+    end
+  end
 end
 
-def f(n,m)
-  combi(n+m,m)
-end
-
-def g(n,m)
-  f(n + 1, m + 1) - 1
-end
-
-r1,c1,r2,c2 = gets.split.map &:to_i
-
-a = g(r2, c2)
-b = g(r1 - 1, c2)
-c = g(r2, c1 - 1)
-d = g(r1 - 1, c1 - 1)
-
-puts (a - b - c + d) % 1000000007
+n,x = gets.split.map &:to_i
+puts Gcd.new.solve(n-x,x).ans * 3
