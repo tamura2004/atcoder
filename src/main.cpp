@@ -87,146 +87,23 @@ template<class T> bool by_snd(const T &a, const T &b) { return a.snd < b.snd; }
 inline void print_and_exit(int x) { cout << x << endl; exit(0);}
 const int dx[] = {0, 1, 0, -1, 1, -1, 1, -1}, dy[] = {1, 0, -1, 0, 1, -1, -1, 1};
 
-/* 基本要素 */
-
-typedef double D;      // 座標値の型。doubleかlong doubleを想定
-typedef complex<D> P;  // Point
-typedef pair<P, P> L;  // Line
-typedef vector<P> VP;
-const D EPS = 1e-9;    // 許容誤差。問題によって変える
-#define X real()
-#define Y imag()
-#define LE(n,m) ((n) < (m) + EPS)
-#define GE(n,m) ((n) + EPS > (m))
-#define EQ(n,m) (abs((n)-(m)) < EPS)
-
-// 内積　dot(a,b) = |a||b|cosθ
-D dot(P a, P b) {
-  return (conj(a)*b).X;
-}
-// 外積　cross(a,b) = |a||b|sinθ
-D cross(P a, P b) {
-  return (conj(a)*b).Y;
+int query1(int t, int s, vi &a) {
+  int ans = upper_bound(ALL(a),t/s) - a.begin();
 }
 
-// 点の進行方向
-int ccw(P a, P b, P c) {
-  b -= a;  c -= a;
-  if (cross(b,c) >  EPS) return +1;  // counter clockwise
-  if (cross(b,c) < -EPS) return -1;  // clockwise
-  if (dot(b,c)   < -EPS) return +2;  // c--a--b on line
-  if (norm(b) < norm(c)) return -2;  // a--b--c on line or a==b
-  return 0;                          // a--c--b on line or a==c or b==c
-}
-
-/* 交差判定　直線・線分は縮退してはならない。接する場合は交差するとみなす。isecはintersectの略 */
-
-// 直線と点
-bool isecLP(P a1, P a2, P b) {
-  return abs(ccw(a1, a2, b)) != 1;  // return EQ(cross(a2-a1, b-a1), 0); と等価
-}
-
-// 直線と直線
-bool isecLL(P a1, P a2, P b1, P b2) {
-  return !isecLP(a2-a1, b2-b1, 0) || isecLP(a1, b1, b2);
-}
-
-// 直線と線分
-bool isecLS(P a1, P a2, P b1, P b2) {
-  return cross(a2-a1, b1-a1) * cross(a2-a1, b2-a1) < EPS;
-}
-
-// 線分と線分
-bool isecSS(P a1, P a2, P b1, P b2) {
-  return ccw(a1, a2, b1)*ccw(a1, a2, b2) <= 0 &&
-         ccw(b1, b2, a1)*ccw(b1, b2, a2) <= 0;
-}
-
-// 線分と点
-bool isecSP(P a1, P a2, P b) {
-  return !ccw(a1, a2, b);
-}
-
-
-/* 距離　各直線・線分は縮退してはならない */
-
-// 点pの直線aへの射影点を返す
-P proj(P a1, P a2, P p) {
-  return a1 + dot(a2-a1, p-a1)/norm(a2-a1) * (a2-a1);
-}
-
-// 点pの直線aへの反射点を返す
-P reflection(P a1, P a2, P p) {
-  return 2.0*proj(a1, a2, p) - p;
-}
-
-D distLP(P a1, P a2, P p) {
-  return abs(proj(a1, a2, p) - p);
-}
-
-D distLL(P a1, P a2, P b1, P b2) {
-  return isecLL(a1, a2, b1, b2) ? 0 : distLP(a1, a2, b1);
-}
-
-D distLS(P a1, P a2, P b1, P b2) {
-  return isecLS(a1, a2, b1, b2) ? 0 : min(distLP(a1, a2, b1), distLP(a1, a2, b2));
-}
-
-D distSP(P a1, P a2, P p) {
-  P r = proj(a1, a2, p);
-  if (isecSP(a1, a2, r)) return abs(r-p);
-  return min(abs(a1-p), abs(a2-p));
-}
-
-D distSS(P a1, P a2, P b1, P b2) {
-  if (isecSS(a1, a2, b1, b2)) return 0;
-  return min(min(distSP(a1, a2, b1), distSP(a1, a2, b2)),
-             min(distSP(b1, b2, a1), distSP(b1, b2, a2)));
-}
-
-// 2直線の交点
-P crosspointLL(P a1, P a2, P b1, P b2) {
-  D d1 = cross(b2-b1, b1-a1);
-  D d2 = cross(b2-b1, a2-a1);
-  if (EQ(d1, 0) && EQ(d2, 0)) return a1;  // same line
-  if (EQ(d2, 0)) throw "kouten ga nai";   // 交点がない
-  return a1 + d1/d2 * (a2-a1);
-}
-
-
-/* 円 */
-
-D distLC(P a1, P a2, P c, D r) {
-  return max(distLP(a1, a2, c) - r, 0.0);
-}
-
-D distSC(P a1, P a2, P c, D r) {
-  D dSqr1 = norm(c-a1), dSqr2 = norm(c-a2);
-  if (dSqr1 < r*r ^ dSqr2 < r*r) return 0;  // 円が線分を包含するとき距離0ならここをORに変える
-  if (dSqr1 < r*r & dSqr2 < r*r) return r - sqrt(max(dSqr1, dSqr2));
-  return max(distSP(a1, a2, c) - r, 0.0);
-}
-
-VP crosspointLC(P a1, P a2, P c, D r) {
-  VP ps;
-  P ft = proj(a1, a2, c);
-  if (!GE(r*r, norm(ft-c))) return ps;
-
-  P dir = sqrt(max(r*r - norm(ft-c), 0.0)) / abs(a2-a1) * (a2-a1);
-  ps.push_back(ft + dir);
-  if (!EQ(r*r, norm(ft-c))) ps.push_back(ft - dir);
-  return ps;
-}
-
-// 三角形の外心。点a,b,cは同一線上にあってはならない
-P circumcenter(P a, P b, P c) {
-  a = (a-c)*0.5;
-  b = (b-c)*0.5;
-  return c + crosspointLL(a, a*P(1,1), b, b*P(1,1));
+int query2(int t, vi &a) {
+  int ans = 0;
+  for (int s : a) {
+    if (t < s * s) continue;
+    ans += query1(t, s, a);
+    pp(s,t,ans);
+  }
+  return ans;
 }
 
 signed main() {
-  P a(0,0),b(9,1),c(1,9);
-  P ans = circumcenter(a,b,c);
-  pp(ans);
+  in(n,k);
+  vi a(n);cin>>a;
+  sort(ALL(a));
+  pp(query2(14LL,a));
 }
