@@ -87,23 +87,141 @@ template<class T> bool by_snd(const T &a, const T &b) { return a.snd < b.snd; }
 inline void print_and_exit(int x) { cout << x << endl; exit(0);}
 const int dx[] = {0, 1, 0, -1, 1, -1, 1, -1}, dy[] = {1, 0, -1, 0, 1, -1, -1, 1};
 
-int query1(int t, int s, vi &a) {
-  int ans = upper_bound(ALL(a),t/s) - a.begin();
+template <class T>
+void exgcd(T a, T b, T& x, T& y)
+{
+	if (b != 0) { exgcd(b, a % b, y, x); y -= a / b * x; }
+	else { x = 1; y = 0; }
 }
 
-int query2(int t, vi &a) {
-  int ans = 0;
-  for (int s : a) {
-    if (t < s * s) continue;
-    ans += query1(t, s, a);
-    pp(s,t,ans);
+// https://gist.github.com/ttsuki/f3bb54694c90fa9031a7
+// Mod な n! nCr nPr nHr を求める。
+// 初期化に O(n) sizeof(ll) * n * 3 のメモリを要する 1000万(10^7)で256MBギリ
+// 初期化してしまえば、あとは O(1)
+struct ModCombination
+{
+	// modFact[n] = MODを法とした n!
+	vector<ll> modFact{};
+	void initModFact(int N, ll MOD)
+	{
+		modFact.clear();
+		modFact.reserve(N + 1);
+		ll r = 1;
+		modFact.push_back(r);
+		FOR(i, 1, N + 1)
+		{
+			r = r * i % MOD;
+			modFact.push_back(r);
+		}
+	}
+
+	// modInv[n] = MODを法とした n の逆元
+	vector<ll> modInv{};
+	void initModInv(int N, ll MOD)
+	{
+		modInv.clear();
+		modInv.reserve(N + 1);
+		modInv.push_back(0);
+		modInv.push_back(1);
+		FOR(i, 2, N + 1)
+		{
+			modInv.push_back(modInv[MOD % i] * (MOD - MOD / i) % MOD);
+		}
+	}
+
+	// modFactInv[n] = MODを法とした n! の逆元
+	vector<ll> modFactInv{};
+	void initModFactInv(int N, ll MOD)
+	{
+		modFactInv.clear();
+		modFactInv.reserve(N + 1);
+		ll r = 1;
+		modFactInv.push_back(r);
+		FOR(i, 1, N + 1)
+		{
+			r = r * modInv[i] % MOD;
+			modFactInv.push_back(r);
+		}
+	}
+
+	int N;
+	ll MOD;
+	ModCombination(int N, ll MOD) : N(N), MOD(MOD)
+	{
+		initModFact(N + 1, MOD);
+		initModInv(N + 1, MOD);
+		initModFactInv(N + 1, MOD);
+	}
+
+	ll Fact(int n) { return modFact[n]; }
+	ll Permutation(int n, int k) { return k >= 0 && n >= k ? modFact[n] * modFactInv[n - k] % MOD : 0; }
+	ll Combination(int n, int k) { return k >= 0 && n >= k ? Permutation(n, k) * modFactInv[k] % MOD : 0; }
+	ll HomogeneousProduct(int n, int k) { return n == 0 && k == 0 ? 1 : Combination(n + k - 1, k); }
+};
+
+
+// modを法としたxのy乗を求める。(繰り返し二乗法)
+inline ll modPow(ll x, ll y, ll mod)
+{
+	ll r = 1;
+	for (; y > 0; y >>= 1)
+	{
+		if (y & 1) { r = r * x % mod; }
+		x = x * x % mod;
+	}
+	return r;
+}
+
+// modを法としたaの逆元を求める。
+// 要件: a と mod は互いに素
+ll modInv(ll a, ll mod) { ll x, y; exgcd(a, mod, x, y); return x >= 0 ? x : x + mod; }
+
+// modを法とした1..nの逆元をまとめて求める。O(n)
+// 要件: 1..n と mod は互いに素。
+vector<int> modInvs(int n, int mod)
+{
+	vector<int> ret(n + 1);
+	ret[1] = 1;
+	for (int i = 2; i <= n; ++i)
+	{
+		ret[i] = ret[mod % i] * (mod - mod / i) % mod;
+	}
+	return ret;
+}
+
+// modを法としてx/yを計算する。O(exgcd)
+inline ll modDiv(ll x, ll y, ll mod)
+{
+	return (x * modInv(y, mod) + mod) % mod;
+}
+
+
+// modが素数のとき、modを法としたaの逆元を求める。O(log mod_prime)
+inline ll modInvPrime(ll a, ll mod_prime) { return modPow(a, mod_prime - 2, mod_prime); }
+
+// modが素数のとき、modを法としてx/yを計算する。O(log mod_prime)
+inline ll modDivPrime(ll x, ll y, ll mod_prime) { return x * modInvPrime(y, mod_prime) % mod_prime; }
+
+ModCombination m(500000, MOD);
+
+int nCk(int n, int k) {
+  int ans = n;
+  FOR(i,2,k+1) {
+    (ans *= n - i + 1) %= MOD;
+    (ans *= m.modInv[i]) %= MOD;
+    
   }
   return ans;
 }
 
 signed main() {
   in(n,k);
-  vi a(n);cin>>a;
-  sort(ALL(a));
-  pp(query2(14LL,a));
+  if (k < n) {
+    int ans = m.HomogeneousProduct(n,k);
+    (ans *= m.Combination(n,k)) %= MOD;
+    cout << ans << endl;
+  } else {
+    int ans = m.HomogeneousProduct(n,n);
+    cout << ans << endl;
+  }
 }

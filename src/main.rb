@@ -1,5 +1,6 @@
 MOD = 10 ** 9 + 7
 
+# MODを法とした階乗、組み合わせ
 class ModCombination
   attr_reader :fac, :inv, :finv, :mod
  
@@ -27,30 +28,32 @@ class ModCombination
     combination(n + k - 1, k)
   end
 end
- 
-mc = ModCombination.new(10000)
 
-N = gets.to_i
-T = N.times.map { gets.to_i }
-T.sort!
-
-H = Hash.new(0)
-T.each do |t|
-  H[t] += 1
+# MODを法としたxのy乗を求める（繰り返し二乗法）
+def modPow(x,y)
+  ans = 1
+  while y > 0
+    ans = ans * x % MOD if y & 1 == 1
+    y /= 2
+    x = x * x % MOD
+  end
+  return ans
 end
 
-now = 0
-pena = 0
-N.times do |i|
-  now += T[i]
-  pena += now
+MC = ModCombination.new(300000)
+
+# MODを法としたnCk、kが小さいとき
+def nCk(n,k)
+  ans = n
+  2.upto(k) do |i|
+    ans = ans * (n - i + 1) % MOD
+    ans = ans * MC.inv[i] % MOD
+  end
+  ans
 end
 
-pat = 1
-H.each_pair do |k,v|
-  pat *= mc.fac[v]
-  pat %= MOD
-end
-
-puts pena
-puts pat
+n,a,b = gets.split.map &:to_i
+x = modPow(2,n)
+y = MOD - nCk(n,a)
+z = MOD - nCk(n,b)
+puts (x + y + z - 1) % MOD
