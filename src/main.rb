@@ -1,59 +1,61 @@
-MOD = 10 ** 9 + 7
+# Binary Indexed Tree
+class BIT
+  def initialize(n)
+    @n = n
+    @bit = Array.new(n+1,0) # 1 origin
+  end
 
-# MODを法とした階乗、組み合わせ
-class ModCombination
-  attr_reader :fac, :inv, :finv, :mod
- 
-  def initialize(n, mod: MOD)
-    @mod = mod
-    @fac = [1, 1]
-    @inv = [1, 1]
-    @finv = [1, 1]
- 
-    (2..n).each do |i|
-      @fac[i] = fac[i - 1] * i % mod
-      @inv[i] = mod - inv[mod % i] * (mod / i) % mod
-      @finv[i] = finv[i - 1] * inv[i] % mod
+  # 1~i番目の要素の合計を求める
+  def sum(i)
+    ans = 0
+    while i > 0
+      ans += @bit[i]
+      i -= i & -i
+    end
+    return ans
+  end
+
+  # i+1~n番目の合計を求める
+  def greater(i)
+    sum(@n) - sum(i)
+  end
+
+  # i番目の要素にxを加える
+  def add(i,x)
+    while i <= @n
+      @bit[i] += x
+      i += i & -i
     end
   end
- 
-  def combination(n, k)
-    return 0 if n < k
-    return 0 if n < 0 || k < 0
- 
-    fac[n] * (finv[k] * finv[n - k] % mod) % mod
+
+  # 数列Aの転倒数を求める（副作用：内部状態の変更）
+  def inversion!(a)
+    ans = 0
+    a.each do |x|
+      add(x,1)
+      ans += greater(x)
+    end
+    return ans
   end
-  
-  def repeated_combination(n, k)
-    combination(n + k - 1, k)
-  end
+
 end
 
-# MODを法としたxのy乗を求める（繰り返し二乗法）
-def modPow(x,y)
-  ans = 1
-  while y > 0
-    ans = ans * x % MOD if y & 1 == 1
-    y /= 2
-    x = x * x % MOD
-  end
-  return ans
-end
+# 入力、初期化
+n,k = gets.split.map &:to_i
+a = gets.split.map &:to_i
+bit = BIT.new(2000) # 要素数ではなく、値の最大値で初期化
+MOD = 10**9+7
 
-MC = ModCombination.new(300000)
+# s := An内での転倒数
+s = bit.inversion!(a)
 
-# MODを法としたnCk、kが小さいとき
-def nCk(n,k)
-  ans = n
-  2.upto(k) do |i|
-    ans = ans * (n - i + 1) % MOD
-    ans = ans * MC.inv[i] % MOD
-  end
-  ans
-end
+# t := ひとつ前のAnとの転倒数
+t = a.inject(0){|acc,x| acc += bit.greater(x) }
 
-n,a,b = gets.split.map &:to_i
-x = modPow(2,n)
-y = MOD - nCk(n,a)
-z = MOD - nCk(n,b)
-puts (x + y + z - 1) % MOD
+# f(k) := k回繰り返した時の転倒数
+# f(1) = s 
+# f(k+1) = f(k) + k * t + s
+# => f(k) = ks + (k-1)kt/2
+
+ans = k * s + (k-1) * k * t / 2
+puts ans % MOD
