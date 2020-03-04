@@ -1,50 +1,22 @@
-class UnionFind
-  def initialize(n); @data = Array.new(n,-1); end
-  def find(a); @data[a] < 0 ? a : @data[a] = find(@data[a]); end
-  def same?(a,b); find(a) == find(b); end
-  def size(a); -@data[find(a)]; end
-  def unite(a,b)
-    a = find(a); b = find(b)
-    return if a == b
-    a,b = b,a if @data[a] > @data[b]
-    @data[a] += @data[b]; @data[b] = a
+A = gets.split.map &:to_i
+B = gets.split.map &:to_i
+
+patterns = [
+  [0,1,2],
+  [0,2,1],
+  [2,1,0],
+  [1,0,2],
+  [2,0,1],
+  [1,2,0],
+]
+
+ans = 0
+patterns.each do |pattern|
+  c = 3.times.map{|i|B[pattern[i]]}
+  cnt = 3.times.inject(1) do |acc,i|
+    acc *= A[i] / c[i]
   end
+  ans = cnt if ans < cnt
 end
 
-# UnionFind木で連結成分の要素数を求める
-# 友人、ブロックの隣接リスト作成
-# 人別(N),友人数(M)で二重ループしながらUF参照
-# Mが疎なので計算量はO(M)、ブロックについてもO(K)
-
-n,m,k = gets.split.map &:to_i
-UF = UnionFind.new(n)
-FR = Array.new(n){[]}
-BL = Array.new(n){[]}
-
-m.times do
-  a,b = gets.split.map &:to_i
-  a -= 1; b -= 1
-  UF.unite(a,b)
-  FR[a] << b
-  FR[b] << a
-end
-
-k.times do
-  a,b = gets.split.map &:to_i
-  a -= 1; b -= 1
-  BL[a] << b
-  BL[b] << a
-end
-
-ans = n.times.map do |i|
-  cnt = UF.size(i)
-  FR[i].each do |f|
-    cnt -= 1 if UF.same?(i,f)
-  end
-  BL[i].each do |b|
-    cnt -= 1 if UF.same?(i,b)
-  end
-  cnt -= 1
-end
-
-puts ans.join(" ")
+puts ans
