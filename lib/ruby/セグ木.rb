@@ -15,7 +15,7 @@ class SegTree
     this
   end
 
-  def initialize(n=2**100_000)
+  def initialize(n=2**32)
     @size = n
     @seg = Array.new(size*2, 0)
   end

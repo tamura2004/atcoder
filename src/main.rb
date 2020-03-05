@@ -15,7 +15,7 @@ class SegTree
     this
   end
 
-  def initialize(n=2**100_000)
+  def initialize(n=2**32)
     @size = n
     @seg = Array.new(size*2, 0)
   end
@@ -62,6 +62,7 @@ N = S.size
 T = SegTree.create(S)
 
 N.times do |i|
+  p T
   if T.query(0,N-i) != 0
     puts i
     exit
