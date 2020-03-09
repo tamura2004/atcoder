@@ -11,13 +11,14 @@ watcher.on("ready", () => {
     log("==================================================");
     log("Watching, ready for change.\n");
     watcher.on("change", () => {
+        const stime = Date.now();
         exec("cat src/input.txt | ruby src/main.rb", (err, stdout, stderr) => {
             if (err) {
                 log(err);
             } else {
                 log("==================================================");
-                log((new Date()).toLocaleString());
-                log("--------------------------------------------------\n");
+                log(`${Date.now() - stime}ms`);
+                // log("--------------------------------------------------");
                 log("=== stdout ===");
                 log(stdout);
                 log("=== stderr ===");

@@ -87,11 +87,46 @@ template<class T> bool by_snd(const T &a, const T &b) { return a.snd < b.snd; }
 inline void print_and_exit(int x) { cout << x << endl; exit(0);}
 const int dx[] = {0, 1, 0, -1, 1, -1, 1, -1}, dy[] = {1, 0, -1, 0, 1, -1, -1, 1};
 
+// binary_search(LO,HI,OK?) := 区間[LO,HI)でOK?を満たすものの最大値
+template <typename T>
+int binary_search(int lo, int hi, T ok) {
+  while (hi - lo > 1) {
+    int mid = (hi + lo) / 2;
+    (ok(mid) ? lo : hi) = mid;
+  }
+  return lo;
+}
+
+// aがソート済の配列であり,ok(a[i])に単調性が
+// あるとき、個数を二分探索で求める　[lo, hi)
+template <typename T>
+int count(vi &a, T ok) {
+  int lo = 0;
+  int hi = a.size() + 1;
+  while (hi - lo > 1) {
+    int mid = (hi + lo) / 2;
+    (ok(a[mid-1]) ? lo : hi) = mid;
+  }
+  return lo;
+} 
+
+// 二分探索で個数を累積して数える例
+int count_all(vi &a, vi &b, int x) {
+  int ans = 0;
+  for (auto aa : a) {
+    ans += count(b, [&](int bb){ return aa * bb < x; });
+  }
+  return ans;
+}
+
 signed main() {
-  in(n,p);
-  string s; cin>>s;
-  vvi dp(10000, vi(200000, 0));
-  dp[0][0] = 1;
-  rep(i,10000) rep(j,20000) dp[i][j] = 1;
-  cout << dp[9999][199999] << endl;
+  in(n,k);
+  vi a(n),b(n); cin>>a; cin>>b;
+  sort(ALL(a)); sort(ALL(b));
+
+  int ans = binary_search(-INF,INF,[&](int x) {
+    return count_all(a,b,x) < k;
+  });
+
+  cout << ans << endl;
 }
