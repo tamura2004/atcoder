@@ -2,14 +2,16 @@ require "benchmark/ips"
 require "prime"
 
 N = 200_000
-S = (?0..?9).to_a.sample(N).join
+S = Array.new(N){ 0 }
 
 Benchmark.ips do |x|
-  x.report("string hash") {
-    ans = "123456789".hash
+  x.report("first") {
+    S[0] += 1
+    ans = S[0]
   }
-  x.report("array hash") {
-    ans = "123456789".to_sym.hash
+  x.report("last") {
+    S[-1] += 1
+    ans = S[-1]
   }
   x.compare!
 end
