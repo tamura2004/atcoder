@@ -14,6 +14,7 @@ class PriorityQueue < Array
   def pop
     x = super
     ret = self[0]
+    return x if ret.nil?
     self[0] = x
     i = 0
     while parent?(i)
@@ -34,20 +35,23 @@ class PriorityQueue < Array
   def children(i); [i * 2 + 1, i * 2 + 2]; end
 end
  
-class AgeRank
-  include Comparable
-  attr_reader :age, :rank
-  def initialize(age,rank); @age = age; @rank = rank; end
-  def <=>(other)
-    age - other.age
+n,m = gets.split.map &:to_i
+work = n.times.map{ gets.split.map(&:to_i) }.sort_by(&:first)
+
+que = PriorityQueue.new
+ans = 0
+i = 0
+
+1.upto(m) do |j|
+  loop do
+    break if !work[i] || work[i].first > j
+    que << work[i].last
+    i += 1
   end
+  next if que.empty?
+ 
+  v = que.pop
+  ans += v
 end
  
-q = PriorityQueue.new
-n,k = gets.split.map &:to_i
-x = gets.split.map &:to_i
-n.times do |i|
-  q << AgeRank.new(x[i], i + 1)
-  q.pop if q.size > k
-  puts q.first.rank if q.size == k
-end
+puts ans
