@@ -2,14 +2,14 @@ require "benchmark/ips"
 require "prime"
 
 N = 200_000
-S = Array.new(N){ (?a..?z).to_a.sample }.join
+S = Array.new(N){ (?a..?z).to_a.sample }
 
 Benchmark.ips do |x|
   x.report("first") {
-    s = "a" << S
+    a = S.first
   }
   x.report("last") {
-    s = S << "a"
+    a = S.last
   }
   x.compare!
 end
