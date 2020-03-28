@@ -1,0 +1,209 @@
+10# ---- 2
+def solve2
+  w = (?a..?j).to_a
+  a1 = ?a
+  i1 = 0
+  0.upto(i1+1) do |i2|
+    a2 = a1 + w[i2]
+    puts a2
+  end
+end
+# ---- 3
+def solve3
+  w = (?a..?j).to_a
+  a1 = ?a
+  i1 = 0
+  0.upto(i1+1) do |i2|
+    a2 = a1 + w[i2]
+    0.upto(i2+1) do |i3|
+      a3 = a2 + w[i3]
+      puts a3
+    end
+  end
+end
+# ---- 4
+def solve4
+  w = (?a..?j).to_a
+  a1 = ?a
+  i1 = 0
+  0.upto(i1+1) do |i2|
+    a2 = a1 + w[i2]
+    0.upto(i2+1) do |i3|
+      a3 = a2 + w[i3]
+      0.upto(i3+1) do |i4|
+        a4 = a3 + w[i4]
+        puts a4
+      end
+    end
+  end
+end
+# ---- 5
+def solve5
+  w = (?a..?j).to_a
+  a1 = ?a
+  i1 = 0
+  0.upto(i1+1) do |i2|
+    a2 = a1 + w[i2]
+    0.upto(i2+1) do |i3|
+      a3 = a2 + w[i3]
+      0.upto(i3+1) do |i4|
+        a4 = a3 + w[i4]
+        0.upto(i4+1) do |i5|
+          a5 = a4 + w[i5]
+          puts a5
+        end
+      end
+    end
+  end
+end
+# ---- 6
+def solve6
+  w = (?a..?j).to_a
+  a1 = ?a
+  i1 = 0
+  0.upto(i1+1) do |i2|
+    a2 = a1 + w[i2]
+    0.upto(i2+1) do |i3|
+      a3 = a2 + w[i3]
+      0.upto(i3+1) do |i4|
+        a4 = a3 + w[i4]
+        0.upto(i4+1) do |i5|
+          a5 = a4 + w[i5]
+          0.upto(i5+1) do |i6|
+            a6 = a5 + w[i6]
+            puts a6
+          end
+        end
+      end
+    end
+  end
+end
+# ---- 7
+def solve7
+  w = (?a..?j).to_a
+  a1 = ?a
+  i1 = 0
+  0.upto(i1+1) do |i2|
+    a2 = a1 + w[i2]
+    0.upto(i2+1) do |i3|
+      a3 = a2 + w[i3]
+      0.upto(i3+1) do |i4|
+        a4 = a3 + w[i4]
+        0.upto(i4+1) do |i5|
+          a5 = a4 + w[i5]
+          0.upto(i5+1) do |i6|
+            a6 = a5 + w[i6]
+            0.upto(i6+1) do |i7|
+              a7 = a6 + w[i7]
+              puts a7
+            end
+          end
+        end
+      end
+    end
+  end
+end
+# ---- 8
+def solve8
+  w = (?a..?j).to_a
+  a1 = ?a
+  i1 = 0
+  0.upto(i1+1) do |i2|
+    a2 = a1 + w[i2]
+    0.upto(i2+1) do |i3|
+      a3 = a2 + w[i3]
+      0.upto(i3+1) do |i4|
+        a4 = a3 + w[i4]
+        0.upto(i4+1) do |i5|
+          a5 = a4 + w[i5]
+          0.upto(i5+1) do |i6|
+            a6 = a5 + w[i6]
+            0.upto(i6+1) do |i7|
+              a7 = a6 + w[i7]
+              0.upto(i7+1) do |i8|
+                a8 = a7 + w[i8]
+                puts a8
+              end
+            end
+          end
+        end
+      end
+    end
+  end
+end
+# ---- 9
+def solve9
+  w = (?a..?j).to_a
+  a1 = ?a
+  i1 = 0
+  0.upto(i1+1) do |i2|
+    a2 = a1 + w[i2]
+    0.upto(i2+1) do |i3|
+      a3 = a2 + w[i3]
+      0.upto(i3+1) do |i4|
+        a4 = a3 + w[i4]
+        0.upto(i4+1) do |i5|
+          a5 = a4 + w[i5]
+          0.upto(i5+1) do |i6|
+            a6 = a5 + w[i6]
+            0.upto(i6+1) do |i7|
+              a7 = a6 + w[i7]
+              0.upto(i7+1) do |i8|
+                a8 = a7 + w[i8]
+                0.upto(i8+1) do |i9|
+                  a9 = a8 + w[i9]
+                  puts a9
+                end
+              end
+            end
+          end
+        end
+      end
+    end
+  end
+end
+# ---- 10
+def solve10
+  w = (?a..?j).to_a
+  a1 = ?a
+  i1 = 0
+  0.upto(i1+1) do |i2|
+    a2 = a1 + w[i2]
+    0.upto(i2+1) do |i3|
+      a3 = a2 + w[i3]
+      0.upto(i3+1) do |i4|
+        a4 = a3 + w[i4]
+        0.upto(i4+1) do |i5|
+          a5 = a4 + w[i5]
+          0.upto(i5+1) do |i6|
+            a6 = a5 + w[i6]
+            0.upto(i6+1) do |i7|
+              a7 = a6 + w[i7]
+              0.upto(i7+1) do |i8|
+                a8 = a7 + w[i8]
+                0.upto(i8+1) do |i9|
+                  a9 = a8 + w[i9]
+                  0.upto(i9+1) do |i10|
+                    a10 = a9 + w[i10]
+                    puts a10
+                  end
+                end
+              end
+            end
+          end
+        end
+      end
+    end
+  end
+end
+n = gets.to_i
+puts ?a if n == 1
+solve2 if n == 2
+solve3 if n == 3
+solve4 if n == 4
+solve5 if n == 5
+solve6 if n == 6
+solve7 if n == 7
+solve8 if n == 8
+solve9 if n == 9
+solve10 if n == 10

@@ -12,7 +12,8 @@ watcher.on("ready", () => {
     log("Watching, ready for change.\n");
     watcher.on("change", () => {
         const stime = Date.now();
-        exec("cat src/input.txt | ruby src/main.rb", (err, stdout, stderr) => {
+        log("change detected.\n");
+        exec("cat src/input.txt | ruby src/main.rb", { maxBuffer: 1024 * 1024 },  (err, stdout, stderr) => {
             if (err) {
                 log(err);
             } else {

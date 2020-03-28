@@ -1,57 +1,18 @@
-class PriorityQueue < Array
-  def <<(x)
-    super(x)
-    i = size - 1
-    while i > 0
-      j = parent(i)
-      swap_if(i,j)
-      i = j
-    end
-  end
- 
-  def push(x); self << x; end
- 
-  def pop
-    x = super
-    ret = self[0]
-    return x if ret.nil?
-    self[0] = x
-    i = 0
-    while parent?(i)
-      j, k = children(i)
-      j = k if self[k] && self[j] < self[k]
-      swap_if(j,i)
-      i = j
-    end
-    ret
-  end
- 
-  private
- 
-  def swap(i, j); self[i], self[j] = self[j], self[i]; end
-  def swap_if(i,j); swap(i,j) if self[i] > self[j]; end
-  def parent(i); (i - 1) / 2; end
-  def parent?(i); i * 2 + 1 < size; end
-  def children(i); [i * 2 + 1, i * 2 + 2]; end
-end
- 
-n,m = gets.split.map &:to_i
-work = n.times.map{ gets.split.map(&:to_i) }.sort_by(&:first)
+def count(s,a)
+  n = s.size
+  dp = Array.new(n+1){ Array.new(2){ Array.new(2){ 0 } } }
 
-que = PriorityQueue.new
-ans = 0
-i = 0
+  # dp[index][未満フラグ][先頭が0 or a]
+  dp[0][0][0] = 1
 
-1.upto(m) do |j|
-  loop do
-    break if !work[i] || work[i].first > j
-    que << work[i].last
-    i += 1
+  s.chars.map(&:to_i).each_with_index do |v,i|
+    dp[i+1][0][0] = dp[i][0]
+    dp[i+1][0][1] = dp[i][0]
+    
+    dp[i+1][1] = dp[i][0] * v + dp[i][1] * 10
   end
-  next if que.empty?
- 
-  v = que.pop
-  ans += v
+  dp[n][0] + dp[n][1]
 end
- 
-puts ans
+
+s = gets.chomp
+puts count(s)
