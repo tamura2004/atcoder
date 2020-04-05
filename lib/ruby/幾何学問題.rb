@@ -18,3 +18,10 @@ n.times do |i|
   ans = d if ans > d
 end
 printf("%.12f\n", ans)
+
+# 外接円の中心
+def circumcenter(a,b,c)
+  x = (a-b)*c.abs2 + (b-c)*a.abs2 + (c-a)*b.abs2
+  y = (a-b)*c.conj + (b-c)*a.conj + (c-a)*b.conj
+  x/y
+end

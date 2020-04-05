@@ -11,10 +11,14 @@ watcher.on("ready", () => {
     log("==================================================");
     log("Watching, ready for change.");
     watcher.on("change", () => {
+        const stime = Date.now();
+        log("change detected.\n");
         exec("g++ src/main.cpp && cat src/input.txt | ./a.out", (err, stdout, stderr) => {
             if (err) {
                 log(err);
             } else {
+                log("==================================================");
+                log(`${Date.now() - stime}ms`);
                 log("=== stdout ===");
                 log(stdout);
                 log("=== stderr ===");

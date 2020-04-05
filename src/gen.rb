@@ -1,3 +1,5 @@
+N = 100000
 open("src/input.txt", "w") do |f|
-    f.puts Array.new(1000){(?0..?9).to_a.sample}.join
+    f.puts N
+    f.puts Array.new(N) { |i| i + 1 }.shuffle.join(" ")
 end

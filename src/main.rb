@@ -1,18 +1,38 @@
-def count(s,a)
-  n = s.size
-  dp = Array.new(n+1){ Array.new(2){ Array.new(2){ 0 } } }
-
-  # dp[index][未満フラグ][先頭が0 or a]
-  dp[0][0][0] = 1
-
-  s.chars.map(&:to_i).each_with_index do |v,i|
-    dp[i+1][0][0] = dp[i][0]
-    dp[i+1][0][1] = dp[i][0]
-    
-    dp[i+1][1] = dp[i][0] * v + dp[i][1] * 10
-  end
-  dp[n][0] + dp[n][1]
+# 外接円の中心と半径の自乗
+def circumcenter(a,b,c)
+  x = (a-b)*c.abs2 + (b-c)*a.abs2 + (c-a)*b.abs2
+  y = (a-b)*c.conj + (b-c)*a.conj + (c-a)*b.conj
+  z = x / y
+  r = (a-z).abs2
+  [z,r]
 end
 
-s = gets.chomp
-puts count(s)
+# 二点の中心と中心からの距離の自乗
+def bisector(a,b)
+  z = (a+b) / 2
+  r = ((a-b)/2).abs2
+  [z,r]
+end
+
+# main
+n = gets.to_i
+a = Array.new(n){ gets.split.map &:to_f }.map{|b| Complex(*b)}
+ans = [Float::INFINITY]
+EPS = 1e-6
+chmin = -> z,r { ans[0] = [ans[0], r].min if a.all?{|v| (v-z).abs2 <= r + EPS}}
+
+# 2点を含む最小円を全探索
+a.combination(2) do |s,t|
+  z,r = bisector(s,t)
+  chmin[z,r]
+end
+
+# 3点の外接円を全探索
+a.combination(3) do |s,t,u|
+  z,r = circumcenter(s,t,u)
+  chmin[z,r]
+end
+
+puts Math.sqrt(ans[0])
+
+

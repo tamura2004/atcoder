@@ -87,11 +87,17 @@ template<class T> bool by_snd(const T &a, const T &b) { return a.snd < b.snd; }
 inline void print_and_exit(int x) { cout << x << endl; exit(0);}
 const int dx[] = {0, 1, 0, -1, 1, -1, 1, -1}, dy[] = {1, 0, -1, 0, 1, -1, -1, 1};
 
+
 signed main() {
-  in(n,p);
-  string s; cin>>s;
-  vvi dp(10000, vi(200000, 0));
-  dp[0][0] = 1;
-  rep(i,10000) rep(j,20000) dp[i][j] = 1;
-  cout << dp[9999][199999] << endl;
+  in(n,k);
+  vi h(n); cin>>h;
+  vi dp(n,INF);
+  dp[0] = 0;
+
+  rep(i,n) repi(j,k) {
+    if (i+j >= n) continue;
+    chmin(dp[i+j], dp[i] + abs(h[i] - h[i+j]));
+  }
+
+  cout << dp[n-1] << endl;
 }

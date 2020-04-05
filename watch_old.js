@@ -9,17 +9,15 @@ const log = console.log.bind(console);
 
 watcher.on("ready", () => {
     log("==================================================");
-    log("Watching, ready for change.\n");
+    log("Watching, ready for change.");
     watcher.on("change", () => {
-        const stime = Date.now();
-        log("change detected.\n");
-        exec("cat src/input.txt | ruby src/main.rb", { maxBuffer: 1024 * 1024 },  (err, stdout, stderr) => {
+        log("==================================================");
+        log("Change detected.");
+        exec("g++ src/main.cpp && cat src/input.txt | ./a.out", (err, stdout, stderr) => {
             if (err) {
                 log(err);
             } else {
-                log("==================================================");
-                log(`${Date.now() - stime}ms`);
-                // log("--------------------------------------------------");
+                log(Date.now());
                 log("=== stdout ===");
                 log(stdout);
                 log("=== stderr ===");
