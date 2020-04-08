@@ -1,33 +1,18 @@
-# require "pathname"
+require "tomlrb"
 
-# Pathname.new(".").find do |path|
-#     puts path
-# end
-# __END__
+good = true
+cases = Tomlrb.load_file("testcase.toml", symbolize_keys: true)
 
-
-cases = {
-  [10,3] => 9,
-  [3,10] => 7,
-  [0,10] => 10,
-  [-3,10] => 8,
-  [-10,3] => 8,
-  [-10,0] => 10,
-  [-10,-3] => 7,
-  [-3,-10] => 9,
-  [0,-10] => 11,
-  [3,-10] => 8,
-  [10,-10] => 1,
-  [10,-3] => 8,
-  [10,0] => 11
-}
-
-cases.each do |k,v|
+cases[:testcase].each do |k,v|
     io = IO.popen("ruby src/main.rb", "w+")
-    io.puts k.join(" ")
+    io.puts k
     io.close_write
-    ans = io.read.to_i
-    next if ans == v
+    ans = io.read.chomp
 
-    puts "bad #{k}. want:#{v}, got:#{ans}"
+    if ans != v
+        puts "bad #{k}. want:#{v}, got:#{ans}"
+    else
+        puts "good #{k}. want:#{v}, got:#{ans}"
+    end
 end
+
