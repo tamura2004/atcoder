@@ -6,6 +6,7 @@
   "author": "tamura <tamura2004@gmail.com>",
   "license": "MIT",
   "dependencies": {
-    "chokidar": "^3.2.3"
+    "chokidar": "^3.2.3",
+    "kind-of": ">=6.0.3"
   }
 }

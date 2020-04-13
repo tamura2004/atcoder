@@ -1,0 +1,7 @@
+[[testcase]]
+in = 1
+out = "BOWWOW"
+
+[[testcase]]
+in = 2
+out = "WANWAN"
