@@ -58,17 +58,27 @@ y = MOD - nCk(n,a)
 z = MOD - nCk(n,b)
 puts (x + y + z - 1) % MOD
 
-class Modint < Numeric
-  MOD = 10**9+7
+require "forwardable"
+
+class Modint
+  extend Forwardable
+  def_delegators :@a, :hash #, :to_i
+  
   def initialize(a); @a = a.to_i % MOD; end
-  def + (other); @a = (@a + other) % MOD; self; end
-  def - (other); @a = (@a - other) % MOD; self; end
-  def * (other); @a = (@a + other) % MOD; self; end
-  def ** (other); @a = @a.pow(other, MOD); self; end
-  def / (other); @a = (@a * other.pow(MOD-2, MOD)) % MOD; end
-  def to_s; @a.to_s; end
-  def inspect; @a.to_s; end
+  def + (other); Modint[@a + other.to_i]; end
+  def - (other); Modint[@a - other.to_i]; end
+  def * (other); Modint[@a * other.to_i]; end
+  def ** (other); Modint[@a.pow other.to_i, MOD]; end
+  def / (other); Modint[@a * other.to_i.pow(MOD-2, MOD)]; end
+  def eql? (other); @a.eql? other.to_i; end
+  def to_i; @a.to_i; end
+  def inspect; "#{@a}"; end
+  def coerce(other); [self, other]; end
+  
+  alias :pow :**
+  class << self; alias :[] :new; end
 end
+M = Modint
 
 class Integer
   def to_m; Modint.new(self); end

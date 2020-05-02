@@ -2,22 +2,15 @@ require "benchmark/ips"
 require "prime"
 
 N = 200_000
-S = Array.new(N){ (?a..?z).to_a.sample }
+S = Array.new(N){ (?0..?9).to_a.sample }.join
+A = Array.new(N){ rand(10) }
 
 Benchmark.ips do |x|
-  x.report("index") {
-    a = Array.new(N,&:itself)
-    ans = 1
-    N.times do |i|
-      ans += 1 if a[i].even?
-    end
+  x.report("string") {
+    ix = S.index("5",N/2)
   }
-  x.report("each") {
-    a = Array.new(N,&:itself)
-    ans = 1
-    a.each do |a|
-      ans += 1 if a.even?
-    end
+  x.report("number") {
+    ix = A.index(5)
   }
   x.compare!
 end

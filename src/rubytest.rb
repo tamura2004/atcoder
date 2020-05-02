@@ -1,18 +1,31 @@
-require "tomlrb"
+a = DATA.read.split(/^\n+/)
+a.each_slice(2) do |query,want|
 
-good = true
-cases = Tomlrb.load_file("testcase.toml", symbolize_keys: true)
-
-cases[:testcase].each do |k,v|
     io = IO.popen("ruby src/main.rb", "w+")
-    io.puts k
+    io.puts query
     io.close_write
-    ans = io.read.chomp
-
-    if ans != v
-        puts "bad #{k}. want:#{v}, got:#{ans}"
+    ans = io.read
+    
+    puts "-"*80
+    if ans != want
+        puts "WA: want:#{want}, got:#{ans}"
     else
-        puts "good #{k}. want:#{v}, got:#{ans}"
+        puts "AC"
     end
 end
 
+__END__
+ABBABBABAB
+BA
+
+Yes
+
+ABCGBGBG
+BGB
+
+Yes
+
+ABCDCFG
+AFH
+
+No
