@@ -13,6 +13,8 @@ const langExp = {
     ".cpp": "cpp",
     ".jl": "julia",
     ".cr": "crystal",
+    ".py": "python3",
+    ".pypy": "pypy3",
 };
 
 const cmdStrings = {
@@ -20,6 +22,8 @@ const cmdStrings = {
     "cpp": "g++ src/main.cpp && cat src/input.txt | ./a.out",
     "julia": "cat src/input.txt | julia src/main.jl",
     "crystal": "cat src/input.txt | crystal src/main.cr",
+    "python3": "cat src/input.txt | python3 src/main.py",
+    "pypy3": "cat src/input.txt | pypy3 src/main.pypy",
 };
 
 let lang = "ruby";

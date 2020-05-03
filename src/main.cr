@@ -1,40 +1,11 @@
-n = read_line.to_i64
-s = read_line.chomp
+n,m = read_line.split.map &.to_i
+a = Array.new(n){ read_line.split.map &.to_i }.transpose.map{|v|v.join.to_i(2)}
 
-if n < 3
-  puts 0
-  exit
+# p a.size
+
+ans = 0
+0.upto(2**n-1) do |bit|
+  b = a.map{|v| v ^ bit}.map{|v| v.popcount }.map{|v| v > n - v ? v : n - v}.sum
+  ans = b if ans < b
 end
-
-cnt = 0_i64
-1.upto((n-1) // 2) do |d|
-  (n - 2 * d).times do |i|
-    j = i + d
-    k = j + d
-    if s[i] != s[j] && s[j] != s[k] && s[k] != s[i]
-      cnt += 1
-    end
-  end
-end
-
-r = 0_i64
-g = 0_i64
-b = 0_i64
-ans = 0_i64
-
-n.times do |i|
-  case s[i]
-  when 'R'
-    ans += g * b
-    r += 1
-  when 'G'
-    ans += r * b
-    g += 1
-  when 'B'
-    ans += r * g
-    b += 1
-  else
-  end
-end
-
-p ans - cnt
+puts ans

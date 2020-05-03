@@ -1,22 +1,9 @@
-MOD = 10**9+7
-n,k = gets.split.map &:to_i
-dp = [0] * (k+1)
-
-1.upto(k+1) do |i|
-  dp[i] = (k/i).pow(n,MOD)
-end
-
-k.downto(0) do |i|
-  (2*i).step(k+1,i) do |j|
-    dp[i] -= dp[j]
-    dp[i] %= MOD
-  end
-end
+n,m = gets.split.map &:to_i
+a = Array.new(n){ gets.split.map &:to_i }.transpose.map(&:join).map{|v|v.to_i(2)}
 
 ans = 0
-1.upto(k+1) do |i|
-  ans += dp[i] * i
-  ans %= MOD
+0.upto(2**n-1) do |bit|
+  b = a.map{|v| (v ^ bit).to_s(2).count("1") }.map{|v| v > n-v ? v : n-v }.inject(:+)
+  ans = b if ans < b
 end
-
 puts ans
