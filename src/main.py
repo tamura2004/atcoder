@@ -1,11 +1,19 @@
-x = 10
-y = 20
-cnt = dict()
-for i in [x,y]:
-    cnt[i] = 1
+n = int(input())
+ans = 0
 
-flag = True
-for i in [x,y,100]:
-    flag = flag and i in cnt
 
-print(flag)
+def mask(i): return 1 << ((i-3) >> 1)
+
+
+def dfs(a, use):
+    global ans
+    if a > n:
+        return
+    if use == 0b111:
+        ans += 1
+    for i in [3, 5, 7]:
+        dfs(a*10+i, use | mask(i))
+
+
+dfs(0, 0)
+print(ans)

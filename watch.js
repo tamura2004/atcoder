@@ -15,6 +15,8 @@ const langExp = {
     ".cr": "crystal",
     ".py": "python3",
     ".pypy": "pypy3",
+    ".hs": "haskell",
+    ".clj": "clojure",
 };
 
 const cmdStrings = {
@@ -24,6 +26,8 @@ const cmdStrings = {
     "crystal": "cat src/input.txt | crystal src/main.cr",
     "python3": "cat src/input.txt | python3 src/main.py",
     "pypy3": "cat src/input.txt | pypy3 src/main.pypy",
+    "haskell": "cat src/input.txt | runghc src/main.hs",
+    "clojure": "cat src/input.txt | clojure src/main.clj",
 };
 
 let lang = "ruby";

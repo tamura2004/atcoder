@@ -1,30 +1,29 @@
-function main()
-  n = parse(Int, readline())
-  a = map(readlines()) do s
-    map(split(s)) do c
-      parse(Int, c)
+N = parse(Int, readline())
+
+mask(i) = 1 << ((i - 3) >> 1)
+
+function dfs(block, a, use)
+    if a > N
+        return
     end
-  end
-  cnt = Dict{Vector{Int},Int}()
-  for i in 1:n
-    cnt[a[i]] = 1
-  end
-  L = [0 -1; 1 0]
- 
-  ans = 0
-  for i in a, j in a
-    if i[1] <= j[1]
-      v = L * (j - i)
-      if haskey(cnt, i + v) && haskey(cnt, j + v)
-        res = v[1]^2 + v[2]^2
-        if res > ans
-          ans = res
-        end
-      end
+
+    if use == 0b111
+        block(a)
     end
-  end
- 
-  println(ans)
+
+    for i in [3,5,7]
+        dfs(block, a * 10 + i, use | mask(i))
+    end
 end
- 
-main()
+
+function main()
+    ans = 0
+    dfs(0, 0) do a
+        ans += 1
+    end
+    return ans
+end
+
+println(main())
+
+  

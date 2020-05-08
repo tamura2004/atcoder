@@ -1,16 +1,16 @@
 require "benchmark/ips"
 require "prime"
 
-N = 200_000
+N = 100
 S = Array.new(N){ (?0..?9).to_a.sample }.join
 A = Array.new(N){ rand(10) }
 
 Benchmark.ips do |x|
-  x.report("string") {
-    ix = S.index("5",N/2)
+  x.report("shift") {
+    y = 1 << N
   }
-  x.report("number") {
-    ix = A.index(5)
+  x.report("power") {
+    y = 2 ** N
   }
   x.compare!
 end
