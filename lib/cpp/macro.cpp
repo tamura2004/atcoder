@@ -1,14 +1,10 @@
 #include <bits/stdc++.h>
 using namespace std;
 
-#define int long long
 struct Fast {Fast(){std::cin.tie(0);ios::sync_with_stdio(false);}} fast;
+// #define int long long
 
 /* short */
-#define pb push_back
-#define mp make_pair
-#define fst first
-#define snd second
 #define ALL(v) begin(v), end(v)
 
 /* REPmacro */
@@ -25,24 +21,28 @@ using ull = unsigned long long;
 using vi = vector<int>;
 using vvi = vector<vi>;
 using vvvi = vector<vvi>;
+using vd = vector<double>;
+using vvd = vector<vd>;
+using vvvd = vector<vvd>;
 using pii = pair<int, int>;
 using vpii = vector<pii>;
+using vvpii = vector<pii>;
 using mii = map<int, int>;
 using vs = vector<string>;
 using vb = vector<bool>;
-using Graph = vvi;
 template <typename T> using PQ = priority_queue<T>;
 template <typename T> using minPQ = priority_queue<T, vector<T>, greater<T>>;
 
 /* iostream */
 template<typename T> istream &operator>>(istream &is, vector<T> &vec){ for (auto &v : vec) is >> v; return is; }
-template<typename T> istream &operator>>(istream &is, pair<T,T> &p){ int a,b;is>>a>>b;p=mp(a,b);return is;}
+template<typename T> istream &operator>>(istream &is, pair<T,T> &p){ int a,b;is>>a>>b;p=make_pair(a,b);return is;}
 template<typename T> ostream &operator<<(ostream &os, const vector<T> &vec){ os << "["; for (auto v : vec) os << v << ","; os << "]"; return os; }
 template<typename T> ostream &operator<<(ostream &os, const deque<T> &vec){ os << "deq["; for (auto v : vec) os << v << ","; os << "]"; return os; }
 template<typename T> ostream &operator<<(ostream &os, const set<T> &vec){ os << "{"; for (auto v : vec) os << v << ","; os << "}"; return os; }
 template<typename T> ostream &operator<<(ostream &os, const multiset<T> &vec){ os << "{"; for (auto v : vec) os << v << ","; os << "}"; return os; }
 template<typename T1, typename T2> ostream &operator<<(ostream &os, const pair<T1, T2> &pa){ os << "(" << pa.first << "," << pa.second << ")"; return os; }
 template<typename TK, typename TV> ostream &operator<<(ostream &os, const map<TK, TV> &mp){ os << "{"; for (auto v : mp) os << v.first << "=>" << v.second << ","; os << "}"; return os; }
+template<typename T> istream &operator>>(istream &is, complex<T> &c){ T x,y;is>>x>>y;c=complex<T>(x,y);return is;}
 
 /* input */
 #define _overload(_1,_2,_3,_4,_5,_6,name,...) name
@@ -68,73 +68,41 @@ template<typename TK, typename TV> ostream &operator<<(ostream &os, const map<TK
 // const int INF = 1001001001;
 const ll INF = 1001001001001001001ll;
 const int MOD = 1e9 + 7;
-const int dx[] = {0, 1, 0, -1, 1, -1, 1, -1}, dy[] = {1, 0, -1, 0, 1, -1, -1, 1};
 
 /* func */
-#define UNIQUE(v) v.erase( unique(ALL(v)), v.end() );
-#define TIME system("date +%M:%S.%N")
 inline bool inside(int y, int x, int H, int W) {return y >= 0 && x >= 0 && y < H && x < W;}
-inline bool odd(int x) { return x & 1;}
-inline bool even(int x) { return x & 1 == 0;}
 inline int sum(vi a) { return accumulate(ALL(a),0); }
-inline void yn(bool ans) { cout << (ans?"Yes":"No") << endl; }
-inline void YN(bool ans) { cout << (ans?"YES":"NO") << endl; }
 template <typename T> inline bool chmin(T& a, const T& b) {if (a > b) a = b; return a > b;}
 template <typename T> inline bool chmax(T& a, const T& b) {if (a < b) a = b; return a < b;}
 template<class T> T gcd(const T &a, const T &b) { return a < b ? gcd(b, a) : b ? gcd(b, a % b) : a; }
 template<class T> T lcm(const T &a, const T &b) { return a / gcd(a, b) * b; }
 template<class T> T div_ceil(const T &a, const T &b) { return (a + b - 1) / b; }
-template<class T> bool by_snd(const T &a, const T &b) { return a.snd < b.snd; }
+const int dx[] = {0, 1, 0, -1, 1, -1, 1, -1}, dy[] = {1, 0, -1, 0, 1, -1, -1, 1};
 
-// stl::
-// int ans = accumulate(ALL(a),a[0],[](int a, int b){return gcd(a,b);});
-// bool ans = all_of(ALL(a),odd);
-// bool ans = any_of(ALL(a),odd);
-// bool ans = none_of(ALL(a),odd);
-// transform(ALL(a),a.begin(),[](int x) {return x - 10;});
-// fill(ALL(seen),false);
+// template<class T> bool include(vector<T> a, T b) {
+//   return find(ALL(a), b) < a.end();  
+// }
 
-// 青木君(=v)から見た各ノードの距離
-void a_dfs(int v, int d, vi &dist, vb &seen, Graph &g) {
-  seen[v] = true;
-  dist[v] = d;
-  for (int nv : g[v]) {
-    if (seen[nv]) continue;
-    a_dfs(nv, d+1, dist, seen, g);
-  }
-}
-
-// 高橋君(=u)が移動できる場所
-void t_dfs(int v, int d, vi &dist, vb &seen, Graph &g) {
-  seen[v] = true;
-  for (int nv : g[v]) {
-    if (seen[nv] || d >= dist[nv]) continue;
-    t_dfs(nv, d+1, dist, seen, g);
-  }
+pii to_pair(complex<int> a) {
+  return make_pair(a.real(), a.imag());
 }
 
 signed main() {
-  in(n,u,v);u--;v--;
-  Graph g(n);rep(i,n-1) {
-    in(a,b);a--;b--;
-    g[a].pb(b);
-    g[b].pb(a);
-  }
+  int n; cin >> n;
+  vector<complex<int>> a(n); cin>>a;
+  set<pii> b; rep(i,n) b.insert(to_pair(a[i]));
 
-  // 青木君(=v)から見た各ノードの距離
-  vi dist(n, -1);
-  vb seen(n,false);
-  a_dfs(v,0,dist,seen,g);
-
-  // 高橋君が移動できる場所
-  fill(ALL(seen),false);
-  t_dfs(u,0,dist,seen,g);
-
-  // 高橋君が移動できる場所で、青木君からの距離の最大値－１
   int ans = 0;
-  rep(i,n) {
-    if (seen[i]) chmax(ans,dist[i]);
+  rep(i,n) rep(j,n) {
+    if (i == j) continue;
+    auto s = a[i];
+    auto t = a[j];
+    auto v = (t - s) * complex<int>(0,1);
+    if (b.count(to_pair(t + v)) && b.count(to_pair(s + v))) {
+      // pp(s,t,t+v,s+v);
+      chmax(ans, (v * conj(v)).real());
+    }
   }
-  cout << ans - 1 << endl;
 
+  cout << ans << endl;
 }

@@ -1,29 +1,16 @@
-N = parse(Int, readline())
-
-mask(i) = 1 << ((i - 3) >> 1)
-
-function dfs(block, a, use)
-    if a > N
-        return
-    end
-
-    if use == 0b111
-        block(a)
-    end
-
-    for i in [3,5,7]
-        dfs(block, a * 10 + i, use | mask(i))
-    end
+n,k = [parse(Int, x) for x in readline() |> split]
+a = [parse(Int, x) for x in readline() |> split]
+m = zeros(Int,n,n)
+for i in 1:n
+  m[a[i],i] = 1
 end
 
-function main()
-    ans = 0
-    dfs(0, 0) do a
-        ans += 1
-    end
-    return ans
+ans = m ^ k
+
+for i in 1:n
+  if ans[i,1] == 1
+    println(i)
+    exit()
+  end
 end
 
-println(main())
-
-  

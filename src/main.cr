@@ -1,19 +1,24 @@
-N = read_line.to_i64
+S   = read_line.chomp.chars.map(&.to_i)
+N   = S.size
+D   = read_line.to_i64
+MOD = 10**9 + 7
 
-def dfs(a, use, &block : Int64 ->)
-  return if a > N
-  if use == 0b111
-    yield a
-  end
+dp = Array.new(N + 1) { Array.new(2) { Array.new(D, 0) } }
+dp[0][0][0] = 1
 
-  [3, 5, 7].each do |i|
-    mask = 1 << ((i - 3)//2)
-    dfs(a*10 + i, use | mask, &block)
+N.times do |i|
+  2.times do |smaller|
+    D.times do |mod|
+      10.times do |d|
+        next if smaller != 1 && S[i] < d
+        next_smaller = smaller | (d < S[i] ? 1 : 0)
+        next_mod = (mod + d) % D
+        
+        dp[i + 1][next_smaller][next_mod] += dp[i][smaller][mod]
+        dp[i + 1][next_smaller][next_mod] %= MOD
+      end
+    end
   end
 end
 
-ans = 0i64
-dfs(0i64, 0i64) do |a|
-  ans += 1
-end
-puts ans
+puts (dp[N][0][0] + dp[N][1][0] - 1) % MOD # 0を除く

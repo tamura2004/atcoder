@@ -17,6 +17,7 @@ const langExp = {
     ".pypy": "pypy3",
     ".hs": "haskell",
     ".clj": "clojure",
+    ".nim": "nim",
 };
 
 const cmdStrings = {
@@ -28,6 +29,7 @@ const cmdStrings = {
     "pypy3": "cat src/input.txt | pypy3 src/main.pypy",
     "haskell": "cat src/input.txt | runghc src/main.hs",
     "clojure": "cat src/input.txt | clojure src/main.clj",
+    "nim": "cat src/input.txt | nim c -r --stdout:off --hints:off --warning[UnusedImport]:off src/main.nim",
 };
 
 let lang = "ruby";
@@ -42,6 +44,7 @@ watcher.on("ready", () => {
         const extName = path.extname(pathname);
         const langType = langExp[extName];
         if (langType) lang = langType;
+        else if (extName != ".txt") return;
         log(`lang type is ${lang}\n`);
 
         const cmdString = cmdStrings[lang]
