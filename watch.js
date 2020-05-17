@@ -29,6 +29,7 @@ const cmdStrings = {
     "pypy3": "cat src/input.txt | pypy3 src/main.pypy",
     "haskell": "cat src/input.txt | runghc src/main.hs",
     "clojure": "cat src/input.txt | clojure src/main.clj",
+    // "nim": "cat src/input.txt | nim c -r --hints:off src/main.nim",
     "nim": "cat src/input.txt | nim c -r --stdout:off --hints:off --warning[UnusedImport]:off src/main.nim",
 };
 

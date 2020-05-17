@@ -5,16 +5,11 @@ when true:
   template rep(a,b): seq = newSeqWith(b,a)
   template `min=`(a,b) = (if a > b: a = b)
   template `max=`(a,b) = (if a < b: a = b)
-  const inf = 1 shl 30
-  template say(ans) = echo ["No","Yes"][1-int(ans)]
+  type P = (int,int)
+  const inf = int.high div 2
 
-template main =
-  let
-    n,m = read()
-    a = read().rep(n)
-    b = a.sum
-    ans = a.filterIt(it * 4 * m >= b).len >= m
+proc main:int =
+  let a = read().rep(3).sorted
+  return a[^1] - a[0]
 
-  say(ans)
-  
-main()
+echo main()

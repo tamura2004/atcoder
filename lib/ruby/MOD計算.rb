@@ -30,6 +30,7 @@ class ModCombination
 end
 
 # MODを法としたxのy乗を求める（繰り返し二乗法）
+# ruby2.5以降標準ライブラリで可能、x.pow(y,MOD)
 def modPow(x,y)
   ans = 1
   while y > 0
@@ -58,33 +59,33 @@ y = MOD - nCk(n,a)
 z = MOD - nCk(n,b)
 puts (x + y + z - 1) % MOD
 
-require "forwardable"
+######################################################
+# ruby 2.5.1 or later
+######################################################
+module ModInt
+  MOD = 10 ** 9 + 7
 
-class Modint
-  extend Forwardable
-  def_delegators :@a, :hash #, :to_i
-  
-  def initialize(a); @a = a.to_i % MOD; end
-  def + (other); Modint[@a + other.to_i]; end
-  def - (other); Modint[@a - other.to_i]; end
-  def * (other); Modint[@a * other.to_i]; end
-  def ** (other); Modint[@a.pow other.to_i, MOD]; end
-  def / (other); Modint[@a * other.to_i.pow(MOD-2, MOD)]; end
-  def eql? (other); @a.eql? other.to_i; end
-  def to_i; @a.to_i; end
-  def inspect; "#{@a}"; end
-  def coerce(other); [self, other]; end
-  
-  alias :pow :**
-  class << self; alias :[] :new; end
-end
-M = Modint
-
-class Integer
-  def to_m; Modint.new(self); end
+  def to_mod(a); a % MOD; end
+  def add(a, b); (a + b) % MOD; end
+  def mul(a, b); (a * b) % MOD; end
+  def inv(a); a.pow(MOD - 2, MOD); end
+  def div(a, b); mul(a, inv(b)); end
 end
 
-10.times do |i|
-  a = (100000*i).to_m ** (i*100000)
-  puts a
+class FactTable
+  include ModInt
+
+  def initialize(n)
+    @fact = [1] * (n + 1)
+    @finv = [1] * (n + 1)
+    2.upto(n) { |i| @fact[i] = mul(@fact[i - 1], i) }
+    @finv[n] = inv(@fact[n])
+    n.downto(3) { |i| @finv[i - 1] = mul(@finv[i], i) }
+  end
+
+  def nCk(n, m)
+    mul(mul(@fact[n], @finv[m]), @finv[n - m])
+  end
 end
+
+# assert nCk(200000,100000) == 87946733
