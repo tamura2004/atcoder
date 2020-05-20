@@ -7,48 +7,55 @@ when true:
   template `max=`(a,b) = (if a < b: a = b)
   const inf = int.high div 2
 
-type work = object
-  id,head,tail:int
+when true:
+  const Mod = 1000000007
+  type fin = distinct int
+  converter toFin(a:int):fin = fin((a mod Mod+Mod)mod Mod)
+  converter toInt(a:fin):int = a.int
+  proc`+`(a,b:fin):fin = a.int + b.int
+  proc`-`(a,b:fin):fin = a.int - b.int
+  proc`*`(a,b:fin):fin = a.int * b.int
+  proc`+=`(a:var fin; b:fin) = a = a+b
+  proc`-=`(a:var fin; b:fin) = a = a-b
+  proc`*=`(a:var fin; b:fin) = a = a*b
+  proc`/`(a,b:fin):fin = a * b ^ (Mod - 2)
+  proc`/=`(a:var fin; b:fin) = a = a / b
+  type FacTable = object
+    fa, fi: seq[fin]
+  proc initFacTable(n:Natural):FacTable =
+    var fa, fi = 1.fin.repeat n+1
+    for i in 2..n: fa[i] = fa[i-1] * i
+    fi[n] = 1 / fa[n]
+    for i in countdown(n,3): fi[i-1] = fi[i] * i
+    FacTable(fa:fa, fi:fi)
+  proc nCk(ft:FacTable; n,r:int):fin =
+    if n<r or n<0 or r<0: 0
+    else: ft.fa[n] * ft.fi[r] * ft.fi[n-r]
+  proc popcount(bit: int): int = bit.toBin(64).count('1')
+  proc paritySign(bit: int): int = (if bit.popcount mod 2 == 0: 1 else: -1)
 
-proc newWorks(s:string,c:int):seq[work] =
-  for i,v in s:
-    if v == 'o':
-      result.add work(id:i+1, head:i+1, tail:i+1+c)
+# ################################################################################
+# template main =
+#   # a個からb個選び、残りa-b個からc個選ぶ
+#   proc solve(ft:FacTable, a,b,c:int):fin =
+#     ft.nCk(a,b) * ft.nCk(a-b,c)
 
-proc cmpWork(a,b:work):int =
-  case cmp(a.tail, b.tail)
-  of 1: 1
-  of -1: -1
-  else: cmp(a.head, b.head)
+#   let R,C,X,Y,D,L = read()
+#   let ft = initFacTable(1000)
 
-proc takeWorks(a:var seq[work],n:int):seq[work] =
-  a.sort(cmpWork)
-  var pre = work(tail: -inf)
-  for now in a:
-    if pre.tail < now.head:
-      result.add now
-      pre = now
-    if result.len >= n: break
-  result.sort(proc(a,b:work):int = cmp(a.id,b.id))
+#   # 包除原理を利用
+#   # 四方の壁の「いずれか」に隙間がある
+#   # 全体 - 壁の一つに隙間がある4パターン + 4パターンが2つ重なった分 - 3つ重なった分 + 4つ重なった分
+#   var ans = 0.fin
+#   for bit in 0..<(1 shl 4):
+#     var x = X - popcount(bit and 0b0011); x.max= 0
+#     var y = Y - popcount(bit and 0b1100); y.max= 0
+#     ans += ft.solve(x * y, D, L) * bit.paritySign
 
-proc revWork(w:work):work =
-  result.id = w.id
-  result.head = inf - w.tail
-  result.tail = inf - w.head
+#   # 壁で囲んだ範囲が動く自由度
+#   ans *= (R - X + 1) * (C - Y + 1)
+#   echo ans
 
-let n,m,c = read()
-let s = get()
-
-var a = newWorks(s,c)
-var left = takeWorks(a,m)
-
-var b = a.map(revWork)
-var right = takeWorks(b,m)
-
-var ans = false
-for i, a in left:
-  let b = right[i]
-  if a.id == b.id:
-    echo a.head
-
-
+# main()
+let ft = initFacTable(100000)
+echo ft.nCk(100000,30000)

@@ -9,4 +9,21 @@ end
 
 puts ans
 
+# nの約数の個数
+def div_num(n)
+  Prime.prime_division(n)
+    .map(&:last)
+    .map(&:succ)
+    .inject(1,:*)
+end
 
+# 約数列挙
+def divisions(n)
+  1.upto(n) do |i|
+    break if i*i > n
+    if n % i == 0
+      yield i
+      yield n/i if i != n/i # 平方数の場合
+    end
+  end
+end
