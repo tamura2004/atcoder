@@ -54,12 +54,12 @@ watcher.on("ready", () => {
                 log(err);
             } else {
                 log("==================================================");
-                log(`${Date.now() - stime}ms`);
-                // log("--------------------------------------------------");
                 log("=== stdout ===");
                 log(stdout);
                 log("=== stderr ===");
                 log(stderr);
+                log("=== time ===");
+                log(`${Date.now() - stime}ms`);
             }
         });
     })
