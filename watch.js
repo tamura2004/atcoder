@@ -18,6 +18,7 @@ const langExp = {
     ".hs": "haskell",
     ".clj": "clojure",
     ".nim": "nim",
+    ".java": "java",
 };
 
 const cmdStrings = {
@@ -31,6 +32,7 @@ const cmdStrings = {
     "clojure": "cat src/input.txt | clojure src/main.clj",
     // "nim": "cat src/input.txt | nim c -r --hints:off src/main.nim",
     "nim": "cat src/input.txt | nim c -r --stdout:off --hints:off --warning[UnusedImport]:off src/main.nim",
+    "java": "javac -d dist src/Main.java && cat src/input.txt | java -classpath dist Main",
 };
 
 let lang = "ruby";
