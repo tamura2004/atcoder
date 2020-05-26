@@ -1,16 +1,24 @@
 require "benchmark/ips"
 require "prime"
 
-N = 100
-S = Array.new(N){ (?0..?9).to_a.sample }.join
-A = Array.new(N){ rand(10) }
+N = 100000
+A = Array.new(N){ rand 1..1000000 }
+B = Array.new(N){ rand 1..1000000 }
 
 Benchmark.ips do |x|
-  x.report("shift") {
-    y = 1 << N
+  x.report("bit") {
+    N.times do |i|
+      x = (A[i]<<32) | B[i]
+      y = x >> 32
+      z = x & ((1<<32)-1)
+    end
   }
-  x.report("power") {
-    y = 2 ** N
+  x.report("decimal") {
+    N.times do |i|
+      x = A[i] * 10000000 + B[i]
+      y = x / 10000000
+      z = x % 10000000
+    end
   }
   x.compare!
 end

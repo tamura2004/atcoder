@@ -1,8 +1,12 @@
-N = 200000
-Q = 10
+N = 30
+M = 5
+
 open("src/input.txt", "w") do |f|
-  f.puts N
+  f.puts [N,M].join(" ")
   N.times do |i|
-    f.puts [rand(1..(i+1)), rand(1..100)].join(" ")
+    f.puts [rand(0..1000), rand(0..1000), rand(1..3)].join(" ")
+  end
+  M.times do |i|
+    f.puts [rand(0..1000), rand(0..1000), rand(1..3)].join(" ")
   end
 end
