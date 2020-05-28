@@ -1,22 +1,30 @@
-import java.util.Scanner;
+import java.util.*;
 
 public class Main {
   public static void main(String[] args) {
     Scanner sc = new Scanner(System.in);
     int n = sc.nextInt();
-    int pre = sc.nextInt();
-    for (int i = 0; i < n - 1; i++) {
-      int now = sc.nextInt();
-      if (now < pre) {
-        System.out.printf("down %d\n", pre - now);
+    int a[] = new int[n];
 
-      } else if (now == pre) {
-        System.out.println("stay");
-        
-      } else {
-        System.out.printf("up %d\n", now - pre);
+    for (int i = 0; i < n; i++) {
+      int j = sc.nextInt();
+      a[j-1] += 1;
+    }
+
+    int dup = -1;
+    int none = -1;
+    for (int i = 0; i < n; i++) {
+      if (a[i] == 2) {
+        dup = i + 1;
+      } else if (a[i] == 0) {
+        none = i + 1;
       }
-      pre = now;
+    }
+
+    if (dup != -1) {
+      System.out.printf("%d %d\n", dup, none);
+    } else {
+      System.out.println("Correct");
     }
   } 
 }
