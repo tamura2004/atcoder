@@ -1,8 +1,6 @@
-N = 400
+N = 3000
 
 open("src/input.txt", "w") do |f|
   f.puts [N,N].join(" ")
-  N.times do |i|
-    f.puts Array.new(N){ %w(# .).sample }.join
-  end
+  f.puts Array.new(N){ rand(1..3) }.join(" ")
 end

@@ -1,24 +1,32 @@
-S   = read_line.chomp.chars.map(&.to_i)
-N   = S.size
-D   = read_line.to_i64
-MOD = 10**9 + 7
-
-dp = Array.new(N + 1) { Array.new(2) { Array.new(D, 0) } }
-dp[0][0][0] = 1
-
-N.times do |i|
-  2.times do |smaller|
-    D.times do |mod|
-      10.times do |d|
-        next if smaller != 1 && S[i] < d
-        next_smaller = smaller | (d < S[i] ? 1 : 0)
-        next_mod = (mod + d) % D
-        
-        dp[i + 1][next_smaller][next_mod] += dp[i][smaller][mod]
-        dp[i + 1][next_smaller][next_mod] %= MOD
-      end
+N = gets.not_nil!.to_i
+Ps = gets.not_nil!.split
+ 
+ds = (0 ... N*N).map{|i| [i%N, i//N, N - 1 - i%N, N - 1 - i//N].min}
+es = Array(Bool).new(N*N, false)
+ans = 0
+Ps.map{|p| p.to_i - 1}.each do |i|
+  ans += ds[i]
+  es[i] = true
+  s = [i]
+  while !s.empty?
+    j = s.pop
+    d = es[j] ? ds[j] : ds[j] + 1
+    if j - N >= 0 && ds[j - N] > d
+      ds[j - N] = d
+      s << j - N
+    end
+    if j + N < N*N && ds[j + N] > d
+      ds[j + N] = d
+      s << j + N
+    end
+    if j%N != 0 && ds[j - 1] > d
+      ds[j - 1] = d
+      s << j - 1
+    end
+    if j%N != N - 1 && ds[j + 1] > d
+      ds[j + 1] = d
+      s << j + 1
     end
   end
 end
-
-puts (dp[N][0][0] + dp[N][1][0] - 1) % MOD # 0を除く
+puts ans
