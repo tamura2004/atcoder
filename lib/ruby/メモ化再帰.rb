@@ -46,3 +46,47 @@ class PointChart
   puts CHO
   puts NAO
   
+  # ---------------------------------------------------------
+  class Problem
+    MOD = 10007
+    MAX = 10 ** 12
+    attr_reader :a, :b, :c, :d, :memo, :cost
+  
+    def initialize(a, b, c, d)
+      @a = a; @b = b; @c = c; @d = d
+      @memo = { 0 => 0, 1 => @d }
+      @cost = { 2 => @a, 3 => @b, 5 => @c}
+    end
+  
+    def solve(n)
+      return memo[n] if memo[n]
+      mini = MAX
+      candidates(n) do |to, cost|
+        now = solve(to) + cost
+        mini = now if now < mini
+      end
+      memo[n] = mini
+    end
+  
+    def candidates(n)
+      yield [0, d * n]
+      [2, 3, 5].each do |i|
+        j = cost[i]
+        if i <= n
+          yield [n / i, j + d * (n % i)]
+        end
+  
+        if n % i != 0
+          yield [(n + i - 1) / i, j + d * (i - n % i)]
+        end
+      end
+    end
+  end
+  
+  t = gets.to_i
+  t.times do
+    n, a, b, c, d = gets.split.map(&:to_i)
+    pr = Problem.new(a, b, c, d)
+    puts pr.solve(n)
+  end
+  
