@@ -1,26 +1,25 @@
-INF = 10**12
-n,m = gets.split.map(&:to_i)
-e = Array.new(m){ gets.split.map(&:to_i) }.map{|a,b,c|[a-1,b-1,c]}
-g = Array.new(n){ Array.new(n, INF) }
-n.times { |i| g[i][i] = 0 }
+n,k = gets.split.map(&:to_i)
 
-e.each do |a,b,c|
-  g[a][b] = c
-  g[b][a] = c
+MAX_PAIR = (n - 1) * (n - 2) / 2 # スターグラフの場合
+MAX_EDGE = n * (n - 1) / 2 # 完全グラフの辺の数
+if MAX_PAIR < k
+  puts -1
+  exit
 end
 
-n.times do |k|
-  n.times do |i|
-    n.times do |j|
-      dist = g[i][k] + g[k][j]
-      g[i][j] = dist if g[i][j] > dist
+def each_edge(n)
+  1.upto(n-1) do |i|
+    (i+1).upto(n) do |j|
+      yield i,j
     end
   end
 end
 
-ans = 0
-e.each do |i,j,cost|
-  ans += 1 if g[i][j] < cost
+cnt = MAX_EDGE - k
+puts cnt
+each_edge(n) do |i,j|
+  puts [i,j].join(" ")
+  cnt -= 1
+  exit if cnt == 0
 end
 
-puts ans
