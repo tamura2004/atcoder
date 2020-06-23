@@ -18,3 +18,5 @@ class UnionFind
   # size(i) := Aiが属するグループの要素の数
   # unite(i,j) := Ai,Ajを同じグループに統合する
   
+  uf = UnionFind.new(10)
+  pp uf.same(1,2)

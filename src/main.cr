@@ -1,26 +1,26 @@
-class Station
-  property :ans
+record ModInt, value : Int64 = 0_i64 do
+  MOD = 1_000_000_007_i64
+  def +(other); ModInt.new((@value + other.to_i64 % MOD) % MOD); end
+  def <<(other); ModInt.new((@value << other) % MOD); end
+  delegate inspect, to: @value
+  delegate to_s, to: @value
+  delegate to_i64, to: @value
+end
 
-  def initialize
-    @ans = 0_i64
-    @g = Hash(Int64, Int64).new { |h, k| h[k] = 0_i64 }
-  end
+n = gets.to_s.to_i
+a = gets.to_s.split.map { |v| v.to_i64 }
+cnt = Array.new(60, 0)
 
-  def <<(a)
-    @ans += @g[2540_i64 - a]
-    @g[a] += 1_i64
+a.each do |v|
+  60.times do |i|
+    cnt[i] += 1 if v >> i & 1 == 1
   end
 end
 
-n, m = gets.not_nil!.split.map(&.to_i64)
-g = Array.new(n) { Station.new }
-m.times do
-  a, b, c = gets.not_nil!.split.map(&.to_i)
-  a -= 1
-  b -= 1
-  g[a] << c.to_i64
-  g[b] << c.to_i64
+ans = ModInt.new
+cnt.reverse_each do |m|
+  ans <<= 1
+  ans += m.to_i64 * (n - m)
 end
 
-ans = g.map(&.ans).sum
 puts ans

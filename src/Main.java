@@ -1,27 +1,22 @@
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 import java.util.*;
+import java.util.stream.*;
 
 public class Main {
-  public static void main(final String[] args) throws Exception {
-    final Scanner scanner = new Scanner(System.in);
+  public static void main(String[] args) {
+    Scanner sc = new Scanner(System.in);
     try {
-      String s = scanner.next();
-      DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy/MM/dd");
-      LocalDate date = LocalDate.parse(s, formatter);
+      int n = sc.nextInt();
+      int[] a = IntStream.range(0, n).map(i -> sc.nextInt()).toArray();
+      int mask = Arrays.stream(a).reduce(0, (acc,v) -> acc ^ v);
+      int[] b = Arrays.stream(a).map(v -> v ^ mask).toArray();
 
-      while (true) {
-        int y = date.getYear();
-        int m = date.getMonthValue();
-        int d = date.getDayOfMonth();
-        if (y % m == 0 && (y / m) % d == 0) {
-          System.out.println(date.format(formatter));
-          return;
-        }
-        date = date.plusDays(1);
+      for (int i = 0; i < n; i++) {
+        System.out.print(b[i]);
+        System.out.print(" ");
       }
+      System.out.println("\n");
     } finally {
-      scanner.close();
+      sc.close();
     }
   }
 }

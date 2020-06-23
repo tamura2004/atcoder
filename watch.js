@@ -19,12 +19,14 @@ const langExp = {
   ".clj": "clojure",
   ".nim": "nim",
   ".java": "java",
+  ".kt": "kotlin",
 };
 
 const compileStrings = {
   "cpp": "g++ src/main.cpp",
   "crystal": "crystal build --release --no-debug -o dist/crystal.out src/main.cr",
   "java": "javac -d dist src/Main.java",
+  "kotlin": "kotlinc src/main.kt -include-runtime -d dist/kotlin.jar -XXLanguage:+InlineClasses",
 };
 
 const executeStrings = {
@@ -39,6 +41,7 @@ const executeStrings = {
   // "nim": "cat src/input.txt | nim c -r --hints:off src/main.nim",
   "nim": "cat src/input.txt | nim c -r --stdout:off --hints:off --warning[UnusedImport]:off src/main.nim",
   "java": "cat src/input.txt | java -classpath dist Main",
+  "kotlin": "cat src/input.txt | kotlin dist/kotlin.jar",
 };
 
 let lang = "ruby";
