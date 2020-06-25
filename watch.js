@@ -20,6 +20,7 @@ const langExp = {
   ".nim": "nim",
   ".java": "java",
   ".kt": "kotlin",
+  ".cs": "csharp",
 };
 
 const compileStrings = {
@@ -27,6 +28,7 @@ const compileStrings = {
   "crystal": "crystal build --release --no-debug -o dist/crystal.out src/main.cr",
   "java": "javac -d dist src/Main.java",
   "kotlin": "kotlinc src/main.kt -include-runtime -d dist/kotlin.jar -XXLanguage:+InlineClasses",
+  "csharp": "mcs src/main.cs -out:dist/csharp.exe",
 };
 
 const executeStrings = {
@@ -42,6 +44,7 @@ const executeStrings = {
   "nim": "cat src/input.txt | nim c -r --stdout:off --hints:off --warning[UnusedImport]:off src/main.nim",
   "java": "cat src/input.txt | java -classpath dist Main",
   "kotlin": "cat src/input.txt | kotlin dist/kotlin.jar",
+  "csharp": "cat src/input.txt | mono dist/csharp.exe",
 };
 
 let lang = "ruby";
