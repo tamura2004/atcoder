@@ -1,43 +1,64 @@
-def max(a, b); a > b ? a : b; end
-
-def count_by_bit(a, m)
-  n = a.size
-  k = max(m, a.max.bit_length)
-  Array.new(k, 0).tap do |cnt|
-    n.times do |i|
-      k.times { |j| cnt[j] += a[i][j] }
-    end
+MOD = 10**9+7
+class Problem
+  attr_accessor :a, :b, :c, :n, :m, :k, :h, :w, :x, :y, :ans, :q
+  def initialize
+    @n, @k = gets.to_s.split.map{ |v| v.to_i }
+    @a = gets.to_s.split.map{ |v| v.to_i }
+    @plus = @a.select{ _1 > 0 }.sort!.reverse!
+    @double = @plus.each_slice(2).map{|s,t|s*t}
+    @double_o = @double.dup
+    @m = @a.select{ _1 < 0 }.sort!
+    @minus = @m.each_slice(2).map{|s,t|s*t}
+    @minus_o = @minus.dup
   end
-end
 
-def count_to_num(cnt)
-  cnt.reverse_each.inject(0) do |ans,i|
-    ans *= 2
-    ans += i
-  end
-end
-
-def solve_1(n,k,a)
-  m = (k+1).bit_length - 1
-  count_by_bit(a, m).tap do |cnt|  
-    m.times do |i|
-      cnt[i] = max(cnt[i], n - cnt[i])
-    end
-  end
-end
-
-def solve_2(n,k,a)
-  m = k.bit_length
-  count_by_bit(a, m).tap do |cnt|
-    m.times do |i|
-      if cnt[i] < n - cnt[i] && k[i] == 1
-        cnt[i] = n - cnt[i]
+  def solve
+    i = 0
+    j = 0
+    while i + j < k / 2
+      if @double.size > 0
+        if @minus.size > 0
+          if @double[i] > @minus[j]
+            i += 1
+            @double.shift
+          else
+            j += 1
+            @minus.shift
+          end
+        else
+          i += 1
+          @double.shift
+        end
+      else
+        if @minus.size > 0
+          j += 1
+          @minus.shift
+        else
+          raise "err"
+        end
       end
     end
+    @i = i * 2
+    @j = j
+    if k - (@i + @j * 2) > 0
+      if @plus.size > @i
+        @i += 1
+      end
+    end
+
+    ans = 1
+    @j.times do |j|
+      ans *= @minus_o[j]
+      ans %= MOD
+    end
+    @i.times do |i|
+      ans *= @plus[i]
+      ans %= MOD
+    end
+    puts ans
   end
 end
 
-n,k = gets.to_s.split.map{ |v| v.to_i }
-a = gets.to_s.split.map{ |v| v.to_i }
-ans = [solve_1(n,k,a), solve_2(n,k,a)].map{ count_to_num(_1) }.max
-puts ans
+pb = Problem.new
+pb.solve
+pp pb if ENV['USER'] == "tamura"

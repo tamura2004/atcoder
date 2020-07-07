@@ -25,7 +25,7 @@ const langExp = {
 
 const compileStrings = {
   "cpp": "g++ src/main.cpp",
-  "crystal": "crystal build --release --no-debug -o dist/crystal.out src/main.cr",
+  // "crystal": "crystal build --release --no-debug -o dist/crystal.out src/main.cr",
   "java": "javac -d dist src/Main.java",
   "kotlin": "kotlinc src/main.kt -include-runtime -d dist/kotlin.jar -XXLanguage:+InlineClasses",
   "csharp": "mcs src/main.cs -out:dist/csharp.exe",
@@ -35,7 +35,8 @@ const executeStrings = {
   "ruby": "cat src/input.txt | ruby src/main.rb",
   "cpp": "cat src/input.txt | ./a.out",
   "julia": "cat src/input.txt | julia src/main.jl",
-  "crystal": "cat src/input.txt | dist/crystal.out",
+  // "crystal": "cat src/input.txt | dist/crystal.out",
+  "crystal": "cat src/input.txt | crystal src/main.cr",
   "python3": "cat src/input.txt | python3 src/main.py",
   "pypy3": "cat src/input.txt | pypy3 src/main.pypy",
   "haskell": "cat src/input.txt | runghc src/main.hs",
