@@ -39,7 +39,7 @@
     "prefix": "vi",
     "body": [
       "a = new int[n];",
-      "for (int i = 0; i < n; i++) a[i] = sc.nextInt();",
+      "for (int i = 0; i < n; i++) a[i] = sc.nextInt();"
     ]
   },
   "get long array from scanner by stream": {
@@ -54,7 +54,7 @@
       "$1 ^= $2;",
       "$2 ^= $1;",
       "$1 ^= $2;"
-    ],
+    ]
   },
   "class template": {
     "prefix": "class",
