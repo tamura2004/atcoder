@@ -1,0 +1,123 @@
+{
+  "get int from scanner": {
+    "prefix": "ini",
+    "body": [
+      "sc.nextInt();"
+    ]
+  },
+  "get long from scanner": {
+    "prefix": "inl",
+    "body": [
+      "sc.nextLong();"
+    ]
+  },
+  "get String from scanner": {
+    "prefix": "ins",
+    "body": [
+      "sc.next();"
+    ]
+  },
+  "print to stdout": {
+    "prefix": "pp",
+    "body": [
+      "System.out.println($0);"
+    ]
+  },
+  "print array to stdout": {
+    "prefix": "ppa",
+    "body": [
+      "System.out.println(Arrays.toString($1));"
+    ]
+  },
+  "for loop": {
+    "prefix": "fo",
+    "body": [
+      "for (int $1 = 0; $1 < n; $1++) {$0}"
+    ]
+  },
+  "get int array from scanner by stream": {
+    "prefix": "vi",
+    "body": [
+      "a = new int[n];",
+      "for (int i = 0; i < n; i++) a[i] = sc.nextInt();",
+    ]
+  },
+  "get long array from scanner by stream": {
+    "prefix": "vl",
+    "body": [
+      "IntStream.range(0, $2).map(i -> sc.nextLong()).toArray();"
+    ]
+  },
+  "swap value": {
+    "prefix": "swap",
+    "body": [
+      "$1 ^= $2;",
+      "$2 ^= $1;",
+      "$1 ^= $2;"
+    ],
+  },
+  "class template": {
+    "prefix": "class",
+    "body": [
+      "import java.util.*;",
+      "",
+      "class Reader {",
+      "  Scanner sc = new Scanner(System.in);",
+      "",
+      "  public int ini() {",
+      "    return sc.nextInt();",
+      "  }",
+      "",
+      "  public String insl() {",
+      "    return sc.nextLine();",
+      "  }",
+      "",
+      "  public void skip() {",
+      "    sc.nextLine();",
+      "  }",
+      "",
+      "  public int[] vi(int n) {",
+      "    int[] a = new int[n];",
+      "    for (int i = 0; i < n; i++) a[i] = sc.nextInt();",
+      "    return a;",
+      "  }",
+      "",
+      "  public long[] vl(int n) {",
+      "    long[] a = new long[n];",
+      "    for (int i = 0; i < n; i++) a[i] = sc.nextLong();",
+      "    return a;",
+      "  }",
+      "",
+      "  public String[] vsl(int n) {",
+      "    String[] a = new String[n];",
+      "    for (int i = 0; i < n; i++) a[i] = sc.nextLine();",
+      "    return a;",
+      "  }",
+      "}",
+      "",
+      "public class Main extends Reader {",
+      "  public static void main(String[] args) {",
+      "    Main main = new Main();",
+      "    main.show(main.solve());",
+      "  }",
+      "",
+      "  int n;",
+      "  int a[];",
+      "",
+      "  public Main() {",
+      "    n = ini();",
+      "    a = vi(l);",
+      "  }",
+      "  ",
+      "  int solve() {",
+      "    return -1;",
+      "  }",
+      "",
+      "  void show(int ans) {",
+      "    System.out.println(ans);",
+      "  }",
+      "}"
+    ]
+  }
+}
+

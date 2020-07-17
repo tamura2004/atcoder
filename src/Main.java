@@ -1,61 +1,94 @@
 import java.util.*;
 
-public class Main {
+class Reader {
+  Scanner sc = new Scanner(System.in);
+
+  public int ini() {
+    return sc.nextInt();
+  }
+
+  public String insl() {
+    return sc.nextLine();
+  }
+
+  public void skip() {
+    sc.nextLine();
+  }
+
+  public int[] vi(int n) {
+    int[] a = new int[n];
+    for (int i = 0; i < n; i++) a[i] = sc.nextInt();
+    return a;
+  }
+
+  public long[] vl(int n) {
+    long[] a = new long[n];
+    for (int i = 0; i < n; i++) a[i] = sc.nextLong();
+    return a;
+  }
+
+  public String[] vsl(int n) {
+    String[] a = new String[n];
+    for (int i = 0; i < n; i++) a[i] = sc.nextLine();
+    return a;
+  }
+}
+
+public class Main extends Reader {
   public static void main(String[] args) {
     Main main = new Main();
-    main.solve();
-    main.show();
+    main.show(main.solve());
+    // main.debug();
   }
 
-  List<Deque<Integer>> a;
-  int ans;
-  int turn = 0;
-  boolean win = false;
-  static final int A = 0;
-  static final int B = 1;
-  static final int C = 2;
-  static final int N = 3;
+  int n;
+  int l;
+  String a[];
+  String b;
+  int ans[];
 
   public Main() {
-    Scanner sc = new Scanner(System.in);
-    try {
-      a = new ArrayList<Deque<Integer>>();
-      a.add(read(sc));
-      a.add(read(sc));
-      a.add(read(sc));
-    } finally {
-      sc.close();
-    }
-  }
-
-  private static Deque<Integer> read(Scanner sc) {
-    Deque<Integer> ans = new ArrayDeque<Integer>();
-    String s = sc.next();
-    int n = s.length();
-    for (int i = 0; i < n; i++) {
-      if (s.charAt(i) == 'a' ) ans.addLast(A);
-      if (s.charAt(i) == 'b' ) ans.addLast(B);
-      if (s.charAt(i) == 'c' ) ans.addLast(C);
-    }
-    return ans;
+    n = ini();
+    l = ini();
+    skip();
+    a = vsl(l);
+    b = insl();
+    ans = new int[n];
+    for (int i = 0; i < n; i++) ans[i] = i + 1;
   }
   
-  void solve() {
-    while (!win) play();
-  }
-
-  void play() {
-    if (a.get(turn).size() == 0) {
-      win = true;
-      ans = turn;
-      return;
+  int solve() {
+    for (int i = 0; i < l; i++) {
+      for (int j = 0; j < n - 1; j++) {
+        if (a[i].charAt(j*2+1) == '-') swap(j, j+1);
+      }
     }
-    turn = a.get(turn).pollFirst();
+    return ans[goal()];
+  }
+  
+  void swap(int i, int j) {
+    ans[i] ^= ans[j];
+    ans[j] ^= ans[i];
+    ans[i] ^= ans[j];
   }
 
-  void show() {
-    if (ans == A) System.out.println("A");
-    if (ans == B) System.out.println("B");
-    if (ans == C) System.out.println("C");
+  int goal() {
+    for (int i = 0; i < n; i++) {
+      if (b.charAt(i*2) == 'o') return i;
+    }
+    return -1;
+  }
+
+  void show(int ans) {
+    System.out.println(ans);
+  }
+
+  void debug() {
+    System.out.printf("n=%d,l=%d\n", n, l);
+    for (int i = 0; i < l; i++) {
+      System.out.println(a[i]);
+    }
+    System.out.println(b);
+    System.out.println(goal());
   }
 }

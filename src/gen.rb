@@ -1,4 +1,4 @@
-N = 200000
+N = 100000
 
 open("src/input.txt", "w") do |f|
   f.puts N

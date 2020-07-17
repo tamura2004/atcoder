@@ -1,0 +1,115 @@
+{
+	"2D around 4 or 8 direction": {
+		"prefix": "dx",
+		"body": [
+			"DX = [ 0, 1, 0,-1, 1,-1, 1,-1]\nDY = [ 1, 0,-1, 0, 1,-1,-1, 1]"
+		]
+	},
+	"2D around 4 or 8 direction by narray": {
+		"prefix": "dv",
+		"body": [
+			"DV = Numo::Int64.parse('1 0;0 1;-1 0;0 -1;1 1;-1 1;-1 -1;1 -1')"
+		]
+	},
+	"2D point inside rectangle": {
+		"prefix": "inside",
+		"body": [
+			"inside = -> y, x, h, w { 0 <= y && y < h && 0 <= x && x < w }"
+		]
+	},
+	"get array of integer from stdin": {
+		"prefix": "in",
+		"body": [
+			"gets.to_s.split.map{ |v| v.to_i }"
+		]
+	},
+	"get array of integer from stdin to narray": {
+		"prefix": "in",
+		"body": [
+			"Numo::Int64.parse(gets).reshape!(nil)"
+		]
+	},
+	"get integer from stdin": {
+		"prefix": "ini",
+		"body": [
+			"gets.to_s.to_i"
+		]
+	},
+	"get string from stdin": {
+		"prefix": "ins",
+		"body": [
+			"gets.chomp"
+		]
+	},
+	"make 2D array by narray": {
+		"prefix": "vvi",
+		"body": [
+			"Numo::Int64.zeros($1, $2)"
+		]
+	},
+	"make 2D array": {
+		"prefix": "vvi",
+		"body": [
+			"Array.new($1){Array.new($2){ $0 }}"
+		]
+	},
+	"make 1D array": {
+		"prefix": "vi",
+		"body": [
+			"Array.new($1){ $0 }"
+		]
+	},
+	"cumulative sum": {
+		"prefix": "cs",
+		"body": [
+			"a.each_with_object([0]) { |v, h| h << h[-1] + v }"
+		]
+	},
+	"make 1D array 2": {
+		"prefix": "vi",
+		"body": [
+			"Array.new($1, $0)"
+		]
+  },
+  "Problem class template": {
+    "prefix": "class",
+    "body": [
+      "class Problem",
+      "  attr_accessor :a, :b, :n, :m, :h, :w",
+      "  def initialize",
+      "    @$0",
+      "  end",
+      "",
+      "  def solve",
+      "  end",
+      "",
+      "  def show(ans)",
+      "    puts ans",
+      "  end",
+      "end",
+      "",
+      "Problem.new.instance_eval do",
+      "  show(solve)",
+      "end",
+    ]
+  },
+  "Grid": {
+    "prefix": "each",
+    "body": [
+      "  def eachgrid(y, x)",
+      "    yield y + 1, x if y < h - 1",
+      "    yield y - 1, x if y > 0",
+      "    yield y , x + 1 if x < w - 1",
+      "    yield y , x - 1 if x > 0",
+      "  end",
+    ]
+  },
+  "def": {
+    "prefix": "def",
+    "body": [
+      "def $1",
+      "  @$1 ||= $0",
+      "end",
+    ]
+  }
+}

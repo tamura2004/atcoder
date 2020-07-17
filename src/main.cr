@@ -1,23 +1,51 @@
 class Problem
-  @a : Int64
-  @b : Int64
-  @ans : Int64
-
-  property :a, :b, :ans
+  property :n, :dp
+  @n : Int32
+  @dp : Array(Int32)
 
   def initialize
-    @a, @b = gets.to_s.split.map(&.to_i64)
+    @n = gets.to_s.to_i
+    @dp = Array.new(n+1){|i|i}
   end
-
+  
   def solve
-    @ans = a * b
+    rec6
+    rec9
+    dp[n]
   end
 
-  def show
+  def rec6
+    n.times do |i|
+      1.upto(7) do |j|
+        d = 6 ** j
+        1.upto(5) do |k|
+          e = d * k
+          next if n < i + e
+          dp[i + e] = dp[i] + k if dp[i + e] > dp[i] + k
+        end
+      end
+    end
+  end
+
+  def rec9
+    n.times do |i|
+      1.upto(6) do |j|
+        d = 9 ** j
+        1.upto(8) do |k|
+          e = d * k
+          next if n < i + e
+          dp[i + e] = dp[i] + k if dp[i + e] > dp[i] + k
+        end
+      end
+    end
+  end
+
+  def show(ans)
     puts ans
   end
 end
 
-b = Problem.new
-b.solve
-b.show
+Problem.new.try do |b|
+  b.show(b.solve)
+end
+
