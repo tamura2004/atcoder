@@ -75,8 +75,8 @@
     "prefix": "class",
     "body": [
       "class Problem",
-      "  attr_accessor :a, :b, :n, :m, :h, :w",
-      "  def initialize",
+      "  attr_accessor *(?a..?z).to_a.map(&:to_sym)",
+        "  def initialize",
       "    @$0",
       "  end",
       "",
@@ -110,6 +110,26 @@
       "def $1",
       "  @$1 ||= $0",
       "end"
+    ]
+  },
+  "Yes No answer" : {
+    "prefix": "yes",
+    "body": [
+      " ? \"Yes\" : \"No\""
+    ]
+  },
+  "YES NO answer" : {
+    "prefix": "yes",
+    "body": [
+      " ? \"YES\" : \"NO\""
+    ]
+  },
+  "minmax": {
+    "prefix": "min",
+    "body": [
+      "def max(a,b); a < b ? b : a; end",
+      "def min(a,b); a < b ? a : b; end",
+      ""
     ]
   }
 }

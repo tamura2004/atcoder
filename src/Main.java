@@ -7,6 +7,10 @@ class Reader {
     return sc.nextInt();
   }
 
+  public String ins() {
+    return sc.next();
+  }
+
   public String insl() {
     return sc.nextLine();
   }
@@ -38,57 +42,25 @@ public class Main extends Reader {
   public static void main(String[] args) {
     Main main = new Main();
     main.show(main.solve());
-    // main.debug();
   }
 
-  int n;
-  int l;
-  String a[];
-  String b;
-  int ans[];
+  int a[];
+  int b[];
 
   public Main() {
-    n = ini();
-    l = ini();
-    skip();
-    a = vsl(l);
-    b = insl();
-    ans = new int[n];
-    for (int i = 0; i < n; i++) ans[i] = i + 1;
+    a = vi(7);
+    b = vi(7);
   }
   
   int solve() {
-    for (int i = 0; i < l; i++) {
-      for (int j = 0; j < n - 1; j++) {
-        if (a[i].charAt(j*2+1) == '-') swap(j, j+1);
-      }
+    int ans = 0;
+    for (int i = 0; i < 7; i++) {
+      ans += Math.max(a[i], b[i]);
     }
-    return ans[goal()];
-  }
-  
-  void swap(int i, int j) {
-    ans[i] ^= ans[j];
-    ans[j] ^= ans[i];
-    ans[i] ^= ans[j];
-  }
-
-  int goal() {
-    for (int i = 0; i < n; i++) {
-      if (b.charAt(i*2) == 'o') return i;
-    }
-    return -1;
+    return ans;
   }
 
   void show(int ans) {
     System.out.println(ans);
-  }
-
-  void debug() {
-    System.out.printf("n=%d,l=%d\n", n, l);
-    for (int i = 0; i < l; i++) {
-      System.out.println(a[i]);
-    }
-    System.out.println(b);
-    System.out.println(goal());
   }
 }

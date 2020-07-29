@@ -1,6 +1,6 @@
-N = 100000
+N = 1333
 
 open("src/input.txt", "w") do |f|
-  f.puts N
-  f.puts Array.new(N){ rand 1..1000000000 }.join(" ")
+  f.puts N * 3
+  f.puts "RGB" * N
 end
