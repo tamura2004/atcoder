@@ -1,37 +1,59 @@
-class BIT
-  property :a, :n
-  def initialize(@n : Int32); @a = Array(Int32).new(n + 1, 0); end
-  def add(i, x); return if n < i; a[i] += x; add(i + lsb(i), x); end
-  def sum(i); return 0 if i <= 0; a[i] + sum(i - lsb(i)); end
-  def lsb(i); i & -i; end
-end
-# BIT.new(n) := 長さnで初期化
-# sum(i) := 閉区間[0,i]の合計
-# add(i,x) := 要素iにxを加える
-
 class Problem
-  property :a, :b, :n
+  property :a, :b, :c, :d, :e, :f, :g, :h, :i, :j, :k, :l, :m, :n, :o, :p, :q, :r, :s, :t, :u, :v, :w, :x, :y, :z
+
   @n : Int32
-  @a : Array(Int64)
+  @a : Array(Array(Int64))
+  @b : Array(Int32)
 
   def initialize
     @n = gets.to_s.to_i
-    @a = gets.to_s.split.map(&.to_i64).reverse
-    @b = BIT.new(n + 1)
+    @a = Array.new(n){ gets.to_s.split.map(&.to_i64) }
+    @b = Array.new(n){ |i| i }
   end
 
-  def solve
-    a.reduce(0_i64) do |ans, i|
-      b.add(i, 1)
-      ans + b.sum(i) - 1
+  def is_diag?
+    n.times.all? do |i|
+      a[i][i].zero? &&
+      n.times.all? do |j|
+        a[i][j] == a[j][i]
+      end
     end
   end
 
+  def valid?
+    b.combinations(3).each.all? do |(i,j,k)|
+      x = a[i][j]
+      y = a[j][k]
+      z = a[k][i]
+      x <= y + z && y <= x + z && z <= x + y
+    end
+  end
+
+  def calc
+    ans = 0_i64
+    b.combinations(2).each do |(i,j)|
+      next if b.each.any? { |k|
+        i != k &&
+        j != k &&
+        a[i][j] >= a[i][k] + a[k][j]
+      }
+      ans += a[i][j]
+    end
+    ans
+  end
+
+  def solve
+    return -1 if !is_diag?
+    return 0 if n == 1
+    return a[1][0] if n == 2
+    return -1 if !valid?
+    calc
+  end
+
   def show(ans)
-    puts ans
   end
 end
 
 Problem.new.try do |me|
-  me.show(me.solve)
+  puts me.solve
 end
