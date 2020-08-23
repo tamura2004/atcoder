@@ -1,6 +1,15 @@
-N = 100000
+require "profile"
+
+N = 64
+M = N / 2
 
 open("src/input.txt", "w") do |f|
-  f.puts N
-  f.puts Array.new(N){ _1 + 1 }.shuffle.join(" ")
+  f.puts [N,N].join(" ")
+  f.puts [1,1].join(" ")
+  f.puts [N,N].join(" ")
+
+  M.times do
+    f.puts ".#" * M
+    f.puts "#." * M
+  end
 end
