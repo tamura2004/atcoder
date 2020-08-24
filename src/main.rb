@@ -1,29 +1,36 @@
-
 class Problem
   attr_accessor *(?a..?z).to_a.map(&:to_sym)
-
-  DX = [ 0, 1, 0,-1, 1,-1, 1,-1]
-  DY = [ 1, 0,-1, 0, 1,-1,-1, 1]
-
+  attr_accessor :ch
   def initialize
-    @h,@w = gets.split.map(&:to_i)
-    @c = gets.split.map(&:to_i)
-    @d = gets.split.map(&:to_i)
-    @s = Array.new(h){ gets.chomp }
+    @n,@c = gets.split.map(&:to_i)
+    @s,@t,@ch = Array.new(n){ gets.split.map(&:to_i) }.transpose
+    @ch.map!{ _1 - 1 }
   end
 
-  def each_walk(y,x)
-    4.times do |i|
-      ny = y + DY[i]
-      nx = x + DX[i]
-      next if nx < 0 || w <= nx
-      next if ny < 0 || h <= ny
-      next if s[ny][nx] == "#"
-      yield y,x
-    end
-  end
-    
   def solve
+    dp = Array.new(200_001){ Array.new(30, 0) }
+    n.times do |i|
+      dp[s[i]][ch[i]] += 1
+      dp[t[i]][ch[i]] -= 1
+    end
+
+    200_000.times do |i|
+      30.times do |j|
+        if 0 < dp[i+1][j]
+          dp[i][j] = dp[i+1][j]
+          dp[i+1][j] = 0
+        end
+      end
+    end
+    
+    a = Array.new(200_001,0)
+    200_000.times do |i|
+      30.times do |j|
+        a[i] += dp[i][j]
+      end
+    end
+    cs = a.each_with_object([0]) { |v, h| h << h[-1] + v }
+    cs.max
   end
 
   def show(ans)
@@ -33,5 +40,4 @@ end
 
 Problem.new.instance_eval do
   show(solve)
-  pp self
 end
