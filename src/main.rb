@@ -1,34 +1,33 @@
 class Problem
+  N = 10**5
+  M = 30
   attr_accessor *(?a..?z).to_a.map(&:to_sym)
-  attr_accessor :ch
   def initialize
-    @n,@c = gets.split.map(&:to_i)
-    @s,@t,@ch = Array.new(n){ gets.split.map(&:to_i) }.transpose
-    @ch.map!{ _1 - 1 }
+    @n,@m = gets.to_s.split.map{ |v| v.to_i }
+    @s,@t,@c = Array.new(n){ gets.to_s.split.map{ |v| v.to_i } }.transpose
+    @c.map!{|v|v-1}
   end
 
   def solve
-    dp = Array.new(200_001){ Array.new(30, 0) }
+    dp = Array.new(M){ Array.new(N+1,0) }
     n.times do |i|
-      dp[s[i]][ch[i]] += 1
-      dp[t[i]][ch[i]] -= 1
+      dp[c[i]][s[i]] += 1
+      dp[c[i]][t[i]] -= 1
     end
 
-    200_000.times do |i|
-      30.times do |j|
-        if 0 < dp[i+1][j]
-          dp[i][j] = dp[i+1][j]
-          dp[i+1][j] = 0
+    a = Array.new(N+1,0)
+    M.times do |i|
+      N.times do |j|
+        if 0 < dp[i][j+1]
+          a[j] += dp[i][j+1]
+        end
+
+        if dp[i][j] < 0
+          a[j] += dp[i][j]
         end
       end
     end
-    
-    a = Array.new(200_001,0)
-    200_000.times do |i|
-      30.times do |j|
-        a[i] += dp[i][j]
-      end
-    end
+
     cs = a.each_with_object([0]) { |v, h| h << h[-1] + v }
     cs.max
   end
