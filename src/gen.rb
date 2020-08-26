@@ -1,9 +1,6 @@
-N = 300000
+N = 8000
 
 open("src/input.txt", "w") do |f|
-  f.puts [N,N,N].join(" ")
-
-  N.times do |i|
-    f.puts [i,i].join(" ")
-  end
+  f.puts "TF" * (N/2)
+  f.puts [rand(8000)-4000,rand(8000)-4000].join(" ")
 end

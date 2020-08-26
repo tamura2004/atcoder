@@ -1,35 +1,26 @@
 class Problem
-  N = 10**5
-  M = 30
   attr_accessor *(?a..?z).to_a.map(&:to_sym)
   def initialize
-    @n,@m = gets.to_s.split.map{ |v| v.to_i }
-    @s,@t,@c = Array.new(n){ gets.to_s.split.map{ |v| v.to_i } }.transpose
-    @c.map!{|v|v-1}
+    @n,@c = gets.split.map(&:to_i)
+    @x,@v = Array.new(n){ gets.split.map(&:to_i) }.transpose
+    @a = v.each_with_object([0]) { |v, h| h << h[-1] + v }
+    @b = v.reverse.each_with_object([0]) { |v, h| h << h[-1] + v }
   end
 
   def solve
-    dp = Array.new(M){ Array.new(N+1,0) }
     n.times do |i|
-      dp[c[i]][s[i]] += 1
-      dp[c[i]][t[i]] -= 1
+      a[i+1] -= x[i]
+      b[i+1] -= c - x[n-1-i]
     end
-
-    a = Array.new(N+1,0)
-    M.times do |i|
-      N.times do |j|
-        if 0 < dp[i][j+1]
-          a[j] += dp[i][j+1]
-        end
-
-        if dp[i][j] < 0
-          a[j] += dp[i][j]
-        end
-      end
+    v1 = a.max
+    v2 = b.max
+    n.times do |i|
+      a[i+1] -= x[i]
+      b[i+1] -= c - x[n-1-i]
     end
-
-    cs = a.each_with_object([0]) { |v, h| h << h[-1] + v }
-    cs.max
+    v3 = a.max
+    v4 = b.max
+    [v1+v4,v2+v3].max
   end
 
   def show(ans)
