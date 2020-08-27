@@ -1,0 +1,76 @@
+{
+  "info": {
+    "id": "16774180-faf8-4b00-a63f-7c94e6290ac9",
+    "title": "SFPC #017",
+    "memo": "灰x6 茶x2 緑x2 新人在宅学習用",
+    "owner_user_id": "1623021",
+    "start_epoch_second": 1594721400,
+    "duration_second": 3196800,
+    "mode": null,
+    "is_public": true,
+    "penalty_second": 0
+  },
+  "problems": [
+    {
+      "id": "abc054_a",
+      "point": null,
+      "order": 0
+    },
+    {
+      "id": "abc162_a",
+      "point": null,
+      "order": 1
+    },
+    {
+      "id": "abc042_a",
+      "point": null,
+      "order": 2
+    },
+    {
+      "id": "abc050_a",
+      "point": null,
+      "order": 3
+    },
+    {
+      "id": "abc124_b",
+      "point": null,
+      "order": 4
+    },
+    {
+      "id": "abc170_b",
+      "point": null,
+      "order": 5
+    },
+    {
+      "id": "abc082_b",
+      "point": null,
+      "order": 6
+    },
+    {
+      "id": "abc047_b",
+      "point": null,
+      "order": 7
+    },
+    {
+      "id": "abc048_b",
+      "point": null,
+      "order": 8
+    },
+    {
+      "id": "abc054_b",
+      "point": null,
+      "order": 9
+    }
+  ],
+  "participants": [
+    "NakatsukaMomoka",
+    "RinkaSasagawa",
+    "ShuHONDA",
+    "deltazarashi",
+    "hosonuma",
+    "naskya",
+    "takanoyuto",
+    "tamura2004",
+    "yukakawamoto"
+  ]
+}

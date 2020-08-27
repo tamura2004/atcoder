@@ -1,0 +1,71 @@
+{
+  "info": {
+    "id": "7967779c-f7b8-43f9-bcbb-1022cd9b49a3",
+    "title": "SFPC #022",
+    "memo": "灰x5 茶x5 新人在宅学習用",
+    "owner_user_id": "1623021",
+    "start_epoch_second": 1596145800,
+    "duration_second": 2336400,
+    "mode": null,
+    "is_public": true,
+    "penalty_second": 300
+  },
+  "problems": [
+    {
+      "id": "arc019_1",
+      "point": null,
+      "order": 0
+    },
+    {
+      "id": "abc021_b",
+      "point": null,
+      "order": 1
+    },
+    {
+      "id": "arc028_1",
+      "point": null,
+      "order": 2
+    },
+    {
+      "id": "dwango2016qual_a",
+      "point": null,
+      "order": 3
+    },
+    {
+      "id": "abc033_b",
+      "point": null,
+      "order": 4
+    },
+    {
+      "id": "arc029_1",
+      "point": null,
+      "order": 5
+    },
+    {
+      "id": "arc080_a",
+      "point": null,
+      "order": 6
+    },
+    {
+      "id": "codefestival_2015_qualB_c",
+      "point": null,
+      "order": 7
+    },
+    {
+      "id": "arc079_a",
+      "point": null,
+      "order": 8
+    },
+    {
+      "id": "panasonic2020_c",
+      "point": null,
+      "order": 9
+    }
+  ],
+  "participants": [
+    "ShuHONDA",
+    "deltazarashi",
+    "tamura2004",
+    "yanai"
+  ]
+}

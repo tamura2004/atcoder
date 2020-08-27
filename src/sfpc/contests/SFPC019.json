@@ -1,0 +1,78 @@
+{
+  "info": {
+    "id": "bc20848c-eb04-4953-a018-f2dc3034632d",
+    "title": "SFPC #019",
+    "memo": "灰x7 茶x3 新人在宅学習用",
+    "owner_user_id": "1623021",
+    "start_epoch_second": 1595243100,
+    "duration_second": 3283200,
+    "mode": null,
+    "is_public": true,
+    "penalty_second": 0
+  },
+  "problems": [
+    {
+      "id": "exawizards2019_a",
+      "point": null,
+      "order": 0
+    },
+    {
+      "id": "diverta2019_2_a",
+      "point": null,
+      "order": 1
+    },
+    {
+      "id": "arc021_1",
+      "point": null,
+      "order": 2
+    },
+    {
+      "id": "code_formula_2014_qualA_a",
+      "point": null,
+      "order": 3
+    },
+    {
+      "id": "tenka1_2012_qualA_1",
+      "point": null,
+      "order": 4
+    },
+    {
+      "id": "arc008_1",
+      "point": null,
+      "order": 5
+    },
+    {
+      "id": "indeednow_2015_quala_2",
+      "point": null,
+      "order": 6
+    },
+    {
+      "id": "abc130_c",
+      "point": null,
+      "order": 7
+    },
+    {
+      "id": "arc098_a",
+      "point": null,
+      "order": 8
+    },
+    {
+      "id": "agc034_a",
+      "point": null,
+      "order": 9
+    }
+  ],
+  "participants": [
+    "Gex777",
+    "NakatsukaMomoka",
+    "RinkaSasagawa",
+    "ShuHONDA",
+    "deltazarashi",
+    "hosonuma",
+    "okakita",
+    "takanoyuto",
+    "tamura2004",
+    "yanai",
+    "yukakawamoto"
+  ]
+}

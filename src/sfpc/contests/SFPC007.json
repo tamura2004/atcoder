@@ -1,0 +1,87 @@
+{
+  "info": {
+    "id": "2ebfdaaa-81aa-41b7-8f17-da9068a36552",
+    "title": "SFPC #007",
+    "memo": "灰x10 新人在宅学習用",
+    "owner_user_id": "1623021",
+    "start_epoch_second": 1592303100,
+    "duration_second": 3114000,
+    "mode": null,
+    "is_public": true,
+    "penalty_second": 0
+  },
+  "problems": [
+    {
+      "id": "codefestival_2015_qualA_b",
+      "point": 200,
+      "order": 0
+    },
+    {
+      "id": "code_festival_qualA_b",
+      "point": 200,
+      "order": 1
+    },
+    {
+      "id": "arc012_2",
+      "point": 200,
+      "order": 2
+    },
+    {
+      "id": "code_festival_final_b",
+      "point": 200,
+      "order": 3
+    },
+    {
+      "id": "tenka1_2013_qualB_a",
+      "point": 200,
+      "order": 4
+    },
+    {
+      "id": "tenka1_2012_qualA_2",
+      "point": 200,
+      "order": 5
+    },
+    {
+      "id": "code_formula_2014_qualA_b",
+      "point": 200,
+      "order": 6
+    },
+    {
+      "id": "arc023_1",
+      "point": 200,
+      "order": 7
+    },
+    {
+      "id": "dwacon5th_prelims_a",
+      "point": 200,
+      "order": 8
+    },
+    {
+      "id": "tenka1_2016_qualB_a",
+      "point": 200,
+      "order": 9
+    }
+  ],
+  "participants": [
+    "KanaeTsukimitsu",
+    "MiCHiN",
+    "NakatsukaMomoka",
+    "RinkaSasagawa",
+    "ShuHONDA",
+    "ZatoZatoYuki",
+    "allagenovese",
+    "deltazarashi",
+    "hosonuma",
+    "loveflower",
+    "namba1997",
+    "okakita",
+    "sojisan",
+    "takanoyuto",
+    "tamura2004",
+    "tonakai",
+    "yamamichi",
+    "yanai",
+    "yuichiyoshida",
+    "yukakawamoto"
+  ]
+}

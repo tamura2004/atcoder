@@ -1,0 +1,86 @@
+{
+  "info": {
+    "id": "b819e60f-7b7a-4885-9ff9-a23bfb68be8d",
+    "title": "SFPC #008",
+    "memo": "灰x7 茶x3 新人在宅学習用",
+    "owner_user_id": "1623021",
+    "start_epoch_second": 1592381400,
+    "duration_second": 3553200,
+    "mode": null,
+    "is_public": true,
+    "penalty_second": 0
+  },
+  "problems": [
+    {
+      "id": "abc096_a",
+      "point": null,
+      "order": 0
+    },
+    {
+      "id": "abc095_a",
+      "point": null,
+      "order": 1
+    },
+    {
+      "id": "abc095_b",
+      "point": null,
+      "order": 2
+    },
+    {
+      "id": "abc100_b",
+      "point": null,
+      "order": 3
+    },
+    {
+      "id": "abc099_a",
+      "point": null,
+      "order": 4
+    },
+    {
+      "id": "abc099_b",
+      "point": null,
+      "order": 5
+    },
+    {
+      "id": "abc079_c",
+      "point": null,
+      "order": 6
+    },
+    {
+      "id": "abc107_b",
+      "point": null,
+      "order": 7
+    },
+    {
+      "id": "abc003_2",
+      "point": null,
+      "order": 8
+    },
+    {
+      "id": "abc014_2",
+      "point": null,
+      "order": 9
+    }
+  ],
+  "participants": [
+    "KanaeTsukimitsu",
+    "MechanizedPonchi",
+    "NakatsukaMomoka",
+    "RinkaSasagawa",
+    "ShuHONDA",
+    "ZatoZatoYuki",
+    "abhishekmittal15",
+    "deltazarashi",
+    "hosonuma",
+    "loveflower",
+    "namba1997",
+    "tad092626",
+    "takanoyuto",
+    "tamura2004",
+    "yamamichi",
+    "yamasaKit",
+    "yanai",
+    "yuichiyoshida",
+    "yukakawamoto"
+  ]
+}

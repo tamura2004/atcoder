@@ -1,0 +1,82 @@
+{
+  "info": {
+    "id": "47df9501-a884-4e7c-8be8-22ce29eea819",
+    "title": "SFPC #009",
+    "memo": "灰x8 茶x1 緑x1 新人在宅学習用",
+    "owner_user_id": "1623021",
+    "start_epoch_second": 1592607600,
+    "duration_second": 3628800,
+    "mode": null,
+    "is_public": true,
+    "penalty_second": 0
+  },
+  "problems": [
+    {
+      "id": "bitflyer2018_final_a",
+      "point": null,
+      "order": 0
+    },
+    {
+      "id": "yahoo_procon2018_qual_b",
+      "point": null,
+      "order": 1
+    },
+    {
+      "id": "mujin_pc_2018_b",
+      "point": null,
+      "order": 2
+    },
+    {
+      "id": "nikkei2019_2_final_a",
+      "point": null,
+      "order": 3
+    },
+    {
+      "id": "nikkei2019_final_a",
+      "point": null,
+      "order": 4
+    },
+    {
+      "id": "soundhound2018_summer_qual_b",
+      "point": null,
+      "order": 5
+    },
+    {
+      "id": "jsc2019_qual_a",
+      "point": null,
+      "order": 6
+    },
+    {
+      "id": "tenka1_2019_b",
+      "point": null,
+      "order": 7
+    },
+    {
+      "id": "abc051_b",
+      "point": null,
+      "order": 8
+    },
+    {
+      "id": "arc061_a",
+      "point": null,
+      "order": 9
+    }
+  ],
+  "participants": [
+    "KanaeTsukimitsu",
+    "NakatsukaMomoka",
+    "RinkaSasagawa",
+    "ShuHONDA",
+    "ZatoZatoYuki",
+    "deltazarashi",
+    "loveflower",
+    "namba1997",
+    "okakita",
+    "takanoyuto",
+    "tamura2004",
+    "yamamichi",
+    "yanai",
+    "yuichiyoshida",
+    "yukakawamoto"
+  ]
+}

@@ -1,0 +1,75 @@
+{
+  "info": {
+    "id": "55263904-03d8-424a-a11a-d62fd2121a3a",
+    "title": "SFPC #020",
+    "memo": "灰x7 茶x3 新人在宅学習用",
+    "owner_user_id": "1623021",
+    "start_epoch_second": 1595767800,
+    "duration_second": 2768400,
+    "mode": null,
+    "is_public": true,
+    "penalty_second": 300
+  },
+  "problems": [
+    {
+      "id": "abc104_a",
+      "point": null,
+      "order": 0
+    },
+    {
+      "id": "abc077_a",
+      "point": null,
+      "order": 1
+    },
+    {
+      "id": "arc025_1",
+      "point": null,
+      "order": 2
+    },
+    {
+      "id": "arc022_1",
+      "point": null,
+      "order": 3
+    },
+    {
+      "id": "arc046_a",
+      "point": null,
+      "order": 4
+    },
+    {
+      "id": "abc166_c",
+      "point": null,
+      "order": 5
+    },
+    {
+      "id": "arc007_2",
+      "point": null,
+      "order": 6
+    },
+    {
+      "id": "abc162_d",
+      "point": null,
+      "order": 7
+    },
+    {
+      "id": "panasonic2020_c",
+      "point": null,
+      "order": 8
+    },
+    {
+      "id": "arc043_a",
+      "point": null,
+      "order": 9
+    }
+  ],
+  "participants": [
+    "NakatsukaMomoka",
+    "RinkaSasagawa",
+    "ShuHONDA",
+    "deltazarashi",
+    "takanoyuto",
+    "tamura2004",
+    "yanai",
+    "yukakawamoto"
+  ]
+}

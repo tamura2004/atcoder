@@ -3,26 +3,26 @@ require "nokogiri"
 require "open-uri"
 
 users = %w[
+  yanai
+  loveflower
+  okakita
+  ShuHONDA
+  ZatoZatoYuki
+  namba1997
+  KanaeTsukimitsu
+  yuichiyoshida
+  RinkaSasagawa
+  takanoyuto
   deltazarashi
+  yukakawamoto
   hosonuma
+  NakatsukaMomoka
   hyuu
   ibyoneyama
   kamiryo
-  KanaeTsukimitsu
-  loveflower
   MiCHiN
-  NakatsukaMomoka
-  namba1997
-  okakita
-  RinkaSasagawa
-  ShuHONDA
-  takanoyuto
   tamura2004
   yamamichi
-  yanai
-  yuichiyoshida
-  yukakawamoto
-  ZatoZatoYuki
 ]
 
 data = []

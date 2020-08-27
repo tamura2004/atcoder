@@ -1,0 +1,88 @@
+{
+  "info": {
+    "id": "8479fa06-4ce0-4dfd-9db2-bf6f2d775301",
+    "title": "SFPC #002",
+    "memo": "灰x10 新人在宅学習用",
+    "owner_user_id": "1623021",
+    "start_epoch_second": 1590968400,
+    "duration_second": 2809200,
+    "mode": null,
+    "is_public": true,
+    "penalty_second": 0
+  },
+  "problems": [
+    {
+      "id": "abc140_a",
+      "point": null,
+      "order": 0
+    },
+    {
+      "id": "abc132_b",
+      "point": null,
+      "order": 1
+    },
+    {
+      "id": "abc062_a",
+      "point": null,
+      "order": 2
+    },
+    {
+      "id": "abc084_b",
+      "point": null,
+      "order": 3
+    },
+    {
+      "id": "abc140_c",
+      "point": null,
+      "order": 4
+    },
+    {
+      "id": "abc061_b",
+      "point": null,
+      "order": 5
+    },
+    {
+      "id": "abc053_b",
+      "point": null,
+      "order": 6
+    },
+    {
+      "id": "abc097_b",
+      "point": null,
+      "order": 7
+    },
+    {
+      "id": "sumitb2019_c",
+      "point": null,
+      "order": 8
+    },
+    {
+      "id": "abc169_b",
+      "point": null,
+      "order": 9
+    }
+  ],
+  "participants": [
+    "Jonr",
+    "KanaeTsukimitsu",
+    "NakatsukaMomoka",
+    "Otkramune",
+    "RinkaSasagawa",
+    "ShuHONDA",
+    "ZatoZatoYuki",
+    "deltazarashi",
+    "giva",
+    "hosonuma",
+    "hyuu",
+    "ibyoneyama",
+    "loveflower",
+    "namba1997",
+    "okakita",
+    "takanoyuto",
+    "tamura2004",
+    "yamamichi",
+    "yanai",
+    "yuichiyoshida",
+    "yukakawamoto"
+  ]
+}

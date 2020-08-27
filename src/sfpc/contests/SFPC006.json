@@ -1,0 +1,85 @@
+{
+  "info": {
+    "id": "c4acae5b-d0c7-4544-9fd8-12d6762c6b73",
+    "title": "SFPC #006",
+    "memo": "灰x10 新人在宅学習用",
+    "owner_user_id": "1623021",
+    "start_epoch_second": 1591876500,
+    "duration_second": 6480000,
+    "mode": null,
+    "is_public": true,
+    "penalty_second": 0
+  },
+  "problems": [
+    {
+      "id": "arc003_1",
+      "point": null,
+      "order": 0
+    },
+    {
+      "id": "abc168_c",
+      "point": null,
+      "order": 1
+    },
+    {
+      "id": "abc114_b",
+      "point": null,
+      "order": 2
+    },
+    {
+      "id": "abc139_c",
+      "point": null,
+      "order": 3
+    },
+    {
+      "id": "abc059_b",
+      "point": null,
+      "order": 4
+    },
+    {
+      "id": "abc093_b",
+      "point": null,
+      "order": 5
+    },
+    {
+      "id": "abc104_b",
+      "point": null,
+      "order": 6
+    },
+    {
+      "id": "abc018_2",
+      "point": null,
+      "order": 7
+    },
+    {
+      "id": "abc103_c",
+      "point": null,
+      "order": 8
+    },
+    {
+      "id": "keyence2019_b",
+      "point": null,
+      "order": 9
+    }
+  ],
+  "participants": [
+    "KanaeTsukimitsu",
+    "NakatsukaMomoka",
+    "RinkaSasagawa",
+    "ShuHONDA",
+    "ZatoZatoYuki",
+    "allagenovese",
+    "deltazarashi",
+    "hosonuma",
+    "ibyoneyama",
+    "namba1997",
+    "okakita",
+    "ryo0721",
+    "takanoyuto",
+    "tamura2004",
+    "yamamichi",
+    "yanai",
+    "yuichiyoshida",
+    "yukakawamoto"
+  ]
+}
