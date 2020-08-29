@@ -1,44 +1,46 @@
 class Problem
   attr_accessor *(?a..?z).to_a.map(&:to_sym)
   def initialize
-    @n = gets.to_s.to_i
+    @n,@c = gets.split.map(&:to_i)
+    @d = Array.new(c){ gets.split.map(&:to_i) }
+    @a = Array.new(n){ gets.split.map(&:to_i).map{_1-1} }
   end
 
-  def dfs(init)
-    que = [*init]
-    while que.size > 0
-      v = que.pop
-      yield v,que
-    end
-  end
-
-  def set_nv(v,m,que)
-    1.upto(m) do |i|
-      que << v + [i]
+  def init
+    @dp = Array.new(3){ Array.new(c,0) }
+    c.times do |i|
+      n.times do |y|
+        n.times do |x|
+          j = a[y][x]
+          @dp[(y+x)%3][i] += d[j][i]
+        end
+      end
     end
   end
 
   def solve
-    ans = []
-    init = (1..n).map{ [_1+1] }
-
-    dfs(init) do |v,que|
-      x = v.sum
-      m = [n-x,v.last].min
-      if x == n
-        ans << v 
-      else
-        set_nv(v,m,que) 
+    init
+    ans = 10**15
+    c.times do |i|
+      c.times do |j|
+        next if i == j
+        c.times do |k|
+          next if i == k
+          next if j == k
+          v = @dp[0][i] + @dp[1][j] + @dp[2][k]
+          ans = v if ans > v
+        end
       end
     end
-    ans    
+    ans
   end
 
   def show(ans)
-    puts ans.map{|v|v.join(" ")}.join("\n")
+    puts ans
   end
 end
 
 Problem.new.instance_eval do
   show(solve)
+  # pp self
 end
