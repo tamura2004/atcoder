@@ -31,7 +31,7 @@ class Sieve
   def [](i); d[i]; end
 
   def each_prime
-    (2...n).each do |i|
+    (2..n).each do |i|
       next unless d[i]
       yield i
     end
@@ -45,28 +45,12 @@ class Sieve
   end
 end
 
-class Problem
-  property :x, :s
+# N = 100
+# s = Sieve.new(N).solve
+# count = 10
+# s.reverse_each_prime do |p|
+#   pp p
+#   count -= 1
+#   exit if count.zero?
+# end
 
-  @x : Int32
-  @s : Sieve
-
-  def initialize
-    @x = gets.to_s.to_i
-    @s = Sieve.new(1_000_000).solve
-  end
-
-  def solve
-    x.upto(1_000_000) do |i|
-      return i if s[i]
-    end
-  end
-
-  def show(ans)
-    puts ans
-  end
-end
-
-Problem.new.try do |me|
-  me.show(me.solve)
-end

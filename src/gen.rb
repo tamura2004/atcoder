@@ -1,6 +1,6 @@
-N = 8000
+N = 2000000
 
 open("src/input.txt", "w") do |f|
-  f.puts "TF" * (N/2)
-  f.puts [rand(8000)-4000,rand(8000)-4000].join(" ")
+  f.puts N
+  f.puts Array.new(N){ rand(N) }.join(" ")
 end

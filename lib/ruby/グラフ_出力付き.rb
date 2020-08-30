@@ -16,6 +16,16 @@ class Graph
     g[v]
   end
 
+  def bfs(init)
+    que = [init]
+    while que.size > 0
+      v = que.shift
+      g[v].each do |nv|
+        yield v,nv,que
+      end
+    end
+  end
+
   def to_png
     gv = GraphViz.new(:G, type: :digraph)
     nodes = Array.new(n, nil)
