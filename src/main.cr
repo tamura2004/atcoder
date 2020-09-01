@@ -1,69 +1,56 @@
-class Sieve
-  EPS = 0.1
-  property :n,:d,:m
+MOD = 10**9+7
 
+class Problem
+  property :d,:s,:n,:dp
+
+  @d : Int32
+  @s : String
   @n : Int32
-  @d : Array(Bool)
-  @m : Int32
+  @dp : Array(Array(Array(Int64)))
 
-  def initialize(n)
-    @n = n
-    @d = Array.new(n+1,true)
-    @m = (Math.sqrt(n) + EPS).ceil.to_i
+  def initialize
+    @d = gets.to_s.to_i
+    @s = gets.to_s.chomp
+    @n = s.size
+    @dp = Array.new(n+1){ Array.new(d) { Array.new(2, 0_i64) } }
+    dp[0][0][0] = 1
   end
 
   def each
-    (2...m).each do |i|
-      next unless d[i]
-      (i*i).step(to: n, by: i) do |j|
-        yield j
+    1.upto(n) do |i|
+      num = s[i-1].to_i
+      0.upto(d-1) do |from|
+        0.upto(9) do |digit|
+          to = (from + digit) % d
+          yield dp[i-1][from],dp[i][to],num,digit
+        end
       end
     end
   end
 
-  def solve
-    each do |i|
-      d[i] = false
+  def init
+    each do |from,to,num,digit|
+      if digit < num
+        to[1] += from[1]
+        to[1] += from[0]
+      elsif digit == num
+        to[0] += from[0]
+        to[1] += from[1]
+      else
+        to[1] += from[1]
+      end
+      to[1] %= MOD
+      to[0] %= MOD
     end
-    self
   end
   
-  def [](i); d[i]; end
-
-  def each_prime
-    (2...n).each do |i|
-      next unless d[i]
-      yield i
-    end
-  end
-
-  def reverse_each_prime
-    n.downto(2) do |i|
-      next unless d[i]
-      yield i
-    end
-  end
-end
-
-class Problem
-  property :x, :s
-
-  @x : Int32
-  @s : Sieve
-
-  def initialize
-    @x = gets.to_s.to_i
-    @s = Sieve.new(1_000_000).solve
-  end
-
   def solve
-    x.upto(1_000_000) do |i|
-      return i if s[i]
-    end
+    init
+    dp[n][0][0] + dp[n][0][1]
   end
-
+  
   def show(ans)
-    puts ans
+    puts ans - 1
   end
 end
 
