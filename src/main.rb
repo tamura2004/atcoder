@@ -1,56 +1,45 @@
-MOD = 10**9+7
+require "benchmark/ips"
+require "numo/narray"
 
-class Problem
-  attr_accessor *(?a..?z).to_a.map(&:to_sym)
-  attr_accessor :equl, :less
-  def initialize
-    @d = gets.to_s.to_i
-    @s = gets.to_s.chomp
-    @n = s.size
-    # dp[決めた位置][Dの剰余] := 場合の数
-    @equl = Array.new(n+1){ Array.new(d,0) }
-    @less = Array.new(n+1){ Array.new(d,0) }
-    equl[0][0] = 1
-  end
+N = 100
+INF = 1<<60
 
-  def each
-    1.upto(n) do |i|
-      num = s[i-1].to_i
-      0.upto(d-1) do |mod|
-        0.upto(9) do |digit|
-          newmod = (mod + digit) % d
-          yield i, num, newmod, mod, digit
+Benchmark.ips do |x|
+  x.report("wf") do
+    g = Array.new(N){ Array.new(N, INF) }
+    N.times { |i| g[i][i] = 0 }
+    N.times do
+      (0..N).to_a.sample(3) do |x,y,z|
+        g[x][y] = z
+        g[y][x] = z
+      end
+    end
+    N.times do |k|
+      N.times do |i|
+        N.times do |j|
+          len = g[i][k] + g[k][j]
+          g[i][j] = len if len < g[i][j]
         end
       end
     end
   end
-
-  def init
-    each do |i,num,newmod,mod,digit|
-      if digit < num
-        less[i][newmod] += less[i-1][mod]
-        less[i][newmod] += equl[i-1][mod]
-      elsif digit == num
-        equl[i][newmod] += equl[i-1][mod]
-        less[i][newmod] += less[i-1][mod]
-      else
-        less[i][newmod] += less[i-1][mod]
+  x.report("numo") do
+    g = Numo::Int64.new(N,N).fill(INF)
+    N.times { |i| g[i,i] = 0 }
+    N.times do
+      (0..N).to_a.sample(3) do |x,y,z|
+        g[x,y] = z
+        g[y,x] = z
       end
-      less[i][newmod] %= MOD
-      equl[i][newmod] %= MOD
     end
-  end
-  
-  def solve
-    init
-    equl[n][0] + less[n][0]
-  end
-  
-  def show(ans)
-    puts ans - 1
-  end
-end
+    N.times do |k|
+      N.times do |i|
+        N.times do |j|
+          len = g[i,k] + g[k,j]
+          g[i,j] = len if len < g[i,j]
+        end
+      end
+    end
 
-Problem.new.instance_eval do
-  show(solve)
+  end
 end

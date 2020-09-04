@@ -1,21 +1,8 @@
 {
-  // Place your snippets for crystal here. Each snippet is defined under a snippet name and has a prefix, body and 
-  // description. The prefix is what is used to trigger the snippet and the body will be expanded and inserted. Possible variables are:
-  // $1, $2 for tab stops, $0 for the final cursor position, and ${1:label}, ${2:another} for placeholders. Placeholders with the 
-  // same ids are connected.
-  // Example:
-  // "Print to console": {
-  // 	"prefix": "log",
-  // 	"body": [
-  // 		"console.log('$1');",
-  // 		"$2"
-  // 	],
-  // 	"description": "Log output to console"
-  // }
   "get array of integer from stdin": {
     "prefix": "in",
     "body": [
-      "gets.to_s.split.map(&.to_i64)"
+      "gets.to_s.split.map { |v| v.to_i64 }"
     ]
   },
   "get integer from stdin": {
@@ -49,73 +36,72 @@
     ]
   },
   "type Int64": {
-    "prefix": "tl",
+    "prefix": "gl",
     "body" : [
-      "Int64"
+      "getter $0 : Int64"
     ]
   },
   "type Int32": {
-    "prefix": "ti",
+    "prefix": "gi",
     "body" : [
-      "Int32"
+      "getter $0 : Int32"
     ]
   },
   "type Int64Array": {
-    "prefix": "tvl",
+    "prefix": "gvl",
     "body" : [
-      "Array(Int64)"
+      "getter $0 : Array(Int64)"
     ]
   },
   "type Int32Array": {
-    "prefix": "tvi",
+    "prefix": "gvi",
     "body" : [
-      "Array(Int32)"
+      "getter $0 : Array(Int32)"
     ]
   },
   "type String": {
-    "prefix": "ts",
+    "prefix": "gs",
     "body" : [
-      "String"
+      "getter $0 : String"
     ]
   },
   "Yes No answer" : {
     "prefix": "yes",
     "body": [
-      " ? \"Yes\" : \"No\"",
+      " ? \"Yes\" : \"No\""
     ]
   },
   "YES NO answer" : {
     "prefix": "yes",
     "body": [
-      " ? \"YES\" : \"NO\"",
+      " ? \"YES\" : \"NO\""
     ]
   },
   "Class template": {
     "prefix": "class",
     "body": [
       "class Problem",
-      "  property :a, :b, :c, :d, :e, :f, :g, :h, :i, :j, :k, :l, :m, :n, :o, :p, :q, :r, :s, :t, :u, :v, :w, :x, :y, :z",
       "",
-      "  @n : Int32",
-      "  @a : Array(Int64)",
+      "  $0",
       "",
       "  def initialize",
-      "    @n = gets.to_s.to_i",
-      "    @a = gets.to_s.split.map(&.to_i64)",
       "  end",
       "",
       "  def solve",
-      "    a.sum",
       "  end",
       "",
       "  def show(ans)",
       "    puts ans",
       "  end",
+      "",
+      "  def instance_eval",
+      "    with self yield",
+      "  end",
       "end",
       "",
-      "Problem.new.try do |me|",
-      "  me.show(me.solve)",
-      "end"      
+      "Problem.new.instance_eval do",
+      "  show(solve)",
+      "end"
     ]
   }
 }
