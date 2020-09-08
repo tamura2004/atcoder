@@ -24,7 +24,7 @@ const langExp = {
 };
 
 const compileStrings = {
-  "cpp": "g++ src/main.cpp",
+  "cpp": "g++ src/main.cpp -std=c++14 -I /home/tamura/src/acl",
   // "crystal": "crystal build --release --no-debug -o dist/crystal.out src/main.cr",
   "java": "javac -d dist src/Main.java",
   "kotlin": "kotlinc src/main.kt -include-runtime -d dist/kotlin.jar -XXLanguage:+InlineClasses",
