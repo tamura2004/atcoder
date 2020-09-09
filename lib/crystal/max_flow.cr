@@ -4,28 +4,25 @@ class MaxFlow(T)
     property to : Int32
     property cap : T
     property rev : Int32
+    getter forward : Bool
 
-    def initialize(@from, @to, @cap, @rev); end
+    def initialize(@from, @to, @cap, @rev, @forward); end
   end
 
   getter n : Int32
   getter g : Array(Array(Edge(T)))
-  getter edges : Array(Edge(T))
   getter seen : Array(Bool)
 
   def initialize(@n)
     @g = Array.new(n) { [] of Edge(T) }
-    @edges = [] of Edge(T)
     @seen = Array.new(n, false)
   end
 
   def add_edge(from, to, cap)
-    forward = Edge(T).new(from, to, cap, g[to].size)
-    reverse = Edge(T).new(to, from, T.zero, g[from].size - 1)
-    g[from] << forward
-    g[to] << reverse
-    edges << forward
-    edges << reverse
+    raise "MaxFlow#add_edge: bad from #{from}" unless (0...n).includes? from
+    raise "MaxFlow#add_edge: bad to #{to}" unless (0...n).includes? to
+    g[from] << Edge(T).new(from, to, cap, g[to].size, true)
+    g[to] << Edge(T).new(to, from, T.zero, g[from].size - 1, false)
   end
 
   def dfs(v, t, f)
@@ -50,27 +47,5 @@ class MaxFlow(T)
       return flow if f == 0
       flow += f
     end
-  end
-
-  def min_cut(s)
-    seen = Array.new(n, false)
-    que = [s]
-    while que.size > 0
-      v = que.shift
-      seen[v] = true
-      g[v].each do |e|
-        next if e.cap.zero? || seen[e.to]
-        seen[e.to] = true
-        que << e.to
-      end
-    end
-    # seen
-    edges.select { |e|
-      seen[e.from] & !seen[e.to]
-    }.map { |e| {e.from, e.to} }
-  end
-
-  def instance_eval
-    with self yield
   end
 end
