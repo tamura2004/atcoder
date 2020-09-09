@@ -46,7 +46,7 @@ def to_complex(n, a)
   return b
 end
 
-# calculate fft convolution
+# Calculate fft convolution
 #
 # ```
 # a = [1,2,3].map(&.to_i64)
@@ -68,5 +68,3 @@ def convolution(a : Array(Int64), b : Array(Int64))
   ifft(f)
   f.map { |i| (i.real + 0.5).to_i64 }
 end
-
-

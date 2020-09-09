@@ -6,7 +6,8 @@ class MaxFlow(T)
     property rev : Int32
     getter forward : Bool
 
-    def initialize(@from, @to, @cap, @rev, @forward); end
+    def initialize(@from, @to, @cap, @rev, @forward)
+    end
   end
 
   getter n : Int32
