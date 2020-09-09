@@ -1,111 +1,167 @@
-# SegmentTree.cr by Koki Takahashi
-# Licensed under MIT License https://mit-license.org
+class MaxFlow(T)
+  class Edge(T)
+    property from : Int32
+    property to : Int32
+    property cap : T
+    property rev : Int32
+    getter forward : Bool
 
-class SegmentTree(T)
-  property values : Array(T)
-
-  def initialize(values : Array(T))
-    initialize(values) {|a, b| a > b ? a : b}
+    def initialize(@from, @to, @cap, @rev, @forward); end
   end
 
-  def initialize(values : Array(T), &block : T, T -> T)
-    @compare_proc = block
-    @values = values
-    @segments = Array(T | Nil).new(2 ** Math.log2(values.size).ceil.to_i, nil)
+  getter n : Int32
+  getter g : Array(Array(Edge(T)))
+  getter seen : Array(Bool)
 
-    # initialize segments
-    (@segments.size - 2).downto(0) do |i|
-      child1 = nil.as(T | Nil)
-      child2 = nil.as(T | Nil)
-      if i * 2 + 2 < @segments.size
-        child1 = @segments[i * 2 + 1]
-        child2 = @segments[i * 2 + 2]
-      else
-        if i * 2 + 2 - @segments.size < @values.size
-          child1 = @values[i * 2 + 2 - @segments.size]
-        end
-        if i * 2 + 3 - @segments.size < @values.size
-          child2 = @values[i * 2 + 3 - @segments.size]
-        end
-      end
-      if !child1.nil? && !child2.nil?
-        @segments[i] = @compare_proc.call(child1, child2)
-      elsif !child1.nil? && child2.nil?
-        @segments[i] = child1
-      end
+  def initialize(@n)
+    @g = Array.new(n) { [] of Edge(T) }
+    @seen = Array.new(n, false)
+  end
+
+  def add_edge(from, to, cap)
+    raise "MaxFlow#add_edge: bad from #{from}" unless (0...n).includes? from
+    raise "MaxFlow#add_edge: bad to #{to}" unless (0...n).includes? to
+    g[from] << Edge(T).new(from, to, cap, g[to].size, true)
+    g[to] << Edge(T).new(to, from, T.zero, g[from].size - 1, false)
+  end
+
+  def dfs(v, t, f)
+    return f if v == t
+    seen[v] = true
+    g[v].each do |e|
+      next if seen[e.to] || e.cap <= 0
+      d = dfs(e.to, t, [f, e.cap].min)
+      next if d <= 0
+      e.cap -= d
+      g[e.to][e.rev].cap += d
+      return d
+    end
+    return 0
+  end
+
+  def max_flow(s, t)
+    flow = 0
+    loop do
+      seen.fill(false)
+      f = dfs(s, t, T::MAX)
+      return flow if f == 0
+      flow += f
     end
   end
 
-  def []=(index : Int, value : T)
-    @values[index] = value
-
-    child = value
-    parent_index = (index + @segments.size - 2) // 2
-    while parent_index >= 0
-      i = parent_index
-      child1 = nil.as(T | Nil)
-      child2 = nil.as(T | Nil)
-      if i * 2 + 2 < @segments.size
-        child1 = @segments[i * 2 + 1]
-        child2 = @segments[i * 2 + 2]
-      else
-        if i * 2 + 2 - @segments.size < @values.size
-          child1 = @values[i * 2 + 2 - @segments.size]
-        end
-        if i * 2 + 3 - @segments.size < @values.size
-          child2 = @values[i * 2 + 3 - @segments.size]
-        end
-      end
-      if !child1.nil? && !child2.nil?
-        @segments[i] = @compare_proc.call(child1, child2)
-      elsif !child1.nil? && child2.nil?
-        @segments[i] = child1
-      end
-      parent_index = (parent_index - 1) // 2
-    end
-  end
-
-  def [](index : Int)
-    @values[index]
-  end
-
-  def [](range : Range(Int, Int))
-    a = range.begin
-    b = range.exclusive? ? range.end : range.end + 1
-    get_value(a, b, 0, 0...@segments.size).not_nil!
-  end
-
-  def get_value(a : Int, b : Int, segment_index : Int, range : Range(Int, Int))
-    if range.end <= a || b <= range.begin
-      return nil
-    end
-    if a <= range.begin && range.end <= b
-      if segment_index + 1 < @segments.size
-        return @segments[segment_index]
-      else
-        return @values[segment_index + 1 - @segments.size]
+  def min_cut(s)
+    seen = Array.new(n, false)
+    que = [s]
+    while que.size > 0
+      v = que.shift
+      seen[v] = true
+      g[v].each do |e|
+        next if e.cap.zero? || seen[e.to]
+        seen[e.to] = true
+        que << e.to
       end
     end
-    range_median = (range.begin + range.end) // 2
-    child1 = get_value(a, b, 2 * segment_index + 1, range.begin...range_median)
-    child2 = get_value(a, b, 2 * segment_index + 2, range_median...range.end)
-    if !child1.nil? && !child2.nil?
-      @compare_proc.call(child1, child2)
-    elsif !child1.nil? && child2.nil?
-      child1
-    elsif child1.nil? && !child2.nil?
-      child2
-    else
-      nil
-    end
+    seen
   end
 end
 
-s = SegmentTree(Int32).new(Array.new(33,&.itself)) { |a,b| a.gcd(b) }
-s[1] = 16
-s[2] = 12
-s[3] = 18
-s[4] = 24
+class Problem
+  getter n : Int32
+  getter m : Int32
+  getter s : Array(Array(Char))
+  getter g : MaxFlow(Int32)
+  
+  def initialize
+    @n, @m = gets.to_s.split.map { |v| v.to_i }
+    @s = Array.new(n) { gets.to_s.chomp.chars }
+    @g = MaxFlow(Int32).new(n*m + 2)
+  end
+  
+  def add_edge_from_origin
+    n.times do |y|
+      m.times do |x|
+        next if s[y][x] == '#'
+        if (x+y).even?
+          i = y * m + x + 1
+          g.add_edge(0, i, 1)
+        end
+      end
+    end
+  end
+  
+  def add_edge_to_sink
+    n.times do |y|
+      m.times do |x|
+        next if s[y][x] == '#'
+        if (x+y).odd?
+          i = y * m + x + 1
+          g.add_edge(i, n*m + 1, 1)
+        end
+      end
+    end
+  end
 
-pp s[2..3]
-pp s[3..3]
+  def add_edge_brtween_board
+    n.times do |sy|
+      m.times do |sx|
+        next if s[sy][sx] == '#'
+        [[sy,sx+1],[sy+1,sx]].each do |(ty,tx)|
+          next if ty == n || tx == m
+          next if s[ty][tx] == '#'
+          from = sy * m + sx + 1
+          to = ty * m + tx + 1
+          if (sx+sy).even?
+            g.add_edge(from, to, 1)
+          else
+            g.add_edge(to, from, 1)
+          end
+        end
+      end
+    end
+  end
+  
+  def solve
+    add_edge_from_origin
+    add_edge_to_sink
+    add_edge_brtween_board
+  end
+
+  def show(ans)
+    num = g.max_flow(0, n*m + 1)
+    edges = g.g.flatten.select do |e|
+      e.cap.zero? &&
+      e.forward &&
+      e.from != 0 &&
+      e.to !=  n * m + 1
+    end
+
+    edges.each do |e|
+      fy = (e.from - 1) // m
+      fx = (e.from - 1) % m
+      ty = (e.to - 1) // m
+      tx = (e.to - 1) % m
+      if fy == ty # horizontal
+        fx, tx = tx, fx if fx > tx
+        s[fy][fx] = '>'
+        s[ty][tx] = '<'
+      else # virtical
+        fy, ty = ty, fy if fy > ty
+        s[fy][fx] = 'v'
+        s[ty][tx] = '^'
+      end
+    end
+  
+    puts num
+    s.each do |row|
+      puts row.join
+    end
+  end
+
+  def instance_eval
+    with self yield
+  end
+end
+
+Problem.new.instance_eval do
+  show(solve)
+end
