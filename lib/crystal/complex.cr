@@ -13,26 +13,30 @@ struct Complex(T)
     Complex(T).new(real,-imag)
   end
 
-  def +(b : Complex(T))
+  def +(b : self)
     Complex(T).new(real + b.real, imag + b.imag)
   end
 
-  def -(b : Complex(T))
+  def -(b : self)
     Complex(T).new(real - b.real, imag - b.imag)
   end
-  
-  def *(b : Complex(T))
+
+  def *(b : self)
     Complex(T).new(
       real * b.real - imag * b.imag,
       real * b.imag + imag * b.real
     )
   end
 
-  def dot(b : Complex(T))
+  def dot(b : self)
     (conj * b).real
   end
 
-  def cross(b : Complex(T))
+  def cross(b : self)
     (conj * b).imag
+  end
+
+  def manhattan
+    real.abs + imag.abs
   end
 end
