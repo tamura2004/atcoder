@@ -1,14 +1,28 @@
-W = 20
-H = 20
-P = 20
+N = 4
+
+def ntoa(n,sign)
+  return [] if n.zero?
+  (1..n).map{|i|i*sign}
+end
 
 open("src/input.txt", "w") do |f|
-  f.puts [W,H,P].join(" ")
-  H.times do
-    f.puts Array.new(W){ rand 0..100 }.join(" ")
+  ans = []
+  N.times do |x|
+    N.times do |y|
+      N.times do |z|
+        2.times do |dk|
+          n = x+y+z
+          next if n == 0
+          k = n / 2 + dk
+          next if k == 0
+          a = (ntoa(x,1) + ntoa(y,-1) + ntoa(z,0)).sort
+          want = 10
+          ans << sprintf("{%d,%d,%s,%d},", n, k, a.inspect, want)
+        end
+      end
+    end
   end
-  P.times do
-    f.puts [rand(0...H),rand(0...W)].join(" ")
+  ans.sort.each do |a|
+    f.puts a
   end
-  f.puts "0 0 0"
 end

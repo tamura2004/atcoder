@@ -62,47 +62,16 @@ class SegmentTree(T)
   delegate call, to: f
 end
 
-class Problem
-  getter n : Int32
-  getter a : Array(Int32)
-  getter g : SegmentTree(Int32)
-  
-  def initialize
-    @n = gets.to_s.to_i
-    @a = gets.to_s.chars.map { |c| char2bit(c) }
-    @g = SegmentTree(Int32).new(@a) do |a,b|
-      a | b
-    end
-  end
+# require "../lib/crystal/test_helper"
 
-  def solve
-    q = gets.to_s.to_i
-    q.times do
-      ope, i, j = gets.to_s.chomp.split
-      case ope
-      when "1"
-        i = i.to_i - 1
-        g[i] = char2bit(j[0])
-      when "2"
-        i = i.to_i - 1
-        j = j.to_i - 1
-        puts g[i..j].not_nil!.popcount
-      end
-    end
-  end
+# testcase = [
+#   {[1, 2, 3, 4, 5, 6], 5, 6, 0, 5, 1},
+#   {[1, 2, 3, 4, 5, 6], 5, 6, 2, 5, 3},
+#   {[1, 2, 3, 4, 5, 6], 5, 2, 2, 5, 2},
+# ]
 
-  def show(ans)
-  end
-
-  def instance_eval
-    with self yield
-  end
-
-  private def char2bit(c)
-    1 << (c.ord - 'a'.ord)
-  end
-end
-
-Problem.new.instance_eval do
-  show(solve)
-end
+# testcase.each do |(v, i, x, a, b, want)|
+#   t = SegmentTree(Int32).new(v)
+#   t[i] = x
+#   assert t[a..b], want
+# end

@@ -101,7 +101,7 @@ def inv_gcd(a : Int, b : Int) : Int
   return m0
 end
 
-def butterfly_init_unit(g : Int, mod : Int) : Tuple(Int32, Array(Int64), Array(Int64))
+def butterfly_unit(g : Int, mod : Int) : Tuple(Int32, Array(Int64), Array(Int64))
   es = Array.new(30, 0_i64)
   ies = Array.new(30, 0_i64)
   cnt = bsf(mod - 1)
@@ -118,8 +118,8 @@ def butterfly_init_unit(g : Int, mod : Int) : Tuple(Int32, Array(Int64), Array(I
   return ({cnt, es, ies})
 end
 
-def butterfly_init(a : Array(Int64), g : Int, mod : Int) : Array(Int64)
-  cnt, es, ies = butterfly_init_unit(g, mod)
+def butterfly_init(g : Int, mod : Int) : Array(Int64)
+  cnt, es, ies = butterfly_unit(g, mod)
   se = Array.new(30, 0_i64)
   now = 1_i64
   (cnt - 1).times do |i|
@@ -131,12 +131,12 @@ def butterfly_init(a : Array(Int64), g : Int, mod : Int) : Array(Int64)
   return se
 end
 
-def butterfly(a : Array(Int64), mod : Int)
+def butterfly(a : Array(Int64), mod : Int) : Nil
   g = primitive_root(mod)
   n = a.size
   h = ceil_pow2(n)
-  se = butterfly_init(a, g, mod)
-
+  se = butterfly_init(g, mod)
+  
   1.upto(h) do |ph|
     w = 1_i64 << (ph - 1)
     p = 1_i64 << (h - ph)
@@ -160,37 +160,26 @@ def butterfly(a : Array(Int64), mod : Int)
   end
 end
 
-def butterflyInv(a : Array(Int64), mod : Int)
+def butterfly_inv_init(g : Int, mod : Int) : Array(Int64)
+  sie = Array.new(30, 0_i64)
+  cnt2,es,ies = butterfly_unit(g,mod)
+
+  now = 1_i64
+  (cnt2 - 1).times do |i|
+    sie[i] = ies[i] * now
+    sie[i] %= mod
+    now *= es[i]
+    now %= mod
+  end
+  sie
+end
+
+def butterfly_inv(a : Array(Int64), mod : Int) : Nil
   g = primitive_root(mod)
   n = a.size
   h = ceil_pow2(n)
   first = true
-  sie = Array.new(30, 0_i64)
-  if first
-    first = false
-    es = Array.new(30, 0_i64)
-    ies = Array.new(30, 0_i64)
-
-    cnt2 = bsf(mod - 1)
-    e = pow_mod(g, (mod - 1) >> cnt2, mod)
-    ie = inv_gcd(e, mod)
-    cnt2.downto(2) do |i|
-      es[i - 2] = e
-      ies[i - 2] = ie
-      e *= e
-      e %= mod
-      ie *= ie
-      ie %= mod
-    end
-
-    now = 1_i64
-    (cnt2 - 1).times do |i|
-      sie[i] = ies[i] * now
-      sie[i] %= mod
-      now *= es[i]
-      now %= mod
-    end
-  end
+  sie = butterfly_inv_init(g, mod)
 
   h.downto(1) do |ph|
     w = 1_i64 << (ph - 1)
@@ -230,7 +219,7 @@ def convolution(p : Array(Int64), q : Array(Int64), mod : Int) : Array(Int64)
   m = q.size
 
   return [] of Int64 if n == 0 || m == 0
-  # return convolution_mini(p,q,mod) if n <= 60 || m <= 60
+  return convolution_mini(p,q,mod) if n <= 60 || m <= 60
 
   z = 1_i64 << ceil_pow2(n + m - 1)
   a = Array.new(z) { |i| i < n ? p[i] : 0_i64 }
@@ -244,7 +233,7 @@ def convolution(p : Array(Int64), q : Array(Int64), mod : Int) : Array(Int64)
     a[i] %= mod
   end
 
-  butterflyInv(a, mod)
+  butterfly_inv(a, mod)
 
   a = a[0, n + m - 1]
   iz = inv_gcd(z, mod)
@@ -255,11 +244,11 @@ def convolution(p : Array(Int64), q : Array(Int64), mod : Int) : Array(Int64)
   return a
 end
 
-# MOD = 998244353
-# n, m = gets.to_s.split.map { |v| v.to_i }
-# a = gets.to_s.split.map { |v| v.to_i64 }
-# b = gets.to_s.split.map { |v| v.to_i64 }
-# puts convolution(a, b, MOD).join(" ")
+MOD = 998244353
+n, m = gets.to_s.split.map { |v| v.to_i }
+a = gets.to_s.split.map { |v| v.to_i64 }
+b = gets.to_s.split.map { |v| v.to_i64 }
+puts convolution(a, b, MOD).join(" ")
 
 # include Random::Secure
 # N = 100

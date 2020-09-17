@@ -18,7 +18,3 @@
 guard "process", name: "Spec", command: "crystal spec src/main_spec.cr" do
   watch %r[src/main_spec.cr|lib/crystal/ntt_convolution.cr]
 end
-
-guard "process", name: "Run", command: "cat src/input.txt | crystal run src/main.cr" do
-  watch %r"src/(main.cr|input.txt)"
-end
