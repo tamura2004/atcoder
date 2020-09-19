@@ -36,7 +36,7 @@ const executeStrings = {
   "cpp": "cat src/input.txt | ./a.out",
   "julia": "cat src/input.txt | julia src/main.jl",
   // "crystal": "cat src/input.txt | dist/crystal.out",
-  "crystal": "cat src/input.txt | crystal run src/main.cr",
+  "crystal": "cat src/input.txt | DEBUG=1 crystal run src/main.cr",
   // "crystal": "crystal spec src/main_spec.cr",
   "python3": "cat src/input.txt | python3 src/main.py",
   "pypy3": "cat src/input.txt | pypy3 src/main.pypy",

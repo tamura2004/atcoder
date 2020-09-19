@@ -1,14 +1,15 @@
 require "colorize"
 
-macro assert(got, want)
-  _assert({{got}}, {{want}}, label: "{{got}}")
-end
+# macro assert(got, &block)
+#   _assert({{got}}, {{want}}, &block)
+# end
 
-def _assert(got, want, label = "")
+def assert(got, want)
   unless got == want
-    puts "bad: #{label} got = #{got}, want = #{want}".colorize(:red)
+    puts "bad: got = #{got}, want = #{want}".colorize(:red)
+    yield
   else
-    puts "good: #{label} got = #{got}, want = #{want}".colorize(:green)
+    puts "good: got = #{got}, want = #{want}".colorize(:green)
   end
 end
 
@@ -16,7 +17,6 @@ end
 # include Random::Secure
 # 100.times do
 #   n = rand(1..10)
-#   k = rand(1..10)
 #   a = Array.new(n) { rand(1..10) }
 #   obj = Problem.new(n, k, a)
 #   assert obj.solve, obj.solve2
