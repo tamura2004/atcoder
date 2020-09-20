@@ -1,42 +1,46 @@
 require "colorize"
+require "./test_tree"
 
-# macro assert(got, &block)
-#   _assert({{got}}, {{want}}, &block)
-# end
+module Test
+  def assert(got, want)
+    color = got == want ? :green : :red
+    color.tap do |c|
+      puts "got = #{got}, want = #{want}".colorize(c)
+    end
+  end
 
-def assert(got, want)
-  unless got == want
-    puts "bad: got = #{got}, want = #{want}".colorize(:red)
-    yield
-  else
-    puts "good: got = #{got}, want = #{want}".colorize(:green)
+  def assert(obj, got, want)
+    if assert(got, want) == :red
+      puts ("bad:" + obj.pretty_inspect + "\n----").colorize(:red)
+    end
+  end
+
+  def assert(got, want, &block)
+    assert(yield, got, want) == :red
   end
 end
 
 # require "../lib/crystal/test_helper"
 # include Random::Secure
-# 100.times do
-#   n = rand(1..10)
-#   a = Array.new(n) { rand(1..10) }
-#   obj = Problem.new(n, k, a)
-#   assert obj.solve, obj.solve2
-#   if obj.solve != obj.solve2
-#     pp! n
-#     pp! k
-#     pp! a
+
+# 10.times do
+#   n = rand(10)
+#   m = 1000_i64
+#   a = Array.new(n) { rand(m) + 1 }
+#   obj = Problem.new(n, a)
+#   assert obj.solve, obj.solve2 do
+#     {n, a}
 #   end
 # end
 
 # testcase = [
-#   {6, 10, [1, 1, 1, 1, 1, 1], 21},
-#   {6, 10, [2, 2, 2, 2, 2, 2], 0},
-#   {6, 9, [10, 10, 10, 10, 10, 10], 21},
-#   {6, 1, [10, 10, 10, 10, 10, 10], 0},
-#   {3, 2, [4, 2, 1], 1},
+#   {4, [2, 3, 4, 5], 14},
+#   {5, [1, 2, 3, 4, 5], 15},
 # ]
 
-# testcase.each do |(n, m, a, want)|
-#   obj = Problem.new(n, m, a)
-#   assert obj.solve, want
-#   assert obj.solve2, want
+# testcase.each do |(n, a, want)|
+#   obj = Problem.new(n, a.map &.to_i64)
+#   assert obj.solve, obj.solve2 do
+#     {n, a}
+#   end
 # end
