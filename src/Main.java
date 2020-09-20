@@ -44,18 +44,18 @@ public class Main extends Reader {
     main.show(main.solve());
   }
 
+  int n;
   int a[];
-  int b[];
 
   public Main() {
-    a = vi(7);
-    b = vi(7);
+    n = ini();
+    a = vi(n);
   }
   
   int solve() {
     int ans = 0;
-    for (int i = 0; i < 7; i++) {
-      ans += Math.max(a[i], b[i]);
+    for (int i = 0; i < n; i++) {
+      ans += a[i];
     }
     return ans;
   }
