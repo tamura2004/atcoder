@@ -1,6 +1,7 @@
 require "listen"
 require "open3"
 require "time"
+require "colorize"
 
 LANG_EXT = {
   ".rb" => "ruby",
@@ -55,16 +56,19 @@ listener = Listen.to("src") do |params|
     src = path.to_s
   end
   puts "lang type is #{lang}.\n\n"
+  puts "src is #{src}.\n\n"
 
   if compile_str = COMPILE[lang]
     puts `#{compile_str}`
   end
 
   exec_str = EXECUTE[lang] % src
+  puts "exec str is #{exec_str}"
   input = open("src/input.txt")
   stime = Time.now
+
   Open3.popen3(exec_str) do |i,o,e,w|
-    i.write input.read
+    i.write(input.read)
     i.close
     puts "=" * 50
     puts "=== stdout ==="
@@ -81,12 +85,35 @@ listener = Listen.to("src") do |params|
     printf("%.2fms", (Time.now - stime) * 1000)
     puts
   end
-  # Dir.chdir "lib/crystal/spec" do
-  # end
   # puts `DEBUG=1 crystal run #{params[0]}`
+end
+
+lib_listener = Listen.to("lib") do |params|
+  path = Pathname(params[0])
+  puts "change #{path.basename} detected.\n\n"
+  
+  return if path.extname != ".cr"
+
+  if path.basename.to_s =~ /spec/
+    src = path.relative_path_from(Pathname.pwd)
+  else
+    src = Pathname("lib/crystal/spec/#{path.basename(".cr")}_spec.cr")
+  end
+  
+  puts "crystal spec #{src}"
+  Open3.popen3("crystal spec #{src}") do |i,o,e,w|
+    i.close
+    msg = o.read
+    if msg =~ /0 failures, 0 errors/
+      puts msg.green
+    else
+      puts msg.red
+    end
+  end
 end
 
 puts "=" * 50
 puts "watching, ready for change\n\n"
 listener.start
+lib_listener.start
 sleep
