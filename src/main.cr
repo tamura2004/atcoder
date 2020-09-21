@@ -1,40 +1,41 @@
-require "colorize"
+class Grid
+  getter h : Int32
+  getter w : Int32
+  getter s : Array(String)
 
-macro define_mod(*nums)
-  {% for num in nums %}
-    module M{{num}}
-      MOD = {{num}}_i64
+  def initialize(@h, @w, @s)
+  end
+
+  private def inside(y, x)
+    0 <= y && y < h && 0 <= x && x < w
+  end
+
+  def each_adjust(y, x)
+    [-1, 0, 1].product([-1, 0, 1]) do |dy, dx|
+      next if dy.zero? && dx.zero?
+      yield y + dy, x + dx if inside(y + dy, x + dx)
     end
-  {% end %}
-end
-
-define_mod 2, 3, 5, 7, 11, 17, 1_000_000_007
-
-module Mod
-  MOD = 10_i64**9+7
-end
-
-struct ModInt(T)
-  getter v : Int64
-  forward_missing_to v
-
-  def initialize(@v = 0_i64)
   end
 
-  def self.zero
-    new
-  end
-
-  def +(other : self)
-    (v + other.v) % T::MOD
+  def solve
+    ans = Array.new(h) { Array.new(w) { "#" } }
+    h.times do |y|
+      w.times do |x|
+        next if s[y][x] == '#'
+        cnt = 0
+        each_adjust(y, x) do |ny, nx|
+          cnt += 1 if s[ny][nx] == '#'
+        end
+        ans[y][x] = cnt.to_s
+      end
+    end
+    ans
   end
 end
 
-x = ModInt(Mod).new(1_000_000_000_i64)
-y = ModInt(Mod).new(1_000_000_000_i64)
-
-def warn(str)
-  puts str.colorize(:red)
+h, w = gets.to_s.split.map { |v| v.to_i }
+s = Array.new(h) { gets.to_s.chomp }
+ans = Grid.new(h, w, s).solve
+ans.each do |line|
+  puts line.join
 end
-
-warn x + y

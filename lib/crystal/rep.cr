@@ -1,4 +1,4 @@
-macro rep(i, n, &block)
+macro rep!(i, n, &block)
   {{i}} = 0
   while {{i}} < {{n}}
     {{block.body}}
@@ -6,7 +6,7 @@ macro rep(i, n, &block)
   end
 end
 
-macro for(init, cond, inc, &block)
+macro for!(init, cond, inc, &block)
   {{init}}
   while {{cond}}
     {{block.body}}

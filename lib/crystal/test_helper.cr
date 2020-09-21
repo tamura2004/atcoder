@@ -1,23 +1,64 @@
 require "colorize"
-require "./test_tree"
 
-module Test
-  def assert(got, want)
-    color = got == want ? :green : :red
-    color.tap do |c|
-      puts "got = #{got}, want = #{want}".colorize(c)
+# require "./test_tree"
+
+macro assert!(exp, want, &block)
+  begin
+    assert {{exp}}, {{want}} do
+      {{block.body}}
     end
-  end
-
-  def assert(obj, got, want)
-    if assert(got, want) == :red
-      puts ("bad:" + obj.pretty_inspect + "\n----").colorize(:red)
+  rescue e
+    error e.message.not_nil!
+    trace = e.backtrace.select do |s|
+      s =~ /src\/main.cr/
     end
+    error trace.join("\n")
+    newline
+    {{block.body}}
+    exit
   end
+end
 
-  def assert(got, want, &block)
-    assert(yield, got, want) == :red
+def assert(got, want, &block)
+  color = got == want ? :green : :red
+  color.tap do |c|
+    puts "got = #{got}, want = #{want}".colorize(c)
+    yield if c == :red
   end
+end
+
+macro error!(obj)
+  unless obj.nil?
+    error("{{obj}} = " + {{obj}}.pretty_inspect)
+  end
+end
+
+macro warning!(obj)
+  unless obj.nil?
+    warning("{{obj}} = " + {{obj}}.pretty_inspect)
+  end
+end
+
+macro success!(obj)
+  unless obj.nil?
+    success("{{obj}} = " + {{obj}}.pretty_inspect)
+  end
+end
+
+def error(msg : String)
+  STDERR.puts msg.colorize(:red)
+end
+
+def warning(msg : String)
+  STDERR.puts msg.colorize(:yellow)
+end
+
+def success(msg : String)
+  STDERR.puts msg.colorize(:green)
+end
+
+def newline
+  STDERR.puts
 end
 
 # require "../lib/crystal/test_helper"
@@ -27,7 +68,7 @@ end
 #   n = rand(10)
 #   m = 1000_i64
 #   a = Array.new(n) { rand(m) + 1 }
-#   obj = Problem.new(n, a)
+#   msg = Problem.new(n, a)
 #   assert obj.solve, obj.solve2 do
 #     {n, a}
 #   end

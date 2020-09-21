@@ -1,21 +1,48 @@
+# 桁DPの練習
+#
+# 問題
+# 2780 から 4019の間で、桁の和が29であるものの個数を求めよ
+
 class Problem
-  attr_accessor *(?a..?z).to_a.map(&:to_sym)
+  attr_accessor :lo, :hi, :target
   def initialize
-    @n = gets.to_s.to_i
-    @a = Array.new(n){ gets.to_s.split.map { |v| v.to_i } }
+    @lo = 2
+    @hi = 12
+    @target = 2
+  end
+
+  # 桁dp
+  def query(num) # Array(Int)
+    num = num.digits.reverse
+    n = num.size
+    edge = Array.new(n+1) { Array.new(@target+1, 0) }
+    less = Array.new(n+1) { Array.new(@target+1, 0) }
+    edge[0][0] = 1
+    n.times do |i|
+      0.upto(@target) do |sum|
+        10.times do |d|
+          next if sum < d
+          less[i+1][sum] += less[i][sum - d]
+          if d == num[i]
+            edge[i+1][sum] += edge[i][sum - d]
+          elsif d < num[i]
+            less[i+1][sum] += edge[i][sum - d]
+          end
+        end
+      end
+    end
+    edge[n][target] + less[n][target]
   end
 
   def solve
-    cnt = 0
-    n.times do |i|
-      if a[i][0] == a[i][1]
-        cnt += 1 
-      else
-        cnt = 0
-      end
-      return "Yes" if cnt >= 3
+    query(hi) - query(lo-1)
+  end
+
+  # 全探索
+  def solve2
+    (lo..hi).each.count do |i|
+      i.digits.sum == target
     end
-    "No"
   end
 
   def show(ans)
@@ -25,4 +52,5 @@ end
 
 Problem.new.instance_eval do
   show(solve)
+  show(solve2)
 end

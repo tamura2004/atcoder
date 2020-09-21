@@ -32,11 +32,15 @@ class FenwickTree(T)
   
   # 要素iに加算
   def add(i : Int, x : T)
-    raise "FenewickTree#add: index #{i} must not be zero or negative" if i.sign != 1
+    raise ArgumentError.new("FenewickTree#add: index #{i} must not be zero or negative") if i.sign != 1
     while i <= n
       data[i] += x
       i += ffs(i)
     end
+  end
+
+  def []=(i : Int, x : T)
+    add(i, x)
   end
   
   # 要素1からiまでの累積和を取得
@@ -47,6 +51,10 @@ class FenwickTree(T)
       i -= ffs(i)
     end
     result
+  end
+
+  def [](i : Int)
+    sum(i)
   end
 
   # 2進数で1が出現する最下位ビット

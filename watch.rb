@@ -44,76 +44,115 @@ EXECUTE = {
   "csharp" => "mono dist/csharp.exe",
 }
 
-lang = "ruby"
-src = "src/main.rb"
+class Task
+  attr_accessor :lang, :src, :input, :path
+  attr_accessor :exec_str, :compile_str
 
-listener = Listen.to("src") do |params|
-  path = Pathname.new(params[0])
-  puts "change #{path.basename} detected.\n\n"
-
-  if path.extname != ".txt"
-    lang = LANG_EXT[path.extname.to_s]
-    src = path.to_s
-  end
-  puts "lang type is #{lang}.\n\n"
-  puts "src is #{src}.\n\n"
-
-  if compile_str = COMPILE[lang]
-    puts `#{compile_str}`
+  def initialize
+    @lang = "ruby"
+    @src = "src/main.rb"
+    @input = "src/input.txt"
+    @path = nil
+    @exec_str = nil
   end
 
-  exec_str = EXECUTE[lang] % src
-  puts "exec str is #{exec_str}"
-  input = open("src/input.txt")
-  stime = Time.now
+  def parse_params(params)
+    return unless params[0]
+    @path = Pathname(params[0])
+    puts "Detect to change #{path.basename}.\n\n"
+  end
 
-  Open3.popen3(exec_str) do |i,o,e,w|
-    i.write(input.read)
-    i.close
+  def check_lang_and_src
+    if path && path.extname != ".txt"
+      @lang = LANG_EXT[path.extname.to_s]
+      @src = path.to_s
+    end
+    info "lang type is #{lang}.\n\n"
+    info "src is #{src}.\n\n"
+  end
+
+  def check_compile
+    if cmd = COMPILE[lang]
+      puts `cmd`
+    end
+  end
+
+  def check_exec
+    @exec_str = EXECUTE[lang] % src
+    info "Task Execute by #{exec_str}."
+  end
+
+  private def error(msg)
+    STDERR.puts msg.colorize(:red)
+  end
+
+  private def success(msg)
+    STDERR.puts msg.colorize(:green)
+  end
+
+  private def info(msg)
+    STDERR.puts msg.colorize(:blue)
+  end
+
+  private def warning(msg)
+    STDERR.puts msg.colorize(:yellow)
+  end
+
+  def run
     puts "=" * 50
-    puts "=== stdout ==="
-    o.each do |line|
-      puts line
+    puts "watching, ready for change\n\n"
+
+    src_listener = Listen.to("src") do |params|
+      parse_params(params)
+      check_lang_and_src
+      check_compile
+      check_exec
+
+      input = open("src/input.txt")
+      stime = Time.now
+      o,e,s = Open3.capture3(exec_str, stdin_data: input)
+
+      puts "=" * 50
+      puts "=== stdout ==="
+      puts o
+      puts
+      puts "=== stderr ==="
+      puts e
+      puts
+      puts "=== time ==="
+      printf("%.2fms", (Time.now - stime) * 1000)
+      puts
     end
-    puts
-    puts "=== stderr ==="
-    e.each do |line|
-      puts line
+
+    lib_listener = Listen.to("lib") do |params|
+      parse_params(params)
+      next if path.extname != ".cr"
+
+      if path.basename.to_s =~ /spec/
+        src = path.relative_path_from(Pathname.pwd)
+      else
+        src = Pathname("lib/crystal/spec/#{path.basename(".cr")}_spec.cr")
+      end
+
+      if !src.exist?
+        error "No spec exists, #{src}."
+        next
+      end
+      
+      cmd = "crystal spec #{src}"
+      o,e,s = Open3.capture3(cmd)
+      if o =~ /0 failures, 0 errors/
+        success o
+      else
+        error o
+      end
+      warning e
     end
-    puts
-    puts "=== time ==="
-    printf("%.2fms", (Time.now - stime) * 1000)
-    puts
+
+    src_listener.start
+    lib_listener.start
+    sleep
   end
-  # puts `DEBUG=1 crystal run #{params[0]}`
 end
 
-lib_listener = Listen.to("lib") do |params|
-  path = Pathname(params[0])
-  puts "change #{path.basename} detected.\n\n"
-  
-  return if path.extname != ".cr"
-
-  if path.basename.to_s =~ /spec/
-    src = path.relative_path_from(Pathname.pwd)
-  else
-    src = Pathname("lib/crystal/spec/#{path.basename(".cr")}_spec.cr")
-  end
-  
-  puts "crystal spec #{src}"
-  Open3.popen3("crystal spec #{src}") do |i,o,e,w|
-    i.close
-    msg = o.read
-    if msg =~ /0 failures, 0 errors/
-      puts msg.green
-    else
-      puts msg.red
-    end
-  end
-end
-
-puts "=" * 50
-puts "watching, ready for change\n\n"
-listener.start
-lib_listener.start
-sleep
+Task.new.run
