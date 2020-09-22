@@ -1,11 +1,8 @@
-def inc(x : Pointer(Int32))
-  x.value = 20
+def ext_gcd(a, b)
+  debug! [a,b]
+  return b, 0, 1 if a.zero?
+  g, y, x = ext_gcd(b % a, a)
+  return g, x - (b//a)*y, y
 end
 
-x = 10
-inc(pointerof(x))
-#debug! x
-
-require "spec"
-
-it { 1.should eq 4 }
+pp! ext_gcd(4181,6765)
