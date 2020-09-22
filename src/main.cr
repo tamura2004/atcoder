@@ -1,8 +1,10 @@
-def ext_gcd(a, b)
-  debug! [a,b]
-  return b, 0, 1 if a.zero?
-  g, y, x = ext_gcd(b % a, a)
-  return g, x - (b//a)*y, y
-end
+require "crystal/log_num"
 
-pp! ext_gcd(4181,6765)
+include Math
+
+ans = LogNum.c(10, 3) * (LogNum.from(5) ** 3) / (LogNum.from(6) ** 10)
+ans2 = log(10) + log(9) + log(8) - log(3) - log(2) + (log(5)*3) - (log(6)*10)
+pp! ans
+pp! ans2
+pp! ans.to_num
+pp! ans.class

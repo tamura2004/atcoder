@@ -4,7 +4,7 @@ require "colorize"
 
 macro assert!(exp, want, &block)
   begin
-    _assert {{exp}}, {{want}} do
+    _assert {{exp}}, {{want}}, "{{exp}}", "{{want}}" do
       {{block.body}}
     end
   rescue e
@@ -19,10 +19,10 @@ macro assert!(exp, want, &block)
   end
 end
 
-def _assert(got, want, &block)
+def _assert(got, want, gotlabel, wantlabel, &block)
   color = got == want ? :green : :red
   color.tap do |c|
-    puts "got = #{got}, want = #{want}".colorize(c)
+    puts "#{gotlabel} = #{got}, #{wantlabel} = #{want}".colorize(c)
     yield if c == :red
   end
 end
