@@ -4,7 +4,7 @@ require "colorize"
 
 macro assert!(exp, want, &block)
   begin
-    assert {{exp}}, {{want}} do
+    _assert {{exp}}, {{want}} do
       {{block.body}}
     end
   rescue e
@@ -19,7 +19,7 @@ macro assert!(exp, want, &block)
   end
 end
 
-def assert(got, want, &block)
+def _assert(got, want, &block)
   color = got == want ? :green : :red
   color.tap do |c|
     puts "got = #{got}, want = #{want}".colorize(c)

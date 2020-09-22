@@ -1,7 +1,6 @@
 "{% if env(\"DEBUG\") %}",
 "  require \"debug\"",
 "  require \"../lib/crystal/test_helper\"",
-"  include Random::Secure",
 "{% else %}",
 "  macro debug!(content)",
 "  end",

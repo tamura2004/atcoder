@@ -59,16 +59,27 @@ class Task
   def parse_params(params)
     return unless params[0]
     @path = Pathname(params[0])
-    puts "Detect to change #{path.basename}.\n\n"
+    puts "=" * 50
+    puts "#{path.basename} was changed.\n"
   end
 
   def check_lang_and_src
     if path && path.extname != ".txt"
       @lang = LANG_EXT[path.extname.to_s]
       @src = path.to_s
+      if path.extname == ".cr"
+        open("dist/tmp.cr","w") do |fh|
+          warning "Insert debug header to #{path.basename}."
+          fh.puts 'require "debug"'
+          fh.puts 'require "crystal/test_helper"'
+          fh.puts
+          fh.puts path.read.gsub(/#debug!/, "debug!")
+        end
+        @src = "dist/tmp.cr"
+      end
     end
-    info "lang type is #{lang}.\n\n"
-    info "src is #{src}.\n\n"
+    info "lang type is #{lang}."
+    info "src is #{src}."
   end
 
   def check_compile
@@ -138,7 +149,7 @@ class Task
         error "No spec exists, #{src}."
         next
       end
-      
+
       cmd = "crystal spec #{src}"
       o,e,s = Open3.capture3(cmd)
       if o =~ /0 failures, 0 errors/
