@@ -1,16 +1,40 @@
-require "crystal/log_num"
+# require "crystal/prime"
 
-# include Math
+# def div_num(counter)
+#   ans = 1
+#   counter.values.each do |v|
+#     ans *= v + 1
+#   end
+#   ans
+# end
 
-# ans = LogNum.c(10, 3) * (LogNum.from(5) ** 3) / (LogNum.from(6) ** 10)
-# ans2 = log(10) + log(9) + log(8) - log(3) - log(2) + (log(5)*3) - (log(6)*10)
-# pp! ans
-# pp! ans2
-# pp! ans.to_num
-# pp! ans.class
+# maxi = 0
+# 15000.times do |i|
+#   if i.odd?
+#     a = (i + 1) // 2
+#     b = i
+#   else
+#     a = i // 2
+#     b = i + 1
+#   end
 
-a = 10.00001
-b = 9.999999
+#   counter = Prime.division_conv(a,b)
+#   cnt = div_num(counter)
+#   if maxi < cnt
+#     maxi = cnt
+#     pp! i
+#     pp! a
+#     pp! b
+#     pp! a*b
+#     pp! cnt
+#     pp! counter
+#   end
+# end
 
-pp! a.round
-pp! b.round
+h = {} of Int32 => Int32
+
+pp! h.empty?
+pp! h.values.reduce(1){|acc,v|acc*(v+1)}
+h[1] = 2
+pp! h.empty?
+pp! h.values.reduce(1){|acc,v|acc*(v+1)}

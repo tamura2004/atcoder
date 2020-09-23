@@ -7,21 +7,25 @@ describe Int do
   it "f is factorial" do
     want = 5 * 4 * 3 * 2 * 1
     5.f.to_i.should eq want
+    0.f.to_i.should eq 1
   end
 
   it "p is permutation" do
     want = 5 * 4 * 3
     5.p(3).to_i.should eq want
+    5.p(0).to_i.should eq 1
   end
 
   it "c is combination" do
     want = 5 * 4 * 3 // 3 // 2 // 1
     5.c(3).to_i.should eq want
+    5.c(0).to_i.should eq 1
   end
-
+  
   it "r is repeated combination" do
     want = 7 * 6 * 5 // 3 // 2 // 1
     5.r(3).to_i.should eq want
+    5.r(0).to_i.should eq 1
   end
 
   it "log convert Int to LogNum" do

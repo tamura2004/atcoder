@@ -21,25 +21,12 @@ struct Int
 end
 
 record LogNum, v : Float64 do
-  MAX = 200_000
-
-  @@log = Array(LogNum).new(MAX)
-  @@ft = Array(LogNum).new(MAX)
-
   def self.from(n : Int)
-    @@log << new(Math.log(1)) if @@log.empty?
-    @@log.size.upto(n) do |i|
-      @@log << new(Math.log(i))
-    end
-    @@log[n]
+    new(Math.log(n))
   end
 
   def self.f(n : Int)
-    @@ft << LogNum.from(1) if @@ft.empty?
-    @@ft.size.upto(n) do |i|
-      @@ft << @@ft[-1] * i
-    end
-    @@ft[n]
+    new(Math.lgamma(n + 1))
   end
 
   def self.p(n : Int, k : Int)
@@ -84,6 +71,10 @@ record LogNum, v : Float64 do
 
   def **(n : Int)
     LogNum.new(v * n)
+  end
+
+  def <(other : self)
+    v < other.v
   end
 
   def to_f
