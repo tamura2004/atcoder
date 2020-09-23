@@ -1,40 +1,38 @@
-# require "crystal/prime"
+class IMOS
+  getter n : Int32
+  getter a : Array(Int64)
 
-# def div_num(counter)
-#   ans = 1
-#   counter.values.each do |v|
-#     ans *= v + 1
-#   end
-#   ans
-# end
+  def initialize(@n)
+    @a = Array.new(n, 0_i64)
+  end
 
-# maxi = 0
-# 15000.times do |i|
-#   if i.odd?
-#     a = (i + 1) // 2
-#     b = i
-#   else
-#     a = i // 2
-#     b = i + 1
-#   end
+  def add(lo, hi, v)
+    a[Math.max(lo, 0)] += v
+    a[hi + 1] -= v if hi + 1 < n
+  end
 
-#   counter = Prime.division_conv(a,b)
-#   cnt = div_num(counter)
-#   if maxi < cnt
-#     maxi = cnt
-#     pp! i
-#     pp! a
-#     pp! b
-#     pp! a*b
-#     pp! cnt
-#     pp! counter
-#   end
-# end
+  def to_a
+    (n - 1).times do |i|
+      a[i + 1] += a[i]
+    end
+    return a
+  end
+end
 
-h = {} of Int32 => Int32
+n, k = gets.to_s.split.map { |v| v.to_i }
+a = gets.to_s.split.map { |v| v.to_i64 }
 
-pp! h.empty?
-pp! h.values.reduce(1){|acc,v|acc*(v+1)}
-h[1] = 2
-pp! h.empty?
-pp! h.values.reduce(1){|acc,v|acc*(v+1)}
+k.times do
+  b = IMOS.new(n)
+  n.times do |i|
+    lo = i - a[i]
+    hi = i + a[i]
+    b.add(lo, hi, 1)
+  end
+  a = b.to_a
+  if a.all? { |v| v == n }
+    puts a.join(" ")
+    exit
+  end
+end
+puts a.join(" ")

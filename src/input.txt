@@ -1,12 +1,2 @@
-10
-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
-a
-aa
-aaa
-aaaa
-aaaaa
-aaaaaa
-aaaaaaa
-aaaaaaaa
-aaaaaaaaa
-aaaaaaaaaa
+5 1000000000
+1 0 0 1 0
