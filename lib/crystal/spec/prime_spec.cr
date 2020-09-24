@@ -43,7 +43,7 @@ describe Prime do
       Factor.new({2 => 3}),
       Factor.new({2 => 2, 3 => 1}),
     ]
-    Prime.prime_division(*param).should eq want 
+    Prime.prime_division(*param).should eq want
     Prime.division(*param).should eq want
   end
 

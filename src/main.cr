@@ -1,38 +1,28 @@
-class IMOS
-  getter n : Int32
-  getter a : Array(Int64)
+class Prime
+  extend Iterator(Int32)
 
-  def initialize(@n)
-    @a = Array.new(n, 0_i64)
-  end
+  @@ch = Channel(Int32).new
+  @@once = true
+  @@is_prime = [0,0,1,1,0,1,0,1,0,0,0,1]
 
-  def add(lo, hi, v)
-    a[Math.max(lo, 0)] += v
-    a[hi + 1] -= v if hi + 1 < n
-  end
-
-  def to_a
-    (n - 1).times do |i|
-      a[i + 1] += a[i]
+  def self.next
+    if @@once
+      @@once = false
+      spawn do
+        10.times do |i|
+          next if @@is_prime[i] == 0
+          @@ch.send(i)
+        end
+        @@ch.close
+      end
     end
-    return a
+
+    begin
+      @@ch.receive
+    rescue Channel::ClosedError
+      stop
+    end
   end
 end
 
-n, k = gets.to_s.split.map { |v| v.to_i }
-a = gets.to_s.split.map { |v| v.to_i64 }
-
-k.times do
-  b = IMOS.new(n)
-  n.times do |i|
-    lo = i - a[i]
-    hi = i + a[i]
-    b.add(lo, hi, 1)
-  end
-  a = b.to_a
-  if a.all? { |v| v == n }
-    puts a.join(" ")
-    exit
-  end
-end
-puts a.join(" ")
+pp! Prime.each.first(10).to_a
