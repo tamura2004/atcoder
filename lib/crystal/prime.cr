@@ -34,7 +34,9 @@ class Prime
 
   @@is_prime = Array(Bool).new(MAX + 1, true)
   @@min_div = Array(Int32).new(MAX + 1, &.itself)
-  @@pt = 0_i64
+  @@ch = Channel(Int64).new
+  @@once = true
+  # @@pt = 0_i64
 
   def self.sieve
     @@is_prime[0] = false
@@ -54,16 +56,29 @@ class Prime
     @@is_prime[n]
   end
 
-  def self.next(maxi = MAX)
-    @@pt += 1 if @@pt < MAX
-    until @@pt > MAX || prime?(@@pt)
-      @@pt += 1
+  def self.generate
+    (2..MAX).each do |i|
+      next unless prime?(i)
+      @@ch.send(i.to_i64)
     end
-    @@pt > MAX ? stop : @@pt
+    @@ch.close
+  end
+
+  def self.next
+    if @@once
+      @@once = false
+      spawn generate
+    end
+
+    begin
+      @@ch.receive
+    rescue Channel::ClosedError
+      stop
+    end
   end
 
   def self.rewind
-    @@pt = 0_i64
+    @@once = true
   end
 
   def self.prime_division(x : Int) : Factor

@@ -13,6 +13,7 @@ class Ro
     @cycle = 0
 
     a[0] = init
+    memo[init] = 0
     limit.times do |i|
       nv = a[i + 1] = block.call(a[i])
       if memo[nv] == -1
@@ -33,19 +34,3 @@ class Ro
     a[j]
   end
 end
-
-a = [1, 2, 3, 4, 5, 3]
-obj = Ro.new(0, 10) { |i| i && a[i] }
-
-assert!(obj.lo, 3) {}
-assert!(obj.hi, 6) {}
-assert!(obj.get(0), 0) {}
-assert!(obj.get(1), 1) {}
-assert!(obj.get(2), 2) {}
-assert!(obj.get(3), 3) {}
-assert!(obj.get(4), 4) {}
-assert!(obj.get(5), 5) {}
-assert!(obj.get(6), 3) {}
-assert!(obj.get(7), 4) {}
-assert!(obj.get(307), 4) {}
-assert!(obj.get(300000007), 4) {}

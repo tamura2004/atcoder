@@ -56,14 +56,8 @@ describe Prime do
 
   describe "Iterable" do
     it "first" do
-      Prime.rewind
-      Prime.each.first(3).to_a.should eq [2, 3, 5]
-    end
-
-    it "select" do
-      Prime.rewind
-      Prime.each.select { |v| v < 2_000_000 }.sum
-        .should eq 142913828922
+      # Prime.rewind
+      Prime.each.first(4).sum.should eq 17
     end
   end
 end

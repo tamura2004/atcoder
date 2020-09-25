@@ -10,7 +10,7 @@ macro assert!(exp, want, &block)
   rescue e
     error e.message.not_nil!
     trace = e.backtrace.select do |s|
-      s =~ /src\/main.cr/
+      s =~ /src\/main.cr|dist\/tmp.cr/
     end
     error trace.join("\n")
     newline
