@@ -33,4 +33,13 @@ class Ro
     j = (i - lo) % cycle + lo
     a[j]
   end
+
+  # https://atcoder.jp/contests/abc030/tasks/abc030_d
+  # for huge i (i.e. 10^100000)
+  # need hi <= i, if i < hi -> undefined
+  # mod = i % cycle
+  def at_mod(mod : Int)
+    offset = (mod - lo) % cycle
+    get(lo + offset)
+  end
 end

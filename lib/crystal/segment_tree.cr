@@ -3,11 +3,20 @@ class SegmentTree(T)
   getter f : T?, T? -> T?
   getter node : Array(T?)
 
-  def initialize(v)
+  def initialize(v : Array(T?))
     initialize(v) { |a, b| a < b ? a : b }
   end
 
-  def initialize(v, &block : T, T -> T)
+  def initialize(_n : Int32, &block : T, T -> T)
+    @f = ->(a : T?, b : T?) {
+      a && b ? block.call(a,b) : a ? a : b ? b : nil
+    }
+
+    @n = ceil_pow2(_n)
+    @node = Array(T?).new(2 * n - 1, nil)
+  end
+
+  def initialize(v : Array(T?), &block : T, T -> T)
     @f = ->(a : T?, b : T?) {
       a && b ? block.call(a,b) : a ? a : b ? b : nil
     }
@@ -37,7 +46,7 @@ class SegmentTree(T)
     update(i, x)
   end
 
-  def get(a : Int32, b : Int32, k = 0, lo = 0, hi = -1) : T?
+  def get(a : Int, b : Int, k = 0, lo = 0, hi = -1) : T?
     hi = n if hi < 0
     case
     when hi <= a || b <= lo then nil
@@ -49,10 +58,14 @@ class SegmentTree(T)
     end
   end
 
-  def [](r : Range(Int32, Int32))
+  def [](r : Range(Int, Int))
     a = r.begin
     b = r.end + (r.exclusive? ? 0 : 1)
     get(a, b)
+  end
+
+  def [](i : Int)
+    node[i + n - 1]
   end
 
   private def ceil_pow2(n)
@@ -61,17 +74,3 @@ class SegmentTree(T)
 
   delegate call, to: f
 end
-
-# require "../lib/crystal/test_helper"
-
-# testcase = [
-#   {[1, 2, 3, 4, 5, 6], 5, 6, 0, 5, 1},
-#   {[1, 2, 3, 4, 5, 6], 5, 6, 2, 5, 3},
-#   {[1, 2, 3, 4, 5, 6], 5, 2, 2, 5, 2},
-# ]
-
-# testcase.each do |(v, i, x, a, b, want)|
-#   t = SegmentTree(Int32).new(v)
-#   t[i] = x
-#   assert t[a..b], want
-# end

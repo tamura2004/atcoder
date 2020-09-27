@@ -243,29 +243,3 @@ def convolution(p : Array(Int64), q : Array(Int64), mod : Int) : Array(Int64)
   end
   return a
 end
-
-MOD = 998244353
-n, m = gets.to_s.split.map { |v| v.to_i }
-a = gets.to_s.split.map { |v| v.to_i64 }
-b = gets.to_s.split.map { |v| v.to_i64 }
-puts convolution(a, b, MOD).join(" ")
-
-# include Random::Secure
-# N = 100
-# 10.times do
-#   a = Array.new(N) { rand(0..MOD - 1).to_i64 }
-#   b = Array.new(N) { rand(0..MOD - 1).to_i64 }
-#   c = a.dup
-#   d = b.dup
-#   g = a.dup
-#   h = b.dup
-#   e = convolution(a, b, MOD)
-#   f = convolution_mini(c, d, MOD)
-#   if e != f
-#     pp! g
-#     pp! h
-#     pp! e
-#     pp! f
-#     raise "result mismatch"
-#   end
-# end

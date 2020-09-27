@@ -67,16 +67,16 @@ class Task
     if path && path.extname != ".txt"
       @lang = LANG_EXT[path.extname.to_s]
       @src = path.to_s
-      if path.extname == ".cr"
-        open("dist/tmp.cr","w") do |fh|
-          warning "Insert debug header to #{path.basename}."
-          fh.puts 'require "debug"'
-          fh.puts 'require "crystal/test_helper"'
-          fh.puts
-          fh.puts path.read.gsub(/#debug!/, "debug!")
-        end
-        @src = "dist/tmp.cr"
-      end
+      # if path.extname == ".cr"
+      #   open("dist/tmp.cr","w") do |fh|
+      #     warning "Insert debug header to #{path.basename}."
+      #     fh.puts 'require "debug"'
+      #     fh.puts 'require "crystal/test_helper"'
+      #     fh.puts
+      #     fh.puts path.read.gsub(/#debug!/, "debug!")
+      #   end
+      #   @src = "dist/tmp.cr"
+      # end
     end
     info "lang type is #{lang}."
     info "src is #{src}."
