@@ -1,17 +1,3 @@
-# 累積和の更新と取得を共にO(log N)で行うデータ構造
-#
-# ```
-# t = FenwickTree.new([1,2,3])
-# t.sum(0) # => 0
-# t.sum(1) # => 1
-# t.sum(2) # => 3
-# t.sum(3) # => 6
-# t.add(2, 4)
-# t.sum(0) # => 0
-# t.sum(1) # => 1
-# t.sum(2) # => 7
-# t.sum(3) # => 10
-# ```
 class FenwickTree(T)
   getter n : Int32
   getter data : Array(T)
@@ -35,7 +21,7 @@ class FenwickTree(T)
     raise ArgumentError.new("FenewickTree#add: index #{i} must not be zero or negative") if i.sign != 1
     while i <= n
       data[i] += x
-      i += ffs(i)
+      i += lsb(i)
     end
   end
 
@@ -48,7 +34,7 @@ class FenwickTree(T)
     result = T.zero
     while i > T.zero
       result += data[i]
-      i -= ffs(i)
+      i -= lsb(i)
     end
     result
   end
@@ -57,8 +43,23 @@ class FenwickTree(T)
     sum(i)
   end
 
+  # 二分探索で合計がx以上になる最小のiを求める
+  def bsearch(x : T)
+    return 0 if x <= 0
+    i = 0
+    w = 2 ** Math.log2(n).to_i
+    while w > 0
+      if i + w < n && data[i + w] < x
+        x -= data[i + w]
+        i += w
+      end
+      w //= 2
+    end
+    return i + 1
+  end
+
   # 2進数で1が出現する最下位ビット
-  def ffs(i)
+  def lsb(i)
     i & -i
   end
 end

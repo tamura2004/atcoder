@@ -2,6 +2,16 @@ require "spec"
 require "../fenwick_tree"
 
 describe FenwickTree do
+  it "usage: init empty array" do
+    bit = FenwickTree(Int64).new(10)
+    bit[1].should eq 0
+    bit[3].should eq 0
+    bit[5].should eq 0
+    bit[1] = 1
+    bit[3] = 2
+    bit[5].should eq 3
+  end
+
   it "usage: init by array" do
     bit = FenwickTree.new([1, 2, 4])
     bit[3].should eq 7
@@ -9,6 +19,17 @@ describe FenwickTree do
     bit[3].should eq 15
     bit[1] = -8
     bit[3].should eq 7
+  end
+
+  it "bsearch" do
+    bit = FenwickTree.new([1,2,2,2,2,2])
+    # 1 3 5 7 9 11
+    bit.bsearch(5).should eq 3
+    bit.bsearch(6).should eq 4
+    bit.bsearch(7).should eq 4
+    bit.bsearch(1).should eq 1
+    bit.bsearch(13).should eq 6
+    bit.bsearch(1300).should eq 6
   end
 
   it "index error" do

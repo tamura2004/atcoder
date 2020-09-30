@@ -67,16 +67,6 @@ class Task
     if path && path.extname != ".txt"
       @lang = LANG_EXT[path.extname.to_s]
       @src = path.to_s
-      # if path.extname == ".cr"
-      #   open("dist/tmp.cr","w") do |fh|
-      #     warning "Insert debug header to #{path.basename}."
-      #     fh.puts 'require "debug"'
-      #     fh.puts 'require "crystal/test_helper"'
-      #     fh.puts
-      #     fh.puts path.read.gsub(/#debug!/, "debug!")
-      #   end
-      #   @src = "dist/tmp.cr"
-      # end
     end
     info "lang type is #{lang}."
     info "src is #{src}."
@@ -93,20 +83,34 @@ class Task
     info "Task Execute by #{exec_str}."
   end
 
-  private def error(msg)
+  def error(msg)
     STDERR.puts msg.colorize(:red)
   end
 
-  private def success(msg)
+  def success(msg)
     STDERR.puts msg.colorize(:green)
   end
 
-  private def info(msg)
+  def info(msg)
     STDERR.puts msg.colorize(:blue)
   end
 
-  private def warning(msg)
+  def warning(msg)
     STDERR.puts msg.colorize(:yellow)
+  end
+
+  def exec_src(exec_str, input, stime)
+    o, e, s = Open3.capture3(exec_str, stdin_data: input)
+    puts "=" * 50
+    puts "=== stdout ==="
+    puts o
+    puts
+    puts "=== stderr ==="
+    puts e
+    puts
+    puts "=== time ==="
+    printf("%.2fms", (Time.now - stime) * 1000)
+    puts
   end
 
   def run
@@ -118,21 +122,9 @@ class Task
       check_lang_and_src
       check_compile
       check_exec
-
       input = open("src/input.txt")
       stime = Time.now
-      o,e,s = Open3.capture3(exec_str, stdin_data: input)
-
-      puts "=" * 50
-      puts "=== stdout ==="
-      puts o
-      puts
-      puts "=== stderr ==="
-      puts e
-      puts
-      puts "=== time ==="
-      printf("%.2fms", (Time.now - stime) * 1000)
-      puts
+      exec_src(exec_str, input, stime)
     end
 
     lib_listener = Listen.to("lib") do |params|
@@ -151,7 +143,7 @@ class Task
       end
 
       cmd = "crystal spec #{src}"
-      o,e,s = Open3.capture3(cmd)
+      o, e, s = Open3.capture3(cmd)
       if o =~ /0 failures, 0 errors/
         success o
       else

@@ -1,21 +1,10 @@
-a,b = gets.to_s.split.map { |v| v.to_i }
-seen = Array.new(100, -1)
-
-que = [a]
-seen[a] = 0
-while que.size > 0
-  v = que.shift
-  d = seen[v]
-  if v == b
-    puts d
-    exit
-  end
-
-  [-10,10,-5,5,-1,1].each do |dv|
-    nv = v + dv
-    next if nv < -5 || 40 < nv
-    next if seen[nv] != -1
-    seen[nv] = d + 1
-    que << nv
-  end
+s = gets.to_s.chomp.gsub(/\s/,"")
+t = "0123456789"
+n = gets.to_s.to_i64
+a = Array.new(n) do
+  i = gets.to_s.tr(s,t).to_i
+end
+a.sort!
+a.each do |i|
+  puts i.to_s.tr(t,s)
 end

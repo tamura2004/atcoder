@@ -33,7 +33,8 @@ class SegmentTree(T)
     end
   end
 
-  def update(i, x)
+  def update(i, _x)
+    x : T = _x.is_a?(T) ? _x : T.new(_x)
     i += n - 1
     node[i] = x
     while i > 0
@@ -68,9 +69,13 @@ class SegmentTree(T)
     node[i + n - 1]
   end
 
+  def to_a
+    node[n-1..]
+  end
+
   private def ceil_pow2(n)
     1 << Math.log2(n).ceil.to_i
   end
-
+  
   delegate call, to: f
 end
