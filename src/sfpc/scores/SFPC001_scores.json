@@ -2316,18 +2316,6 @@
     "execution_time": 129
   },
   {
-    "id": 14860006,
-    "epoch_second": 1593500445,
-    "problem_id": "abc100_c",
-    "contest_id": "abc100",
-    "user_id": "takanoyuto",
-    "language": "Java (OpenJDK 11.0.6)",
-    "point": 300.0,
-    "length": 506,
-    "result": "AC",
-    "execution_time": 234
-  },
-  {
     "id": 14860083,
     "epoch_second": 1593500719,
     "problem_id": "abc123_b",
@@ -3252,18 +3240,6 @@
     "execution_time": 120
   },
   {
-    "id": 14854019,
-    "epoch_second": 1593474584,
-    "problem_id": "abc068_a",
-    "contest_id": "abc068",
-    "user_id": "deltazarashi",
-    "language": "Java (OpenJDK 11.0.6)",
-    "point": 100.0,
-    "length": 207,
-    "result": "AC",
-    "execution_time": 165
-  },
-  {
     "id": 14864267,
     "epoch_second": 1593514285,
     "problem_id": "abc123_b",
@@ -3288,18 +3264,6 @@
     "execution_time": 402
   },
   {
-    "id": 14861061,
-    "epoch_second": 1593503527,
-    "problem_id": "codefestival_2016_qualA_b",
-    "contest_id": "code-festival-2016-quala",
-    "user_id": "takanoyuto",
-    "language": "Java (OpenJDK 11.0.6)",
-    "point": 200.0,
-    "length": 472,
-    "result": "AC",
-    "execution_time": 395
-  },
-  {
     "id": 14858481,
     "epoch_second": 1593495219,
     "problem_id": "abc152_c",
@@ -3322,18 +3286,6 @@
     "length": 513,
     "result": "AC",
     "execution_time": 385
-  },
-  {
-    "id": 14858149,
-    "epoch_second": 1593494070,
-    "problem_id": "codefestival_2016_qualA_b",
-    "contest_id": "code-festival-2016-quala",
-    "user_id": "RinkaSasagawa",
-    "language": "Java (OpenJDK 11.0.6)",
-    "point": 0.0,
-    "length": 510,
-    "result": "CE",
-    "execution_time": null
   },
   {
     "id": 14833501,
@@ -3516,6 +3468,18 @@
     "execution_time": 114
   },
   {
+    "id": 14860006,
+    "epoch_second": 1593500445,
+    "problem_id": "abc100_c",
+    "contest_id": "abc100",
+    "user_id": "takanoyuto",
+    "language": "Java (OpenJDK 11.0.6)",
+    "point": 300.0,
+    "length": 506,
+    "result": "AC",
+    "execution_time": 234
+  },
+  {
     "id": 14854312,
     "epoch_second": 1593476451,
     "problem_id": "abc147_a",
@@ -3636,6 +3600,18 @@
     "execution_time": 1056
   },
   {
+    "id": 14854019,
+    "epoch_second": 1593474584,
+    "problem_id": "abc068_a",
+    "contest_id": "abc068",
+    "user_id": "deltazarashi",
+    "language": "Java (OpenJDK 11.0.6)",
+    "point": 100.0,
+    "length": 207,
+    "result": "AC",
+    "execution_time": 165
+  },
+  {
     "id": 14879405,
     "epoch_second": 1593584084,
     "problem_id": "abc068_a",
@@ -3646,6 +3622,30 @@
     "length": 235,
     "result": "AC",
     "execution_time": 6
+  },
+  {
+    "id": 14861061,
+    "epoch_second": 1593503527,
+    "problem_id": "codefestival_2016_qualA_b",
+    "contest_id": "code-festival-2016-quala",
+    "user_id": "takanoyuto",
+    "language": "Java (OpenJDK 11.0.6)",
+    "point": 200.0,
+    "length": 472,
+    "result": "AC",
+    "execution_time": 395
+  },
+  {
+    "id": 14858149,
+    "epoch_second": 1593494070,
+    "problem_id": "codefestival_2016_qualA_b",
+    "contest_id": "code-festival-2016-quala",
+    "user_id": "RinkaSasagawa",
+    "language": "Java (OpenJDK 11.0.6)",
+    "point": 0.0,
+    "length": 510,
+    "result": "CE",
+    "execution_time": null
   },
   {
     "id": 14879557,
@@ -4366,6 +4366,18 @@
     "length": 416,
     "result": "AC",
     "execution_time": 393
+  },
+  {
+    "id": 16467158,
+    "epoch_second": 1599053668,
+    "problem_id": "abc144_c",
+    "contest_id": "abc144",
+    "user_id": "tamura2004",
+    "language": "Crystal (0.33.0)",
+    "point": 300.0,
+    "length": 457,
+    "result": "AC",
+    "execution_time": 35
   },
   {
     "id": 13680238,
@@ -5520,18 +5532,6 @@
     "execution_time": 83
   },
   {
-    "id": 15058674,
-    "epoch_second": 1594092930,
-    "problem_id": "abc086_a",
-    "contest_id": "abc086",
-    "user_id": "tamura2004",
-    "language": "Crystal (0.33.0)",
-    "point": 100.0,
-    "length": 316,
-    "result": "AC",
-    "execution_time": 10
-  },
-  {
     "id": 15057487,
     "epoch_second": 1594086352,
     "problem_id": "abc047_a",
@@ -5542,6 +5542,18 @@
     "length": 396,
     "result": "AC",
     "execution_time": 7
+  },
+  {
+    "id": 15058674,
+    "epoch_second": 1594092930,
+    "problem_id": "abc086_a",
+    "contest_id": "abc086",
+    "user_id": "tamura2004",
+    "language": "Crystal (0.33.0)",
+    "point": 100.0,
+    "length": 316,
+    "result": "AC",
+    "execution_time": 10
   },
   {
     "id": 13913928,
@@ -5604,6 +5616,18 @@
     "execution_time": 402
   },
   {
+    "id": 16522139,
+    "epoch_second": 1599308720,
+    "problem_id": "abc144_c",
+    "contest_id": "abc144",
+    "user_id": "tamura2004",
+    "language": "Crystal (0.33.0)",
+    "point": 300.0,
+    "length": 144,
+    "result": "AC",
+    "execution_time": 30
+  },
+  {
     "id": 14505820,
     "epoch_second": 1592664620,
     "problem_id": "abc152_c",
@@ -5614,6 +5638,18 @@
     "length": 437,
     "result": "AC",
     "execution_time": 532
+  },
+  {
+    "id": 16579069,
+    "epoch_second": 1599564974,
+    "problem_id": "abc147_a",
+    "contest_id": "abc147",
+    "user_id": "tamura2004",
+    "language": "Crystal (0.33.0)",
+    "point": 100.0,
+    "length": 75,
+    "result": "AC",
+    "execution_time": 11
   },
   {
     "id": 15253671,

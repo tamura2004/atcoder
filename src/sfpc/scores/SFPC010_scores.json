@@ -2962,5 +2962,29 @@
     "length": 735,
     "result": "AC",
     "execution_time": 249
+  },
+  {
+    "id": 17097311,
+    "epoch_second": 1601372048,
+    "problem_id": "abc004_2",
+    "contest_id": "abc004",
+    "user_id": "tamura2004",
+    "language": "Crystal (0.33.0)",
+    "point": 100.0,
+    "length": 98,
+    "result": "AC",
+    "execution_time": 10
+  },
+  {
+    "id": 17097461,
+    "epoch_second": 1601372949,
+    "problem_id": "abc004_3",
+    "contest_id": "abc004",
+    "user_id": "tamura2004",
+    "language": "Crystal (0.33.0)",
+    "point": 100.0,
+    "length": 164,
+    "result": "AC",
+    "execution_time": 11
   }
 ]

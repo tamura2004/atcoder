@@ -22,9 +22,9 @@ struct Matrix(T)
     end
     Matrix(T).new(ans)
   end
-  
+
   def **(k : Int)
-    n = Math.log2(k).ceil.to_i + 1
+    n = Math.ilogb(k) + 1
     ans = eye
     b = eye * self
     n.times do |i|
@@ -35,7 +35,7 @@ struct Matrix(T)
     end
     ans
   end
-  
+
   def eye
     ans = Array.new(n) { Array.new(n, T.zero) }
     n.times do |i|

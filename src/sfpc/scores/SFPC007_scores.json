@@ -360,6 +360,18 @@
     "execution_time": 102
   },
   {
+    "id": 14425156,
+    "epoch_second": 1592368885,
+    "problem_id": "dwacon5th_prelims_a",
+    "contest_id": "dwacon5th-prelims",
+    "user_id": "ShuHONDA",
+    "language": "Java8 (OpenJDK 1.8.0)",
+    "point": 0.0,
+    "length": 639,
+    "result": "WA",
+    "execution_time": 108
+  },
+  {
     "id": 14418559,
     "epoch_second": 1592324423,
     "problem_id": "dwacon5th_prelims_a",
@@ -600,6 +612,18 @@
     "execution_time": 422
   },
   {
+    "id": 16520163,
+    "epoch_second": 1599303112,
+    "problem_id": "arc012_2",
+    "contest_id": "arc012",
+    "user_id": "tamura2004",
+    "language": "Crystal (0.33.0)",
+    "point": 100.0,
+    "length": 427,
+    "result": "AC",
+    "execution_time": 11
+  },
+  {
     "id": 14422203,
     "epoch_second": 1592355707,
     "problem_id": "code_formula_2014_qualA_b",
@@ -838,18 +862,6 @@
     "length": 637,
     "result": "WA",
     "execution_time": 106
-  },
-  {
-    "id": 14425156,
-    "epoch_second": 1592368885,
-    "problem_id": "dwacon5th_prelims_a",
-    "contest_id": "dwacon5th-prelims",
-    "user_id": "ShuHONDA",
-    "language": "Java8 (OpenJDK 1.8.0)",
-    "point": 0.0,
-    "length": 639,
-    "result": "WA",
-    "execution_time": 108
   },
   {
     "id": 14425258,
@@ -3478,5 +3490,29 @@
     "length": 5,
     "result": "WA",
     "execution_time": 5
+  },
+  {
+    "id": 16777861,
+    "epoch_second": 1600231379,
+    "problem_id": "tenka1_2012_qualA_2",
+    "contest_id": "tenka1-2012-qualA",
+    "user_id": "sojisan",
+    "language": "C++ (GCC 9.2.1)",
+    "point": 100.0,
+    "length": 5485,
+    "result": "AC",
+    "execution_time": 7
+  },
+  {
+    "id": 16979588,
+    "epoch_second": 1600898131,
+    "problem_id": "codefestival_2015_qualA_b",
+    "contest_id": "code-festival-2015-quala",
+    "user_id": "tamura2004",
+    "language": "Crystal (0.33.0)",
+    "point": 100.0,
+    "length": 144,
+    "result": "AC",
+    "execution_time": 11
   }
 ]

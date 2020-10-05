@@ -696,18 +696,6 @@
     "execution_time": 95
   },
   {
-    "id": 14128076,
-    "epoch_second": 1591671481,
-    "problem_id": "hitachi2020_b",
-    "contest_id": "hitachi2020",
-    "user_id": "yanai",
-    "language": "Java8 (OpenJDK 1.8.0)",
-    "point": 200.0,
-    "length": 1081,
-    "result": "AC",
-    "execution_time": 805
-  },
-  {
     "id": 14169763,
     "epoch_second": 1591847816,
     "problem_id": "abc056_a",
@@ -828,6 +816,66 @@
     "execution_time": 592
   },
   {
+    "id": 16418308,
+    "epoch_second": 1598855254,
+    "problem_id": "hitachi2020_b",
+    "contest_id": "hitachi2020",
+    "user_id": "takanoyuto",
+    "language": "Java (OpenJDK 11.0.6)",
+    "point": 200.0,
+    "length": 846,
+    "result": "AC",
+    "execution_time": 772
+  },
+  {
+    "id": 14128076,
+    "epoch_second": 1591671481,
+    "problem_id": "hitachi2020_b",
+    "contest_id": "hitachi2020",
+    "user_id": "yanai",
+    "language": "Java8 (OpenJDK 1.8.0)",
+    "point": 200.0,
+    "length": 1081,
+    "result": "AC",
+    "execution_time": 805
+  },
+  {
+    "id": 16459871,
+    "epoch_second": 1599031530,
+    "problem_id": "abc103_b",
+    "contest_id": "abc103",
+    "user_id": "hosonuma",
+    "language": "Java (OpenJDK 11.0.6)",
+    "point": 0.0,
+    "length": 462,
+    "result": "WA",
+    "execution_time": 163
+  },
+  {
+    "id": 16459974,
+    "epoch_second": 1599031834,
+    "problem_id": "abc122_b",
+    "contest_id": "abc122",
+    "user_id": "hosonuma",
+    "language": "Java (OpenJDK 11.0.6)",
+    "point": 200.0,
+    "length": 467,
+    "result": "AC",
+    "execution_time": 115
+  },
+  {
+    "id": 16459907,
+    "epoch_second": 1599031650,
+    "problem_id": "abc103_b",
+    "contest_id": "abc103",
+    "user_id": "hosonuma",
+    "language": "Java (OpenJDK 11.0.6)",
+    "point": 200.0,
+    "length": 452,
+    "result": "AC",
+    "execution_time": 160
+  },
+  {
     "id": 15061806,
     "epoch_second": 1594106318,
     "problem_id": "abc138_a",
@@ -850,6 +898,18 @@
     "length": 946,
     "result": "AC",
     "execution_time": 119
+  },
+  {
+    "id": 15058337,
+    "epoch_second": 1594090898,
+    "problem_id": "abc122_b",
+    "contest_id": "abc122",
+    "user_id": "ZatoZatoYuki",
+    "language": "Java (OpenJDK 11.0.6)",
+    "point": 0.0,
+    "length": 554,
+    "result": "WA",
+    "execution_time": 117
   },
   {
     "id": 15063344,
@@ -1452,18 +1512,6 @@
     "execution_time": 117
   },
   {
-    "id": 15058337,
-    "epoch_second": 1594090898,
-    "problem_id": "abc122_b",
-    "contest_id": "abc122",
-    "user_id": "ZatoZatoYuki",
-    "language": "Java (OpenJDK 11.0.6)",
-    "point": 0.0,
-    "length": 554,
-    "result": "WA",
-    "execution_time": 117
-  },
-  {
     "id": 15058280,
     "epoch_second": 1594090578,
     "problem_id": "abc077_b",
@@ -1930,54 +1978,6 @@
     "length": 311,
     "result": "CE",
     "execution_time": null
-  },
-  {
-    "id": 15075635,
-    "epoch_second": 1594165864,
-    "problem_id": "abc056_a",
-    "contest_id": "abc056",
-    "user_id": "yukakawamoto",
-    "language": "Java (OpenJDK 11.0.6)",
-    "point": 100.0,
-    "length": 476,
-    "result": "AC",
-    "execution_time": 108
-  },
-  {
-    "id": 15075631,
-    "epoch_second": 1594165848,
-    "problem_id": "abc056_a",
-    "contest_id": "abc056",
-    "user_id": "NakatsukaMomoka",
-    "language": "Java (OpenJDK 11.0.6)",
-    "point": 100.0,
-    "length": 537,
-    "result": "AC",
-    "execution_time": 106
-  },
-  {
-    "id": 15075620,
-    "epoch_second": 1594165791,
-    "problem_id": "abc056_a",
-    "contest_id": "abc056",
-    "user_id": "NakatsukaMomoka",
-    "language": "Java (OpenJDK 11.0.6)",
-    "point": 0.0,
-    "length": 537,
-    "result": "WA",
-    "execution_time": 114
-  },
-  {
-    "id": 15075584,
-    "epoch_second": 1594165540,
-    "problem_id": "abc056_a",
-    "contest_id": "abc056",
-    "user_id": "RinkaSasagawa",
-    "language": "Java (OpenJDK 11.0.6)",
-    "point": 100.0,
-    "length": 316,
-    "result": "AC",
-    "execution_time": 108
   },
   {
     "id": 15075901,
@@ -2532,30 +2532,6 @@
     "execution_time": 118
   },
   {
-    "id": 15077023,
-    "epoch_second": 1594174373,
-    "problem_id": "arc073_a",
-    "contest_id": "arc073",
-    "user_id": "deltazarashi",
-    "language": "Java (OpenJDK 11.0.6)",
-    "point": 300.0,
-    "length": 484,
-    "result": "AC",
-    "execution_time": 535
-  },
-  {
-    "id": 15076991,
-    "epoch_second": 1594174171,
-    "problem_id": "arc073_a",
-    "contest_id": "arc073",
-    "user_id": "deltazarashi",
-    "language": "Java (OpenJDK 11.0.6)",
-    "point": 300.0,
-    "length": 484,
-    "result": "AC",
-    "execution_time": 542
-  },
-  {
     "id": 15077012,
     "epoch_second": 1594174333,
     "problem_id": "hitachi2020_b",
@@ -2674,6 +2650,30 @@
     "length": 1003,
     "result": "RE",
     "execution_time": 119
+  },
+  {
+    "id": 15077023,
+    "epoch_second": 1594174373,
+    "problem_id": "arc073_a",
+    "contest_id": "arc073",
+    "user_id": "deltazarashi",
+    "language": "Java (OpenJDK 11.0.6)",
+    "point": 300.0,
+    "length": 484,
+    "result": "AC",
+    "execution_time": 535
+  },
+  {
+    "id": 15076991,
+    "epoch_second": 1594174171,
+    "problem_id": "arc073_a",
+    "contest_id": "arc073",
+    "user_id": "deltazarashi",
+    "language": "Java (OpenJDK 11.0.6)",
+    "point": 300.0,
+    "length": 484,
+    "result": "AC",
+    "execution_time": 542
   },
   {
     "id": 15077539,
@@ -3010,6 +3010,54 @@
     "length": 325,
     "result": "AC",
     "execution_time": 119
+  },
+  {
+    "id": 15075635,
+    "epoch_second": 1594165864,
+    "problem_id": "abc056_a",
+    "contest_id": "abc056",
+    "user_id": "yukakawamoto",
+    "language": "Java (OpenJDK 11.0.6)",
+    "point": 100.0,
+    "length": 476,
+    "result": "AC",
+    "execution_time": 108
+  },
+  {
+    "id": 15075631,
+    "epoch_second": 1594165848,
+    "problem_id": "abc056_a",
+    "contest_id": "abc056",
+    "user_id": "NakatsukaMomoka",
+    "language": "Java (OpenJDK 11.0.6)",
+    "point": 100.0,
+    "length": 537,
+    "result": "AC",
+    "execution_time": 106
+  },
+  {
+    "id": 15075620,
+    "epoch_second": 1594165791,
+    "problem_id": "abc056_a",
+    "contest_id": "abc056",
+    "user_id": "NakatsukaMomoka",
+    "language": "Java (OpenJDK 11.0.6)",
+    "point": 0.0,
+    "length": 537,
+    "result": "WA",
+    "execution_time": 114
+  },
+  {
+    "id": 15075584,
+    "epoch_second": 1594165540,
+    "problem_id": "abc056_a",
+    "contest_id": "abc056",
+    "user_id": "RinkaSasagawa",
+    "language": "Java (OpenJDK 11.0.6)",
+    "point": 100.0,
+    "length": 316,
+    "result": "AC",
+    "execution_time": 108
   },
   {
     "id": 15078844,
@@ -3996,18 +4044,6 @@
     "execution_time": 8
   },
   {
-    "id": 15105718,
-    "epoch_second": 1594299408,
-    "problem_id": "abc122_b",
-    "contest_id": "abc122",
-    "user_id": "allagenovese",
-    "language": "C++ (GCC 9.2.1)",
-    "point": 0.0,
-    "length": 808,
-    "result": "WA",
-    "execution_time": 10
-  },
-  {
     "id": 15099163,
     "epoch_second": 1594276095,
     "problem_id": "abc088_c",
@@ -4102,5 +4138,17 @@
     "length": 805,
     "result": "AC",
     "execution_time": 114
+  },
+  {
+    "id": 15105718,
+    "epoch_second": 1594299408,
+    "problem_id": "abc122_b",
+    "contest_id": "abc122",
+    "user_id": "allagenovese",
+    "language": "C++ (GCC 9.2.1)",
+    "point": 0.0,
+    "length": 808,
+    "result": "WA",
+    "execution_time": 10
   }
 ]

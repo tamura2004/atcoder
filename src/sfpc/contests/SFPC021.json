@@ -5,7 +5,7 @@
     "memo": "灰x5 茶x5 新人在宅学習用",
     "owner_user_id": "1623021",
     "start_epoch_second": 1595941800,
-    "duration_second": 2682000,
+    "duration_second": 5446800,
     "mode": null,
     "is_public": true,
     "penalty_second": 300
@@ -63,12 +63,18 @@
     }
   ],
   "participants": [
+    "KanaeTsukimitsu",
+    "Nachiket",
+    "NakatsukaMomoka",
+    "RinkaSasagawa",
     "ShuHONDA",
     "deltazarashi",
+    "hosonuma",
     "takanoyuto",
     "tamura2004",
     "tomo22",
     "yanai",
+    "yuichiyoshida",
     "yukakawamoto"
   ]
 }

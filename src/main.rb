@@ -1,8 +1,12 @@
-n = gets.to_s.to_i
-ans = 0
-n.times do
-  a, b = gets.to_s.split.map { |v| v.to_i }
-  ans += a * b
+def sa(n, s)
+  ans = []
+  n.times do |i|
+    ans << [s[i..-1], i]
+  end
+  return ans
 end
 
-puts (ans * 105) / 100
+require "minitest/unit"
+
+include Test::Unit::Assertions
+assert_equal 1,2

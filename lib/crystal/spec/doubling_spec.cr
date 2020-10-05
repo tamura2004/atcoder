@@ -9,7 +9,7 @@ describe Doubling do
       got.should eq i
     end
   end
-  
+
   it "random test" do
     obj = Doubling(Int32).new(10){rand(10)}
     10.times do
@@ -18,7 +18,7 @@ describe Doubling do
       got.should eq want
     end
   end
-  
+
   it "nilable add" do
     obj = Doubling(Int32).new(10){rand(10)}
     obj.add(10, 20).should eq 30
@@ -27,7 +27,7 @@ describe Doubling do
     obj.add(nil, nil).should eq nil
     obj.add(Int32::MAX, Int32::MAX).should eq Int32::MAX
   end
-  
+
   it "cumulative sum" do
     obj = Doubling(Int32).new(10, &.itself)
     obj.sum2(from: 3, step: 3).should eq 12
