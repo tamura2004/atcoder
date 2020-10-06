@@ -1,12 +1,7 @@
-def sa(n, s)
-  ans = []
-  n.times do |i|
-    ans << [s[i..-1], i]
-  end
-  return ans
+require "prime"
+
+12.times do |i|
+  x = "1#{'0'*i}1".to_i
+  pp x
+  pp Prime.prime_division(x)
 end
-
-require "minitest/unit"
-
-include Test::Unit::Assertions
-assert_equal 1,2
