@@ -1,8 +1,7 @@
-s = gets.to_s.chomp.chars
-n = s.size
-ans = n.times.all? do |i|
-  (i.even? && s[i] != 'L') ||
-  (i.odd? && s[i] != 'R')
+ans = 0
+3.times do
+  s,e = gets.to_s.split.map { |v| v.to_i }
+  ans += s * e // 10
 end
 
-puts ans ? "Yes" : "No"
+pp ans

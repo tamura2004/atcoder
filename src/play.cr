@@ -1,17 +1,10 @@
-struct Rep
-  getter a : Array(Int32)
-
-  def initialize(@a)
+record Edge, to : Int32, cost : Int32 do
+  def [](i : Int)
+    i.zero? ? to : cost
   end
-
-  def *(other : self)
-    Rep.new(Array(Int32).new(a.size) { |i|
-      other[a[i]]
-    })
-  end
-
-  delegate "[]", to: a
 end
 
-a = Rep.new([1, 2, 3, 4, 5, 0])
-b = a * a
+x = Edge.new(10,20)
+a,b = x
+pp! a
+pp! b

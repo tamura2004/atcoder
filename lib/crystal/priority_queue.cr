@@ -1,40 +1,66 @@
 class PriorityQueue(T) < Array(T)
-  def push(v)
+  getter f : T, T -> Bool
+
+  def initialize(&block : T, T -> Bool)
+    super()
+    @f = block
+  end
+
+  def initialize
+    super()
+    @f = ->(a : T, b : T) { a < b }
+  end
+
+  def push(v : T)
     super(v)
     fixup(size - 1)
   end
 
-  def pop
+  def pop : T
     ret = self[0]
     last = super
     if size > 0
       self[0] = last
-      fixdown(0)
+      fixdown
     end
     ret
   end
 
-  def fixup(index : Int32)
-    while index > 0
-      parent = (index - 1) // 2
-      break if self[parent] >= self[index]
-      swap index, parent
-      index = parent
+  def fixup(i : Int32)
+    j = up(i)
+    while i > 0 && comp j, i
+      swap i, j
+      i, j = j, up(j)
     end
   end
 
-  def fixdown(index : Int32)
-    while true
-      left = index * 2 + 1
-      break if left >= size
-      right = index * 2 + 2
-      child = right >= size || self[left] > self[right] ? left : right
-      if self[child] > self[index]
-        swap child, index
-        index = child
+  def fixdown
+    i = 0
+    while lo(i) < size
+      if hi(i) < size && comp lo(i), hi(i)
+        j = hi(i)
       else
-        break
+        j = lo(i)
       end
+      break if comp j, i
+      swap i, j
+      i = j
     end
+  end
+
+  def comp(i, j)
+    f.call self[i], self[j]
+  end
+
+  def lo(i)
+    i * 2 + 1
+  end
+
+  def hi(i)
+    i * 2 + 2
+  end
+
+  def up(i)
+    (i - 1) // 2
   end
 end
