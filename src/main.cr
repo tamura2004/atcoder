@@ -28,52 +28,42 @@ class UnionFindTree
   end
 end
 
-macro chmax(target, other)
-  {{target}} = ({{other}}) if ({{target}}) < ({{other}})
+n = gets.to_s.to_i
+s = gets.to_s.chomp
+t = gets.to_s.chomp
+
+uf = UnionFindTree.new(200)
+
+n.times do |i|
+  si, ti = s[i], t[i]
+  next if si == ti
+  next if is_num?(si) && is_num?(ti)
+
+  ti = '@' if is_num?(ti)
+  si = '@' if is_num?(si)
+  uf.unite(si.ord, ti.ord)
 end
 
-n, k = gets.to_s.split.map { |v| v.to_i }
-a = Array.new(k) { gets.to_s.to_i }.sort
+ans = 1_i64
+n.times do |i|
+  si = s[i]
+  next if is_num?(si)
+  next if uf.same?(si.ord, '@'.ord)
 
-pp JOI2007HO_B.new(n,k,a).solve
-
-class JOI2007HO_B
-  getter n : Int32
-  getter k : Int32
-  getter a : Array(Int32)
-
-  def initialize(@n,@k,@a)
+  if i == 0
+    ans *= 9
+  else
+    ans *= 10
   end
+  uf.unite(si.ord, '@'.ord)
+end
 
-  def solve
-    return 1 if n == 1 || k == 1
+pp ans
 
-    wild = false
-    if a[0] == 0
-      a.shift
-      wild = true
-    end
+def is_num?(c : Char)
+  ('0'..'9').includes?(c)
+end
 
-    uf = UnionFindTree.new(n + 1)
-    a.each_cons(2) do |(x, y)|
-      if x + 1 == y
-        uf.unite(x, y)
-      end
-    end
-
-    ans = 1.upto(n).max_of do |i|
-      uf.size(i)
-    end
-
-    if wild
-      ans += 1
-      1.upto(n - 2) do |i|
-        unless uf.same?(i, i + 2)
-          chmax ans, uf.size(i) + uf.size(i + 2) + 1
-        end
-      end
-    end
-
-    return ans
-  end
+def is_alp?(c : Char)
+  ('a'..'z').includes?(c)
 end
