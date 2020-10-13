@@ -1,69 +1,98 @@
-class UnionFindTree
-  getter n : Int32
-  getter a : Array(Int32)
+class Grid
+  DIR = [{0, 1}, {1, 0}, {0, -1}, {-1, 0}]
 
-  def initialize(@n)
-    @a = Array.new(n, -1)
+  getter h : Int32
+  getter w : Int32
+  getter c : Array(String)
+  getter seen : Array(Array(Bool))
+  getter q : Deque(Tuple(Int32,Int32))
+
+  def initialize(@h, @w, @c)
+    @seen = Array.new(h){ Array.new(w, false) }
+    @q = Deque(Tuple(Int32,Int32)).new
   end
 
-  def find(i)
-    a[i] < 0 ? i : (a[i] = find(a[i]))
+  def self.read
+    h,w = gets.to_s.split.map { |v| v.to_i }
+    c = Array.new(h){ gets.to_s.chomp }
+    new(h,w,c)
   end
 
-  def same?(i, j)
-    find(i) == find(j)
+  def bfs
+    gy,gx = find('g')
+    while q.size > 0
+      vy,vx = q.shift
+      if vy == gy && vx == gx
+        return true
+      end
+      each(vy,vx) do |ny,nx,is_wall|
+        next if is_wall
+        next if seen[ny][nx]
+        seen[ny][nx] = true
+        q << {ny,nx}
+      end
+    end
+    return false
   end
 
-  def size(i)
-    -a[find(i)]
+  def break_wall
+    tmp = Deque(Tuple(Int32,Int32)).new
+    h.times do |y|
+      w.times do |x|
+        next unless seen[y][x]
+        tmp << {y,x}
+      end
+    end
+    while tmp.size > 0
+      y,x = tmp.shift
+      each(y,x) do |ny,nx,is_wall|
+        next unless is_wall
+        next if seen[ny][nx]
+        seen[ny][nx] = true
+        q << {ny,nx}
+      end
+    end
   end
 
-  def unite(i, j)
-    i = find(i)
-    j = find(j)
-    return if i == j
-    i, j = j, i if a[i] > a[j]
-    a[i] += a[j]
-    a[j] = i
+  def solve
+    sy,sx = find('s')
+    q << {sy,sx}
+    seen[sy][sx] = true
+
+    3.times do
+      return "YES" if bfs
+      break_wall
+    end
+    return "NO"
+  end
+  
+  def each(y, x)
+    DIR.each do |dy, dx|
+      ny = y + dy
+      nx = x + dx
+      next if outside?(ny, nx)
+      yield ny, nx, wall?(ny, nx)
+    end
+  end
+
+  def find(ch : Char)
+    h.times do |y|
+      w.times do |x|
+        return {y,x} if c[y][x] == ch
+      end
+    end
+    return {-1,-1}
+  end
+
+  def outside?(y, x)
+    y < 0 || h <= y || x < 0 || w <= x
+  end
+
+  def wall?(y, x)
+    c[y][x] == '#'
   end
 end
 
-n = gets.to_s.to_i
-s = gets.to_s.chomp
-t = gets.to_s.chomp
+g = Grid.read
+puts g.solve
 
-uf = UnionFindTree.new(200)
-
-n.times do |i|
-  si, ti = s[i], t[i]
-  next if si == ti
-  next if is_num?(si) && is_num?(ti)
-
-  ti = '@' if is_num?(ti)
-  si = '@' if is_num?(si)
-  uf.unite(si.ord, ti.ord)
-end
-
-ans = 1_i64
-n.times do |i|
-  si = s[i]
-  next if is_num?(si)
-  next if uf.same?(si.ord, '@'.ord)
-
-  if i == 0
-    ans *= 9
-  else
-    ans *= 10
-  end
-  uf.unite(si.ord, '@'.ord)
-end
-
-pp ans
-
-def is_num?(c : Char)
-  ('0'..'9').includes?(c)
-end
-
-def is_alp?(c : Char)
-  ('a'..'z').includes?(c)
-end
