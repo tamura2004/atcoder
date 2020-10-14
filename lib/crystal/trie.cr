@@ -1,13 +1,13 @@
 class Trie
-  A = 26
+  A = 27
 
   class Node
     getter value : Int32
-    getter children : Array(Node?)
+    getter children : StaticArray(Node?,A)
     property tail : Bool
 
     def initialize(@value : Int32)
-      @children = Array(Node?).new(A+1, nil)
+      @children = StaticArray(Node?,A).new(nil)
       @tail = false
     end
   end
@@ -18,7 +18,7 @@ class Trie
     @root = Node.new(0)
   end
 
-  def insert(s : String)
+  def add(s : String)
     now = root
     s.chars.each do |c|
       i = num(c)
@@ -48,13 +48,4 @@ class Trie
     c.ord - 'a'.ord + 1
   end
 end
-
-tr = Trie.new
-tr.insert("fire")
-tr.insert("five")
-tr.insert("firearm")
-tr.insert("system")
-tr.insert("sysadmin")
-
-pp! tr.find("sysad")
-pp! tr.find("five")
+;
