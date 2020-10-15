@@ -1,30 +1,32 @@
-n,m = gets.to_s.split.map { |v| v.to_i64 }
-num = Array.new(n, 1)
-red = Array.new(n,0)
-red[0] = 1
 
-m.times do
-  x,y = gets.to_s.split.map { |v| v.to_i64 - 1}
-  if num[x] == 1
-    if red[x] == 1
-      red[x] = 0
-      red[y] = 1
-      num[x] -= 1
-      num[y] += 1
-    else
-      num[x] -= 1
-      num[y] += 1
-    end
-  else
-    if red[x] == 1
-      red[y] = 1
-      num[x] -= 1
-      num[y] += 1
-    else
-      num[x] -= 1
-      num[y] += 1
-    end
+record ModInt, v : Int64 do
+  MOD = 10_i64**9+7
+
+  def +(b)
+    (v + b.to_i64 % MOD) % MOD
+  end
+
+  def -(b)
+    (v + MOD - b.to_i64 % MOD) % MOD
+  end
+
+  def *(b)
+    (v * (b.to_i64 % MOD)) % MOD
+  end
+
+  def self.zero
+    new(0)
+  end
+
+  def to_i64
+    v
   end
 end
 
-puts red.count(&.== 1)
+x = ModInt.zero
+x += 10000000000000
+x *= 2
+x *= 2
+x *= 2
+x *= 2
+pp! x

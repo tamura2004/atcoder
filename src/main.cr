@@ -1,60 +1,34 @@
-class Trie
-  A = 26
+s = gets.to_s.chomp
+pp! s.scan(/^(_*)([a-z][a-z0-9]*)(_[a-z][a-z0-9]*)*(_*)$/).to_a
 
-  class Node
-    getter value : Int32
-    getter children : Array(Node?)
-    property tail : Bool
 
-    def initialize(@value : Int32)
-      @children = Array(Node?).new(A+1, nil)
-      @tail = false
-    end
-  end
+# head = s.scan(/^_*/).try(&.first)
+# s = s.gsub(/^_*/, "")
+# tail = s.scan(/_*$/).try(&.first)
+# s = s.gsub(/_*$/, "")
 
-  getter root : Node
+# def is_camel?(s)
+#   s =~ /^[a-z][a-z0-9]*([A-Z][a-z0-9]*)*$/
+# end
 
-  def initialize
-    @root = Node.new(0)
-  end
+# def is_snake?(s)
+#   return false if s =~ /__/
+#   s =~ /^[a-z][a-z0-9]*(_[a-z][a-z0-9]*)*$/
+# end
 
-  def insert(s : String)
-    now = root
-    s.chars.each do |c|
-      i = num(c)
-      if nex = now.children[i]
-        now = nex
-      else
-        now = now.children[i] = Node.new(i)
-      end
-    end
-    now.tail = true
-  end
+# def camel_to_snake(s)
+#   s.split(/(?=[A-Z])/).join("_").downcase
+# end
 
-  def find(s : String)
-    now = root
-    s.chars.each do |c|
-      i = num(c)
-      if nex = now.children[i]
-        now = nex
-      else
-        return false
-      end
-    end
-    return now.tail
-  end
+# def snake_to_camel(s)
+#   s.split(/_/).map.with_index { |s, i| i.zero? ? s : s.capitalize }.join
+# end
 
-  def num(c : Char)
-    c.ord - 'a'.ord + 1
-  end
-end
-
-tr = Trie.new
-tr.insert("fire")
-tr.insert("five")
-tr.insert("firearm")
-tr.insert("system")
-tr.insert("sysadmin")
-
-pp! tr.find("sysad")
-pp! tr.find("five")
+# case
+# when is_camel?(s)
+#   puts head + camel_to_snake(s) + tail
+# when is_snake?(s)
+#   puts head + snake_to_camel(s) + tail
+# else
+#   puts head + s + tail
+# end

@@ -1,27 +1,31 @@
-n = gets.to_s.to_i
-p = gets.to_s.split.map{ |v| v.to_i }
-a = Array.new(n,0)
-b = Array.new(n,0)
+s = gets.chomp
+head = s.scan(/^_*/)&.first
+s.gsub!(/^_*/, "")
+tail = s.scan(/_*$/)&.first
+s.gsub!(/_*$/, "")
 
-0.upto(n-2) do |i|
-  d = p[i+1] - p[i]
-  if d < 0
-    b[i+1] = d
-  else
-    a[i+1] = d
-  end
+def is_camel?(s)
+  s =~ /^[a-z][a-z0-9]*([A-Z][a-z0-9]*)*$/
 end
 
-0.upto(n-2) do |i|
-  a[i+1] += a[i] + 1
-  b[i+1] += b[i] - 1
+def is_snake?(s)
+  return false if s =~ /__/
+  s =~ /^[a-z][a-z0-9]*(_[a-z][a-z0-9]*)*$/
 end
 
-c = b.min.abs + 1
-n.times do |i|
-  a[i] += 1
-  b[i] += c
+def camel_to_snake(s)
+  s.split(/(?=[A-Z])/).join("_").downcase
 end
 
-puts a.join(" ")
-puts b.join(" ")
+def snake_to_camel(s)
+  s.split(/_/).map.with_index { |s, i| i.zero? ? s : s.capitalize }.join
+end
+
+case
+when is_camel?(s)
+  puts head + camel_to_snake(s) + tail
+when is_snake?(s)
+  puts head + snake_to_camel(s) + tail
+else
+  puts head + s + tail
+end
