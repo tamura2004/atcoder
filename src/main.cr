@@ -1,7 +1,12 @@
-s = gets.to_s.chomp
-n = s.size
-if s[0] == s[-1]
-  puts n.even? ? "First" : "Second"
-else
-  puts n.odd? ? "First" : "Second"
+a = gets.to_s.to_i
+if a.zero?
+  puts "Yes"
+  exit
 end
+
+s = gets.to_s.chomp
+ans = s.chars.any? do |c|
+  a += (c =='+' ? 1 : -1)
+  a == 0
+end
+puts ans ? "Yes" : "No"
