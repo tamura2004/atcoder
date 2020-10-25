@@ -3,6 +3,24 @@ require "../max_flow"
 
 describe MaxFlow do
   it "usage" do
+    g = MaxFlow(Int32).new(8)
+    g.add_edge(0, 1, 1)
+    g.add_edge(0, 2, 1)
+    g.add_edge(0, 3, 1)
+    g.add_edge(1, 4, 1)
+    g.add_edge(2, 4, 1)
+    g.add_edge(3, 4, 1)
+    g.add_edge(1, 5, 1)
+    g.add_edge(1, 6, 1)
+    g.add_edge(4, 7, 1)
+    g.add_edge(6, 7, 1)
+    g.add_edge(6, 7, 1)
+    g.max_flow(0, 7).should eq 2
+  end
+end
+
+describe MaxFlow do
+  it "usage weighted" do
     g = MaxFlow(Int64).new(5)
     g.add_edge(0, 1, 10_i64)
     g.add_edge(0, 2, 2_i64)
