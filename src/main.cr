@@ -1,28 +1,17 @@
-require "string_scanner"
-
-t = gets.to_s
-s = t.chars
-u = t.chars
-t.size.times do |i|
-  if t[i] == '?'
-    if i.odd?
-      s[i] = '2'
-      u[i] = '5'
-    else
-      s[i] = '5'
-      u[i] = '2'
-    end
-  end
+macro chmin(target, other)
+  {{target}} = ({{other}}) if ({{target}}) > ({{other}})
 end
 
-s = s.join
-u = u.join
+n = gets.to_s.to_i
+a = gets.to_s.split.map { |v| v.to_i64 }
+b = gets.to_s.split.map { |v| v.to_i64 }
 
-puts Math.max(num(s), num(u))
-
-def num(s)
-  return 0 unless s.match(/25/)
-  s.scan(/(25)+/).max_of do |md|
-    md[0]? ? md[0].size : 0
+cnt = 0_i64
+ans = Int64::MAX
+n.times do |i|
+  cnt += a[i]
+  if b[i] <= cnt
+    chmin ans, b[i]
   end
 end
+puts ans == Int64::MAX ? -1 : ans

@@ -1,26 +1,30 @@
 class Node(T)
-  getter lo : self?
-  getter hi : self?
-  getter up : self?
+  property lo : self?
+  property hi : self?
   getter val : T
   getter pri : Int64
 
-  def initialize(@val : T, @up = nil, @lo = nil, @hi = nil)
+  def initialize(@val : T, @lo = nil, @hi = nil)
     @pri = rand(Int64::MAX)
+    # @pri = rand(6_i64)
   end
 
-  def <<(x)
+  def insert(x : T) : Node(T)
     if x < val
       if l = lo
-        l << x
+        l.insert(x).tap do |c|
+          l.lo, c.hi = c.hi, l if c.pri < l.pri
+        end
       else
-        @lo = Node.new(x, self)
+        @lo = Node.new(x)
       end
     else
       if h = hi
-        h << x
+        h.insert(x).tap do |c|
+          h.hi, c.lo = c.lo, h if c.pri < h.pri
+        end
       else
-        @hi = Node.new(x, self)
+        @hi = Node.new(x)
       end
     end
   end
@@ -29,9 +33,15 @@ class Node(T)
     (lo.try(&.to_s) || "") + val.to_s + (hi.try(&.to_s) || "")
   end
 
-  def print
-    lo.try &.print
-    print val
-    hi.try &.print
+  def debug
+    puts "#{val} #{pri}"
+    lo.try &.debug
+    hi.try &.debug
   end
 end
+
+t = Node.new(5)
+10.times do |i|
+  t = t.insert(i)
+end
+t.debug
