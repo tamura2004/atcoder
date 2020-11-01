@@ -1,7 +1,11 @@
-N = 200000
-K = 300
+N = 10000
 
 open("src/input.txt", "w") do |f|
-  f.puts "#{N} #{K}"
-  f.puts Array.new(N) { 100000000 }.join(" ")
+  f.puts N
+  cnt = [0]
+  1.upto(N / 2) do |i|
+    cnt << i
+    cnt << i
+  end
+  f.puts cnt.join(" ")
 end

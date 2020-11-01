@@ -1,47 +1,74 @@
-class Node(T)
-  property lo : self?
-  property hi : self?
-  getter val : T
-  getter pri : Int64
+class Treap
+  class Node
+    property left : self?
+    property right : self?
+    getter v : Int32
+    getter pri : Int32
 
-  def initialize(@val : T, @lo = nil, @hi = nil)
-    @pri = rand(Int64::MAX)
-    # @pri = rand(6_i64)
-  end
+    def initialize(@v)
+      @pri = ((v+4)*5)%7 #rand(Int32::MAX)
+      pp [v,pri]
+      @left = nil
+      @right = nil
+    end
 
-  def insert(x : T) : Node(T)
-    if x < val
-      if l = lo
-        l.insert(x).tap do |c|
-          l.lo, c.hi = c.hi, l if c.pri < l.pri
+    def insert(x)
+      if x < v
+        if node = left
+          @left = node.insert(x)
+        else
+          @left = Node.new(x)
         end
+        rotate_right?
       else
-        @lo = Node.new(x)
-      end
-    else
-      if h = hi
-        h.insert(x).tap do |c|
-          h.hi, c.lo = c.lo, h if c.pri < h.pri
+        if node = right
+          @right = node.insert(x)
+        else
+          @right = Node.new(x)
         end
-      else
-        @hi = Node.new(x)
+        rotate_left?
       end
+    end
+    
+    def rotate_right?
+      return self unless node = left
+      return self if pri <= node.pri
+      @left, node.right = node.right, self
+      return node
+    end
+    
+    def rotate_left?
+      return self unless node = right
+      return self if pri <= node.pri
+      @right, node.left = node.left, self
+      return node
+    end
+
+    def min
+      left.nil? ? v : left.as(Node).min
+    end
+
+    def max
+      right.nil? ? v : right.as(Node).max
+    end
+
+    def debug(i)
+      puts " " * i + v.to_s
+      left && left.as(Node).debug(i+2) 
+      right && right.as(Node).debug(i+2) 
     end
   end
 
-  def to_s
-    (lo.try(&.to_s) || "") + val.to_s + (hi.try(&.to_s) || "")
+  getter root : Node
+  forward_missing_to root
+
+  def initialize(v)
+    @root = Node.new(v)
   end
 
-  def debug
-    puts "#{val} #{pri}"
-    lo.try &.debug
-    hi.try &.debug
+  def insert(x)
+    node = @root.insert(x)
+    @root = node
   end
 end
 
-t = Node.new(5)
-10.times do |i|
-  t = t.insert(i)
-end
-t.debug

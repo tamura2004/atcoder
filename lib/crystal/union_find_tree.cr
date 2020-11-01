@@ -26,4 +26,8 @@ class UnionFindTree
     a[i] += a[j]
     a[j] = i
   end
+  
+  def gsize
+    n.times.map{|i|find(i)}.uniq.size
+  end
 end

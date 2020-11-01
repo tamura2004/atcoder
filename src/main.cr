@@ -1,17 +1,32 @@
+require "complex"
 macro chmin(target, other)
   {{target}} = ({{other}}) if ({{target}}) > ({{other}})
 end
 
 n = gets.to_s.to_i
-a = gets.to_s.split.map { |v| v.to_i64 }
-b = gets.to_s.split.map { |v| v.to_i64 }
+a = Array.new(n) do
+  x,y = gets.to_s.split.map { |v| v.to_i }
+  Complex.new(x,y)
+end
 
-cnt = 0_i64
-ans = Int64::MAX
+a.sort_by!{|v|v.imag}
+dp = Array.new(n){ Array.new(n, 0_f64) }
 n.times do |i|
-  cnt += a[i]
-  if b[i] <= cnt
-    chmin ans, b[i]
+  n.times do |j|
+    dp[i][j] = (a[i] - a[j]).abs
   end
 end
-puts ans == Int64::MAX ? -1 : ans
+
+ans = [100.0 - a[-1].imag, a[0].imag + 100]
+if n >= 2
+  cnt = Float64::MAX
+  n.times do |k|
+    k.times do |i|
+      k.upto(n-1) do |j|
+        chmin cnt, dp[i][j]
+      end
+    end
+  end
+  ans << cnt
+end
+puts ans.max / 2
