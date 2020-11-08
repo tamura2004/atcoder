@@ -46,6 +46,7 @@ class FenwickTree(T)
   # 二分探索で合計がx以上になる最小のiを求める
   def bsearch(x : T)
     return 0 if x <= 0
+    return n + 1 if sum(n) < x
     i = 0
     w = 2 ** Math.log2(n).to_i
     while w > 0

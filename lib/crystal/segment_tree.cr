@@ -3,6 +3,10 @@ class SegmentTree(T)
   getter f : T?, T? -> T?
   getter node : Array(T?)
 
+  def initialize(n : T)
+    initialize(n) { |a, b| a < b ? a : b }
+  end
+
   def initialize(v : Array(T?))
     initialize(v) { |a, b| a < b ? a : b }
   end
@@ -34,7 +38,7 @@ class SegmentTree(T)
   end
 
   def update(i, _x)
-    x : T = _x.is_a?(T) ? _x : T.new(_x)
+    x : T? = _x.is_a?(T) ? _x : _x.nil? ? _x : T.new(_x)
     i += n - 1
     node[i] = x
     while i > 0
