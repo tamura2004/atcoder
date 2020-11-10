@@ -6,14 +6,14 @@ class Grid
   getter c : Array(String)
   getter dp : Array(Array(Int32))
 
-  def initialize(@h, @w, @c,@dp)
+  def initialize(@h, @w, @c, @dp)
   end
 
   def self.read
-    h,w = gets.to_s.split.map { |v| v.to_i }
-    c = Array.new(h){ gets.to_s.chomp }
-    dp = Array.new(h){ Array.new(w, -1) }
-    new(h,w,c,dp)
+    h, w = gets.to_s.split.map { |v| v.to_i }
+    c = Array.new(h) { gets.to_s.chomp }
+    dp = Array.new(h) { Array.new(w, -1) }
+    new(h, w, c, dp)
   end
 
   def each(y, x)
@@ -21,42 +21,34 @@ class Grid
       ny = y + dy
       nx = x + dx
       next if outside?(ny, nx)
-      next if wall?(ny, nx)
+      # next if wall?(ny, nx)
       yield ny, nx
     end
   end
 
   def bfs
-    q = [{0,0,0}]
-    dp[0][0] = 1
-    while q.size > 0
-      y,x,d = q.pop
-      dp[y][x] = d+1
+    q = [{0, 0}]
+    dp[0][0] = 0
 
-      puts "====="
-      pp [y,x]
-      puts dp.join("\n")
-      if y == h - 1 && x == w - 1
-        return dp
-      end
-      each(y,x) do |ny,nx|
+    while q.size > 0
+      y, x = q.shift
+      each(y, x) do |ny, nx|
         next if dp[ny][nx] != -1
-        q << ({ny,nx,d+1})
+        if wall?(ny, nx)
+          dp[ny][nx] = dp[y][x] + 1
+          q << ({ny, nx})
+        else
+          dp[ny][nx] = dp[y][x]
+          q.unshift({ny, nx})
+        end
       end
     end
-    return nil
   end
 
   def solve
-    if cnt = bfs
-      h.times.sum do |y|
-        w.times.count do |x|
-          cnt[y][x] == -1 && c[y][x] == '.'
-        end
-      end
-    else
-      return -1
-    end
+    bfs
+    puts dp.join("\n")
+    dp.map(&.max).max
   end
 
   def outside?(y, x)
@@ -68,4 +60,4 @@ class Grid
   end
 end
 
-pp Grid.read.solve
+puts Grid.read.solve
