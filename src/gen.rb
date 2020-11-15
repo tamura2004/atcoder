@@ -1,11 +1,9 @@
-N = 10000
+N = 100
+a = [0, 0] + [0] * (N - 2)
 
 open("src/input.txt", "w") do |f|
   f.puts N
-  cnt = [0]
-  1.upto(N / 2) do |i|
-    cnt << i
-    cnt << i
+  N.times do |i|
+    f.puts Array.new(N) { rand < 0.01 ? 1 : 0 }.join
   end
-  f.puts cnt.join(" ")
 end

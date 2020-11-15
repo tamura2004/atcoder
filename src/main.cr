@@ -1,63 +1,65 @@
-class Grid
-  DIR = [{0, 1}, {1, 0}, {0, -1}, {-1, 0}]
+class UnionFindTree
+  getter n : Int32
+  getter a : Array(Int32)
 
-  getter h : Int32
-  getter w : Int32
-  getter c : Array(String)
-  getter dp : Array(Array(Int32))
-
-  def initialize(@h, @w, @c, @dp)
+  def initialize(@n)
+    @a = Array.new(n, -1)
   end
 
-  def self.read
-    h, w = gets.to_s.split.map { |v| v.to_i }
-    c = Array.new(h) { gets.to_s.chomp }
-    dp = Array.new(h) { Array.new(w, -1) }
-    new(h, w, c, dp)
+  def find(i)
+    a[i] < 0 ? i : (a[i] = find(a[i]))
   end
 
-  def each(y, x)
-    DIR.each do |dy, dx|
-      ny = y + dy
-      nx = x + dx
-      next if outside?(ny, nx)
-      # next if wall?(ny, nx)
-      yield ny, nx
-    end
+  def same?(i, j)
+    find(i) == find(j)
   end
 
-  def bfs
-    q = [{0, 0}]
-    dp[0][0] = 0
-
-    while q.size > 0
-      y, x = q.shift
-      each(y, x) do |ny, nx|
-        next if dp[ny][nx] != -1
-        if wall?(ny, nx)
-          dp[ny][nx] = dp[y][x] + 1
-          q << ({ny, nx})
-        else
-          dp[ny][nx] = dp[y][x]
-          q.unshift({ny, nx})
-        end
-      end
-    end
+  def size(i)
+    -a[find(i)]
   end
 
-  def solve
-    bfs
-    puts dp.join("\n")
-    dp.map(&.max).max
+  def unite(i, j)
+    i = find(i)
+    j = find(j)
+    return if i == j
+    i, j = j, i if a[i] > a[j]
+    a[i] += a[j]
+    a[j] = i
   end
 
-  def outside?(y, x)
-    y < 0 || h <= y || x < 0 || w <= x
-  end
-
-  def wall?(y, x)
-    c[y][x] == '#'
+  def gsize
+    n.times.map { |i| find(i) }.uniq.size
   end
 end
 
-puts Grid.read.solve
+n, q = gets.to_s.split.map { |v| v.to_i }
+c = gets.to_s.split.map { |v| v.to_i - 1 }
+
+uf = UnionFindTree.new(n.to_i)
+cnt = Array.new(n) { Hash(Int32, Int32).new { |h, k| h[k] = 0 } }
+n.times do |i|
+  cnt[i][c[i]] = 1
+end
+
+q.times do
+  cmd, a, b = gets.to_s.split.map { |v| v.to_i - 1 }
+  case cmd
+  when 0
+    next if uf.same?(a, b)
+    i, j = uf.find(a), uf.find(b)
+    uf.unite(a, b)
+    k = uf.find(a)
+    case
+    when i == k
+      cnt[j].each do |key, value|
+        cnt[i][key] += value
+      end
+    when j == k
+      cnt[i].each do |key, value|
+        cnt[j][key] += value
+      end
+    end
+  when 1
+    puts cnt[uf.find(a)][b]
+  end
+end
