@@ -1,3 +1,4 @@
-x = rand < 0.005 ? 10 : nil
-
-pp x.try{|v|v+5}
+cnt = Array.new(10){ {} of Int32 => Int32 }
+cnt[1][2] = 3
+cnt[2][4] = 5
+pp cnt

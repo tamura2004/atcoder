@@ -40,38 +40,38 @@ uf.unite 5,6
 uf.unite 5,7
 uf.unite 5,1
 
-N = 0..9
-pp! N.map{|i|uf.a[i]}
-pp! N.map{|i|uf.size(i)}
-pp! N.map{|i|uf.find(i)}
+# N = 0..9
+# pp! N.map{|i|uf.a[i]}
+# pp! N.map{|i|uf.size(i)}
+# pp! N.map{|i|uf.find(i)}
 # n, q = gets.to_s.split.map { |v| v.to_i }
 # c = gets.to_s.split.map { |v| v.to_i - 1 }
 
-# uf = UnionFindTree.new(n.to_i)
-# cnt = Array.new(n) { Hash(Int32, Int32).new { |h, k| h[k] = 0 } }
-# n.times do |i|
-#   cnt[i][c[i]] = 1
-# end
+uf = UnionFindTree.new(n.to_i)
+cnt = Array.new(n) { Hash(Int32, Int32).new { |h, k| h[k] = 0 } }
+n.times do |i|
+  cnt[i][c[i]] = 1
+end
 
-# q.times do
-#   cmd, a, b = gets.to_s.split.map { |v| v.to_i - 1 }
-#   case cmd
-#   when 0
-#     next if uf.same?(a, b)
-#     i, j = uf.find(a), uf.find(b)
-#     uf.unite(a, b)
-#     k = uf.find(a)
-#     case
-#     when i == k
-#       cnt[j].each do |key, value|
-#         cnt[i][key] += value
-#       end
-#     when j == k
-#       cnt[i].each do |key, value|
-#         cnt[j][key] += value
-#       end
-#     end
-#   when 1
-#     puts cnt[uf.find(a)][b]
-#   end
-# end
+q.times do
+  cmd, a, b = gets.to_s.split.map { |v| v.to_i - 1 }
+  case cmd
+  when 0
+    next if uf.same?(a, b)
+    i, j = uf.find(a), uf.find(b)
+    uf.unite(a, b)
+    k = uf.find(a)
+    case
+    when i == k
+      cnt[j].each do |key, value|
+        cnt[i][key] += value
+      end
+    when j == k
+      cnt[i].each do |key, value|
+        cnt[j][key] += value
+      end
+    end
+  when 1
+    puts cnt[uf.find(a)][b]
+  end
+end
