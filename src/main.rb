@@ -1,16 +1,16 @@
-def solve
-  s = gets.chomp
-  n = s.size
-  return s.to_i % 8 == 0 if n <= 3
+require "benchmark/ips"
 
-  t = s.chars.map(&.to_i)
-  cnt = Array.new(10, 0)
-  n.times do |i|
-    cnt[t[i]] += 1
-  end
+N = 100
+A = Array.new(N){ Array.new(N){ Array.new(N, 0) } }
 
-  14.upto(124).any? do |i|
-    j = (i*8).to_s.chars
-    next if j.includes?(0)
-    
-
+Benchmark.ips do |r|
+  r.report("ruby") {
+    N.times do |k|
+      N.times do |j|
+        N.times do |i|
+          A[i][j][k] += 1
+        end
+      end
+    end
+  }
+end
