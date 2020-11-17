@@ -21,42 +21,51 @@ class Treap
         @sum = (left.try(&.sum) || 0) + (right.try(&.sum) || 0) + val
       end
     end
+  end
 
-    def merge(right : self?)
-      case right
-      when Nil then self
-      when Node
-        if pri < right.pri
-          @right = @right.try{|node|node.merge(right)}
-          update
-        else
-          right.left = merge(right.left)
-          right.update
-        end
+  def self.merge(left : Node?, right : Node?) : Node?
+    case {left, right}
+    when {Nil, Nil}  then nil
+    when {Node, Nil} then left
+    when {Nil, Node} then right
+    when {Node, Node}
+      if left.pri < right.pri
+        left.right = merge(left.right, right)
+        left.update
+      else
+        right.left = merge(left, right.left)
+        right.update
       end
     end
+  end
 
-    # def merge(left : self?, right : self?)
-    #   case {left, right}
-    #   when {Nil, Nil}  then nil
-    #   when {Node, Nil} then left
-    #   when {Nil, Node} then right
-    #   when {Node, Node}
-    #     if left.pri < right.pri
-    #       left.right = merge(left.right, right)
-    #       left.update
-    #     else
-    #       right.left = merge(left, right.left)
-    #       right.update
-    #     end
-    #   end
-    # end
+  # [0,k) [k,n)
+  def self.split(node : Node?, k)
+    if node
+      if k <= count(node.left)
+        s = split(node.left, k)
+        node.left = s[1]
+        {s[0], node.update}
+      else
+        s = split(node.right, k - count(node.left) - 1)
+        node.right = s[0]
+        {node.update, s[1]}
+      end
+    else
+      {nil,nil}
+    end
 
+  end
+
+  def self.count(node : Node?) : Int32
+    node ? node.cnt : 0
   end
 end
 
 t = Treap::Node.new(1)
 s = Treap::Node.new(2)
-if u = t.as(Treap::Node).merge(s)
-  pp u
+if u = Treap.merge(s, t)
+  x,y = Treap.split(u,1)
+  pp! x
+  pp! y
 end

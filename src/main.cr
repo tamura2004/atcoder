@@ -1,77 +1,78 @@
-class UnionFindTree
+class FenwickTree(T)
   getter n : Int32
-  getter a : Array(Int32)
+  getter data : Array(T)
 
-  def initialize(@n)
-    @a = Array.new(n, -1)
+  # 要素数nで初期化
+  def initialize(@n : Int32)
+    @data = Array(T).new(n + 1, T.zero)
   end
 
-  def find(i)
-    a[i] < 0 ? i : (a[i] = find(a[i]))
-  end
-
-  def same?(i, j)
-    find(i) == find(j)
-  end
-
-  def size(i)
-    -a[find(i)]
-  end
-
-  def unite(i, j)
-    i = find(i)
-    j = find(j)
-    return i if i == j
-    i, j = j, i if a[i] > a[j]
-    a[i] += a[j]
-    a[j] = i
-  end
-
-  def gsize
-    n.times.map { |i| find(i) }.uniq.size
-  end
-end
-
-uf = UnionFindTree.new(10)
-uf.unite 1,2
-uf.unite 1,3
-uf.unite 1,4
-uf.unite 5,6
-uf.unite 5,7
-uf.unite 5,1
-
-# N = 0..9
-# pp! N.map{|i|uf.a[i]}
-# pp! N.map{|i|uf.size(i)}
-# pp! N.map{|i|uf.find(i)}
-# n, q = gets.to_s.split.map { |v| v.to_i }
-# c = gets.to_s.split.map { |v| v.to_i - 1 }
-
-uf = UnionFindTree.new(n.to_i)
-cnt = Array.new(n) { Hash(Int32, Int32).new { |h, k| h[k] = 0 } }
-n.times do |i|
-  cnt[i][c[i]] = 1
-end
-
-q.times do
-  cmd, a, b = gets.to_s.split.map { |v| v.to_i - 1 }
-  case cmd
-  when 0
-    next if uf.same?(a, b)
-    i, j = uf.find(a), uf.find(b)
-    uf.unite(a, b)
-    k = uf.find(a)
-    case
-    when i == k
-      cnt[j].each do |key, value|
-        cnt[i][key] += value
-      end
-    when j == k
-      cnt[i].each do |key, value|
-        cnt[j][key] += value
-      end
+  # 配列aで初期化
+  def initialize(a : Array(T))
+    @n = a.size
+    initialize(n)
+    a.each_with_index do |v, i|
+      add(i + 1, v)
     end
-  when 1
-    puts cnt[uf.find(a)][b]
   end
+  
+  # 要素iに加算
+  def add(i : Int, x : T)
+    raise ArgumentError.new("FenewickTree#add: index #{i} must not be zero or negative") if i.sign != 1
+    while i <= n
+      data[i] += x
+      i += lsb(i)
+    end
+  end
+
+  def []=(i : Int, x : T)
+    add(i, x)
+  end
+  
+  # 要素1からiまでの累積和を取得
+  def sum(i : Int)
+    result = T.zero
+    while i > T.zero
+      result += data[i]
+      i -= lsb(i)
+    end
+    result
+  end
+
+  def [](i : Int)
+    sum(i)
+  end
+
+  # 二分探索で合計がx以上になる最小のiを求める
+  def bsearch(x : T)
+    return 0 if x <= 0
+    return n + 1 if sum(n) < x
+    i = 0
+    w = 2 ** Math.log2(n).to_i
+    while w > 0
+      if i + w < n && data[i + w] < x
+        x -= data[i + w]
+        i += w
+      end
+      w //= 2
+    end
+    return i + 1
+  end
+
+  # 2進数で1が出現する最下位ビット
+  def lsb(i)
+    i & -i
+  end
+end
+
+ft = FenwickTree(Int32).new(100)
+ft[10] = 1
+ft[20] = -1
+ft[18] = 1
+ft[30] = -1
+ft[28] = 1
+ft[40] = -1
+
+1.upto(100) do |i|
+  pp ft[i]
 end
