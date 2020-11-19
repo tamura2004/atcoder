@@ -1,7 +1,19 @@
 require "spec"
 require "../priority_queue"
 
-record Edge, to : Int32, cost : Int32
+record Edge, to : Int32, cost : Int32 do
+  def self.zero
+    Edge.new(0, 0)
+  end
+
+  def +(b)
+    Edge.new(0, cost + b.cost)
+  end
+
+  def -(b)
+    Edge.new(0, cost - b.cost)
+  end
+end
 
 describe PriorityQueue do
   it "usage max heap" do
@@ -53,9 +65,9 @@ describe PriorityQueue do
   end
 
   it "solve abc077d" do
-    ABC077D.new(6).solve(1,0).should eq 3
-    ABC077D.new(41).solve(1,0).should eq 5
-    ABC077D.new(79992).solve(1,0).should eq 36
+    ABC077D.new(6).solve(1, 0).should eq 3
+    ABC077D.new(41).solve(1, 0).should eq 5
+    ABC077D.new(79992).solve(1, 0).should eq 36
   end
 end
 
@@ -107,7 +119,7 @@ class ABC077D
       v = q.pop
       return v.cost if v.to == goal
       seen[v.to] = true
-      
+
       g[v.to].each do |nv|
         next if seen[nv.to]
         q << Edge.new(to: nv.to, cost: v.cost + nv.cost)
