@@ -12,7 +12,9 @@ describe Treap do
     t.insert(20)
     t.min.should eq 10
     t.max.should eq 20
+    t.cnt.should eq 2
     t.delete(10)
+    t.cnt.should eq 1
     t.min.should eq 20
     t.max.should eq 20
   end

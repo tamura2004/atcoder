@@ -1,6 +1,6 @@
 class PriorityQueue(T)
   getter f : T, T -> Bool
-  getter sum : T
+  # getter sum : T
   getter a : Deque(T)
 
   forward_missing_to a
@@ -8,17 +8,17 @@ class PriorityQueue(T)
   def initialize(&block : T, T -> Bool)
     @f = block
     @a = Deque(T).new
-    @sum = T.zero
+    # @sum = T.zero
   end
-  
+
   def initialize
     @f = ->(a : T, b : T) { a < b }
     @a = Deque(T).new
-    @sum = T.zero
+    # @sum = T.zero
   end
 
   def <<(v : T)
-    @sum += v
+    # @sum += v
     @a << v
     fixup(a.size - 1)
   end
@@ -30,7 +30,7 @@ class PriorityQueue(T)
       a[0] = last
       fixdown
     end
-    @sum -= ret
+    # @sum -= ret
     ret
   end
 

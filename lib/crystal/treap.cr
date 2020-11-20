@@ -2,15 +2,18 @@ class Treap(T)
   class Node(T)
     getter v : T
     getter pri : Int32
+    getter cnt : Int32
     property left : self?
     property right : self?
 
     def initialize(@v : T)
       @pri = rand(Int32::MAX)
       @left = @right = nil
+      @cnt = 0
     end
 
     def insert(x : T)
+      @cnt += 1
       if x < v
         case left = @left
         when Nil
@@ -50,27 +53,30 @@ class Treap(T)
       end
     end
 
-    def rotate_right
-      left = @left
-      case left
-      when Nil
-        self
-      when Node
+    def update
+      @cnt = (left.nil? ? 0 : left.as(Node(T)).cnt) + 1 + (right.nil? ? 0 : right.as(Node(T)).cnt)
+      self
+    end
+
+    def rotate_right : Node(T)
+      if left = @left
         @left = left.right
         left.right = self
-        left
+        update
+        left.update
+      else
+        self
       end
     end
 
     def rotate_left
-      right = @right
-      case right
-      when Nil
-        self
-      when Node
+      if right = @right
         @right = right.left
         right.left = self
-        right
+        update
+        right.update
+      else
+        self
       end
     end
 
@@ -94,6 +100,7 @@ class Treap(T)
     end
 
     def delete(x : T)
+      @cnt -= 1
       case x
       when .== v
         merge(@left, @right)
@@ -169,7 +176,7 @@ class Treap(T)
         right.each(&block)
       end
     end
-    
+
     def sum
       ans = v
       if left = @left
@@ -251,6 +258,13 @@ class Treap(T)
     case root = @root
     when Nil  then 0
     when Node then root.sum
+    end
+  end
+
+  def cnt
+    case root = @root
+    when Nil then 0
+    when Node then root.cnt
     end
   end
 end
