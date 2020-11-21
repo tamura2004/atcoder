@@ -7,16 +7,15 @@ class Node
 
   def initialize(@v)
     @ch = [Pointer(Node).null] * 2
+    @cnt = 1
     @sum = v
-    @cnt = 0
     @pri = rand(Int32::MAX)
   end
 
   def insert(x : Int32)
     i = x < v ? 0 : 1
     if @ch[i].null?
-      @ch[i] = Pointer(Node).malloc(1)
-      @ch[i].value = Node.new(x)
+      @ch[i] = Pointer(Node).malloc(1, Node.new(x))
     else
       @ch[i].value.insert(x)
     end
@@ -26,6 +25,12 @@ class Node
     @cnt = ch.map(&.cnt).sum + 1
     @sum = ch.map(&.sum).sum + v
     self
+  end
+
+  def rotate(b)
+    s = ch[1-b]
+    ch[1-b] = s.value.ch[b]
+    s.value.ch[b] = 
   end
 end
 

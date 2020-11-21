@@ -1,6 +1,0 @@
-name: shard
-version: 0.11.1
-
-dependencies:
-  debug:
-    github: Sija/debug.cr
