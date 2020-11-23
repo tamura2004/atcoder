@@ -75,29 +75,29 @@ end
 # 区間更新、１点読み出し
 class SqrtDecompositionRangeUpdateQuery
   N = 512
-  INF = Int64::MAX
+  INF = Int32::MAX
 
   getter m : Int32
-  getter a : Array(Int64)
-  getter b : Array(Int64?) # lazy_update
+  getter a : Array(Int32)
+  getter b : Array(Int32?) # lazy_update
 
   def initialize(n : Int32)
     @m = (n + N - 1) // N
     @a = Array.new(m * N, INF)
-    @b = Array(Int64?).new(N, nil)
+    @b = Array(Int32?).new(N, nil)
   end
 
-  def initialize(@a : Array(Int64))
+  def initialize(@a : Array(Int32))
     @m = (@a.size + N - 1) // N
     while @a.size < m * N
       @a << INF
     end
-    @b = Array(Int64?).new(m, nil)
+    @b = Array(Int32?).new(m, nil)
   end
 
   def eval(k)
     case lazy = b[k]
-    when Int64
+    when Int32
       N.times do |i|
         a[k * N + i] = lazy
       end
@@ -112,11 +112,15 @@ class SqrtDecompositionRangeUpdateQuery
       hi = (k + 1) * N
       next if j < lo || hi <= i
       if i <= lo && hi <= j
-        b[k] = x
+        if lazy = b[k]
+          b[k] = Math.min(lazy, x)
+        else
+          b[k] = x
+        end
       else
         eval(k)
         (Math.max(i,lo)...Math.min(j,hi)).each do |i|
-          a[i] = x
+          a[i] = Math.min(a[i], x)
         end
       end
     end

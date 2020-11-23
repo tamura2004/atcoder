@@ -1,66 +1,103 @@
-class Node
-  getter ch : Array(Pointer(Node))
-  getter v : Int32
-  getter pri : Int32
-  getter cnt : Int32
-  getter sum : Int32
+alias Pair = Tuple(Int32, Int32)
 
-  def initialize(@v)
-    @ch = [Pointer(Node).null] * 2
-    @cnt = 1
-    @sum = v
-    @pri = rand(Int32::MAX)
+class Grid
+  DIR = [{0, 1}, {1, 0}, {0, -1}, {-1, 0}]
+
+  getter h : Int32
+  getter w : Int32
+  getter c : Array(String)
+  getter warp : Array(Array(Int64))
+  getter sy : Int32
+  getter sx : Int32
+  getter gy : Int32
+  getter gx : Int32
+  getter seen : Array(Array(Int32))
+
+  def initialize(@h, @w, @c)
+    @warp = Array.new(26) { [] of Int64 }
+    @sy = @sx = @gy = @gx = 0
+    h.times do |y|
+      w.times do |x|
+        case c[y][x]
+        when 'S'
+          @sy = y
+          @sx = x
+        when 'G'
+          @gy = y
+          @gx = x
+        when 'a'..'z'
+          i = c[y][x].ord - 'a'.ord
+          @warp[i] << to_key(y, x)
+        end
+      end
+    end
+    @seen = Array.new(h) { Array.new(w, -1) }
   end
 
-  def insert(x : Int32)
-    i = x < v ? 0 : 1
-    if @ch[i].null?
-      @ch[i] = Pointer(Node).malloc(1, Node.new(x))
-    else
-      @ch[i].value.insert(x)
+  def self.read
+    h, w = gets.to_s.split.map { |v| v.to_i }
+    c = Array.new(h) { gets.to_s.chomp }
+    new(h, w, c)
+  end
+
+  def solve
+    seen[sy][sx] = 0
+    q = Deque(Pair).new
+    q << {sy, sx}
+    while q.size > 0
+      y, x = q.shift
+      if gy == y && gx == x
+        return seen[y][x]
+      end
+      each(y, x) do |ny, nx|
+        next if seen[ny][nx] != -1
+        seen[ny][nx] = seen[y][x] + 1
+        q << {ny, nx}
+      end
+    end
+    return -1
+  end
+
+  def each(y, x)
+    DIR.each do |dy, dx|
+      ny = y + dy
+      nx = x + dx
+      next if outside?(ny, nx)
+      next if wall?(ny, nx)
+      yield ny, nx
+    end
+
+    i = c[y][x].ord - 'a'.ord
+    if 0 <= i && i < 26
+    # case c[y][x]
+    # when 'a'..'z'
+      if warp[i].size > 0
+        key = to_key(y, x)
+        warp[i].each do |nkey|
+          next if key == nkey
+          ny, nx = from_key(nkey)
+          next if seen[ny][nx] != -1
+          yield ny.to_i, nx.to_i
+        end
+      end
     end
   end
 
-  def update
-    @cnt = ch.map(&.cnt).sum + 1
-    @sum = ch.map(&.sum).sum + v
-    self
+  def outside?(y, x)
+    y < 0 || h <= y || x < 0 || w <= x
   end
 
-  def rotate(b)
-    s = ch[1-b]
-    ch[1-b] = s.value.ch[b]
-    s.value.ch[b] = 
-  end
-end
-
-struct Pointer(T)
-  def cnt
-    null? ? 0 : value.cnt
+  def wall?(y, x)
+    c[y][x] == '#'
   end
 
-  def sum
-    null? ? 0 : value.sum
+  def to_key(y, x) : Int64
+    y.to_i64 * w + x
   end
 
-  def rotate(b)
-    s = value.ch[1-b]
-    value.ch[1-b] = s.value.ch[b]
-    s.value.ch[b] = self
-    value.update
-    s.value.update
-    return s
+  def from_key(key)
+    {key // w, key % w}
   end
 end
 
-root = Node.new(50)
-pp! root.ch[0]
-root.insert(30)
-root.insert(20)
-root.insert(40)
-root.insert(70)
-root.insert(60)
-root.insert(80)
-
-pp! root.v
-pp! root.ch[0].value
+pp Grid.read.solve

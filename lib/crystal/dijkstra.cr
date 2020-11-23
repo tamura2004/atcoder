@@ -1,3 +1,5 @@
+record Edge, to : Int32, cost : Int64
+
 class Dijkstra(E)
   getter n : Int32
   getter g : Array(Array(E))
