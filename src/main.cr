@@ -1,60 +1,83 @@
-# 半分全列挙サンプル
-class SplitAndList
+class FenwickTree(T)
   getter n : Int32
-  getter s : Array(Char)
-  getter lo : Array(Char)
-  getter hi : Array(Char)
+  getter data : Array(T)
 
-  def self.read
-    n = gets.to_s.to_i
-    s = gets.to_s.chars
-    new(n, s)
+  # 要素数nで初期化
+  def initialize(@n : Int32)
+    @data = Array(T).new(n + 1, T.zero)
   end
 
-  def initialize(@n, @s)
-    @lo = s.first(n)
-    @hi = s.last(n).reverse
-  end
-
-  def solve
-    lo_cnt = collect_split_pattern(lo)
-    hi_cnt = collect_split_pattern(hi)
-
-    # pp! lo
-    # pp! hi
-    # pp! lo_cnt
-    # pp! hi_cnt
-
-    lo_cnt.sum do |k,v|
-      v * hi_cnt[k]
+  # 配列aで初期化
+  def initialize(a : Array(T))
+    @n = a.size
+    initialize(n)
+    a.each_with_index do |v, i|
+      add(i + 1, v)
     end
   end
 
-  # 塗分けパターンを集計
-  def collect_split_pattern(a)
-    cnt = Hash(Tuple(String, String), Int64).new { |h, k| h[k] = 0_i64 }
-    n = a.size
-    (1<<n).times do |mask|
-      key = split_by_mask(a, mask)
-      cnt[key] += 1
+  # 要素iに加算
+  def add(i : Int, x : T)
+    raise ArgumentError.new("FenewickTree#add: index #{i} must not be zero or negative") if i.sign != 1
+    while i <= n
+      data[i] += x
+      i += lsb(i)
     end
-    return cnt
   end
 
-  # 配列aをビットマスクで分割
-  def split_by_mask(a, mask)
-    n = a.size
-    b = [] of Char
-    c = [] of Char
-    n.times do |i|
-      if mask.bit(i) == 1
-        b << a[i]
-      else
-        c << a[i]
+  def []=(i : Int, x : T)
+    add(i, x)
+  end
+
+  # 要素1からiまでの累積和を取得
+  def sum(i : Int)
+    return T.zero if i <= 0
+    result = T.zero
+    while i > T.zero
+      result += data[i]
+      i -= lsb(i)
+    end
+    result
+  end
+
+  def [](i : Int)
+    sum(i)
+  end
+
+  # 二分探索で合計がx以上になる最小のiを求める
+  def bsearch(x : T)
+    return 0 if x <= 0
+    return n + 1 if sum(n) < x
+    i = 0
+    w = 2 ** Math.log2(n).to_i
+    while w > 0
+      if i + w < n && data[i + w] < x
+        x -= data[i + w]
+        i += w
       end
+      w //= 2
     end
-    return {b.join, c.join}
+    return i + 1
+  end
+
+
+  # 2進数で1が出現する最下位ビット
+  def lsb(i)
+    i & -i
   end
 end
 
-pp SplitAndList.read.solve
+# 非負整数の配列aの転倒数
+def inversion_number(a)
+  n = a.max
+  ft = FenwickTree(Int32).new(n+1)
+  a.sum do |i|
+    ft[i] = 1
+    ft[n] - ft[i]
+  end
+end
+
+n = gets.to_s.to_i
+a = gets.to_s.split.map { |v| v.to_i }
+
+puts inversion_number(a)

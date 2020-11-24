@@ -15,7 +15,7 @@ class FenwickTree(T)
       add(i + 1, v)
     end
   end
-  
+
   # 要素iに加算
   def add(i : Int, x : T)
     raise ArgumentError.new("FenewickTree#add: index #{i} must not be zero or negative") if i.sign != 1
@@ -28,9 +28,10 @@ class FenwickTree(T)
   def []=(i : Int, x : T)
     add(i, x)
   end
-  
+
   # 要素1からiまでの累積和を取得
   def sum(i : Int)
+    return T.zero if i <= 0
     result = T.zero
     while i > T.zero
       result += data[i]
@@ -59,8 +60,20 @@ class FenwickTree(T)
     return i + 1
   end
 
+
   # 2進数で1が出現する最下位ビット
   def lsb(i)
     i & -i
+  end
+end
+
+
+# 非負整数の配列aの転倒数
+def inversion_number(a)
+  n = a.max
+  ft = FenwickTree(Int32).new(n+1)
+  a.sum do |i|
+    ft[i] = 1
+    ft[n] - ft[i]
   end
 end
