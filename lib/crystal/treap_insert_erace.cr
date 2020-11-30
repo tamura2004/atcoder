@@ -31,10 +31,10 @@ class Treap
       end
     end
 
-    def erace(x)
+    def erase(x)
       if x != val
         b = dir(x)
-        ch[b] = ch[b].try(&.erace(x))
+        ch[b] = ch[b].try(&.erase(x))
         update!
       else
         l, r = ch
@@ -43,7 +43,7 @@ class Treap
         else
           b = r.nil? ? Left : l.nil? ? Right : l.pri < r.pri ? Left : Right
           rotate(b).tap do |t|
-            t.ch[1 - b] = erace(x)
+            t.ch[1 - b] = erase(x)
           end
         end
       end
@@ -68,6 +68,17 @@ class Treap
       self
     end
 
+    def kth_element(k)
+      left = ch[Left].try(&.cnt) || 0
+      return self if left == k - 1
+
+      if left >= k
+        ch[Left].try(&.kth_element(k))
+      else
+        ch[Right].try(&.kth_element(k - left - 1))
+      end
+    end
+
     private def dir(x)
       x < val ? Left : Right
     end
@@ -88,33 +99,18 @@ class Treap
   end
 
   def <<(x)
-    if r = root
-      @root = r.insert(x)
-    else
-      @root = Node.new(x)
-    end
+    @root = root.try(&.insert(x)) || Node.new(x)
   end
 
-  def erace(x)
-    if r = root
-      @root = r.erace(x)
-    else
-      puts "nothing to delete"
-    end
+  def erase(x)
+    root.try &.erase(x)
+  end
+
+  def kth_element(k)
+    root.try &.kth_element(k)
   end
 
   def debug
-    if r = root
-      r.debug(0)
-    end
+    root.try &.debug(0)
   end
 end
-
-a = Treap.new
-10.times do |i|
-  a << i
-end
-a.erace(0)
-a.erace(3)
-a.erace(8)
-a.debug
