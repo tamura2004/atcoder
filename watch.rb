@@ -50,7 +50,7 @@ class Task
 
   def initialize
     @lang = "ruby"
-    @src = "src/main.rb"
+    @src = "src/main.cr"
     @input = "src/input.txt"
     @path = nil
     @exec_str = nil
