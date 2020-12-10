@@ -1,16 +1,33 @@
-require "benchmark/ips"
+# a := ２の倍数のうち３の倍数でないもの
+# b := ３の倍数のうち２の倍数でないもの
 
-N = 100
-A = Array.new(N){ Array.new(N){ Array.new(N, 0) } }
+a = [] of Int32
+b = [] of Int32
 
-Benchmark.ips do |r|
-  r.report("ruby") {
-    N.times do |k|
-      N.times do |j|
-        N.times do |i|
-          A[i][j][k] += 1
-        end
-      end
-    end
-  }
+2.upto(20000) do |i|
+  a << i if i % 2 == 0 && i % 3 != 0
+  b << i if i % 3 == 0 && i % 2 != 0
 end
+
+n = gets.to_s.to_i
+
+ans = case n
+when 3
+  [2, 5, 63]
+when .even?
+  case n // 2
+  when .even?
+    a.first(n//4) + b.first(n//4)
+  when .odd?
+    a.first(n//4+1) + b.first(n//4)
+  end
+when .odd?
+  case n // 2
+  when .even?
+    a.first(n//4) + b.first(n//4) + [6]
+  when .odd?
+    a.first(n//4+1) + b.first(n//4) + [6]
+  end
+end
+
+puts ans.join(" ")
