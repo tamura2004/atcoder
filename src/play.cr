@@ -1,73 +1,100 @@
-struct Nil
-  def dep
-    0
+# 座標圧縮（1次元）計算量 O(N logN)
+#
+# ```
+# cc = CoodinateCompressLiner(Int32).new([100, -10, 5, -10])
+# cc.src # => [100, -10, 5, -10]
+# cc.dst # => [2, 0, 1, 0]
+# cc.ref # => [-10, 5, 100]
+# ```
+class CoodinateCompressLiner(T)
+  getter src : Array(T)
+  getter dst : Array(Int32)
+  getter ref : Array(T)
+
+  def initialize(@src)
+    @ref = src.sort.uniq
+    @dst = src.map do |i|
+      ref.bsearch_index do |j|
+        i <= j
+      end || 0
+    end
   end
 
-  def ch
-    {nil, nil}
-  end
-
-  def print(i)
-  end
-
-  def insert(k, v)
+  def self.from_pair(p : Array(Tuple(T, T)))
+    n = p.size
+    ccl = new(p.map(&.first) + p.map(&.last))
+    a = ccl.dst[0, n]
+    b = ccl.dst[n, n]
+    return a.zip(b)
   end
 end
 
-class AVLTree
-  class Node
-    getter key : Int32
-    getter val : Int32
-    getter dep : Int32
-    property ch : Array(Node?)
+alias CCL = CoodinateCompressLiner(Int64)
 
-    def initialize(@key, @val)
-      @ch = Array(Node?).new(2, nil)
-      @dep = 0
-    end
+class UnionFindTree
+  getter n : Int32
+  getter a : Array(Int32)
+  getter w : Array(Int32) # 辺の数
 
-    def print(i = 0)
-      ch.each(&.print(i + 2))
-      puts " " * i + key.to_s
-    end
-
-    def insert(k, v)
-      b = k < key ? 0 : 1
-      ch[b] = ch[b].insert(k, v) || Node.new(k, v)
-      self
-    end
-
-    def []=(k, v)
-      insert(k, v)
-    end
-
-    def rotate
-      case ch[0].dep - c[1].dep
-      when +2
-      when -2
-      else
-      end
-    end
+  def initialize(@n)
+    @a = Array.new(n, -1)
+    @w = Array.new(n, 0)
   end
 
-  getter root : Node?
-
-  def initialize
-    @root = nil
+  def find(i)
+    a[i] < 0 ? i : (a[i] = find(a[i]))
   end
 
-  def print
-    @root.try &.print
+  def same?(i, j)
+    find(i) == find(j)
   end
 
-  def []=(k, v)
-    @root = @root.insert(k, v) || Node.new(k, v)
+  def size(i)
+    -a[find(i)]
+  end
+
+  # 辺の数
+  def weight(i)
+    w[find(i)]
+  end
+
+  def unite(i, j)
+    i = find(i)
+    j = find(j)
+    if i == j
+      w[i] += 1
+      return
+    end
+    i, j = j, i if a[i] > a[j]
+    a[i] += a[j]
+    a[j] = i
+    w[i] += w[j] + 1
+  end
+  
+  def gsize
+    n.times.map{|i|find(i)}.uniq.size
   end
 end
 
-t = AVLTree.new
-10.times do |i|
-  t[rand(100)] = rand(100)
+n = gets.to_s.to_i
+src = Array.new(n) do
+  a,b = gets.to_s.split.map { |v| v.to_i64 }
+  {a,b}  
 end
 
-t.print
+dst = CCL.from_pair(src)
+uf = UnionFindTree.new(n*2)
+dst.each do |i,j|
+  uf.unite(i,j)
+end
+
+seen = Array.new(n*2, false)
+ans = 0_i64
+(n*2).times do |i|
+  j = uf.find(i)
+  next if seen[j]
+  seen[j] = true
+  ans += Math.min uf.size(i), uf.weight(i)
+end
+
+puts ans

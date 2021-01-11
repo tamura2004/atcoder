@@ -1,38 +1,47 @@
-# a := ２の倍数のうち３の倍数でないもの
-# b := ３の倍数のうち２の倍数でないもの
-# c := ６の倍数
+class UnionFindTree
+  getter n : Int32
+  getter a : Array(Int32)
+  getter b : Array(Int32)
 
-a = [] of Int32
-b = [] of Int32
-c = [] of Int32
+  def initialize(@n)
+    @a = Array.new(n, -1)
+    @b = Array.new(n, 0)
+  end
 
-2.upto(30000) do |i|
-  a << i if i % 2 == 0 && i % 3 != 0
-  b << i if i % 3 == 0 && i % 2 != 0
-  c << i if i % 3 == 0 && i % 2 == 0
+  def find(i)
+    a[i] < 0 ? i : (a[i] = find(a[i]))
+  end
+
+  def same?(i, j)
+    find(i) == find(j)
+  end
+
+  def size(i)
+    -a[find(i)]
+  end
+
+  def unite(i, j)
+    i = find(i)
+    j = find(j)
+    if i == j
+      b[i] += 1
+      return
+    end
+    i, j = j, i if a[i] > a[j]
+    a[i] += a[j]
+    a[j] = i
+    b[i] += b[j] + 1
+  end
+  
+  def gsize
+    n.times.map{|i|find(i)}.uniq.size
+  end
 end
-
-pp [a,b,c].map(&.size).join(" ")
 
 n = gets.to_s.to_i
-
-ans = case n
-when 3
-  [2, 5, 63]
-when .even?
-  case n // 2
-  when .even?
-    a.first(n//4*2) + b.first(n//4*2)
-  when .odd?
-    a.first((n//4+1)*2) + b.first(n//4*2)
-  end
-when .odd?
-  case n // 2
-  when .even?
-    a.first(n//4*2) + b.first(n//4*2) + [6]
-  when .odd?
-    a.first((n//4+1)*2) + b.first(n//4*2) + [6]
-  end
+uf = UnionFindTree.new(n)
+n.times do
+  a,b = gets.to_s.split.map { |v| v.to_i - 1 }
+  uf.unite(a,b)
 end
 
-# puts ans.try(&.sort.join(" "))
