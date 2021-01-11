@@ -1,47 +1,40 @@
-class UnionFindTree
+# 最長増加部分列(LIS)の長さを求める
+#
+# ```
+# [1,3,5,2,6]の最長増加部分列は、[1,3,5,6]
+# a = [1,3,5,2,6]
+# lis = LIS(Int32).new(a)
+# lis.solve # => 4
+# ```
+class LIS(T)
+  getter a : Array(T)
   getter n : Int32
-  getter a : Array(Int32)
-  getter b : Array(Int32)
 
-  def initialize(@n)
-    @a = Array.new(n, -1)
-    @b = Array.new(n, 0)
+  def initialize(@a)
+    @n = a.size
   end
 
-  def find(i)
-    a[i] < 0 ? i : (a[i] = find(a[i]))
-  end
-
-  def same?(i, j)
-    find(i) == find(j)
-  end
-
-  def size(i)
-    -a[find(i)]
-  end
-
-  def unite(i, j)
-    i = find(i)
-    j = find(j)
-    if i == j
-      b[i] += 1
-      return
+  def solve
+    dp = Array(T).new(n, T::MAX)
+    n.times do |i|
+      j = dp.bsearch_index{|v| a[i] <= v} || 0
+      dp[j] = a[i]
     end
-    i, j = j, i if a[i] > a[j]
-    a[i] += a[j]
-    a[j] = i
-    b[i] += b[j] + 1
-  end
-  
-  def gsize
-    n.times.map{|i|find(i)}.uniq.size
+    dp.index(&.== T::MAX)
   end
 end
+
+alias Pair = Tuple(Int64, Int64)
 
 n = gets.to_s.to_i
-uf = UnionFindTree.new(n)
+dp = [] of Pair
 n.times do
-  a,b = gets.to_s.split.map { |v| v.to_i - 1 }
-  uf.unite(a,b)
+  a,b = gets.to_s.split.map { |v| v.to_i64 }
+  dp << Pair.new(a,b)
+  dp << Pair.new(b,a)
 end
 
+dp.sort_by!{|e|{e[0],-e[1]}}
+a = dp.map(&.last)
+ans = LIS(Int64).new(a).solve
+pp ans
