@@ -70,7 +70,7 @@ class UnionFindTree
     a[j] = i
     w[i] += w[j] + 1
   end
-  
+
   def gsize
     n.times.map{|i|find(i)}.uniq.size
   end
@@ -79,7 +79,7 @@ end
 n = gets.to_s.to_i
 src = Array.new(n) do
   a,b = gets.to_s.split.map { |v| v.to_i64 }
-  {a,b}  
+  {a,b}
 end
 
 dst = CCL.from_pair(src)
