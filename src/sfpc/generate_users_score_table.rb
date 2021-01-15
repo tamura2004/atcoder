@@ -29,7 +29,7 @@ def hms(sec)
 end
 
 fh = open("all_scores.csv", "w")
-users = get_json("newbee.json")
+users = get_json("users.json")
 22.times do |i|
   id = i + 1
   printf("SFPC%03d\n", id)
