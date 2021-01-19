@@ -1,7 +1,15 @@
-x = 10
-case x
-when 1,10
-  pp 1
-when 2,10
-  pp 2
+class Hoge(T)
+  getter f : T, T -> T
+  def initialize
+    @f = -> (x : T, y : T) {
+      yield x,y
+    }
+  end
+
+  def add(x,y)
+    f.call(x,y)
+  end
 end
+
+hoge = Hoge(Int32).new{|a,b|a-b}
+pp! hoge.add(10,5)

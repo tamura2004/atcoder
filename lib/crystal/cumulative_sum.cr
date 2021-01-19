@@ -1,19 +1,35 @@
+# 左右からの累積和を求める
+#
+
 class CumulativeSum(T)
-  getter cs : Array(Array(T))
+  getter left : Array(T)
+  getter right : Array(T)
+  getter src : Array(T)
+  getter n : Int32
+  getter f : T, T -> T
 
-  def initialize(a : Array(Array(T)))
-    h = a.size
-    w = a[0].size
-    @cs = Array.new(h+1){ Array.new(w+1,T.zero) }
+  def initialize(src)
+    initialize(src) { |a, b| a + b }
+  end
 
-    h.times do |i|
-      w.times do |j|
-        cs[i+1][j+1] += cs[i+1][j] + cs[i][j+1] - cs[i][j] + a[i][j]
-      end
+  def initialize(@src, &@f : T, T -> T)
+    @n = src.size
+    @left = Array.new(n + 1) { T.zero }
+    @right = Array.new(n + 1) { T.zero }
+    n.times do |i|
+      left[i + 1] = f.call left[i], src[i]
+    end
+    n.downto(1) do |i|
+      right[i - 1] = f.call right[i], src[i - 1]
     end
   end
 
-  def sum(y1,x1,y2,x2)
-    cs[y2][x2] - cs[y2][x1] - cs[y1][x2] + cs[y1][x1]
+  # i番目の要素を除く
+  def without(i)
   end
+
+  delegate "[]", to: left
+  delegate "[]=", to: left
 end
+
+alias CS = CumulativeSum(Int64)
