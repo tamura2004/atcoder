@@ -1,43 +1,46 @@
-record ModInt, v : Int64 do
-  MOD = 10_i64 ** 9 + 7
-  def +(b); ModInt.new((v + b.to_i64 % MOD) % MOD); end
-  def -(b); ModInt.new((v + MOD - b.to_i64 % MOD) % MOD); end
-  def *(b); ModInt.new((v * (b.to_i64 % MOD)) % MOD); end
-  def **(b)
-    a = self
-    ans = ModInt.new(1_i64)
-    while b > 0
-      ans *= a if b.odd?
-      b //= 2
-      a *= a
+macro chmax(target, other)
+  {{target}} = ({{other}}) if ({{target}}) < ({{other}})
+end
+
+class CumulativeSum2D(T)
+  getter cs : Array(Array(T))
+
+  def initialize(a : Array(Array(T)))
+    h = a.size
+    w = a[0].size
+    @cs = Array.new(h + 1) { Array.new(w + 1, T.zero) }
+
+    h.times do |i|
+      w.times do |j|
+        cs[i + 1][j + 1] += cs[i + 1][j] + cs[i][j + 1] - cs[i][j] + a[i][j]
+      end
     end
-    return ans
-  end
-  def self.zero; new(0); end
-  def to_i64; v; end
-  delegate to_s, to: @v
-  delegate inspect, to: @v
-end
-
-NON = 0
-A__ = 1
-AB_ = 2
-ABC = 3
-
-s = gets.to_s
-n = s.size
-dp = Array.new(n+1){ Array.new(4, ModInt.zero) }
-dp[0][0] = ModInt.new(1)
-
-n.times do |i|
-  mul = s[i] == '?' ? 3 : 1
-  4.times do |j|
-    dp[i+1][j] += dp[i][j] * mul
   end
 
-  dp[i+1][A__] += dp[i][NON] if s[i] == 'A' || s[i] == '?'
-  dp[i+1][AB_] += dp[i][A__] if s[i] == 'B' || s[i] == '?'
-  dp[i+1][ABC] += dp[i][AB_] if s[i] == 'C' || s[i] == '?'
+  def [](y1, x1, y2, x2) : T
+    cs[y2][x2] - cs[y2][x1] - cs[y1][x2] + cs[y1][x1]
+  end
 end
 
-puts dp[-1][-1]
+n, k = gets.to_s.split.map { |v| v.to_i }
+cnt = Array.new(2) { Array.new(k) { Array.new(k, 0) } }
+
+n.times do
+  x, y, c = gets.to_s.split
+  x = x.to_i
+  y = y.to_i
+  c = c == "B" ? 1 : 0
+  i = ((x//k) + (y//k) + c) % 2
+  cnt[i][y % k][x % k] += 1
+end
+
+cs = Array.new(2) { |i| CumulativeSum2D.new(cnt[i]) }
+ans = k.times.max_of do |i|
+  k.times.max_of do |j|
+    2.times.max_of do |c|
+      cs[c][0, 0, i, j] + cs[c][i, j, k, k] + cs[1 - c][0, j, i, k] + cs[1 - c][i, 0, k, j]
+    end
+  end
+end
+
+puts ans
