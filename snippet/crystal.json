@@ -14,13 +14,19 @@
   "get string from stdin": {
     "prefix": "ins",
     "body": [
-      "gets.to_s.chomp"
+      "gets.to_s"
     ]
   },
   "make 1D array": {
     "prefix": "vi",
     "body": [
       "Array.new($1){ $0 }"
+    ]
+  },
+  "MOD": {
+    "prefix": "mod",
+    "body": [
+      "MOD = 10_i64 ** 9 + 7"
     ]
   },
   "Int64 zero": {
@@ -47,61 +53,155 @@
       "getter $0 : Int32"
     ]
   },
-  "type Int64Array": {
+  "getter Int64Array": {
     "prefix": "gvl",
     "body" : [
       "getter $0 : Array(Int64)"
     ]
   },
-  "type Int32Array": {
+  "getter Int32Array": {
     "prefix": "gvi",
     "body" : [
       "getter $0 : Array(Int32)"
     ]
   },
-  "type String": {
-    "prefix": "gs",
+  "getter Int64Array2D": {
+    "prefix": "gvvl",
     "body" : [
-      "getter $0 : String"
+      "getter $0 : Array(Array(Int64))"
     ]
   },
-  "Yes No answer" : {
-    "prefix": "yes",
-    "body": [
-      " ? \"Yes\" : \"No\""
+  "getter Int32Array2D": {
+    "prefix": "gvvi",
+    "body" : [
+      "getter $0 : Array(Array(Int32))"
     ]
   },
-  "YES NO answer" : {
-    "prefix": "yes",
+  "type Int64Array": {
+    "prefix": "tvl",
+    "body" : [
+      "Array(Int64)"
+    ]
+  },
+  "type Int32Array": {
+    "prefix": "tvi",
+    "body" : [
+      "Array(Int32)"
+    ]
+  },
+  "type Array2D": {
+    "prefix": "tvv",
+    "body" : [
+      "Array(Array($0))"
+    ]
+  },
+  "type Int64Array2D": {
+    "prefix": "tvvl",
+    "body" : [
+      "Array(Array(Int64))"
+    ]
+  },
+  "type Int32Array2D": {
+    "prefix": "tvvi",
+    "body" : [
+      "Array(Array(Int32))"
+    ]
+  },
+  "type String": {
+    "prefix": "ts",
+    "body" : [
+      "String"
+    ]
+  },
+  "type Pair": {
+    "prefix": "pair",
+    "body" : [
+      "alias Pair = Tuple(Int64, Int64)",
+      "alias Pair = NamedTuple(lo: Int64, hi: Int64)",
+      "record Pair, lo : Int64, hi : Int64",
+    ]
+  },
+  "chmax" : {
+    "prefix": "chmax",
     "body": [
-      " ? \"YES\" : \"NO\""
+      "macro chmax(target, other)",
+      "  {{target}} = ({{other}}) if ({{target}}) < ({{other}})",
+      "end"
+    ]
+  },
+  "chmin" : {
+    "prefix": "chmin",
+    "body": [
+      "macro chmin(target, other)",
+      "  {{target}} = ({{other}}) if ({{target}}) > ({{other}})",
+      "end"
+    ]
+  },
+  "crumutive sum" : {
+    "prefix": "cs",
+    "body": [
+      "a.each_with_object([0_i64]) { |v, h| h << h[-1] + v }"
+    ]
+  },
+  "modint" : {
+    "prefix": "modint",
+    "body": [
+      "# ModInt",
+      "record ModInt, value : Int64 = 0_i64 do",
+      "  MOD = 1_000_000_007_i64",
+      "  def +(other); ModInt.new((@value + other.to_i64 % MOD) % MOD); end",
+      "  def <<(other); ModInt.new((@value << other) % MOD); end",
+      "  delegate inspect, to: @value",
+      "  delegate to_s, to: @value",
+      "  delegate to_i64, to: @value",
+      "end"
+    ]
+  },
+  "prime division" : {
+    "prefix": "prime",
+    "body": [
+      "def prime_division(n : Int64)",
+      "  m = Math.sqrt(n).to_i64",
+      "  Hash(Int64,Int64).new(0_i64).tap do |ans|",
+      "    2_i64.upto(m) do |i|",
+      "      while n % i == 0",
+      "        ans[i] += 1",
+      "        n //= i",
+      "      end",
+      "    end",
+      "    ans[n] += 1 if n != 1",
+      "  end",
+      "end",
+      "",
+      "$0"
     ]
   },
   "Class template": {
     "prefix": "class",
     "body": [
       "class Problem",
+      "  getter n : Int32",
+      "  getter a : Array(Int64)",
       "",
-      "  $0",
+      "  def initialize(@n, @a)",
+      "  end",
       "",
-      "  def initialize",
+      "  def self.read",
+      "    n = gets.to_s.to_i",
+      "    a = gets.to_s.split.map { |v| v.to_i64 }",
+      "    new(n, a)",
       "  end",
       "",
       "  def solve",
       "  end",
       "",
-      "  def show(ans)",
-      "    puts ans",
-      "  end",
-      "",
-      "  def instance_eval",
-      "    with self yield",
+      "  def run",
+      "    pp self",
+      "    puts solve",
       "  end",
       "end",
       "",
-      "Problem.new.instance_eval do",
-      "  show(solve)",
-      "end"
+      "Problem.read.run",
     ]
   }
 }
