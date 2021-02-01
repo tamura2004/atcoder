@@ -1,16 +1,42 @@
-# https://atcoder.jp/contests/arc111/tasks/arc111_c
-n = gets.to_s.to_i
-a = gets.to_s.split.map { |v| v.to_i - 1 }
-b = gets.to_s.split.map { |v| v.to_i - 1 }
-p = gets.to_s.split.map { |v| v.to_i - 1 }
+# 置換群
+class PermutationGroup
+  getter a : Array(Int32)
+  getter inv : Array(Int32)
 
-inv = Array.new(n, -1)
-n.times do |i|
-  inv[p[i]] = i
+  def initialize(@a)
+    n = a.size
+    @inv = Array.new(n, -1)
+    n.times do |i|
+      inv[a[i]] = i
+    end
+  end
+
+  def swap(i,j)
+    inv.swap a[i],a[j]
+    a.swap i,j
+  end
+
+  # 不動点
+  def fixed?(i)
+    a[i] == i
+  end
+
+  def value
+    ({a,inv})
+  end
 end
 
+alias PG = PermutationGroup
+
+n = gets.to_s.to_i
+a = gets.to_s.split.map { |v| v.to_i }
+b = gets.to_s.split.map { |v| v.to_i }
+p = gets.to_s.split.map { |v| v.to_i - 1 }
+
+pg = PG.new(p)
+
 flag = n.times.any? do |i|
-  p[i] != i && a[i] < b[p[i]]
+  !pg.fixed?(i) && a[i] <= b[pg.a[i]]
 end
 
 if flag
@@ -20,10 +46,9 @@ end
 
 ans = [] of Tuple(Int32,Int32)
 a.zip(0..).sort.each do |w,i|
-  j = inv[i]
-  next if i == j
-  inv.swap p[i],p[j]
-  p.swap i,j
+  next if pg.fixed?(i)
+  j = pg.inv[i]
+  pg.swap(i,j)
   ans << {i,j}
 end
 
@@ -31,6 +56,3 @@ puts ans.size
 ans.each do |i,j|
   puts "#{i+1} #{j+1}"
 end
-
-
-
