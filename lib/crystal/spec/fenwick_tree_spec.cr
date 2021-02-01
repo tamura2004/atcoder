@@ -1,6 +1,20 @@
 require "spec"
 require "../fenwick_tree"
 
+describe "inversion number" do
+  it "usage" do
+    a = [3,2,1]
+    inversion_number(a).should eq 3
+  end
+
+  it "overflow" do
+    n = 100000_i64
+    a = (1..100000).to_a.reverse
+    want = (n-1)*n//2
+    inversion_number(a).should eq want
+  end
+end
+
 describe FenwickTree do
   it "usage: init empty array" do
     bit = FenwickTree(Int64).new(10)
@@ -36,8 +50,8 @@ describe FenwickTree do
 
   it "index error" do
     bit = FenwickTree(Int32).new(10)
-    expect_raises( ArgumentError, "FenewickTree#add: index 0 must not be zero or negative" ) { bit[0] = 1 }
-    expect_raises( ArgumentError, "FenewickTree#add: index -1 must not be zero or negative" ) { bit[-1] = 1 }
+    expect_raises( ArgumentError, "FenwickTree#add: index 0 must not be zero or negative" ) { bit[0] = 1 }
+    expect_raises( ArgumentError, "FenwickTree#add: index -1 must not be zero or negative" ) { bit[-1] = 1 }
   end
 
   it "solve Chokudai Speed Run 001 J" do

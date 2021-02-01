@@ -17,35 +17,35 @@ class FenwickTree(T)
   end
 
   # 要素iに加算
-  def add(i : Int, x : T)
-    raise ArgumentError.new("FenewickTree#add: index #{i} must not be zero or negative") if i.sign != 1
+  def add(i : Int32, x : T)
+    raise ArgumentError.new("FenwickTree#add: index #{i} must not be zero or negative") if i.sign != 1
     while i <= n
       data[i] += x
       i += lsb(i)
     end
   end
 
-  def []=(i : Int, x : T)
+  def []=(i : Int32, x : T)
     add(i, x)
   end
 
   # 要素1からiまでの累積和を取得
-  def sum(i : Int)
+  def sum(i : Int32) : T
     return T.zero if i <= 0
     result = T.zero
-    while i > T.zero
+    while i > 0
       result += data[i]
       i -= lsb(i)
     end
     result
   end
 
-  def [](i : Int)
+  def [](i : Int32) : T
     sum(i)
   end
 
   # 二分探索で合計がx以上になる最小のiを求める
-  def bsearch(x : T)
+  def bsearch(x : T) : Int32
     return 0 if x <= 0
     return n + 1 if sum(n) < x
     i = 0
@@ -60,18 +60,16 @@ class FenwickTree(T)
     return i + 1
   end
 
-
   # 2進数で1が出現する最下位ビット
-  def lsb(i)
+  def lsb(i) : Int32
     i & -i
   end
 end
 
-
 # 非負整数の配列aの転倒数
 def inversion_number(a)
-  n = a.max
-  ft = FenwickTree(Int32).new(n+1)
+  n = a.max.to_i
+  ft = FenwickTree(Int64).new(n+1)
   a.sum do |i|
     ft[i] = 1
     ft[n] - ft[i]
