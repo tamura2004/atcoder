@@ -38,10 +38,7 @@ class ARC111C_TOO_HEAVY
       !pg.fixed?(i) && a[i] <= b[pg.a[i]]
     end
 
-    if flag
-      puts -1
-      exit
-    end
+    return -1 if flag
 
     ans = [] of Tuple(Int32,Int32)
     a.zip(0..).sort.each do |w,i|
