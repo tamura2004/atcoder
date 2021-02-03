@@ -1,58 +1,35 @@
-# 置換群
-class PermutationGroup
-  getter a : Array(Int32)
-  getter inv : Array(Int32)
+l = gets.to_s.to_i
+cnt = [] of Int32
+while l > 1
+  if l.odd?
+    cnt << 1
+  else
+    cnt << 0
+  end
+  l //= 2
+end
 
-  def initialize(@a)
-    n = a.size
-    @inv = Array.new(n, -1)
-    n.times do |i|
-      inv[a[i]] = i
-    end
+i = 1
+unit = 1
+ans = [] of Tuple(Int32,Int32,Int32)
+
+while cnt.size > 0
+  ans << {i,i+1,0}
+  ans << {i,i+1,unit}
+  unit *= 2
+  
+  v = cnt.pop
+  if v == 1
+    ans << {1,i+1,unit}
+    unit += 1
   end
 
-  def swap(i,j)
-    inv.swap a[i],a[j]
-    a.swap i,j
-  end
-
-  # 不動点
-  def fixed?(i)
-    a[i] == i
-  end
-
-  def value
-    ({a,inv})
-  end
+  i += 1
 end
 
-alias PG = PermutationGroup
-
-n = gets.to_s.to_i
-a = gets.to_s.split.map { |v| v.to_i }
-b = gets.to_s.split.map { |v| v.to_i }
-p = gets.to_s.split.map { |v| v.to_i - 1 }
-
-pg = PG.new(p)
-
-flag = n.times.any? do |i|
-  !pg.fixed?(i) && a[i] <= b[pg.a[i]]
+puts "#{i} #{ans.size}"
+ans.each do |row|
+  puts row.join(" ")
 end
 
-if flag
-  puts -1
-  exit
-end
 
-ans = [] of Tuple(Int32,Int32)
-a.zip(0..).sort.each do |w,i|
-  next if pg.fixed?(i)
-  j = pg.inv[i]
-  pg.swap(i,j)
-  ans << {i,j}
-end
-
-puts ans.size
-ans.each do |i,j|
-  puts "#{i+1} #{j+1}"
-end

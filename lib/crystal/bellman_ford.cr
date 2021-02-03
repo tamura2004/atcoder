@@ -1,5 +1,23 @@
+macro chmin(target, other)
+  {{target}} = ({{other}}) if ({{target}}) > ({{other}})
+end
+
+
+# ベルマンフォード法により最短経路を求める
+#
+# ```
+# g = Graph.new(3)
+# g[0] << {0, 1, 10_i64}
+# g[1] << {1, 2, -5_i64}
+# g[0] << {0, 2, 6_i64}
+# dp, neg = g.bellman_ford(0)
+# dp[2].should eq 5
+# ```
 class Graph
-  record Edge, from : Int32, to : Int32, cost : Int64
+  alias Edge = Tuple(Int32,Int32,Int64)
+  
+  INF = Int64::MAX
+
   getter n : Int32
   getter g : Array(Array(Edge))
 
@@ -7,48 +25,32 @@ class Graph
     @g = Array.new(n){ [] of Edge }
   end
 
-  def add(from, to, cost)
-    @g[from] << Edge.new(from, to, cost.to_i64)
-  end
-end
+  def bellman_ford(init)
+    dp = Array.new(n, INF)
+    neg = Array.new(n, false)
 
-class BellmanFord < Graph
-  INF = Int64::MAX
-  getter d : Array(Int64)
-  getter neg : Array(Bool)
-
-  def initialize(@n)
-    super
-    @d = Array.new(n, INF)
-    @neg = Array.new(n, false)
-  end
-
-  # ベルマンフォード法による最短経路
-  def solve(start) : Tuple(Array(Int64),Array(Bool))
-    @d[start] = 0_i64
+    dp[init] = 0_i64
     n.times do |i|
       g.each do |v|
-        v.each do |e|
-          if d[e.from] != INF && d[e.to] > d[e.from] + e.cost
-            d[e.to] = d[e.from] + e.cost
-            # n回目で更新されるなら負閉路
-            if i == n - 1
-              neg[e.to] = true
-            end
+        v.each do |from, to, cost|
+          if dp[from] != INF
+            chmin dp[to], dp[from] + cost
+            neg[to] = true if i == n - 1
           end
         end
       end
     end
-    
+
     # 負閉路から到達できる点
     n.times do |i|
       g.each do |v|
-        v.each do |e|
-          neg[e.to] = true if neg[e.from]
+        v.each do |from, to, cost|
+          neg[to] = neg[from]
         end
       end
     end
-
-    return {d, neg}
+    return ({dp, neg})
   end
+
+  delegate "[]", to: @g
 end
