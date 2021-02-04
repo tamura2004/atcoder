@@ -49,7 +49,7 @@ class Task
   attr_accessor :exec_str, :compile_str
 
   def initialize
-    @lang = "ruby"
+    @lang = "crystal"
     @src = "src/main.cr"
     @input = "src/input.txt"
     @path = nil
@@ -74,7 +74,7 @@ class Task
 
   def check_compile
     if cmd = COMPILE[lang]
-      puts `cmd`
+      info `#{cmd}`
     end
   end
 
