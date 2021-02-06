@@ -29,7 +29,7 @@ class SegmentSieve
   end
 end
 
-pp SegmentSieve.new(22801763489, 22801787297).
-  solve.
-  is_prime.
-  count(true)
+a = 22801763489
+b = 22801787297
+ss = SegmentSieve.new(a,b).solve
+pp ss.is_prime.count(true)
