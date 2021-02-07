@@ -62,7 +62,8 @@ describe FenwickTree do
       { 20, [19,11,10,7,8,9,17,18,20,4,3,15,16,1,5,14,6,2,13,12],114}
     ]
     cases.each do |(n,a,ans)|
-      ChokudaiSpeedRun001J.new(n,a).solve.should eq ans
+      inversion_number(a).should eq ans
+      # ChokudaiSpeedRun001J.new(n,a).solve.should eq ans
     end
   end
 end

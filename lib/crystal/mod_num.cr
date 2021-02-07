@@ -3,6 +3,9 @@
  
 record ModNum, value : Int64 do
   @@factorials = Array(ModNum).new(100_000_i64) # Change here to improve performance
+  @@memo_combi = Hash(Tuple(Int64,Int32),ModNum?).new{|h,k|h[k]=nil}
+  @@memo_pathnum = Hash(Int32,ModNum?).new{|h,k|h[k]=nil}
+  @@memo_cyclenum = Hash(Int32,ModNum?).new { |h,k| h[k] = nil }
  
   def self.factorial(n)
     if @@factorials.empty?
@@ -13,7 +16,17 @@ record ModNum, value : Int64 do
     end
     @@factorials[n]
   end
- 
+
+  def self.pathnum(n)
+    return ModNum.new(1) if n == 1
+    @@memo_pathnum[n] ||= ModNum.factorial(n) // 2
+  end
+  
+  def self.cyclenum(n)
+    return ModNum.new(1) if n == 2
+    @@memo_cyclenum[n] ||= ModNum.factorial(n-1) // 2
+  end
+   
   def self.permutation(n, k)
     raise ArgumentError.new("k cannot be greater than n") unless n >= k
     factorial(n) // factorial(n - k)
@@ -21,7 +34,7 @@ record ModNum, value : Int64 do
  
   def self.combination(n, k)
     raise ArgumentError.new("k cannot be greater than n") unless n >= k
-    permutation(n, k) // @@factorials[k]
+    @@memo_combi[{n,k}] ||= permutation(n, k) // @@factorials[k]
   end
  
   def self.repeated_combination(n, k)

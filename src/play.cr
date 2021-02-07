@@ -1,13 +1,6 @@
-x = 10
-y = 20
-
-unless x == 10 ^ y == 20
-  puts "yes!"
-end
-
-x = 20
-y = 15
-
-unless x == 10 ^ y == 20
-  puts "yes!"
-end
+io = IO::Memory.new
+io.puts "3"
+io.puts "10 20 30"
+io.close
+pp io.gets
+pp io.gets
