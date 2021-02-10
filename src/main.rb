@@ -1,43 +1,27 @@
-class Problem
-  attr_accessor :n, :x, :a, :memo
+require "pathname"
+require "set"
 
-  def initialize
-    @cnt = 0
-    @n = gets.to_s.to_i
-    @memo = Hash.new { |h, k| h[k] = nil }
-  end
+pgm = Hash.new(0)
+cnt = Hash.new(0)
+base = Pathname.new("/home/tamura/share/ib/trunk_20200914/20200914/Prod/04.Batch")
+base.find do |path|
+  next unless path.file?
+  next unless path.extname == ".pc"
 
-  def solve
-    f(n)
-  end
-
-  def f(n)
-    return memo[n] if memo[n]
-    memo[n] = g(n)
-  end
-
-  def g(n)
-    return n if n < 6
-
-    ans = 1 << 60
-    ans = f(n - 1) + 1
-
-    base = 6
-    while base <= n
-      cnt = f(n - base) + 1
-      ans = cnt if ans > cnt
-      base *= 6
+  puts "-"*30
+  puts path.basename
+  pgm[path.basename] += 1
+  path.each_line do |line|
+    if line =~ /fina_cd/i
+      puts line
+      exit
     end
 
-    base = 9
-    while base <= n
-      cnt = f(n - base) + 1
-      ans = cnt if ans > cnt
-      base *= 9
-    end
-
-    return ans
+    # line.match(/NVL|INSTR|DECODE|to_chat|to_number/) do |pat|
+    #   cnt[pat.to_s] += 1
+    # end
   end
 end
 
-puts Problem.new.solve
+puts pgm.keys.size
+puts cnt
