@@ -1,78 +1,73 @@
-macro chmin(target, other)
-  {{target}} = ({{other}}) if ({{target}}) > ({{other}})
-end
 
-# ベルマンフォード法により最短経路を求める
-#
-# ```
-# g = Graph.new(3)
-# g[0] << {0, 1, 10_i64}
-# g[1] << {1, 2, -5_i64}
-# g[0] << {0, 2, 6_i64}
-# dp, neg = g.bellman_ford(0)
-# dp[2].should eq 5
-# ```
-class Graph
-  alias Edge = Tuple(Int32, Int32, Int64)
+class Grid
+  DIR = [{0, 1}, {1, 0}, {0, -1}, {-1, 0}, {1, 1}, {1, -1}, {-1, 1}, {-1, -1}]
+  R = 0
+  D = 1
+  L = 2
+  U = 3
+  INF = Int32::MAX
+  
+  getter h : Int32
+  getter w : Int32
+  getter k : Int32
+  getter sy : Int32
+  getter sx : Int32
+  getter gy : Int32
+  getter gx : Int32
+  getter g : Array(String)
 
-  INF = Int64::MAX
-
-  getter n : Int32
-  getter g : Array(Array(Edge))
-
-  def initialize(@n)
-    @g = Array.new(n) { [] of Edge }
+  def initialize(@h, @w, @k, @g, @sy, @sx, @gy, @gx)
   end
 
-  def add(a, b, c)
-    g[a - 1] << {a - 1, b - 1, c.to_i64}
+  def self.read
+    h, w, k = gets.to_s.split.map { |v| v.to_i }
+    sy,sx,gy,gx = gets.to_s.split.map { |v| v.to_i - 1 }
+    g = Array.new(h) { gets.to_s.chomp }
+    new(h, w, k, g, sy, sx, gy, gx)
   end
 
-  def bellman_ford(init)
-    dp = Array.new(n, INF)
-    neg = Array.new(n, false)
+  def each(y, x, dir)
+    1.upto(k) do |i|
+      ny = y + DIR[dir][0] * i
+      nx = x + DIR[dir][1] * i
+      break if outside?(ny, nx)
+      break if wall?(ny,nx)
+      yield ny, nx, (dir + 1) % 4
+      yield ny, nx, (dir - 1) % 4
+      yield ny, nx, dir if i == k
+    end
+  end
 
-    dp[init] = 0_i64
-    n.times do |i|
-      g.each do |v|
-        v.each do |from, to, cost|
-          # pp! [from,to,cost]
-          if dp[from] != INF
-            if dp[to] > dp[from] + cost
-              dp[to] = dp[from] + cost
-              neg[to] = true if i == n - 1
-            end
-          end
-        end
-      end
+  def solve
+    costs = Array.new(h) { Array.new(w) { Array.new(4, INF) } }
+    q = Deque(Tuple(Int32,Int32,Int32)).new
+    4.times do |dir|
+      costs[sy][sx][dir] = 0
+      q << {sy,sx,dir}
     end
 
-    # 負閉路から到達できる点
-    # n.times do |i|
-    #   g.each do |v|
-    #     v.each do |from, to, cost|
-    #       neg[to] = neg[from]
-    #     end
-    #   end
+    while q.size > 0
+      y, x, dir = q.shift
+      each(y, x, dir) do |ny, nx, ndir|
+        next if costs[ny][nx][ndir] != INF
+        costs[ny][nx][ndir] = costs[y][x][dir] + 1
+        q << {ny, nx, ndir}
+      end
+    end
+    # h.times do |y|
+    #   puts costs[y].map(&.min).map{|i|i==INF ? '@' : i.to_s}.join(" ")
     # end
-    return ({dp, neg})
+    ans = costs[gy][gx].min
+    puts ans == INF ? -1 : ans
   end
 
-  delegate "[]", to: @g
+  def outside?(y, x)
+    y < 0 || h <= y || x < 0 || w <= x
+  end
+
+  def wall?(y, x)
+    g[y][x] == '@'
+  end
 end
 
-n, m, p = gets.to_s.split.map { |v| v.to_i }
-g = Graph.new(n)
-m.times do
-  a, b, c = gets.to_s.split.map { |v| v.to_i }
-  g.add(a, b, p - c)
-end
-
-dp,neg = g.bellman_ford(0)
-if neg[-1]
-  puts -1
-elsif dp[-1] > 0
-  puts 0
-else
-  puts -dp[-1]
-end
+Grid.read.solve

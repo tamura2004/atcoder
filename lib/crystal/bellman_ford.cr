@@ -25,6 +25,11 @@ class Graph
     @g = Array.new(n){ [] of Edge }
   end
 
+  def add(a, b, c)
+    g[a - 1] << {a - 1, b - 1, c.to_i64}
+  end
+
+  # 負閉路に含まれる点 := neg
   def bellman_ford(init)
     dp = Array.new(n, INF)
     neg = Array.new(n, false)
@@ -33,19 +38,20 @@ class Graph
     n.times do |i|
       g.each do |v|
         v.each do |from, to, cost|
-          if dp[from] != INF
-            chmin dp[to], dp[from] + cost
-            neg[to] = true if i == n - 1
+          next if dp[from] == INF
+          if dp[to] > dp[from] + cost
+            dp[to] = dp[from] + cost
+            neg[to] = true if i >= n - 1
           end
         end
       end
     end
 
-    # 負閉路から到達できる点
+    # 負閉路から到達できる点もnegに含める
     n.times do |i|
       g.each do |v|
         v.each do |from, to, cost|
-          neg[to] = neg[from]
+          neg[to] ||= neg[from]
         end
       end
     end

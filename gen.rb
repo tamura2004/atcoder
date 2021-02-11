@@ -1,16 +1,8 @@
-N = 400
-M = 100000
+N = 1000
 open("sample.txt", "w") do |f|
-  f.puts [N, M].join(" ")
-  1.upto(399) do |i|
-    (i + 1).upto(400) do |j|
-      next if i == 350 && j == 400
-      next if i == 300 && j == 350
-      next if i == 300 && j == 400
-      f.puts [i, j].join(" ")
-    end
-  end
-  20203.times do
-    f.puts("300 400")
+  f.puts [N, N, N].join(" ")
+  f.puts "1 1 1000 1000"
+  N.times do
+    f.puts "." * N
   end
 end
