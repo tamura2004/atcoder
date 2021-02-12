@@ -26,9 +26,3 @@ class StringIndex
     dp[c][offset]
   end
 end
-
-dp = StringIndex.new("abcdabcd")
-pp dp['b']    # => 1
-pp dp['b', 1] # => 1
-pp dp['b', 2] # => 5
-pp dp['b', 6] # => nil
