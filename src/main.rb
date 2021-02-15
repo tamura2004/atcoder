@@ -1,9 +1,5 @@
-s = gets.chomp
-case s[2, 1]
-when "B"
-  puts "Bachelor #{s[0, 2]}"
-when "M"
-  puts "Master #{s[0, 2]}"
-when "D"
-  puts "Doctor #{s[0, 2]}"
-end
+require "matrix"
+x, y = gets.to_s.split.map { |v| v.to_i }
+m = Matrix[[3, 1], [1, 3]]
+v = m.inv * Vector[x, y]
+puts v.all? { |a| a.to_i == a } ? "Yes" : "No"
