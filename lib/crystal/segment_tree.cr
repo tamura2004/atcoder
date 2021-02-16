@@ -16,7 +16,7 @@ class SegmentTree(T)
       a && b ? block.call(a,b) : a ? a : b ? b : nil
     }
 
-    @n = ceil_pow2(_n)
+    @n = Math.pw2ceil(_n)
     @node = Array(T?).new(2 * n - 1, nil)
   end
 
@@ -25,7 +25,7 @@ class SegmentTree(T)
       a && b ? block.call(a,b) : a ? a : b ? b : nil
     }
 
-    @n = ceil_pow2(v.size)
+    @n = Math.pw2ceil(v.size)
     @node = Array(T?).new(2 * n - 1, nil)
 
     v.size.times do |i|
@@ -77,9 +77,5 @@ class SegmentTree(T)
     node[n-1..]
   end
 
-  private def ceil_pow2(n)
-    1 << Math.log2(n).ceil.to_i
-  end
-  
   delegate call, to: f
 end

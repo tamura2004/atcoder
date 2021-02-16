@@ -64,6 +64,6 @@ class PriorityQueue(T)
   end
 
   def up(i)
-    (i - 1) // 2
+    (i - 1) >> 1
   end
 end
