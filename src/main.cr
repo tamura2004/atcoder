@@ -1,30 +1,43 @@
-class Problem
-  getter n : Int32
-  getter a : Array(Int64)
-  getter dp : Array(Array(Int64?))
+class CumulativeSum2D(T)
+  getter cs : Array(Array(T))
 
-  def initialize
-    @n = gets.to_s.to_i
-    @a = gets.to_s.split.map { |v| v.to_i64 }
-    @dp = Array.new(n) { Array(Int64?).new(n, nil) }
-    n.times { |i| dp[i][i] = a[i] }
+  def initialize(a : Array(Array(T)))
+    h = a.size
+    w = a[0].size
+    @cs = Array.new(h+1){ Array.new(w+1,T.zero) }
+
+    h.times do |i|
+      w.times do |j|
+        cs[i+1][j+1] += cs[i+1][j] + cs[i][j+1] - cs[i][j] + a[i][j]
+      end
+    end
   end
 
-  def solve
-    puts f(0, n-1)
-  end
-
-  def f(lo, hi)
-    dp[lo][hi] ||= g(lo, hi)
-  end
-
-  def g(lo, hi)
-    return a[lo] if lo == hi
-    dp[lo][hi] = Math.max(
-      a[lo] - f(lo + 1, hi),
-      a[hi] - f(lo, hi - 1)
-    )
+  def sum(y1,x1,y2,x2)
+    cs[y2][x2] - cs[y2][x1] - cs[y1][x2] + cs[y1][x1]
   end
 end
 
-Problem.new.solve
+macro chmax(target, other)
+  {{target}} = ({{other}}) if ({{target}}) < ({{other}})
+end
+
+h,w,k,v = gets.to_s.split.map { |v| v.to_i64 }
+a = Array.new(h){ gets.to_s.split.map { |v| v.to_i64 } }
+cs = CumulativeSum2D(Int64).new(a)
+ans = 0_i64
+h.times do |y|
+  w.times do |x|
+    1.upto(h-y) do |dy|
+      1.upto(w-x) do |dx|
+        s = dy * dx
+        cost = cs.sum(y,x,y+dy,x+dx) + s * k
+        if cost <= v
+          chmax ans, s
+        end
+      end
+    end
+  end
+end
+
+pp ans
