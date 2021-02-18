@@ -3,25 +3,10 @@ require "nokogiri"
 require "open-uri"
 
 users = %w[
-  yanai
-  loveflower
-  okakita
-  ShuHONDA
-  ZatoZatoYuki
-  namba1997
   KanaeTsukimitsu
   yuichiyoshida
-  RinkaSasagawa
   takanoyuto
-  deltazarashi
-  yukakawamoto
-  hosonuma
-  NakatsukaMomoka
-  hyuu
   ibyoneyama
-  kamiryo
-  MiCHiN
-  tamura2004
   yamamichi
 ]
 
@@ -35,3 +20,29 @@ end
 open("src/sfpc/users.json", "w") do |fh|
   fh.puts data.to_json
 end
+
+# nakamuraemiko
+# iaduf123
+# kohara1213
+# MasahiroTada108
+# zukeyama0424
+# yanai
+# loveflower
+# okakita
+# ShuHONDA
+# ZatoZatoYuki
+# namba1997
+# KanaeTsukimitsu
+# yuichiyoshida
+# RinkaSasagawa
+# takanoyuto
+# deltazarashi
+# yukakawamoto
+# hosonuma
+# NakatsukaMomoka
+# hyuu
+# ibyoneyama
+# kamiryo
+# MiCHiN
+# tamura2004
+# yamamichi
