@@ -1,198 +1,169 @@
-# ac-library.cr by hakatashi https://github.com/google/ac-library.cr
+# 遅延評価セグメント木
 #
-# Copyright 2020 Google LLC
-#
-# Licensed under the Apache License, Version 2.0 (the "License");
-# you may not use this file except in compliance with the License.
-# You may obtain a copy of the License at
-#
-#      https://www.apache.org/licenses/LICENSE-2.0
-#
-# Unless required by applicable law or agreed to in writing, software
-# distributed under the License is distributed on an "AS IS" BASIS,
-# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-# See the License for the specific language governing permissions and
-# limitations under the License.
+# ```
+# n = 10
+# xy = -> (x : Int64, y : Int64) { Math.min x, y }
+# xa = -> (x : Int64, a : Int64) { x + a }
+# ab = -> (a : Int64, b : Int64) { a + b }
+# st = LazySegmentTree(Int64,Int64).new(n,xy,xa,ab)
+# st.set(10, 20_i64)
+# st.fold(0,20) # => 20
+# ```
+class LazySegmentTree(X, A)
+  getter n : Int32
+  getter x : Array(X?)
+  getter a : Array(A?)
+  getter xy : X?, X? -> X?
+  getter xa : X?, A? -> X?
+  getter ab : A?, A? -> A?
 
-module AtCoder
-  class LazySegTree(S, F)
-    getter values : Array(S | Nil)
-
-    def initialize(values : Array(S), @operator : S, S -> S, @application : F, S -> S, @composition : F, F -> F)
-      @values = values.map {|v| v.as(S | Nil)}
-      segment_size = 2 ** Math.log2(@values.size).ceil.to_i - 1
-      @segments = Array(S | Nil).new(segment_size, nil)
-      @applicators = Array(F | Nil).new(segment_size, nil)
-
-      # initialize segments
-      (@segments.size - 1).downto(0) do |i|
-        child1 = nil.as(S | Nil)
-        child2 = nil.as(S | Nil)
-        if i * 2 + 1 < @segments.size
-          child1 = @segments[i * 2 + 1]
-          child2 = @segments[i * 2 + 2]
-        else
-          if i * 2 + 1 - @segments.size < @values.size
-            child1 = @values[i * 2 + 1 - @segments.size]
-          end
-          if i * 2 + 2 - @segments.size < @values.size
-            child2 = @values[i * 2 + 2 - @segments.size]
-          end
-        end
-        @segments[i] = operate(child1, child2)
-      end
+  def initialize(n : Int32, xy : X, X -> X, xa : X, A -> X, ab : A, A -> A)
+    x = Array(X?).new(n, nil)
+    initialize(x, xy, xa, ab)
+  end
+  
+  def initialize(_x : Array(X?), xy : X, X -> X, xa : X, A -> X, ab : A, A -> A)
+    @xy = -> (x : X?, y : X?) do
+      x && y ? xy.call(x,y) : x ? x : y ? y : nil
     end
 
-    def []=(index : Int, applicator : F)
-      apply_range(index, index + 1, applicator, 0, 0...(@segments.size + 1))
+    @xa = -> (x : X?, a : A?) do
+      x && a ? xa.call(x,a) : x ? x : nil
     end
 
-    def []=(range : Range(Int, Int), applicator : F)
-      l = range.begin
-      r = range.exclusive? ? range.end : range.end + 1
-      apply_range(l, r, applicator, 0, 0...(@segments.size + 1))
+    @ab = -> (a : A?, b : A?) do
+      a && b ? ab.call(a,b) : a ? a : b ? b : nil
     end
 
-    def [](index : Int)
-      get_range(index, index + 1, 0, 0...(@segments.size + 1)).not_nil!
+    @n = Math.max 2, Math.pw2ceil(_x.size)
+    @x = Array(X?).new(@n*2, nil)
+    @a = Array(A?).new(@n*2, nil)
+
+    _x.each_with_index do |v,i|
+      x[i+n] = v
     end
 
-    def [](range : Range(Int, Int))
-      l = range.begin
-      r = range.exclusive? ? range.end : range.end + 1
-      get_range(l, r, 0, 0...(@segments.size + 1)).not_nil!
+    (n-1).downto(1) do |i|
+      x[i] = @xy.call x[lch(i)], x[rch(i)]
+    end
+  end
+
+  def pp
+    puts "\n# node"
+    i = 1
+    while i <= n
+      sep = " " * (16 // i - 1)
+      puts x[i...(i << 1)].join(sep)
+      i <<= 1
     end
 
-    @[AlwaysInline]
-    private def operate(a : S | Nil, b : S | Nil)
-      if a.nil?
-        b
-      elsif b.nil?
-        a
-      else
-        @operator.call(a, b)
+    puts "\n# lazy"
+    i = 1
+    while i <= n
+      sep = " " * (16 // i - 1)
+      puts a[i...(i << 1)].join(sep)
+      i <<= 1
+    end
+  end
+
+  def set(i : Int32, y : X?)
+    i += n
+    propagate_above(i)
+    x[i] = y
+    a[i] = nil
+    recalc_above(i)
+  end
+
+  def fold(i : Int32, j : Int32) : X?
+    i += n
+    j += n
+
+    i0 = pa(i)
+    j0 = pa(j) - 1
+
+    propagate_above(i0)
+    propagate_above(j0)
+
+    left = nil.as(X?)
+    right = nil.as(X?)
+    while i < j
+      if i.odd?
+        left = xy.call left, eval(i)
+        i += 1
       end
+      if j.odd?
+        j -= 1
+        right = xy.call eval(j), right
+      end
+      i >>= 1
+      j >>= 1
+    end
+    xy.call left, right
+  end
+
+  def update(i : Int32, j : Int32, b : A)
+    i += n
+    j += n
+
+    i0 = pa(i)
+    j0 = pa(j) - 1
+
+    propagate_above(i0)
+    propagate_above(j0)
+
+    while i < j
+      if i.odd?
+        a[i] = ab.call a[i], b
+        i += 1
+      end
+      if j.odd?
+        j -= 1
+        a[j] = ab.call a[j], b
+      end
+      i >>= 1
+      j >>= 1
     end
 
-    @[AlwaysInline]
-    private def apply(f : F | Nil, x : S | Nil)
-      if f.nil?
-        x
-      elsif x.nil?
-        nil
-      else
-        @application.call(f, x)
-      end
+    recalc_above(i0)
+    recalc_above(j0)
+  end
+
+  def recalc_above(i)
+    while i > 2
+      i >>= 1
+      x[i] = xy.call eval(lch(i)), eval(rch(i))
     end
+  end
 
-    @[AlwaysInline]
-    private def compose(a : F | Nil, b : F | Nil)
-      if a.nil?
-        b
-      elsif b.nil?
-        a
-      else
-        @composition.call(a, b)
-      end
+  def propagate_above(i)
+    return if i.zero?
+    Math.ilogb(i).to(1) do |n|
+      propagate(i >> n)
     end
+  end
 
-    # range must be exclusive
-    # assert(segment_index < @segments.size)
-    # assert(range.end - range.begin > 1)
-    def eval_segment(segment_index : Int, range : Range(Int, Int))
-      applicator = @applicators[segment_index]
-      return if applicator.nil?
+  def propagate(i)
+    return if a[i].nil?
+    a[lch(i)] = ab.call a[lch(i)], a[i]
+    a[rch(i)] = ab.call a[rch(i)], a[i]
+    x[i] = eval(i)
+    a[i] = nil
+  end
 
-      @segments[segment_index] = apply(applicator, @segments[segment_index])
+  def eval(i : Int32)
+    xa.call x[i], a[i]
+  end
 
-      if range.end - range.begin > 2
-        @applicators[segment_index * 2 + 1] = compose(applicator, @applicators[segment_index * 2 + 1])
-        @applicators[segment_index * 2 + 2] = compose(applicator, @applicators[segment_index * 2 + 2])
-      else
-        @values[segment_index * 2 + 1 - @segments.size] = apply(applicator, @values[segment_index * 2 + 1 - @segments.size])
-        @values[segment_index * 2 + 2 - @segments.size] = apply(applicator, @values[segment_index * 2 + 2 - @segments.size])
-      end
+  def lch(i)
+    i << 1
+  end
 
-      @applicators[segment_index] = nil
-    end
+  def rch(i)
+    i << 1 | 1
+  end
 
-    # range must be exclusive
-    def apply_range(a : Int, b : Int, f : F, segment_index : Int, range : Range(Int, Int))
-      if segment_index >= @segments.size + @values.size
-        return nil
-      end
-
-      if segment_index < @segments.size
-        eval_segment(segment_index, range)
-      end
-
-      if range.end <= a || b <= range.begin
-        if segment_index < @segments.size
-          return @segments[segment_index]
-        else
-          return @values[segment_index - @segments.size]
-        end
-      end
-
-      if a <= range.begin && range.end <= b
-        if segment_index < @segments.size
-          @applicators[segment_index] = compose(@applicators[segment_index], f)
-          eval_segment(segment_index, range)
-          return @segments[segment_index]
-        else
-          @values[segment_index - @segments.size] = apply(f, @values[segment_index - @segments.size])
-          return @values[segment_index - @segments.size]
-        end
-      end
-
-      range_median = (range.begin + range.end) // 2
-      child1 = apply_range(a, b, f, segment_index * 2 + 1, range.begin...range_median)
-      child2 = apply_range(a, b, f, segment_index * 2 + 2, range_median...range.end)
-
-      @segments[segment_index] = operate(child1, child2)
-      @segments[segment_index]
-    end
-
-    # range must be exclusive
-    def get_range(a : Int, b : Int, segment_index : Int, range : Range(Int, Int))
-      if range.end <= a || b <= range.begin
-        return nil
-      end
-
-      if segment_index < @segments.size
-        eval_segment(segment_index, range)
-      end
-
-      if a <= range.begin && range.end <= b
-        if segment_index < @segments.size
-          return @segments[segment_index]
-        else
-          return @values[segment_index - @segments.size]
-        end
-      end
-
-      range_median = (range.begin + range.end) // 2
-      child1 = get_range(a, b, segment_index * 2 + 1, range.begin...range_median)
-      child2 = get_range(a, b, segment_index * 2 + 2, range_median...range.end)
-
-      operate(child1, child2)
-    end
-
-    def all_prod
-      self[0...@values.size]
-    end
+  def pa(i)
+    i // (i & -i)
   end
 end
 
-# 区間加算、区間最小値
-op = -> (a : Int32, b : Int32) { Math.min a, b }
-mapping = -> (f : Int32, x : Int32) { f + x }
-composition = -> (a : Int32, b : Int32) { a + b }
-st = AtCoder::LazySegTree(Int32,Int32).new((0..10).to_a, op, mapping, composition)
-
-pp! st[0..10] # => 0
-[0,1,2,3,4,5,6,7,8,9,10]
-st[0..3] = 3
-st[0..6] = 1
-[4,5,6,4,5,6,7,7,8,9,10]
-pp! st[0..10] # => 3
