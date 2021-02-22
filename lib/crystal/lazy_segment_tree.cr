@@ -1,50 +1,59 @@
 # 遅延評価セグメント木
 #
 # ```
-# n = 10
-# xy = -> (x : Int64, y : Int64) { Math.min x, y }
-# xa = -> (x : Int64, a : Int64) { x + a }
-# ab = -> (a : Int64, b : Int64) { a + b }
-# st = LazySegmentTree(Int64,Int64).new(n,xy,xa,ab)
-# st.set(10, 20_i64)
-# st.fold(0,20) # => 20
+# alias X = Tuple(ModInt, ModInt)
+# alias A = Tuple(ModInt, ModInt)
+# alias XX = X?, X? -> X?
+# alias AA = A?, A? -> A?
+# alias XA = X?, A? -> X?
+# xx = Proc(X,X,X).new do |(x0, x1), (y0, y1)|
+#   {x0 + y0, x1 + y1}
+# end
+# xa = Proc(X,A,X).new do |(x0, x1), (a0, a1)|
+#   {x0 * a0 + x1 * a1, x1}
+# end
+# aa = Proc(A,A,A).new do |(a0, a1), (b0, b1)|
+#   {a0 * b0, a1 * b0 + b1}
+# end
+# st = LazySegmentTree(X,A,XX,XA,AA).new(a, xx, xa, aa)
+#
 # ```
-class LazySegmentTree(X, A)
+class LazySegmentTree(X,A,XX,XA,AA)
   getter n : Int32
   getter x : Array(X?)
   getter a : Array(A?)
-  getter xy : X?, X? -> X?
-  getter xa : X?, A? -> X?
-  getter ab : A?, A? -> A?
+  getter xx : XX
+  getter xa : XA
+  getter aa : AA
 
-  def initialize(n : Int32, xy : X, X -> X, xa : X, A -> X, ab : A, A -> A)
+  def initialize(n : Int32, xx, xa, aa)
     x = Array(X?).new(n, nil)
-    initialize(x, xy, xa, ab)
+    initialize(x, xx, xa, aa)
   end
-  
-  def initialize(_x : Array(X?), xy : X, X -> X, xa : X, A -> X, ab : A, A -> A)
-    @xy = -> (x : X?, y : X?) do
-      x && y ? xy.call(x,y) : x ? x : y ? y : nil
+
+  def initialize(_x : Array(X?), xx, xa, aa)
+    @xx = XX.new do |x,y|
+      x && y ? xx.call(x, y) : x ? x : y ? y : nil
     end
 
-    @xa = -> (x : X?, a : A?) do
-      x && a ? xa.call(x,a) : x ? x : nil
+    @xa = XA.new do |x,a|
+      x && a ? xa.call(x, a) : x ? x : nil
     end
 
-    @ab = -> (a : A?, b : A?) do
-      a && b ? ab.call(a,b) : a ? a : b ? b : nil
+    @aa = AA.new do |a,b|
+      a && b ? aa.call(a, b) : a ? a : b ? b : nil
     end
 
     @n = Math.max 2, Math.pw2ceil(_x.size)
     @x = Array(X?).new(@n*2, nil)
     @a = Array(A?).new(@n*2, nil)
 
-    _x.each_with_index do |v,i|
-      x[i+n] = v
+    _x.each_with_index do |v, i|
+      x[i + n] = v
     end
 
-    (n-1).downto(1) do |i|
-      x[i] = @xy.call x[lch(i)], x[rch(i)]
+    (n - 1).downto(1) do |i|
+      x[i] = @xx.call x[lch(i)], x[rch(i)]
     end
   end
 
@@ -52,7 +61,7 @@ class LazySegmentTree(X, A)
     puts "\n# node"
     i = 1
     while i <= n
-      sep = " " * (16 // i - 1)
+      sep = " " * ((n * 2) // i - 1)
       puts x[i...(i << 1)].join(sep)
       i <<= 1
     end
@@ -60,7 +69,7 @@ class LazySegmentTree(X, A)
     puts "\n# lazy"
     i = 1
     while i <= n
-      sep = " " * (16 // i - 1)
+      sep = " " * ((n * 2) // i - 1)
       puts a[i...(i << 1)].join(sep)
       i <<= 1
     end
@@ -88,17 +97,17 @@ class LazySegmentTree(X, A)
     right = nil.as(X?)
     while i < j
       if i.odd?
-        left = xy.call left, eval(i)
+        left = xx.call left, eval(i)
         i += 1
       end
       if j.odd?
         j -= 1
-        right = xy.call eval(j), right
+        right = xx.call eval(j), right
       end
       i >>= 1
       j >>= 1
     end
-    xy.call left, right
+    xx.call left, right
   end
 
   def update(i : Int32, j : Int32, b : A)
@@ -113,12 +122,12 @@ class LazySegmentTree(X, A)
 
     while i < j
       if i.odd?
-        a[i] = ab.call a[i], b
+        a[i] = aa.call a[i], b
         i += 1
       end
       if j.odd?
         j -= 1
-        a[j] = ab.call a[j], b
+        a[j] = aa.call a[j], b
       end
       i >>= 1
       j >>= 1
@@ -129,28 +138,28 @@ class LazySegmentTree(X, A)
   end
 
   def recalc_above(i)
-    while i > 2
+    while i > 1
       i >>= 1
-      x[i] = xy.call eval(lch(i)), eval(rch(i))
+      x[i] = xx.call eval(lch(i)), eval(rch(i))
     end
   end
 
   def propagate_above(i)
     return if i.zero?
-    Math.ilogb(i).to(1) do |n|
+    Math.ilogb(i).downto(1) do |n|
       propagate(i >> n)
     end
   end
 
   def propagate(i)
     return if a[i].nil?
-    a[lch(i)] = ab.call a[lch(i)], a[i]
-    a[rch(i)] = ab.call a[rch(i)], a[i]
+    a[lch(i)] = aa.call a[lch(i)], a[i]
+    a[rch(i)] = aa.call a[rch(i)], a[i]
     x[i] = eval(i)
     a[i] = nil
   end
 
-  def eval(i : Int32)
+  def eval(i : Int32) : X?
     xa.call x[i], a[i]
   end
 
@@ -166,4 +175,3 @@ class LazySegmentTree(X, A)
     i // (i & -i)
   end
 end
-

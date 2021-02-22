@@ -7,26 +7,21 @@
 # cc.ref # => [-10, 5, 100]
 # ```
 class CoodinateCompressLiner(T)
-  getter src : Array(T)
-  getter dst : Array(Int32)
   getter ref : Array(T)
+  getter idx : Hash(T,Int32)
 
-  def initialize(@src)
+  def initialize(src)
     @ref = src.sort.uniq
-    @dst = src.map do |i|
-      ref.bsearch_index do |j|
-        i <= j
-      end || 0
+    @idx = Hash(T,Int32).new
+    src.each do |v|
+      i = ref.bsearch_index do |u|
+        v <= u
+      end.not_nil!
+      idx[v] = i
     end
   end
 
-  def self.from_pair(p : Array(Tuple(T, T)))
-    n = p.size
-    ccl = new(p.map(&.first) + p.map(&.last))
-    a = ccl.dst[0, n]
-    b = ccl.dst[n, n]
-    return a.zip(b)
-  end
+  delegate "[]", to: @idx
 end
 
 alias CCL = CoodinateCompressLiner(Int64)

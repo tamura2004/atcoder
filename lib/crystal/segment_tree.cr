@@ -1,81 +1,66 @@
-class SegmentTree(T)
+class SegmentTree(X)
   getter n : Int32
-  getter f : T?, T? -> T?
-  getter node : Array(T?)
+  getter x : Array(X?)
+  getter xx : Proc(X?, X?, X?)
 
-  def initialize(n : T)
-    initialize(n) { |a, b| a < b ? a : b }
-  end
+  def initialize(_x : Array(X), &_xx : Proc(X, X, X))
+    @n = Math.pw2ceil(_x.size)
 
-  def initialize(v : Array(T?))
-    initialize(v) { |a, b| a < b ? a : b }
-  end
-
-  def initialize(_n : Int32, &block : T, T -> T)
-    @f = ->(a : T?, b : T?) {
-      a && b ? block.call(a,b) : a ? a : b ? b : nil
-    }
-
-    @n = Math.pw2ceil(_n)
-    @node = Array(T?).new(2 * n - 1, nil)
-  end
-
-  def initialize(v : Array(T?), &block : T, T -> T)
-    @f = ->(a : T?, b : T?) {
-      a && b ? block.call(a,b) : a ? a : b ? b : nil
-    }
-
-    @n = Math.pw2ceil(v.size)
-    @node = Array(T?).new(2 * n - 1, nil)
-
-    v.size.times do |i|
-      node[i + n - 1] = v[i]
+    @xx = Proc(X?, X?, X?).new do |x, y|
+      x && y ? _xx.call(x, y) : x ? x : y ? y : nil
     end
 
-    (n - 2).downto(0) do |i|
-      node[i] = f.call(node[2*i + 1], node[2*i + 2])
+    @x = Array(X?).new(n*2, nil)
+    _x.each_with_index { |v, i| x[i + n] = v }
+
+    (n - 1).downto(1) do |i|
+      x[i] = xx.call x[i << 1], x[i << 1 | 1]
     end
   end
 
-  def update(i, _x)
-    x : T? = _x.is_a?(T) ? _x : _x.nil? ? _x : T.new(_x)
-    i += n - 1
-    node[i] = x
-    while i > 0
-      i = (i - 1) // 2
-      node[i] = f.call(node[2*i + 1], node[2*i + 2])
+  def []=(i : Int32, y : X?)
+    raise "Bad index i=#{i}" unless (0...n).includes?(i)
+
+    i += n
+    x[i] = y
+    while i > 1
+      i >>= 1
+      x[i] = xx.call x[i << 1], x[i << 1 | 1]
     end
   end
 
-  def []=(i, x)
-    update(i, x)
+  def [](i : Int32) : X?
+    x[i+n]
   end
 
-  def get(a : Int, b : Int, k = 0, lo = 0, hi = -1) : T?
-    hi = n if hi < 0
-    case
-    when hi <= a || b <= lo then nil
-    when a <= lo && hi <= b then node[k]
-    else
-      vlo = get(a, b, 2*k + 1, lo, (lo + hi)//2)
-      vhi = get(a, b, 2*k + 2, (lo + hi)//2, hi)
-      f.call(vlo, vhi)
+  def [](i : Int32, j : Int32) : X?
+    raise "Bad index i=#{i}" unless (0...n).includes?(i)
+    raise "Bad index j=#{j}" unless (1..n).includes?(j)
+
+    i += n; j += n
+    left = right = nil
+    while i < j
+      if i.odd?
+        left = xx.call left, x[i]
+        i += 1
+      end
+
+      if j.odd?
+        j -= 1
+        right = xx.call x[j], right
+      end
+      i >>= 1; j >>= 1
+    end
+
+    xx.call(left, right)
+  end
+
+  def pp
+    i = 1
+    while i <= n
+      sep = " " * ((n * 2) // i - 1)
+      puts x[i...(i << 1)].join(sep)
+      i <<= 1
     end
   end
-
-  def [](r : Range(Int, Int))
-    a = r.begin
-    b = r.end + (r.exclusive? ? 0 : 1)
-    get(a, b)
-  end
-
-  def [](i : Int)
-    node[i + n - 1]
-  end
-
-  def to_a
-    node[n-1..]
-  end
-
-  delegate call, to: f
 end
