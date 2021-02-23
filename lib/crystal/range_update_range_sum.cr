@@ -176,8 +176,8 @@ class LazySegmentTree(X,A,XX,XA,AA)
   end
 end
 
-alias X = Tuple(Int64, Int64)
-alias A = Int64
+alias X = Tuple(UInt128, UInt128)
+alias A = UInt128
 alias XX = X?, X? -> X?
 alias AA = A?, A? -> A?
 alias XA = X?, A? -> X?
@@ -202,13 +202,16 @@ end
 
 n,m = gets.to_s.split.map { |v| v.to_i }
 st = LazySegmentTree(X,A,XX,XA,AA).new(n, xx, xa, aa)
-unit = { 0.to_i64, 1.to_i64 }
+unit = { 0.to_u128, 1.to_u128 }
 n.times{|i|st.set(i, unit)}
 
+ans = 0.to_u128
 m.times do
   t,l,r = gets.to_s.split.map { |v| v.to_i - 1 }
-  t = (t + 1).to_i64
+  t = (t + 1).to_u128
+  ans += t * (l..r).size
+  ans -= st.fold(l, r + 1).try(&.first) || 0
   st.update(l, r + 1, t)
 end
 
-pp st.fold(0, n).try(&.first) || 0
+pp ans

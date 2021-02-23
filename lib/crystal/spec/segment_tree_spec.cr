@@ -1,18 +1,36 @@
 require "spec"
 require "../segment_tree"
 
-alias X = Tuple(Int32, Int32)
+alias Pair = Tuple(Int32, Int32)
 
 describe SegmentTree do
-  it "basic usage" do
-    v = Array(X).new(3){ X.new 0, 1 }
-    obj = SegmentTree(X).new(v) do |(a0,a1), (b0,b1)|
-      X.new a0 * b0, a1 * b0 + b1
-    end
+  it "init by values size" do
+    st = SegmentTree(Int32).new(10)
+    st[0...].should eq 0
+    st[0] = 100
+    st[10] = 100
+    st[...10].should eq 100
+  end
 
-    obj[0] = X.new 2, 1
-    obj[1] = X.new 3, 2
-    obj[2] = X.new 4, 3
-    obj[0, 3].should eq X.new(24,23)
+  it "range sum" do
+    st = SegmentTree(Int32).new([1, 2, 3])
+    st[0..2].should eq 6
+    st[0...2].should eq 3
+    st[1] += 10 # => [1,12,3]
+    st[0..2].should eq 16
+  end
+
+  it "initialized by block" do
+    st = SegmentTree(Int32).new([5,2,8], 0) { |x,y| x ^ y }
+    st[0..2].should eq 15
+  end
+
+  it "monoid" do
+    unit = {1, 0}
+    fx = Proc(Pair, Pair, Pair).new do |(x0, x1), (y0, y1)|
+      {x0 * y0, x1 * y0 + y1}
+    end
+    st = SegmentTree(Pair).new([{1, 2}, {2, 3}, {3, 4}], unit, fx)
+    st[0..2].should eq ({6, 25})
   end
 end
