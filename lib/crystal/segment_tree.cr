@@ -4,16 +4,12 @@ class SegmentTree(T)
   getter xs : Array(T)
   getter fx : Proc(T, T, T)
 
-  def initialize(n : Int32)
-    values = Array.new(n) { T.zero }
+  def initialize(n : Int32, init : T = T.zero)
+    values = Array.new(n) { init }
     initialize(values)
   end
 
-  def initialize(
-    values : Array(T),
-    unit : T = T.zero,
-    &fx : Proc(T, T, T)
-  )
+  def initialize(values : Array(T), unit : T = T.zero, &fx : Proc(T, T, T))
     initialize(values, unit, fx)
   end
 

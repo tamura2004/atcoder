@@ -25,3 +25,13 @@ class CoodinateCompressLiner(T)
 end
 
 alias CCL = CoodinateCompressLiner(Int64)
+
+# 値の大小のみ残して元データは捨てて良い場合
+def compress(src)
+  ref = src.sort.uniq
+  src.map do |v|
+    ref.bsearch_index do |u|
+      v <= u
+    end.not_nil!
+  end
+end

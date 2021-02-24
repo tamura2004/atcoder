@@ -1,214 +1,147 @@
-# 遅延評価セグメント木
-#
-# ```
-# alias X = Tuple(ModInt, ModInt)
-# alias A = Tuple(ModInt, ModInt)
-# alias XX = X?, X? -> X?
-# alias AA = A?, A? -> A?
-# alias XA = X?, A? -> X?
-# xx = Proc(X,X,X).new do |(x0, x1), (y0, y1)|
-#   {x0 + y0, x1 + y1}
-# end
-# xa = Proc(X,A,X).new do |(x0, x1), (a0, a1)|
-#   {x0 * a0 + x1 * a1, x1}
-# end
-# aa = Proc(A,A,A).new do |(a0, a1), (b0, b1)|
-#   {a0 * b0, a1 * b0 + b1}
-# end
-# st = LazySegmentTree(X,A,XX,XA,AA).new(a, xx, xa, aa)
-#
-# ```
-class LazySegmentTree(X,A,XX,XA,AA)
+class SegmentTree(T)
   getter n : Int32
-  getter x : Array(X?)
-  getter a : Array(A?)
-  getter xx : XX
-  getter xa : XA
-  getter aa : AA
+  getter unit : T
+  getter xs : Array(T)
+  getter fx : Proc(T, T, T)
 
-  def initialize(n : Int32, xx, xa, aa)
-    x = Array(X?).new(n, nil)
-    initialize(x, xx, xa, aa)
+  def initialize(n : Int32, unit : T = T.zero, &fx : Proc(T, T, T))
+    values = Array.new(n) { unit }
+    initialize(values, unit, fx)
   end
 
-  def initialize(_x : Array(X?), xx, xa, aa)
-    @xx = XX.new do |x,y|
-      x && y ? xx.call(x, y) : x ? x : y ? y : nil
-    end
+  def initialize(values : Array(T), unit : T = T.zero, &fx : Proc(T, T, T))
+    initialize(values, unit, fx)
+  end
 
-    @xa = XA.new do |x,a|
-      x && a ? xa.call(x, a) : x ? x : nil
-    end
+  def initialize(
+    values : Array(T),
+    @unit : T = T.zero,
+    @fx : Proc(T, T, T) = Proc(T, T, T).new { |x, y| x + y }
+  )
+    @n = Math.pw2ceil(values.size)
+    @xs = Array(T).new(n*2, unit)
 
-    @aa = AA.new do |a,b|
-      a && b ? aa.call(a, b) : a ? a : b ? b : nil
-    end
-
-    @n = Math.max 2, Math.pw2ceil(_x.size)
-    @x = Array(X?).new(@n*2, nil)
-    @a = Array(A?).new(@n*2, nil)
-
-    _x.each_with_index do |v, i|
-      x[i + n] = v
+    values.each_with_index do |v, i|
+      xs[i + n] = v
     end
 
     (n - 1).downto(1) do |i|
-      x[i] = @xx.call x[lch(i)], x[rch(i)]
+      xs[i] = fx.call xs[i << 1], xs[i << 1 | 1]
     end
+  end
+
+  def set(i : Int32, v : T)
+    raise "Bad index i=#{i}" unless (0...n).includes?(i)
+
+    i += n
+    xs[i] = v
+    while i > 1
+      i >>= 1
+      xs[i] = fx.call xs[i << 1], xs[i << 1 | 1]
+    end
+  end
+
+  def []=(i : Int32, v : T)
+    set(i, v)
+  end
+
+  def get(i : Int32) : T
+    xs[i + n]
+  end
+
+  def [](i : Int32) : T
+    get(i)
+  end
+
+  def sum(i : Int32, j : Int32) : T
+    i += n; j += n
+    left = right = unit
+    while i < j
+      if i.odd?
+        left = fx.call left, xs[i]
+        i += 1
+      end
+
+      if j.odd?
+        j -= 1
+        right = fx.call xs[j], right
+      end
+      i >>= 1; j >>= 1
+    end
+
+    fx.call(left, right)
+  end
+
+  def [](r : Range(Int32?, Int32?)) : T
+    lo = r.begin || 0
+    hi = (r.end || n - 1) + (r.excludes_end? ? 0 : 1)
+    sum(lo, hi)
   end
 
   def pp
-    puts "\n# node"
+    puts "========"
     i = 1
     while i <= n
       sep = " " * ((n * 2) // i - 1)
-      puts x[i...(i << 1)].join(sep)
+      puts xs[i...(i << 1)].join(sep)
       i <<= 1
     end
-
-    puts "\n# lazy"
-    i = 1
-    while i <= n
-      sep = " " * ((n * 2) // i - 1)
-      puts a[i...(i << 1)].join(sep)
-      i <<= 1
-    end
-  end
-
-  def set(i : Int32, y : X?)
-    i += n
-    propagate_above(i)
-    x[i] = y
-    a[i] = nil
-    recalc_above(i)
-  end
-
-  def fold(i : Int32, j : Int32) : X?
-    i += n
-    j += n
-
-    i0 = pa(i)
-    j0 = pa(j) - 1
-
-    propagate_above(i0)
-    propagate_above(j0)
-
-    left = nil.as(X?)
-    right = nil.as(X?)
-    while i < j
-      if i.odd?
-        left = xx.call left, eval(i)
-        i += 1
-      end
-      if j.odd?
-        j -= 1
-        right = xx.call eval(j), right
-      end
-      i >>= 1
-      j >>= 1
-    end
-    xx.call left, right
-  end
-
-  def update(i : Int32, j : Int32, b : A)
-    i += n
-    j += n
-
-    i0 = pa(i)
-    j0 = pa(j) - 1
-
-    propagate_above(i0)
-    propagate_above(j0)
-
-    while i < j
-      if i.odd?
-        a[i] = aa.call a[i], b
-        i += 1
-      end
-      if j.odd?
-        j -= 1
-        a[j] = aa.call a[j], b
-      end
-      i >>= 1
-      j >>= 1
-    end
-
-    recalc_above(i0)
-    recalc_above(j0)
-  end
-
-  def recalc_above(i)
-    while i > 1
-      i >>= 1
-      x[i] = xx.call eval(lch(i)), eval(rch(i))
-    end
-  end
-
-  def propagate_above(i)
-    return if i.zero?
-    Math.ilogb(i).downto(1) do |n|
-      propagate(i >> n)
-    end
-  end
-
-  def propagate(i)
-    return if a[i].nil?
-    a[lch(i)] = aa.call a[lch(i)], a[i]
-    a[rch(i)] = aa.call a[rch(i)], a[i]
-    x[i] = eval(i)
-    a[i] = nil
-  end
-
-  def eval(i : Int32) : X?
-    xa.call x[i], a[i]
-  end
-
-  def lch(i)
-    i << 1
-  end
-
-  def rch(i)
-    i << 1 | 1
-  end
-
-  def pa(i)
-    i // (i & -i)
+    puts "--------"
   end
 end
 
-alias X = Tuple(Int64, Int64)
-alias A = Int64
-alias XX = X?, X? -> X?
-alias AA = A?, A? -> A?
-alias XA = X?, A? -> X?
+class Graph
+  getter n : Int32
+  getter a : Array(Int32)
+  getter ans : Array(Int32)
+  getter g : Array(Array(Int32))
+  getter dp : SegmentTree(Int32)
 
-# |x| + |y| = |x+y|
-# |1|   |1|   | 2 |
-xx = Proc(X,X,X).new do |(x0, x1), (y0, y1)|
-  {x0 + y0, x1 + y1}
+  def self.read
+    n = gets.to_s.to_i
+    _a = gets.to_s.split.map { |v| v.to_i }
+    a = compress(_a)
+    g = Array.new(n){ [] of Int32 }
+    (n-1).times do
+      i,j = gets.to_s.split.map { |v| v.to_i - 1 }
+      g[i] << j
+      g[j] << i
+    end
+    new(n,a,g)
+  end
+
+  def initialize(@n, @a, @g)
+    @dp = SegmentTree(Int32).new(n) do |x, y|
+      Math.max x, y
+    end
+    @ans = Array.new(n, -1)
+  end
+
+  def dfs(v,pv)
+    j = a[v]
+    old = dp[j]
+    dp[j] = dp[...j] + 1
+    ans[v] = dp[0..]
+    g[v].each do |nv|
+      next if nv == pv
+      dfs(nv,v)
+    end
+    dp[j] = old
+  end
+
+  def solve
+    dfs(0, -1)
+    ans
+  end
+
+  def self.compress(src)
+    ref = src.sort.uniq
+    src.map do |v|
+      ref.bsearch_index do |u|
+        v <= u
+      end.not_nil!
+    end
+  end
 end
 
-# |0 z| * |x| = |2z|
-# |0 1|   |2|   | 2|
-xa = Proc(X,A,X).new do |(x0, x1), a|
-  {x1 * a, x1}
-end
-
-# |0 b| * |0 a| = |0 b|
-# |0 1|   |0 1|   |0 1|
-aa = Proc(A,A,A).new do |a, b|
-  b
-end
-
-n,m = gets.to_s.split.map { |v| v.to_i }
-st = LazySegmentTree(X,A,XX,XA,AA).new(n, xx, xa, aa)
-unit = { 0.to_i64, 1.to_i64 }
-n.times{|i|st.set(i, unit)}
-
-m.times do
-  t,l,r = gets.to_s.split.map { |v| v.to_i - 1 }
-  t = (t + 1).to_i64
-  st.update(l, r + 1, t)
-end
-
-pp st.fold(0, n).try(&.first) || 0
+puts Graph.read.solve.join("\n")
