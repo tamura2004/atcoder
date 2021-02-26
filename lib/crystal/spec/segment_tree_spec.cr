@@ -20,6 +20,22 @@ describe SegmentTree do
     st[0..2].should eq 16
   end
 
+  it "range sum bsearch" do
+    st = SegmentTree(Int32).new([0, 1, 0, 1, 1, 0, 1, 1])
+    st.bsearch(2).should eq 3
+    st.bsearch(3).should eq 4
+    st.bsearch(4).should eq 6
+    st.bsearch(5).should eq 7
+    st.bsearch(6).should eq 7 # overflow
+  end
+
+  it "range sum bsearch" do
+    st = SegmentTree(Int32).new([1, 2, 1, 2, 1, 0, 1, 1, 1])
+    st.bsearch(3).should eq 1
+    st.bsearch(4).should eq 2
+    st.bsearch(6).should eq 3
+  end
+
   it "initialized by block" do
     st = SegmentTree(Int32).new([5,2,8], 0) { |x,y| x ^ y }
     st[0..2].should eq 15

@@ -4,9 +4,9 @@ class SegmentTree(T)
   getter xs : Array(T)
   getter fx : Proc(T, T, T)
 
-  def initialize(n : Int32, unit : T = T.zero, &fx : Proc(T, T, T))
-    values = Array.new(n) { unit }
-    initialize(values, unit, fx)
+  def initialize(n : Int32, init : T = T.zero)
+    values = Array.new(n) { init }
+    initialize(values)
   end
 
   def initialize(values : Array(T), unit : T = T.zero, &fx : Proc(T, T, T))
@@ -54,6 +54,9 @@ class SegmentTree(T)
   end
 
   def sum(i : Int32, j : Int32) : T
+    raise "Bad index i=#{i}" unless (0...n).includes?(i)
+    raise "Bad index j=#{j}" unless (1..n).includes?(j)
+
     i += n; j += n
     left = right = unit
     while i < j
@@ -78,6 +81,18 @@ class SegmentTree(T)
     sum(lo, hi)
   end
 
+  def bsearch(k : T) : Int32
+    i = 1
+    while i < n
+      i <<= 1
+      if xs[i] < k
+        k -= xs[i]
+        i |= 1
+      end
+    end
+    return i - n
+  end
+
   def pp
     puts "========"
     i = 1
@@ -90,58 +105,29 @@ class SegmentTree(T)
   end
 end
 
-class Graph
-  getter n : Int32
-  getter a : Array(Int32)
-  getter ans : Array(Int32)
-  getter g : Array(Array(Int32))
-  getter dp : SegmentTree(Int32)
+def to_v(i)
+  Array.new(26){ |j| i == j ? 1 : 0 }
+end
 
-  def self.read
-    n = gets.to_s.to_i
-    _a = gets.to_s.split.map { |v| v.to_i }
-    a = compress(_a)
-    g = Array.new(n){ [] of Int32 }
-    (n-1).times do
-      i,j = gets.to_s.split.map { |v| v.to_i - 1 }
-      g[i] << j
-      g[j] << i
-    end
-    new(n,a,g)
-  end
+s = gets.to_s
+n = s.size
+a = s.chars.map(&.ord.- 'a'.ord)
+x = a.map { |i| to_v(i) }
+unit = Array.new(26, 0)
+st = SegmentTree(Array(Int32)).new(x, unit) do |a, b|
+  a.zip(b).map { |i, j| i + j }
+end
 
-  def initialize(@n, @a, @g)
-    @dp = SegmentTree(Int32).new(n) do |x, y|
-      Math.max x, y
-    end
-    @ans = Array.new(n, -1)
-  end
-
-  def dfs(v,pv)
-    j = a[v]
-    old = dp[j]
-    dp[j] = dp[...j] + 1
-    ans[v] = dp[0..]
-    g[v].each do |nv|
-      next if nv == pv
-      dfs(nv,v)
-    end
-    dp[j] = old
-  end
-
-  def solve
-    dfs(0, -1)
-    ans
-  end
-
-  def self.compress(src)
-    ref = src.sort.uniq
-    src.map do |v|
-      ref.bsearch_index do |u|
-        v <= u
-      end.not_nil!
+pre = -1
+ans = 0_i64
+(n-2).times do |i|
+  if a[i] == a[i+1]
+    if pre != a[i]
+      pre = a[i]
+      r = ((i+2)..(n-1))
+      ans += r.size - st[r][a[i]]
     end
   end
 end
 
-puts Graph.read.solve.join("\n")
+pp ans
