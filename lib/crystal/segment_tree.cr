@@ -81,6 +81,18 @@ class SegmentTree(T)
     sum(lo, hi)
   end
 
+  def bsearch(k : T) : Int32
+    i = 1
+    while i < n
+      i <<= 1
+      if xs[i] < k
+        k -= xs[i]
+        i |= 1
+      end
+    end
+    return i - n
+  end
+
   def pp
     puts "========"
     i = 1

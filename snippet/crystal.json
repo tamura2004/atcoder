@@ -118,7 +118,7 @@
     "body" : [
       "alias Pair = Tuple(Int64, Int64)",
       "alias Pair = NamedTuple(lo: Int64, hi: Int64)",
-      "record Pair, lo : Int64, hi : Int64",
+      "record Pair, lo : Int64, hi : Int64"
     ]
   },
   "chmax" : {
@@ -201,7 +201,7 @@
       "  end",
       "end",
       "",
-      "Problem.read.run",
+      "Problem.read.run"
     ]
   }
 }
