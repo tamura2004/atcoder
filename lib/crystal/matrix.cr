@@ -1,106 +1,59 @@
-class Vector(T, N)
-  getter a : Array(T)
-
-  def initialize(@a)
-  end
-
-  def initialize
-    @a = Array.new(N){ |i| yield i }
-  end
-
-  def get(i)
-    a[i]
-  end
-
-  def [](i)
-    get(i)
-  end
-
-  def set(i,x)
-    a[i] = x
-  end
-
-  def []=(i,x)
-    set(i,x)
-  end
-end
-
-class Matrix(T, N)
+class Matrix(T)
+  getter n : Int32
   getter a : Array(Array(T))
-
-  def self.zero
-    new { T.zero } 
+ 
+  def self.zero(n)
+    new(n) { T.zero }
   end
-
-  def self.eye
-    new { |i, j| i == j ? T.zero + 1 : T.zero } 
+ 
+  def self.eye(n)
+    new(n) { |i, j| i == j ? T.zero + 1 : T.zero }
   end
-
-  def initialize
-    @a = Array.new(N) { |i| Array.new(N) { |j| yield i, j } }
+ 
+  def initialize(@n)
+    @a = Array.new(n) { |i| Array.new(n) { |j| yield i, j } }
   end
-
+ 
   def initialize(@a)
+    @n = a.size
   end
-
-  def set(i,j,x)
-    a[i][j] = x
-  end
-
-  def []=(i,j,x)
-    set(i,j,x)
-  end
-
-  def get(i,j)
-    a[i][j]
-  end
-
-  def row(i)
-    a[i]
-  end
-
-  def [](i,j)
-    get(i,j)
-  end
-
-  def [](i)
-    row(i)
-  end
-
+ 
   def *(b : self) : self
-    Matrix(T, N).new do |i, j|
-      N.times.sum do |k|
-        self[i, k] * b[k, j]
+    Matrix(T).new(n) do |i, j|
+      ans = T.zero
+      n.times do |k|
+        ans += self[i, k] * b[k, j]
       end
-    end
-  end
-
-  def *(v : Vector(T, N)) : Vector(T, N)
-    Vector(T, N).new do |i|
-      N.times.sum do |j|
-        self[i,j] * v[j]
-      end
+      ans
     end
   end
 
   def **(k : Int) : self
-    n = Math.ilogb(k) + 1
-    ans = Matrix(T, N).eye
-    b = Matrix(T, N).eye * self
-    N.times do |i|
-      if k.bit(i) == 1
-        ans *= b
-      end
+    ans = Matrix(T).eye(n)
+    m = Math.ilogb(k) + 1
+    b = dup
+    m.times do |i|
+      ans *= b if (k>>i).odd?
       b *= b
     end
     ans
   end
-
-  def ==(b : self)
-    N.times.all? { |i| self[i] == b[i]}
+ 
+  @[AlwaysInline]
+  def [](i,j)
+    a[i][j]
+  end
+ 
+  @[AlwaysInline]
+  def []=(i,j,x)
+    a[i][j] = x
   end
 
-  def pp
-    puts a.map(&.join(" ")).join("\n")
+  def ==(b : self) : Bool
+    n.times.all? do |i|
+      n.times.all? do |j|
+        self[i, j] == b[i, j]
+      end
+    end
   end
 end

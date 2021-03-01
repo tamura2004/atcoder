@@ -25,6 +25,7 @@ class FenwickTree(T)
     end
   end
 
+  # 0-inexed
   def []=(i : Int32, x : T)
     add(i, x)
   end
@@ -40,6 +41,16 @@ class FenwickTree(T)
     result
   end
 
+  # 範囲の累積和
+  def [](r : Range(Int32?,Int32?)) : T
+    lo = r.begin || 0
+    hi = r.end || n
+    lo -= 1 if lo > 0
+    hi -= 1 if r.excludes_end? && hi != n
+    sum(hi) - sum(lo)
+  end
+
+  # 0-indexed
   def [](i : Int32) : T
     sum(i)
   end
@@ -57,10 +68,11 @@ class FenwickTree(T)
       end
       w //= 2
     end
-    return i + 1
+    return i
   end
 
   # 2進数で1が出現する最下位ビット
+  @[AlwaysInline]
   def lsb(i) : Int32
     i & -i
   end

@@ -24,6 +24,10 @@ describe FenwickTree do
     bit[1] = 1
     bit[3] = 2
     bit[5].should eq 3
+    bit[..3].should eq 3
+    bit[1..3].should eq 3
+    bit[1...3].should eq 1
+    bit[...3].should eq 1
   end
 
   it "usage: init by array" do
@@ -36,16 +40,12 @@ describe FenwickTree do
   end
 
   it "bsearch" do
-    bit = FenwickTree.new([1,2,2,2,2,2])
+    bit = FenwickTree.new([0,1,0,1,0,0,1,1,1])
     # 1 3 5 7 9 11
-    bit.bsearch(0).should eq 0
     bit.bsearch(1).should eq 1
-    bit.bsearch(5).should eq 3
-    bit.bsearch(6).should eq 4
-    bit.bsearch(7).should eq 4
-    bit.bsearch(1).should eq 1
-    bit.bsearch(13).should eq 7
-    bit.bsearch(1300).should eq 7
+    bit.bsearch(2).should eq 3
+    bit.bsearch(3).should eq 6
+    bit.bsearch(4).should eq 7
   end
 
   it "index error" do
