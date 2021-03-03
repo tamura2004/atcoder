@@ -76,3 +76,22 @@ class Graph
   end
 end
 
+a = [
+  [0,1],
+  [0,2],
+  [0,3],
+  [1,4],
+  [1,5],
+  [2,4],
+  [3,5],
+  [4,7],
+  [5,7],
+  [6,7],
+]
+
+g = Graph.new(8)
+a.each do |(i,j)|
+  g.add_edge(i,j,1)
+end
+
+pp g.flow(0,7)

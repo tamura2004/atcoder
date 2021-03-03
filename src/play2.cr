@@ -1,9 +1,14 @@
-alias X = Tuple(Int32,Int32)
+# class Edge
+#   getter from : Int32
+#   getter to : Int32
+#   getter cap : Int64
+#   getter cost : Int64
 
-struct X
-  def f(y : self)
-    self[0] + y[0]
-  end
-end
+#   def initialize(@from, @to, @cap : Int64, @cost : Int64)
+#   end
+# end
 
-pp! ({10,20}).f(({20,30}))
+record Edge, s : Int32, t : Int32, cap : Int64, cost : Int64
+
+x = Edge.new(0, 0, 0, 0)
+pp! x

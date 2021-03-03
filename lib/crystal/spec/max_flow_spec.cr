@@ -1,9 +1,9 @@
 require "spec"
 require "../max_flow"
 
-describe MaxFlow do
+describe Graph do
   it "usage" do
-    g = MaxFlow(Int32).new(8)
+    g = Graph.new(8)
     g.add_edge(0, 1, 1)
     g.add_edge(0, 2, 1)
     g.add_edge(0, 3, 1)
@@ -15,13 +15,13 @@ describe MaxFlow do
     g.add_edge(4, 7, 1)
     g.add_edge(6, 7, 1)
     g.add_edge(6, 7, 1)
-    g.max_flow(0, 7).should eq 2
+    g.flow(0, 7).should eq 2
   end
 end
 
-describe MaxFlow do
+describe Graph do
   it "usage weighted" do
-    g = MaxFlow(Int64).new(5)
+    g = Graph.new(5)
     g.add_edge(0, 1, 10_i64)
     g.add_edge(0, 2, 2_i64)
     g.add_edge(1, 2, 6_i64)
@@ -29,7 +29,7 @@ describe MaxFlow do
     g.add_edge(3, 2, 3_i64)
     g.add_edge(2, 4, 5_i64)
     g.add_edge(3, 4, 8_i64)
-    g.max_flow(0, 4).should eq 11
+    g.flow(0, 4).should eq 11
   end
 end
 
@@ -47,10 +47,10 @@ class ABC010D
   getter n : Int32
   getter g : Int32
   getter e : Int32
-  getter flow : MaxFlow(Int32)
+  getter flow : Graph
 
   def initialize(@n,@g,@e,girl,ab)
-    @flow = MaxFlow(Int32).new(101)
+    @flow = Graph.new(101)
     ab.each do |(a,b)|
       flow.add_edge(a,b,1)
       flow.add_edge(b,a,1)
@@ -61,6 +61,6 @@ class ABC010D
   end
 
   def solve
-    flow.max_flow(0,SINK)
+    flow.flow(0,SINK)
   end
 end
