@@ -4,6 +4,8 @@ require "open-uri"
 
 users = %w[
   kohara1213
+  iaduf123
+  MasahiroTada108
 ]
 
 data = []
@@ -18,9 +20,7 @@ open("src/sfpc/users.json", "w") do |fh|
 end
 
 # nakamuraemiko
-# iaduf123
 # kohara1213
-# MasahiroTada108
 # zukeyama0424
 # yanai
 # loveflower
