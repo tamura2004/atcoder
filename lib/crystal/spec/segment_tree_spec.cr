@@ -49,4 +49,15 @@ describe SegmentTree do
     st = SegmentTree(Pair).new([{1, 2}, {2, 3}, {3, 4}], unit, fx)
     st[0..2].should eq ({6, 25})
   end
+
+  it "range min" do
+    st = SegmentTree(Int32).rmq(10)
+    st[1] = 10
+    st[2] = 5
+    st[3] = 20
+    st[1..].should eq 5
+    st[2..].should eq 5
+    st[3..].should eq 20
+
+  end
 end

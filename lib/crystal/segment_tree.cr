@@ -3,6 +3,20 @@ class SegmentTree(T)
   getter unit : T
   getter xs : Array(T)
   getter fx : Proc(T, T, T)
+  
+  # 区間最小
+  def self.rmq(n : Int32)
+    values = Array.new(n){ T::MAX }
+    new(values, unit: T::MAX) do |x,y|
+      Math.min(x,y)
+    end
+  end
+
+  def self.rmq(values : Array(T))
+    new(values, unit: T::MAX) do |x,y|
+      Math.min(x,y)
+    end
+  end
 
   def initialize(n : Int32, init : T = T.zero)
     values = Array.new(n) { init }
