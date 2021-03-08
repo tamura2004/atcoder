@@ -1,3 +1,19 @@
+macro make_array(i,v)
+  Array.new({{i}}){ {{v}} }
+end
+
+macro make_array(i,j,v)
+  Array.new({{i}}){ Array.new({{j}}){ {{v}} } }
+end
+
+macro make_array(i,j,k,v)
+  Array.new({{i}}){ Array.new({{j}}){ Array.new({{k}}){ {{v}} } } }
+end
+
+macro make_array(i,j,k,l,v)
+  Array.new({{i}}){ Array.new({{j}}){ Array.new({{k}}){ Array.new({{l}}){ {{v}} } } } }
+end
+
 class DigitDP(T)
   EDGE = 0
   FREE = 1
@@ -22,14 +38,6 @@ class DigitDP(T)
       end
     end
   end
-
-  def new_dp
-    Array.new(n+1){ Array.new(2, T.zero) }
-  end
-
-  def new_dp(m)
-    Array.new(n+1){ Array.new(m){ Array.new(2){ T.zero } } }
-  end
 end
 
 class ABC154(T) < DigitDP(T)
@@ -41,6 +49,7 @@ class ABC154(T) < DigitDP(T)
 
   def solve
     m = gets.to_s.to_i
+    dp = make_array(n+1, m+1, 2, T.zero)
     dp = Array.new(n + 1) { Array.new(m + 1) { Array.new(2, T.zero) } }
     dp[0][EDGE][0] = T.new(1)
 
