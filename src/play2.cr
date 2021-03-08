@@ -18,3 +18,6 @@ pp! make_array(3,0)
 pp! make_array(3,3,0)
 pp! make_array(3,3,3,0)
 pp! make_array(3,3,3,3,0)
+Array.new(){ Array.new() {  } }
+
+Array.new(){ Array.new() { Array.new() {  } } }
