@@ -1,6 +1,5 @@
-alias Pair = Tuple(Int64, Int64)
-alias X = Pair
+a = true
+b = false
 
-a = [1_i64,2_i64]
-
-pp X.from(a)
+pp 1 + a.to_unsafe
+pp 1 + b.to_unsafe

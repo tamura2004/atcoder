@@ -1,46 +1,60 @@
-class DigitDP
+class DigitDP(T)
+  EDGE = 0
+  FREE = 1
+
   getter n : Int32
-  getter num : Array(Int32)
+  getter a : Array(Int32)
 
-  def initialize(n : String)
-    @num = n.chars.map(&.to_i)
-    @n = num.size
+  def initialize(@n, @a)
   end
 
-  def self.read
-    n = gets.to_s.chomp
-    new(n)
-  end
-
-  def solve
-    free = Array.new(n + 1) { Array.new(n + 1, 0_i64) }
-    edge = Array.new(n + 1) { Array.new(n + 1, 0_i64) }
-    edge[0][0] += 1
-
+  # EDGE --just--> EDGE
+  #      \-up----> FREE --not head--> FREE
+  def each
     n.times do |i|
-      (n + 1).times do |j|
+      [EDGE, FREE].each do |from|
         10.times do |d|
-          z = d == 1 ? 1 : 0
-          next if j - z < 0
-          free[i + 1][j] += free[i][j - z]
-          edge[i + 1][j] += edge[i][j - z] if d == num[i]
-          free[i + 1][j] += edge[i][j - z] if d < num[i]
+          to = from == EDGE && d == a[i] ? EDGE : FREE
+          next if from == EDGE && d > a[i]
+          next if from == FREE && to == FREE && i == 0
+          yield i, from, to, d
         end
       end
     end
-
-    edge[-1].zip(0..).sum { |a, b| a*b } +
-    free[-1].zip(0..).sum { |a, b| a*b }
   end
 
-  def solve2
-    maxi = num.join.to_i
-    (1..maxi).sum do |v|
-      v.to_s.chars.count &.== '1'
-    end
+  def new_dp
+    Array.new(n+1){ Array.new(2, T.zero) }
   end
 
-  def run
-    puts solve
+  def new_dp(m)
+    Array.new(n+1){ Array.new(m){ Array.new(2){ T.zero } } }
   end
 end
+
+class ABC154(T) < DigitDP(T)
+  def self.read
+    a = gets.to_s.chars.map(&.to_i)
+    n = a.size
+    new(n, a)
+  end
+
+  def solve
+    m = gets.to_s.to_i
+    dp = Array.new(n + 1) { Array.new(m + 1) { Array.new(2, T.zero) } }
+    dp[0][EDGE][0] = T.new(1)
+
+    each do |i, from, to, d|
+      0.upto(m) do |v|
+        nv = v + (d != 0).to_unsafe
+        next if nv > m
+
+        dp[i + 1][nv][to] += dp[i][v][from]
+      end
+    end
+
+    dp[-1][-1].sum
+  end
+end
+
+pp ABC154(Int64).read.solve
