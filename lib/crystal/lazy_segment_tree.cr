@@ -23,6 +23,15 @@ class LazySegmentTree(X, A)
   getter fxa : Proc(X?, A?, X?)
   getter faa : Proc(A?, A?, A?)
 
+  def self.range_add_range_min(_x)
+    new(
+      Proc(X,X,X).new { |x,y| Math.min x, y },
+      Proc(X,A,X).new { |x,a| x + a },
+      Proc(A,A,A).new { |a,b| a + b },
+      _x
+    )
+  end
+
   def initialize(
     fxx : Proc(X,X,X),
     fxa : Proc(X,A,X),
