@@ -1,23 +1,6 @@
-macro make_array(i,v)
-  Array.new({{i}}){ {{v}} }
+t = gets.to_s.to_i
+t.times do
+  n = gets.to_s.to_i
+  s = Array.new(3){ gets.to_s }
+  puts "0" * n + "1" * n + "0"
 end
-
-macro make_array(i,j,v)
-  Array.new({{i}}){ Array.new({{j}}){ {{v}} } }
-end
-
-macro make_array(i,j,k,v)
-  Array.new({{i}}){ Array.new({{j}}){ Array.new({{k}}){ {{v}} } } }
-end
-
-macro make_array(i,j,k,l,v)
-  Array.new({{i}}){ Array.new({{j}}){ Array.new({{k}}){ Array.new({{l}}){ {{v}} } } } }
-end
-
-pp! make_array(3,0)
-pp! make_array(3,3,0)
-pp! make_array(3,3,3,0)
-pp! make_array(3,3,3,3,0)
-Array.new(){ Array.new() {  } }
-
-Array.new(){ Array.new() { Array.new() {  } } }
