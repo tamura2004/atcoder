@@ -1,61 +1,51 @@
-# メモ化再帰のひな型
-alias Key = Tuple(Int64,Int64)
-alias Memo = Hash(Key,Int64?)
-
-class Problem
-  getter n : Int64
-  getter x : Int64
-  getter a : Array(Int64)
-  getter memo : Memo
-
-  def initialize(@n,@x,@a)
-    @memo = Memo.new { |h, k| h[k] = nil }
+# メモ化再帰
+#
+# ```
+# 
+# ```
+class Memo(K,V)
+  getter memo : Hash(K,V?)
+  
+  def initialize
+    @memo = Hash(K,V?).new { |h, k| h[k] = nil }
   end
-
-  def solve
-    f(0_i64, x)
+  
+  def f(*key : *K) : V
+    memo[key] ||= g(*key)
   end
-
-  def f(i, x)
-    memo[{i,x}] ||= g(i,x)
-  end
-
-  def g(i, x)
-    return 1_i64 if i == n - 1
-    y = a[i + 1]
-    z = x % y
-    return f(i + 1, x - z) if z == 0
-    f(i + 1, x - z) + f(i + 1, x - z + y)
+  
+  def f(key : K) : V
+    memo[key] ||= g(key)
   end
 end
 
-# class Problem
-#   getter n : Int32
-#   getter a : Array(Int64)
-#   getter dp : Array(Array(Int64?))
+alias Key = Tuple(Int32,Int32)
+class Problem < Memo(Key,Int64)
+  getter n : Int32
+  getter a : Array(Int64)
+  getter cs : Array(Int64)
 
-#   def initialize
-#     @n = gets.to_s.to_i
-#     @a = gets.to_s.split.map { |v| v.to_i64 }
-#     @dp = Array.new(n) { Array(Int64?).new(n, nil) }
-#     n.times { |i| dp[i][i] = a[i] }
-#   end
+  def initialize
+    super
+    @n = gets.to_s.to_i
+    @a = gets.to_s.split.map(&.to_i64)
+    @cs = a.each_with_object([0_i64]) { |v, h| h << h[-1] + v }
+  end
+  
+  def g(lo, hi) : V
+    return 0_i64 if hi - lo < 2
+    return a[lo] + a[lo+1] if hi - lo == 2
+    
+    cost = (lo+1).upto(hi-1).min_of do |i|
+      g(lo, i) + g(i, hi)
+    end
+    
+    cost + cs[hi] - cs[lo]
+  end
+  
+  def solve
+    pp f(0, n)
+  end
+end
 
-#   def solve
-#     puts f(0, n-1)
-#   end
-
-#   def g(lo, hi)
-#     dp[lo][hi] ||= f(lo, hi)
-#   end
-
-#   def f(lo, hi)
-#     return a[lo] if lo == hi
-#     dp[lo][hi] = Math.max(
-#       a[lo] - f(lo + 1, hi),
-#       a[hi] - f(lo, hi - 1)
-#     )
-#   end
-# end
-
-# Problem.new.solve
+# Problem(Key,Int64).new.solve

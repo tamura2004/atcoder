@@ -1,11 +1,29 @@
 require "spec"
 require "../memo"
 
-describe Problem do
-  it "solve https://atcoder.jp/contests/abc182/tasks/abc182_f/editorial" do
-    n = 9_i64
-    x = 11837029798_i64
-    a = [1,942454037,2827362111,19791534777,257289952101,771869856303,3859349281515,30874794252120,216123559764840].map(&.to_i64)
-    Problem.new(n,x,a).solve.should eq 21
+describe Memo do
+  it "solve fibonacci" do
+    Fibonacci.new.f(9).should eq 34
+  end
+
+  it "solve Ackermann function" do
+    Ackermann.new.f(3, 3).should eq 61
+  end
+end
+
+# フィボナッチ数列
+class Fibonacci < Memo(Int32, Int32)
+  def g(n)
+    return 1 if n <= 2
+    f(n - 1) + f(n - 2)
+  end
+end
+
+# アッカーマン関数
+class Ackermann < Memo(Tuple(Int32, Int32), Int32)
+  def g(m, n)
+    return n + 1 if m == 0
+    return f(m - 1, 1) if n == 0
+    f(m - 1, f(m, n - 1))
   end
 end

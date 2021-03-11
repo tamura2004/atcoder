@@ -48,4 +48,3 @@ class Trie
     c.ord - 'a'.ord + 1
   end
 end
-;

@@ -1,50 +1,39 @@
-# 両方向累積和
-class BothSideCS(T)
-  getter a : Array(T)
-  getter left : Array(T)
-  getter right : Array(T)
-  getter n : Int32
-  getter unit : T
-  getter fxx : Proc(T, T, T)
+# WFで全点間最大距離求める
+# 各辺(u,v)について、k != u,v
+# (u,k) + (k,v) <= (u,v)なるkがあれば、
+# 最短パスではない
+macro chmin(target, other)
+  {{target}} = ({{other}}) if ({{target}}) > ({{other}})
+end
 
-  def initialize(
-    a : Array(T),
-    unit = T.zero,
-    &fxx : Proc(T, T, T)
-  )
-    initialize(a,unit,fxx)
-  end
+INF = 10_i64 ** 9
+n,m = gets.to_s.split.map(&.to_i)
+g = Array.new(n){ Array.new(n, INF) }
+n.times{|i|g[i][i] = 0_i64}
+e = Hash(Tuple(Int32,Int32),Int64).new do |h,k|
+  h[k] = 0_i64
+end
 
-  def initialize(
-    @a : Array(T),
-    @unit = T.zero,
-    f = Proc(T, T, T).new { |x, y| x + y }
-  )
-    @fxx = Proc(T,T,T).new do |x,y|
-      x != unit && y != unit ? f.call(x,y) : x != unit ? x : y != unit ? y : unit
+m.times do
+  a,b,c = gets.to_s.split.map(&.to_i)
+  a -= 1
+  b -= 1
+  g[a][b] = c.to_i64
+  g[b][a] = c.to_i64
+  e[{a,b}] = c.to_i64
+end
+
+n.times do |k|
+  n.times do |i|
+    n.times do |j|
+      chmin g[i][j], g[i][k] + g[k][j]
     end
-    @n = a.size
-    @left = Array.new(n + 1, unit)
-    @right = Array.new(n + 1, unit)
-    n.times do |i|
-      left[i + 1] = fxx.call left[i], a[i]
-      right[n - 1 - i] = fxx.call right[n - i], a[n - 1 - i]
-    end
-  end
-
-  def [](i)
-    fxx.call left[i], right[i + 1]
   end
 end
 
-n = gets.to_s.to_i
-a = gets.to_s.split.map(&.to_i64)
-cs = BothSideCS(Int64).new(a, -1_i64) do |x, y|
-  x.gcd(y)
-end
-
-ans = n.times.max_of do |i|
-  cs[i]
+ans = e.count do |key,cost|
+  i,j = key
+  g[i][j] != cost
 end
 
 pp ans
