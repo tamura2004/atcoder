@@ -1549,6 +1549,30 @@
       "execution_time": 128
     },
     {
+      "id": 20826138,
+      "epoch_second": 1615448015,
+      "problem_id": "hitachi2020_a",
+      "contest_id": "hitachi2020",
+      "user_id": "iaduf123",
+      "language": "Java (OpenJDK 11.0.6)",
+      "point": 100.0,
+      "length": 432,
+      "result": "AC",
+      "execution_time": 114
+    },
+    {
+      "id": 20824819,
+      "epoch_second": 1615442771,
+      "problem_id": "caddi2018b_b",
+      "contest_id": "caddi2018b",
+      "user_id": "iaduf123",
+      "language": "Java (OpenJDK 11.0.6)",
+      "point": 200.0,
+      "length": 556,
+      "result": "AC",
+      "execution_time": 172
+    },
+    {
       "id": 20785690,
       "epoch_second": 1615249885,
       "problem_id": "abc144_b",
@@ -1619,18 +1643,6 @@
       "length": 519,
       "result": "AC",
       "execution_time": 123
-    },
-    {
-      "id": 20785746,
-      "epoch_second": 1615250245,
-      "problem_id": "m_solutions2019_b",
-      "contest_id": "m-solutions2019",
-      "user_id": "iaduf123",
-      "language": "Java (OpenJDK 11.0.6)",
-      "point": 200.0,
-      "length": 480,
-      "result": "AC",
-      "execution_time": 109
     },
     {
       "id": 20785812,
@@ -1787,6 +1799,90 @@
       "length": 320,
       "result": "AC",
       "execution_time": 146
+    },
+    {
+      "id": 20824550,
+      "epoch_second": 1615441539,
+      "problem_id": "abc179_b",
+      "contest_id": "abc179",
+      "user_id": "iaduf123",
+      "language": "Java (OpenJDK 11.0.6)",
+      "point": 200.0,
+      "length": 800,
+      "result": "AC",
+      "execution_time": 119
+    },
+    {
+      "id": 20824541,
+      "epoch_second": 1615441518,
+      "problem_id": "abc179_a",
+      "contest_id": "abc179",
+      "user_id": "iaduf123",
+      "language": "Java (OpenJDK 11.0.6)",
+      "point": 0.0,
+      "length": 801,
+      "result": "RE",
+      "execution_time": 125
+    },
+    {
+      "id": 20820928,
+      "epoch_second": 1615422794,
+      "problem_id": "abc094_a",
+      "contest_id": "abc094",
+      "user_id": "iaduf123",
+      "language": "Java (OpenJDK 11.0.6)",
+      "point": 100.0,
+      "length": 482,
+      "result": "AC",
+      "execution_time": 119
+    },
+    {
+      "id": 20820941,
+      "epoch_second": 1615422912,
+      "problem_id": "abc089_a",
+      "contest_id": "abc089",
+      "user_id": "iaduf123",
+      "language": "Java (OpenJDK 11.0.6)",
+      "point": 100.0,
+      "length": 312,
+      "result": "AC",
+      "execution_time": 120
+    },
+    {
+      "id": 20820998,
+      "epoch_second": 1615423293,
+      "problem_id": "abc159_a",
+      "contest_id": "abc159",
+      "user_id": "iaduf123",
+      "language": "Java (OpenJDK 11.0.6)",
+      "point": 100.0,
+      "length": 326,
+      "result": "AC",
+      "execution_time": 118
+    },
+    {
+      "id": 20820968,
+      "epoch_second": 1615423107,
+      "problem_id": "abc097_a",
+      "contest_id": "abc097",
+      "user_id": "iaduf123",
+      "language": "Java (OpenJDK 11.0.6)",
+      "point": 100.0,
+      "length": 568,
+      "result": "AC",
+      "execution_time": 115
+    },
+    {
+      "id": 20785746,
+      "epoch_second": 1615250245,
+      "problem_id": "m_solutions2019_b",
+      "contest_id": "m-solutions2019",
+      "user_id": "iaduf123",
+      "language": "Java (OpenJDK 11.0.6)",
+      "point": 200.0,
+      "length": 480,
+      "result": "AC",
+      "execution_time": 109
     }
   ],
   [
@@ -3531,6 +3627,66 @@
       "execution_time": 118
     },
     {
+      "id": 20821608,
+      "epoch_second": 1615427126,
+      "problem_id": "abc132_a",
+      "contest_id": "abc132",
+      "user_id": "MasahiroTada108",
+      "language": "Java (OpenJDK 11.0.6)",
+      "point": 100.0,
+      "length": 436,
+      "result": "AC",
+      "execution_time": 111
+    },
+    {
+      "id": 20821725,
+      "epoch_second": 1615427725,
+      "problem_id": "abc069_a",
+      "contest_id": "abc069",
+      "user_id": "MasahiroTada108",
+      "language": "Java (OpenJDK 11.0.6)",
+      "point": 100.0,
+      "length": 247,
+      "result": "AC",
+      "execution_time": 118
+    },
+    {
+      "id": 20821705,
+      "epoch_second": 1615427604,
+      "problem_id": "abc135_a",
+      "contest_id": "abc135",
+      "user_id": "MasahiroTada108",
+      "language": "Java (OpenJDK 11.0.6)",
+      "point": 100.0,
+      "length": 339,
+      "result": "AC",
+      "execution_time": 122
+    },
+    {
+      "id": 20821853,
+      "epoch_second": 1615428426,
+      "problem_id": "abc148_b",
+      "contest_id": "abc148",
+      "user_id": "MasahiroTada108",
+      "language": "Java (OpenJDK 11.0.6)",
+      "point": 200.0,
+      "length": 338,
+      "result": "AC",
+      "execution_time": 119
+    },
+    {
+      "id": 20821566,
+      "epoch_second": 1615426886,
+      "problem_id": "abc162_b",
+      "contest_id": "abc162",
+      "user_id": "MasahiroTada108",
+      "language": "Java (OpenJDK 11.0.6)",
+      "point": 200.0,
+      "length": 336,
+      "result": "AC",
+      "execution_time": 123
+    },
+    {
       "id": 20787681,
       "epoch_second": 1615260948,
       "problem_id": "abc153_b",
@@ -3577,54 +3733,6 @@
       "length": 340,
       "result": "RE",
       "execution_time": 121
-    },
-    {
-      "id": 20788164,
-      "epoch_second": 1615263314,
-      "problem_id": "dwacon6th_prelims_a",
-      "contest_id": "dwacon6th-prelims",
-      "user_id": "MasahiroTada108",
-      "language": "Java (OpenJDK 11.0.6)",
-      "point": 0.0,
-      "length": 489,
-      "result": "WA",
-      "execution_time": 124
-    },
-    {
-      "id": 20788119,
-      "epoch_second": 1615263091,
-      "problem_id": "dwacon6th_prelims_a",
-      "contest_id": "dwacon6th-prelims",
-      "user_id": "MasahiroTada108",
-      "language": "Java (OpenJDK 11.0.6)",
-      "point": 0.0,
-      "length": 529,
-      "result": "WA",
-      "execution_time": 131
-    },
-    {
-      "id": 20788457,
-      "epoch_second": 1615264672,
-      "problem_id": "dwacon6th_prelims_a",
-      "contest_id": "dwacon6th-prelims",
-      "user_id": "MasahiroTada108",
-      "language": "Java (OpenJDK 11.0.6)",
-      "point": 0.0,
-      "length": 574,
-      "result": "WA",
-      "execution_time": 121
-    },
-    {
-      "id": 20788439,
-      "epoch_second": 1615264537,
-      "problem_id": "dwacon6th_prelims_a",
-      "contest_id": "dwacon6th-prelims",
-      "user_id": "MasahiroTada108",
-      "language": "Java (OpenJDK 11.0.6)",
-      "point": 0.0,
-      "length": 568,
-      "result": "WA",
-      "execution_time": 116
     },
     {
       "id": 20788505,
@@ -3781,6 +3889,150 @@
       "length": 662,
       "result": "AC",
       "execution_time": 113
+    },
+    {
+      "id": 20788164,
+      "epoch_second": 1615263314,
+      "problem_id": "dwacon6th_prelims_a",
+      "contest_id": "dwacon6th-prelims",
+      "user_id": "MasahiroTada108",
+      "language": "Java (OpenJDK 11.0.6)",
+      "point": 0.0,
+      "length": 489,
+      "result": "WA",
+      "execution_time": 124
+    },
+    {
+      "id": 20788119,
+      "epoch_second": 1615263091,
+      "problem_id": "dwacon6th_prelims_a",
+      "contest_id": "dwacon6th-prelims",
+      "user_id": "MasahiroTada108",
+      "language": "Java (OpenJDK 11.0.6)",
+      "point": 0.0,
+      "length": 529,
+      "result": "WA",
+      "execution_time": 131
+    },
+    {
+      "id": 20788457,
+      "epoch_second": 1615264672,
+      "problem_id": "dwacon6th_prelims_a",
+      "contest_id": "dwacon6th-prelims",
+      "user_id": "MasahiroTada108",
+      "language": "Java (OpenJDK 11.0.6)",
+      "point": 0.0,
+      "length": 574,
+      "result": "WA",
+      "execution_time": 121
+    },
+    {
+      "id": 20788439,
+      "epoch_second": 1615264537,
+      "problem_id": "dwacon6th_prelims_a",
+      "contest_id": "dwacon6th-prelims",
+      "user_id": "MasahiroTada108",
+      "language": "Java (OpenJDK 11.0.6)",
+      "point": 0.0,
+      "length": 568,
+      "result": "WA",
+      "execution_time": 116
+    },
+    {
+      "id": 20829946,
+      "epoch_second": 1615462662,
+      "problem_id": "m_solutions2019_b",
+      "contest_id": "m-solutions2019",
+      "user_id": "MasahiroTada108",
+      "language": "Java (OpenJDK 11.0.6)",
+      "point": 0.0,
+      "length": 338,
+      "result": "RE",
+      "execution_time": 125
+    },
+    {
+      "id": 20830045,
+      "epoch_second": 1615463040,
+      "problem_id": "m_solutions2019_b",
+      "contest_id": "m-solutions2019",
+      "user_id": "MasahiroTada108",
+      "language": "Java (OpenJDK 11.0.6)",
+      "point": 0.0,
+      "length": 338,
+      "result": "RE",
+      "execution_time": 120
+    },
+    {
+      "id": 20830316,
+      "epoch_second": 1615464048,
+      "problem_id": "diverta2019_a",
+      "contest_id": "diverta2019",
+      "user_id": "MasahiroTada108",
+      "language": "Java (OpenJDK 11.0.6)",
+      "point": 100.0,
+      "length": 241,
+      "result": "AC",
+      "execution_time": 120
+    },
+    {
+      "id": 20830236,
+      "epoch_second": 1615463782,
+      "problem_id": "m_solutions2019_b",
+      "contest_id": "m-solutions2019",
+      "user_id": "MasahiroTada108",
+      "language": "Java (OpenJDK 11.0.6)",
+      "point": 200.0,
+      "length": 464,
+      "result": "AC",
+      "execution_time": 108
+    },
+    {
+      "id": 20832734,
+      "epoch_second": 1615470632,
+      "problem_id": "abc155_b",
+      "contest_id": "abc155",
+      "user_id": "MasahiroTada108",
+      "language": "Java (OpenJDK 11.0.6)",
+      "point": 200.0,
+      "length": 514,
+      "result": "AC",
+      "execution_time": 128
+    },
+    {
+      "id": 20833030,
+      "epoch_second": 1615471489,
+      "problem_id": "aising2019_a",
+      "contest_id": "aising2019",
+      "user_id": "MasahiroTada108",
+      "language": "Java (OpenJDK 11.0.6)",
+      "point": 100.0,
+      "length": 280,
+      "result": "AC",
+      "execution_time": 327
+    },
+    {
+      "id": 20832686,
+      "epoch_second": 1615470508,
+      "problem_id": "abc155_b",
+      "contest_id": "abc155",
+      "user_id": "MasahiroTada108",
+      "language": "Java (OpenJDK 11.0.6)",
+      "point": 200.0,
+      "length": 531,
+      "result": "AC",
+      "execution_time": 126
+    },
+    {
+      "id": 20833093,
+      "epoch_second": 1615471661,
+      "problem_id": "abc053_a",
+      "contest_id": "abc053",
+      "user_id": "MasahiroTada108",
+      "language": "Java (OpenJDK 11.0.6)",
+      "point": 100.0,
+      "length": 278,
+      "result": "AC",
+      "execution_time": 115
     }
   ]
 ]
