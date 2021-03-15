@@ -109,7 +109,7 @@ struct Int
   # 素数判定
   #
   # ```
-  # 7.is_Prime? # => true
+  # 7.prime? # => true
   # ```
   def prime?
     Prime.is_prime?(self)
@@ -172,12 +172,4 @@ class Hash
       end
     end
   end
-
-  # 素因数分解としての元の数
-  def to_i
-    reduce(1) do |acc,(k,v)|
-      acc * k ** v
-    end
-  end
-
 end

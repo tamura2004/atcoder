@@ -1,75 +1,48 @@
 require "spec"
 require "../prime"
 
-describe Prime do
-  describe "prime?" do
-    cases = [
-      {0, false},
-      {1, false},
-      {2, true},
-      {3, true},
-      {4, false},
-      {5, true},
-      {6, false},
-      {7, true},
-      {8, false},
-    ]
-    cases.each do |i,want|
-      Prime.prime?(i).should eq want
-    end
+describe Int do
+  it "prime?" do
+    7.prime?.should eq true
+    6.prime?.should eq false
   end
 
-  describe "prime_division" do
-    cases = [
-      {0, {} of Int32 => Int32},
-      {1, {} of Int32 => Int32},
-      {7, {7 => 1}},
-      {8, {2 => 3}},
-      {12, {2 => 2, 3 => 1}},
-    ]
-    cases.each do |i, want|
-      Prime.prime_division(i).should eq Factor.new(want)
-    end
-
-    cases.each do |i, want|
-      Prime.division(i).should eq Factor.new(want)
-    end
+  it "div?" do
+    3.div?(6).should eq true
+    3.div?(7).should eq false
   end
 
-  describe "prime_division of collection" do
-    param = {7,8,12}
-    want = [
-      Factor.new({7 => 1}),
-      Factor.new({2 => 3}),
-      Factor.new({2 => 2, 3 => 1}),
-    ]
-    Prime.prime_division(*param).should eq want
-    Prime.division(*param).should eq want
+  it "prime_division" do
+    71.prime_division.should eq ({71 => 1})
+    72.prime_division.should eq ({2 => 3, 3 => 2})
   end
 
-  describe "prime_division_conv" do
-    param = {7,8,12}
-    want = Factor.new({2 => 5, 3 => 1, 7 => 1})
-    Prime.prime_division_conv(*param).should eq want
-    Prime.division_conv(*param).should eq want
+  it "prime_factor" do
+    71.prime_factor.should eq Set{71}
+    72.prime_factor.should eq Set{2, 3}
   end
 
-  describe "Iterable" do
-    it "first" do
-      # Prime.rewind
-      Prime.each.first(4).sum.should eq 17
-    end
+  it "factor_num" do
+    71.factor_num.should eq 2
+    72.factor_num.should eq 12
   end
 end
 
-describe Factor do
-  it "number of divisors" do
-    subject = Prime.division(240)
-    subject.num_of_divisors.should eq 20
+describe Hash do
+  it "*" do
+    a = {2 => 1, 3 => 2}
+    b = {2 => 2, 5 => 2}
+    (a * b).should eq ({2 => 3, 3 => 2, 5 => 2})
   end
+  
+  it "to_i" do
+    a = {2 => 1, 3 => 2}
+    a.to_i.should eq 18
+  end
+end
 
-  it "number of divisors" do
-    subject = Factor.new({2 => 4, 3 => 1})
-    subject.num_of_divisors.should eq 10
+describe Prime do
+  it "usage" do
+    Prime.primes(20).should eq [2, 3, 5, 7, 11, 13, 17, 19]
   end
 end

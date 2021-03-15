@@ -3,6 +3,14 @@ class SegmentTree(T)
   getter unit : T
   getter xs : Array(T)
   getter fx : Proc(T, T, T)
+    
+  # 区間最大
+  def self.range_max_query(n : Int32)
+    values = Array.new(n){ T.zero }
+    new(values, unit: T.zero) do |x,y|
+      Math.max(x,y)
+    end
+  end
   
   # 区間最小
   def self.rmq(n : Int32)
