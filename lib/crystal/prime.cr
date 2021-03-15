@@ -180,4 +180,10 @@ class Hash
     end
   end
 
+  # 素因数分解としての元の数
+  def to_i64
+    reduce(1_i64) do |acc,(k,v)|
+      acc * k ** v
+    end
+  end
 end
