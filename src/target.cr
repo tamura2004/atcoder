@@ -1,3 +1,5 @@
+pp! Prime.skip_while(&.<= 1000).first(10).to_a
+
 # 素数クラス
 #
 # エラストテレスの篩で、自身を割る最小の素数をクラス変数として持つ
@@ -33,7 +35,7 @@ class Prime
   # Prime.is_Prime(7) # => true
   # ```
   def self.is_prime?(n)
-    div[n] == n
+    @@div[n] == n
   end
 
   # 素数列挙
@@ -57,7 +59,7 @@ class Prime
   def self.prime_division(n : Int) : Hash(Int32, Int32)
     Hash(Int32, Int32).new(0).tap do |dp|
       while n > 1
-        i = div[n]
+        i = @@div[n]
         dp[i] += 1
         n //= i
       end
@@ -137,7 +139,7 @@ struct Int
   # 素数判定
   #
   # ```
-  # 7.prime? # => true
+  # 7.is_Prime? # => true
   # ```
   def prime?
     Prime.is_prime?(self)

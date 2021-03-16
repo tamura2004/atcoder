@@ -26,6 +26,27 @@ describe Int do
     71.factor_num.should eq 2
     72.factor_num.should eq 12
   end
+
+  it "subset" do
+    3.subsets.map(&.to_bit(2)).to_a.should eq ["11", "10", "01"]
+  end
+
+  it "bits" do
+    10.bits.to_a.should eq [1, 3]
+  end
+
+  it "to_bit" do
+    10.to_bit(4).should eq "1010"
+  end
+
+  it "inv" do
+    10.inv(4).to_bit(4).should eq "0101"
+  end
+
+  it "of" do
+    1.of([7,6,5]).should eq 6
+  end
+
 end
 
 describe Hash do
@@ -34,7 +55,7 @@ describe Hash do
     b = {2 => 2, 5 => 2}
     (a * b).should eq ({2 => 3, 3 => 2, 5 => 2})
   end
-  
+
   it "to_i" do
     a = {2 => 1, 3 => 2}
     a.to_i.should eq 18
@@ -43,6 +64,13 @@ end
 
 describe Prime do
   it "usage" do
-    Prime.primes(20).should eq [2, 3, 5, 7, 11, 13, 17, 19]
+    Prime.first(4).to_a.should eq [2, 3, 5, 7]
+  end
+
+  it "双子素数" do
+    ans = Prime.take_while(&.<= 40).each_cons(2).select do |(i,j)|
+      (i - j).abs <= 2
+    end.to_a
+    ans.should eq [[17, 19], [29, 31]]
   end
 end

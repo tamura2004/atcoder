@@ -40,3 +40,8 @@ struct Complex(T)
     real.abs + imag.abs
   end
 end
+
+struct Line(T)
+  getter a : Complex(T)
+  getter b : Complex(T)
+end
