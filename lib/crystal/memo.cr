@@ -1,13 +1,20 @@
 # メモ化再帰
 #
 # ```
-# 
+# # アッカーマン関数
+# class Ackermann < Memo(Tuple(Int32, Int32), Int32)
+#   def g(m, n)
+#     return n + 1 if m == 0
+#     return f(m - 1, 1) if n == 0
+#     f(m - 1, f(m, n - 1))
+#   end
+# end
 # ```
 class Memo(K,V)
   getter memo : Hash(K,V?)
   
   def initialize
-    @memo = Hash(K,V?).new { |h, k| h[k] = nil }
+    @memo = Hash(K,V?).new(nil)
   end
   
   def f(*key : *K) : V

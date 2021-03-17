@@ -1,1 +1,3 @@
-pp 2345 % 7
+s = gets.chomp
+s.gsub!(/ST/, "")
+puts s.size
