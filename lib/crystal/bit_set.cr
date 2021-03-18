@@ -19,6 +19,15 @@ struct Int
     SubsetIterator.new(self)
   end
 
+  # 真部分集合の列挙（空集合除く）
+  #
+  # ```
+  # 3.proper_subsets.map(&.to_bit(2)).to_a # => ["11","10","01"]
+  # ```
+  def proper_subsets
+    ProperSubsetIterator.new(self)
+  end
+
   # 指定サイズの部分集合の辞書順列挙
   #
   # ```
@@ -72,7 +81,7 @@ struct Int
   def on(k)
     to_i64 | (1 << k)
   end
-  
+
   def off(k)
     to_i64 & ~(1 << k)
   end
@@ -111,6 +120,31 @@ struct Int
     def next
       if b > 0
         begin b ensure @b = (b - 1) & v end
+      else
+        stop
+      end
+    end
+  end
+
+  # 真部分集合の列挙
+  #
+  # ```
+  # ProperSubsetIterator.new(3).map(&.to_bit(2)).to_a # => ["11","10","01"]
+  # ```
+  private class ProperSubsetIterator
+    include Iterator(Int64)
+    getter v : Int64
+    getter b : Int64
+
+    def initialize(v)
+      @v = v.to_i64
+      @b = @v
+    end
+
+    def next
+      @b = (b - 1) & v
+      if b > 0
+        b
       else
         stop
       end
@@ -176,6 +210,7 @@ struct Int
 end
 
 class BitSet(N)
+
   # ブロックの評価値で初期化
   #
   # ```

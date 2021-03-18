@@ -53,7 +53,7 @@ class AVLTree
       case left.dep - right.dep
       when 2
         if left.dep < left.right.dep
-          left = left.rotate(0)
+          left = @left.rotate(0)
         end
         root = rotate_right
       when -2
@@ -82,5 +82,3 @@ t = AVLTree.new
 10.times do |i|
   t[rand(100)] = rand(100)
 end
-
-t.print

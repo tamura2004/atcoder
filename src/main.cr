@@ -1,74 +1,24 @@
 require "crystal/bit_set"
 
-class Graph
-  getter n : Int32
-  getter g : Array(Int64)
+macro chmin(target, other)
+  {{target}} = ({{other}}) if ({{target}}) > ({{other}})
+end
 
-  def self.read
-    n, m = gets.to_s.split.map(&.to_i)
-    g = Array.new(n, 0_i64)
-    m.times do
-      a, b = gets.to_s.split.map(&.to_i.- 1)
-      g[a] |= b.exp2
-      g[b] |= a.exp2
+n,a,b,c = gets.to_s.split.map(&.to_i64)
+l = Array.new(n){ gets.to_s.to_i64 }
+
+f = Proc(Int64,Int64,Int64).new do |s,a|
+  (s.bits.map(&.of l).sum - a).abs + (s.popcount - 1) * 10
+end
+
+ans = Int64::MAX
+0.inv(n).subsets.each do |s|
+  s.inv(n).proper_subsets.each do |t|
+    (s|t).inv(n).subsets.each do |u|
+      # pp! [s,t,u]
+      chmin ans, f.call(s,a) + f.call(t,b) + f.call(u,c)
     end
-    new(n, g)
-  end
-
-  def initialize(@n, @g)
-  end
-
-  def cleak?(s)
-    s.bits.all? do |i|
-      s.bits.all? do |j|
-        i == j || g[i].bit(j) == 1
-      end
-    end
-  end
-
-  def remove_cleak(s)
-    ng = g.dup
-    s.bits.each do |i|
-      s.bits.each do |j|
-        ng[i] = ng[i].off(j)
-      end
-    end
-    Graph.new(n, ng)
-  end
-
-  def max_cleak
-    ans = 0_i64
-    (1<<n).times do |s|
-      if cleak?(s)
-        if ans.popcount < s.popcount
-          ans = s
-        end
-      end
-    end
-    ans
-  end
-
-  def print
-    puts g.map(&.to_bit(n).reverse).join("\n")
-  end
-  
-  def solve
-    dp = Array.new(1<<n, 0_i64)
-    (1<<n).times do |s|
-      next if s.zero?
-      if cleak?(s)
-        dp[s] = 1_i64
-      else
-        dp[s] = s.subsets.min_of do |t|
-          next Int64::MAX if s == t
-          dp[t] + dp[s & t.inv(n)]
-        end
-      end
-    end
-    dp[-1]
   end
 end
 
-g = Graph.read
-# g.print
-pp g.solve
+pp ans

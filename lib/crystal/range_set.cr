@@ -3,6 +3,10 @@ struct Range(B, E)
     return nil if b.end < @begin || @end < b.begin
     Math.min(@begin, b.begin)..Math.max(@end, b.end)
   end
+
+  def &(b : self) : self
+    Math.max(@begin, b.begin)..Math.max(@end, b.end)
+  end
 end
 
 class RangeSet(T)
