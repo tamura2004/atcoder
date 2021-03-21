@@ -2,7 +2,29 @@ require "spec"
 require "crystal/priority_queue"
 require "../dijkstra"
 
-describe Graph do
+describe Dijkstra do
+  it "usage" do
+    # [1] -2-> [2]
+    #  | \      |
+    #  7   3    2
+    #  |     \  |
+    #  V      v V
+    # [4] <-2- [3]
+    g = Dijkstra.new(4)
+    g.add_edge_1_indexed 1, 2, 2
+    g.add_edge_1_indexed 2, 3, 2
+    g.add_edge_1_indexed 1, 3, 3
+    g.add_edge_1_indexed 3, 4, 2
+    g.add_edge_1_indexed 1, 4, 7
+    g.solve(0).should eq [0, 2, 3, 5]
+  end
+
+  it "solve arc109a" do
+    ARC109A.read("2 1 1 5").solve.should eq 1
+    ARC109A.read("1 2 100 1").solve.should eq 101
+    ARC109A.read("1 100 1 100").solve.should eq 199
+  end
+
   it "solve abc035d case 1" do
     input = IO::Memory.new <<-EOD
     8 15 120
@@ -27,32 +49,75 @@ describe Graph do
   end
 end
 
+class ARC109A
+  getter a : Int32
+  getter b : Int32
+  getter x : Int32
+  getter y : Int32
+
+  def self.read(io : IO)
+    a, b, x, y = io.gets.to_s.split.map(&.to_i)
+    new(a, b, x, y)
+  end
+
+  def self.read
+    read(STDIN)
+  end
+  
+  def self.read(input : String)
+    read(IO::Memory.new(input))
+  end
+
+  def initialize(@a, @b, @x, @y)
+  end
+
+  def solve
+    g = Dijkstra.new(200)
+
+    # 水平な廊下
+    100.times do |i|
+      j = i + 100
+      g.add_both_edge i, j, x
+    end
+
+    # 斜めの廊下と縦の階段
+    99.times do |i|
+      j = i + 100
+      g.add_both_edge i + 1, j, x
+      g.add_both_edge i, i + 1, y
+      g.add_both_edge j, j + 1, y
+    end
+
+    g.solve(a - 1)[100 + b - 1]
+  end
+end
+
 class ABC035D
   getter n : Int32
   getter m : Int32
   getter t : Int32
   getter a : Array(Int64)
-  getter g : Graph
-  getter r : Graph
+  getter g : Dijkstra
+  getter r : Dijkstra
 
   def self.read(io : IO::Memory)
-    n,m,t = io.gets.to_s.split.map { |v| v.to_i }
+    n, m, t = io.gets.to_s.split.map { |v| v.to_i }
     a = io.gets.to_s.split.map { |v| v.to_i64 }
-    g = Graph.new(n)
+    g = Dijkstra.new(n)
     m.times do
-      i,j,cost = io.gets.to_s.split.map { |v| v.to_i64 }
-      g.add_edge(i,j,cost)
+      i, j, cost = io.gets.to_s.split.map { |v| v.to_i64 }
+      g.add_edge_1_indexed(i, j, cost)
     end
-    new(n,m,t,a,g)
+    new(n, m, t, a, g)
   end
 
-  def initialize(@n,@m,@t,@a,@g)
+  def initialize(@n, @m, @t, @a, @g)
     @r = g.reverse
   end
 
   def solve
-    go = g.dijkstra(0)
-    back = r.dijkstra(0)
+    go = g.solve(0)
+    back = r.solve(0)
 
     ans = 0_i64
     n.times do |i|

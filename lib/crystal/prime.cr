@@ -1,3 +1,5 @@
+require "crystal/mod_int"
+
 # 素数クラス
 #
 # エラストテレスの篩で、自身を割る最小の素数をクラス変数として持つ
@@ -179,107 +181,6 @@ struct Int
   def factor_num
     Prime.factor_num(self)
   end
-
-  # 部分集合の列挙
-  #
-  # ```
-  # 3.subsets.map(&.to_bit(2)).to_a # => ["11","10","01"]
-  # ```
-  def subsets
-    SubsetIterator.new(self)
-  end
-
-  # 集合の要素の列挙
-  #
-  # ```
-  # 10.bit_elements # => [1, 3]
-  # ```
-  def bit_elements
-    BitElementIterator.new(self)
-  end
-
-  # 省略名
-  def bits
-    bit_elements
-  end
-
-  # ゼロ埋め*n*桁指定での２進数表記
-  #
-  # ```
-  # 10.to_bit(4) # => "1010"
-  # ```
-  def to_bit(n)
-    "%0#{n}b" % self
-  end
-
-  # ゼロ埋め*n*桁での補集合（反転）
-  #
-  # ```
-  # 10.inv(4).to_bit(4) # => "0101"
-  # ```
-  def inv(n)
-    self ^ ((1_i64 << n) - 1)
-  end
-
-  # atの逆
-  #
-  # ```
-  # 1.of([4, 7, 1]) # => 7
-  # ```
-  def of(a)
-    a[self]
-  end
-
-  # 部分集合の列挙
-  #
-  # ```
-  # SubsetIterator.new(3).map(&.to_bit(2)).to_a # => ["11","10","01"]
-  # ```
-  private class SubsetIterator
-    include Iterator(Int64)
-    getter v : Int64
-    getter b : Int64
-
-    def initialize(v)
-      @v = v.to_i64
-      @b = @v
-    end
-
-    def next
-      if b > 0
-        begin b ensure @b = (b - 1) & v end
-      else
-        stop
-      end
-    end
-  end
-
-  # 集合の要素の列挙
-  #
-  # ```
-  # BitElementIterator.new(10).to_a # => [1, 3]
-  # ```
-  private class BitElementIterator
-    include Iterator(Int32)
-    getter v : Int64
-    getter i : Int32
-
-    def initialize(v)
-      @v = v.to_i64
-      @i = 0
-    end
-
-    def next
-      while (1_i64 << i) <= v && v.bit(i) == 0
-        @i += 1
-      end
-      if (1_i64 << i) > v
-        stop
-      else
-        begin i ensure @i += 1 end
-      end
-    end
-  end
 end
 
 class Hash
@@ -323,6 +224,18 @@ class Hash
   def to_i64
     reduce(1_i64) do |acc, (k, v)|
       acc * k ** v
+    end
+  end
+
+  # 素因数分解から元の数
+  #
+  # ```
+  # a = {2 => 1, 3 => 2}
+  # a.to_i64 # => 18
+  # ```
+  def to_m
+    reduce(1.to_m) do |acc, (k, v)|
+      acc * k.to_m ** v
     end
   end
 end

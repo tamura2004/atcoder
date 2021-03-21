@@ -1,6 +1,8 @@
+require "crystal/problem"
 require "crystal/bit_set"
 
-class Graph
+# ビット集合リストによる重みなしグラフ
+class BitGraph < Problem
   getter n : Int32
   getter g : Array(Int64)
 
@@ -18,6 +20,7 @@ class Graph
   def initialize(@n, @g)
   end
 
+  # 頂点の集合*s*がクリークであるか
   def clique?(s)
     s.bits.all? do |i|
       s.bits.all? do |j|
@@ -26,6 +29,7 @@ class Graph
     end
   end
 
+  # 頂点の集合sからなる誘導部分グラフの辺を取り除く
   def remove_clique(s)
     ng = g.dup
     s.bits.each do |i|
@@ -36,6 +40,7 @@ class Graph
     Graph.new(n, ng)
   end
 
+  # 最大クリーク
   def max_clique
     ans = 0_i64
     (1<<n).times do |s|
@@ -48,6 +53,7 @@ class Graph
     ans
   end
 
+  # デバッグ用
   def print
     puts g.map(&.to_bit(n).reverse).join("\n")
   end
@@ -59,9 +65,9 @@ class Graph
       if clique?(s)
         dp[s] = 1_i64
       else
-        dp[s] = s.subsets.min_of do |t|
-          next Int64::MAX if s == t
-          dp[t] + dp[s & t.inv(n)]
+        dp[s] = s.proper_subsets.min_of do |t|
+          u = s - t
+          dp[t] + dp[u]
         end
       end
     end
@@ -69,6 +75,6 @@ class Graph
   end
 end
 
-g = Graph.read
+g = BitGraph.read
 # g.print
 pp g.solve

@@ -1,5 +1,21 @@
 require "crystal/problem"
 
+# ABC196D Hanjo
+#
+# 愚直にDFSで解く
+#
+# ```
+# Main.read("2 3 3 0").run # =>
+# --|
+# --|
+#
+# |--
+# |--
+#
+# |||
+# |||
+# 3
+# ```
 class Main < Problem
   getter h : Int32
   getter w : Int32
@@ -85,4 +101,4 @@ class Main < Problem
   end
 end
 
-Main.read("2 3 3 0").run
+Main.read("4 4 2 8").run

@@ -21,6 +21,7 @@ LANG_EXT = {
 COMPILE = {
   "cpp" => "g++ src/main.cpp -std=c++14 -I /home/tamura/src/acl",
   # "crystal" => "crystal build --release --no-debug -o dist/crystal.out src/main.cr",
+  "crystal" => "ruby build.rb %s target.cr",
   "java" => "javac -d dist src/Main.java",
   "kotlin" => "kotlinc src/main.kt -include-runtime -d dist/kotlin.jar -XXLanguage:+InlineClasses",
   "csharp" => "mcs src/main.cs -out:dist/csharp.exe",
@@ -32,7 +33,7 @@ EXECUTE = {
   "julia" => "julia src/main.jl",
   # "crystal" => "dist/crystal.out",
   # "crystal" => "crystal run --release %s",
-  "crystal" => "crystal run %s",
+  "crystal" => "crystal run target.cr",
   "python3" => "python3 src/main.py",
   "pypy3" => "pypy3 src/main.pypy",
   "haskell" => "runghc src/main.hs",
@@ -73,8 +74,9 @@ class Task
   end
 
   def check_compile
-    if cmd = COMPILE[lang]
-      info `#{cmd}`
+    if cmd = COMPILE[lang] % src
+      info "Compled by #{cmd}"
+      `#{cmd}`
     end
   end
 

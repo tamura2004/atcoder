@@ -4,6 +4,10 @@ class PriorityQueue(T)
 
   forward_missing_to a
 
+  def self.lesser
+    new { |a,b| a > b }
+  end
+
   def initialize(&block : T, T -> Bool)
     @f = block
     @a = Deque(T).new

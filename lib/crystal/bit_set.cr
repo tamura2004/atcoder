@@ -28,6 +28,13 @@ struct Int
     ProperSubsetIterator.new(self)
   end
 
+  def each_partision
+    proper_subsets.each do |s|
+      t = self - s
+      yiels s,t if s > t
+    end
+  end
+
   # 指定サイズの部分集合の辞書順列挙
   #
   # ```
@@ -35,7 +42,7 @@ struct Int
   # ```
   def fix_size_subsets(k)
     FixSizeSubsetIterator.new(to_i64, k.to_i64)
-  end
+  end  
 
   # 集合の要素の列挙
   #
@@ -44,7 +51,7 @@ struct Int
   # ```
   def bit_elements
     BitElementIterator.new(self)
-  end
+  end  
 
   # 省略名
   def bits

@@ -26,27 +26,6 @@ describe Int do
     71.factor_num.should eq 2
     72.factor_num.should eq 12
   end
-
-  it "subset" do
-    3.subsets.map(&.to_bit(2)).to_a.should eq ["11", "10", "01"]
-  end
-
-  it "bits" do
-    10.bits.to_a.should eq [1, 3]
-  end
-
-  it "to_bit" do
-    10.to_bit(4).should eq "1010"
-  end
-
-  it "inv" do
-    10.inv(4).to_bit(4).should eq "0101"
-  end
-
-  it "of" do
-    1.of([7,6,5]).should eq 6
-  end
-
 end
 
 describe Hash do

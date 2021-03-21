@@ -1,10 +1,26 @@
+# セグメント木
+#
+# 一点更新、区間計算をO(log n)で実行
+# `T`: 要素の型
+# 単位元: *unit* 省略時は`T.zero`を使用
+# ```
+# st = SegmentTree.new(4)
+# st[1] = 10
+# st[2] = 20
+# st[1..2] # => 30
+# ```
 class SegmentTree(T)
   getter n : Int32
   getter unit : T
   getter xs : Array(T)
   getter fx : Proc(T, T, T)
-    
-  # 区間最大
+  
+  # 一点更新、区間加算、要素数で初期化
+  def self.range_sum_query(n : Int32)
+    new(n)
+  end
+
+  # 一点更新、区間最大、要素数で初期化
   def self.range_max_query(n : Int32)
     values = Array.new(n){ T.zero }
     new(values, unit: T.zero) do |x,y|
@@ -12,14 +28,15 @@ class SegmentTree(T)
     end
   end
   
-  # 区間最小
+  # 一点更新、区間最小、要素数で初期化
   def self.rmq(n : Int32)
     values = Array.new(n){ T::MAX }
     new(values, unit: T::MAX) do |x,y|
       Math.min(x,y)
     end
   end
-
+  
+  # 一点更新、区間最小
   def self.rmq(values : Array(T))
     new(values, unit: T::MAX) do |x,y|
       Math.min(x,y)

@@ -1,3 +1,8 @@
-require "crystal/bit_set"
+a = [10,10,10]
 
-pp! Math.pw2ceil(3)
+cnt = a.zip(0..).slice_when do |(v, i)|
+  i == 1
+end.map(&.map(&.first)).to_a
+
+pp cnt
+
