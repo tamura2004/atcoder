@@ -6,16 +6,33 @@ require "crystal/problem"
 #
 # ```
 # Main.read("2 3 3 0").run # =>
-# --|
-# --|
-#
-# |--
-# |--
-#
-# |||
-# |||
-# 3
-# ```
+# 1
+# +---+---+
+# | x | x |
+# +---+---+
+# |       |
+# +---+---+
+
+# # 2
+# +---+---+
+# | x |   |
+# +---+   +
+# | x |   |
+# +---+---+
+
+# # 3
+# +---+---+
+# |       |
+# +---+---+
+# | x | x |
+# +---+---+
+
+# # 4
+# +---+---+
+# |   | x |
+# +   +---+
+# |   | x |
+# +---+---+
 class Main < Problem
   getter h : Int32
   getter w : Int32
@@ -44,18 +61,16 @@ class Main < Problem
   def solve
   end
 
+  # デバッグ用出力
   def print
-    puts
-    1.upto(h) do |i|
-      1.upto(w) do |j|
-        c = case
-            when g[i][j] == 0           then "."
-            when g[i][j] == g[i - 1][j] then "|"
-            when g[i][j] == g[i + 1][j] then "|"
-            when g[i][j] == g[i][j - 1] then "-"
-            when g[i][j] == g[i][j + 1] then "-"
-            end
-        print c
+    1.upto(h+1) do |i|
+      1.upto(w+1) do |j|
+        print !g[i][j].zero? && g[i][j] == g[i-1][j] ? "+   " : "+---"
+      end
+      puts
+      next if i == h + 1
+      1.upto(w+1) do |j|
+        print g[i][j].zero? ? "| x " : g[i][j] == g[i][j-1] ? "    " :  "|   "
       end
       puts
     end
@@ -89,16 +104,18 @@ class Main < Problem
   end
 
   def count
-    print
     @ans += 1
+    puts
+    puts "# #{ans}"
+    print
   end
 
   def run
     dfs(1, 1, 1)
-    pp ans
+    # pp ans
     # pp self
     # puts solve
   end
 end
 
-Main.read("4 4 2 8").run
+Main.read("2 2 1 0").run

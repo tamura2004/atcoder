@@ -3,8 +3,7 @@ require "nokogiri"
 require "open-uri"
 
 users = %w[
-  iaduf123
-  MasahiroTada108
+  yamamichi
 ]
 
 data = []
@@ -18,6 +17,9 @@ open("src/sfpc/users.json", "w") do |fh|
   fh.puts data.to_json
 end
 
+# iaduf123
+# MasahiroTada108
+# zukeyama0424
 # kohara1213
 # nakamuraemiko
 # kohara1213
@@ -41,4 +43,3 @@ end
 # kamiryo
 # MiCHiN
 # tamura2004
-# yamamichi

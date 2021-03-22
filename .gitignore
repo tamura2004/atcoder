@@ -2,3 +2,8 @@ node_modules
 dist/
 src/nimcache
 .vscode
+docs/
+src/sfpc/users.json
+target.cr
+octave-workspace
+src/nimcache

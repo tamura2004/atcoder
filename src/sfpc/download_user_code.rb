@@ -9,7 +9,7 @@ def get_json(path)
 end
 
 def download(contest_id, submission_id)
-  sleep 0.5
+  sleep 1
   url = "https://atcoder.jp/contests/#{contest_id}/submissions/#{submission_id}"
   html = URI.open(url, &:read)
   doc = Nokogiri::HTML.parse(html,nil,"utf-8")
