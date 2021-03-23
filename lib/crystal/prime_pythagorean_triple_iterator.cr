@@ -1,4 +1,9 @@
 # 原始ピタゴラス数をすべて列挙する
+#
+# ```
+# it = PrimePythagoreanTripleIterator.new
+# it.first(3).to_a # [[3, 4, 5], [5, 12, 13], [8, 15, 17]]
+# ```
 class PrimePythagoreanTripleIterator
   include Iterator(Array(Int64))
   getter n : Int64
@@ -26,9 +31,4 @@ class PrimePythagoreanTripleIterator
       end
     end
   end
-end
-
-N = 100_000
-PrimePythagoreanTripleIterator.new.first(N).each do |x|
-  puts x.join(" ")
 end

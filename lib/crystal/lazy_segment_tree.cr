@@ -23,30 +23,61 @@ class LazySegmentTree(X, A)
   getter fxa : Proc(X?, A?, X?)
   getter faa : Proc(A?, A?, A?)
 
+  # 区間加算、区間合計
   def self.range_add_range_min(_x)
     new(
-      Proc(X,X,X).new { |x,y| Math.min x, y },
-      Proc(X,A,X).new { |x,a| x + a },
-      Proc(A,A,A).new { |a,b| a + b },
+      Proc(X, X, X).new { |x, y| Math.min x, y },
+      Proc(X, A, X).new { |x, a| x + a },
+      Proc(A, A, A).new { |a, b| a + b },
+      _x
+    )
+  end
+
+  # 区間更新、区間合計
+  #
+  # |x|   + |y|   = |x+y|
+  # |1|     |1|     | 2 |
+  #
+  # |0 a| * |x|   = | 2a|
+  # |0 1|   |2|     | 2 |
+  #
+  # |0 b| * |0 a| = |0 b|
+  # |0 1|   |0 1|   |0 1|
+  #
+  # ```
+  # alias X = Tuple(Int64, Int64)
+  # alias A = Int64
+  # unit = X.new(0_i64, 1_i64)
+  # _x = Array.new(10) { unit }
+  # st = LazySegmentTree(X, A).range_update_range_sum(_x)
+  # st[3..5] = 10
+  # st[4..6] = 20 #=> [0,0,0,10,20,20,20,0,0,0,0]
+  # st[2..4] # => 30
+  # ```
+  def self.range_update_range_sum(_x)
+    new(
+      Proc(X, X, X).new { |(x0, x1), (y0, y1)| {x0 + y0, x1 + y1} },
+      Proc(X, A, X).new { |(x0, x1), a| {x1 * a, x1} },
+      Proc(A, A, A).new { |a, b| b },
       _x
     )
   end
 
   def initialize(
-    fxx : Proc(X,X,X),
-    fxa : Proc(X,A,X),
-    faa : Proc(A,A,A),
+    fxx : Proc(X, X, X),
+    fxa : Proc(X, A, X),
+    faa : Proc(A, A, A),
     n : Int32,
     init : X? = nil
-    )
+  )
     x = Array(X?).new(n, init)
     initialize(fxx, fxa, faa, x)
   end
-  
+
   def initialize(
-    fxx : Proc(X,X,X),
-    fxa : Proc(X,A,X),
-    faa : Proc(A,A,A),
+    fxx : Proc(X, X, X),
+    fxa : Proc(X, A, X),
+    faa : Proc(A, A, A),
     _x : Array(X?)
   )
     @fxx = Proc(X?, X?, X?).new do |x, y|

@@ -74,7 +74,3 @@ class BitGraph < Problem
     dp[-1]
   end
 end
-
-g = BitGraph.read
-# g.print
-pp g.solve
