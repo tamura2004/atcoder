@@ -1,45 +1,38 @@
-class Ro
-  getter lo : Int32
-  getter hi : Int32
-  getter cycle : Int32
-  getter memo : Hash(Int32, Int32)
-  getter a : Array(Int32)
+# ロー法により途中からループする状態遷移の値を求める
+class Ro(T)
+  N = 1_000_000 # ループ長さ上限
 
-  def initialize(init, limit, &block : Int32 -> Int32)
-    @memo = Hash(Int32, Int32).new(-1)
-    @a = Array(Int32).new(limit + 1, -1)
-    @lo = 0
-    @hi = 0
-    @cycle = 0
+  getter f : Proc(T, T)       # 遷移関数
+  getter idx : Hash(T, Int32) # 値->インデックス
+  getter val : Hash(Int32, T) # インデックス->値
 
-    a[0] = init
-    memo[init] = 0
-    limit.times do |i|
-      nv = a[i + 1] = block.call(a[i])
-      if memo[nv] == -1
-        memo[nv] = i + 1
+  def initialize(&@f : Proc(T, T))
+    @idx = Hash(T, Int32).new
+    @val = Hash(Int32, T).new
+  end
+
+  # ループの開始点と終了点を求める。
+  # 合わせて終了点までの値を*dp*にメモ
+  def rec(x : T)
+    N.times do |i|
+      if pre = idx[x]?
+        return pre, i
       else
-        @lo = memo[nv]
-        @hi = i + 1
-        @cycle = hi - lo
-        return
+        idx[x] = i
+        val[i] = x
       end
+      x = f.call(x)
     end
-    raise "limit exceed"
+    raise "ループが閉じません"
   end
 
-  def get(i : Int)
-    return a[i] if i < hi
-    j = (i - lo) % cycle + lo
-    a[j]
-  end
-
-  # https://atcoder.jp/contests/abc030/tasks/abc030_d
-  # for huge i (i.e. 10^100000)
-  # need hi <= i, if i < hi -> undefined
-  # mod = i % cycle
-  def at_mod(mod : Int)
-    offset = (mod - lo) % cycle
-    get(lo + offset)
+  # 初期状態*x*に対し*k*回*f*を適用した時の値を求める
+  #
+  # kがループ開始未満であればそのまま適用
+  # kがループ中であれば、ループ長の剰余から求める
+  def solve(x : T, k : Int64)
+    lo, hi = rec(x)
+    i = k < lo ? k.to_i : (k - lo) % (hi - lo) + lo
+    val[i]
   end
 end
