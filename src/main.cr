@@ -1,47 +1,19 @@
-# ロー法により途中からループする状態遷移の値を求める
-class Ro(T)
-  N = 1_000_000 # ループ長さ上限
+require "crystal/int"
+require "crystal/memo"
 
-  getter f : Proc(T, T)       # 遷移関数
-  getter idx : Hash(T, Int32) # 値->インデックス
-  getter val : Hash(Int32, T) # インデックス->値
+n = gets.to_s.to_i64
+puts Main[n]
 
-  def initialize(&@f : Proc(T, T))
-    @idx = Hash(T, Int32).new
-    @val = Hash(Int32, T).new
-  end
+class Main < Memo(Int64, Int64)
+  COINS = [6, 9].map(&.to_i64)
+  ONE = 1_i64
 
-  # ループの開始点と終了点を求める。
-  # 合わせて終了点までの値を*dp*にメモ
-  def rec(x : T)
-    N.times do |i|
-      if pre = idx[x]?
-        return pre, i
-      else
-        idx[x] = i
-        val[i] = x
+  def g(k : K)
+    return 0_i64 if k.zero?
+    COINS.each.min_of do |coin|
+      ONE.step_pow(to: k, by: coin).min_of do |v|
+        f(k - v) + 1
       end
-      x = f.call(x)
     end
-    raise "ループが閉じません"
-  end
-
-  # 初期状態*x*に対し*k*回*f*を適用した時の値を求める
-  #
-  # kがループ開始未満であればそのまま適用
-  # kがループ中であれば、ループ長の剰余から求める
-  def solve(x : T, k : Int64)
-    lo, hi = rec(x)
-    i = k < lo ? k.to_i : (k - lo) % (hi - lo) + lo
-    val[i]
   end
 end
-
-n, k = gets.to_s.split.map(&.to_i64)
-a = gets.to_s.split.map(&.to_i.- 1)
-
-ro = Ro(Int32).new do |i|
-  a[i]
-end
-
-pp ro.solve(0, k) + 1

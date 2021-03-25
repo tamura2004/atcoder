@@ -21,7 +21,7 @@ LANG_EXT = {
 COMPILE = {
   "cpp" => "g++ src/main.cpp -std=c++14 -I /home/tamura/src/acl",
   # "crystal" => "crystal build --release --no-debug -o dist/crystal.out src/main.cr",
-  "crystal" => "ruby build.rb %s target.cr",
+  "crystal" => "ruby build.rb %s target.cr && cat target.cr | clip.exe",
   "java" => "javac -d dist src/Main.java",
   "kotlin" => "kotlinc src/main.kt -include-runtime -d dist/kotlin.jar -XXLanguage:+InlineClasses",
   "csharp" => "mcs src/main.cs -out:dist/csharp.exe",
