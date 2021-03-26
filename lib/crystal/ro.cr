@@ -4,7 +4,7 @@
 # i = 0
 # ro = Ro(Int32,Int32).new { i+=1; [1,2,3,2][i] }
 # lo, hi = ro.rec # => {1, 3}
-# 
+#
 # ```
 class Ro(T,K)
   N = 1_000_000 # ループ長さ上限
@@ -39,6 +39,7 @@ class Ro(T,K)
   # kがループ中であれば、ループ長の剰余から求める
   def solve(x : T, k : K)
     lo, hi = rec(x)
+    # i = k < lo ? k.to_i : hi == lo ? lo : (k - lo) % (hi - lo) + lo
     i = k < lo ? k.to_i : (k - lo) % (hi - lo) + lo
     val[i]
   end

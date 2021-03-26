@@ -136,7 +136,7 @@ class Task
       if path.basename.to_s =~ /spec/
         src = path.relative_path_from(Pathname.pwd)
       else
-        src = Pathname("lib/crystal/spec/#{path.basename(".cr")}_spec.cr")
+        src = Pathname("lib/crystal/spec/#{path.basename('.cr')}_spec.cr")
       end
 
       if !src.exist?

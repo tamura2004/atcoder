@@ -22,9 +22,6 @@ describe Ro do
       a[i]
     end
     ro.solve(0,2).should eq 3
-    ro.solve(0,333333).should eq 4
-    ro.idx.clear
-    ro.val.clear
   end
 
   it "初期状態*x*に対し*k*回*f*を適用した時の値を求める" do
