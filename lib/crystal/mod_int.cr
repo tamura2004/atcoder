@@ -1,9 +1,9 @@
 struct ModInt
-  N   = 100_000
-  MOD = 10_i64 ** 9 + 7
-  # MOD = 998_244_353_i64
+  MAX   = 100_000
+  # MOD = 10_i64 ** 9 + 7
+  MOD = 998_244_353_i64
 
-  class_getter f = Array(ModInt).new(N)
+  class_getter f = Array(ModInt).new(MAX)
   getter v : Int64
 
   def self.f(n)

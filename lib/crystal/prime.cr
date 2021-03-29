@@ -80,8 +80,8 @@ class Prime
   # ```
   # Prime.factors(72) # => [1, 2, 3, 4, 6, 8, 9, 12, 18, 24, 36, 72]
   # ```
-  def self.factors(n : Int) : Array(Int32)
-    Array(Int32).new.tap do |dp|
+  def self.factors(n : Int)
+    Array(Int64).new.tap do |dp|
       m = Math.sqrt(n).to_i
       1.upto(m) do |i|
         next unless n.divisible_by?(i)
@@ -89,6 +89,21 @@ class Prime
         dp << n // i if i * i != n
       end
     end.sort
+  end
+
+  # 約数のペアを列挙
+  #
+  # ```
+  # Prime.each_factors_pair(6)
+  # ```
+  def self.each_factors_pair(n : Int)
+    m = Math.sqrt(n).to_i
+    1.upto(m) do |i|
+      next unless n.divisible_by?(i)
+      j = n // i
+      yield i, j
+      yield j, i if i != j
+    end
   end
 
   # 約数の個数
@@ -180,6 +195,22 @@ struct Int
   # ```
   def factor_num
     Prime.factor_num(self)
+  end
+
+  def factors
+    Prime.factors(self)
+  end
+
+  # 約数のペアを列挙
+  def each_factors_pair
+    one = self // self
+    m = one * Math.sqrt(self).to_i
+    one.upto(m) do |i|
+      next unless divisible_by?(i)
+      j = self // i
+      yield i, j
+      yield j, i if i != j
+    end
   end
 end
 

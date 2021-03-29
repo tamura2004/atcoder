@@ -21,7 +21,7 @@ LANG_EXT = {
 COMPILE = {
   "cpp" => "g++ src/main.cpp -std=c++14 -I /home/tamura/src/acl",
   # "crystal" => "crystal build --release --no-debug -o dist/crystal.out src/main.cr",
-  "crystal" => "ruby build.rb %s target.cr && cat target.cr | clip.exe",
+  "crystal" => "ruby build.rb %s target.cr && cat target.cr | grep -v pp! |  clip.exe",
   "java" => "javac -d dist src/Main.java",
   "kotlin" => "kotlinc src/main.kt -include-runtime -d dist/kotlin.jar -XXLanguage:+InlineClasses",
   "csharp" => "mcs src/main.cs -out:dist/csharp.exe",
@@ -74,7 +74,8 @@ class Task
   end
 
   def check_compile
-    if cmd = COMPILE[lang] % src
+    if cmd = COMPILE[lang]
+      cmd = COMPILE[lang] % src
       info "Compled by #{cmd}"
       `#{cmd}`
     end
@@ -136,7 +137,7 @@ class Task
       if path.basename.to_s =~ /spec/
         src = path.relative_path_from(Pathname.pwd)
       else
-        src = Pathname("lib/crystal/spec/#{path.basename('.cr')}_spec.cr")
+        src = Pathname("lib/crystal/spec/#{path.basename(".cr")}_spec.cr")
       end
 
       if !src.exist?

@@ -45,4 +45,10 @@ module Indexable(T)
       lt[i] + rt[i+1]
     end.to_a
   end
+
+  def or : T
+    reduce(T.zero) do |acc,b|
+      acc | b
+    end
+  end
 end

@@ -1,99 +1,101 @@
-# 重み付きユニオンファインド木
-# グラフの連結成分ごとの頂点と辺の数
-#
-# ```
-# a = [{1,1},{1,2},{2,2},{3,3}] 
-# => 1を含む部分グラフの頂点2,辺3
-# uf = UnionFindTree.new(4)
-# a.each do |i,j|
-#   uf.unite(i,j)
-# end
-# uf.size(1) # => 2 
-# uf.weight(1) # => 3 
-#
-# ```
-class UnionFindTree
+require "crystal/problem"
+require "crystal/union_find_tree"
+
+class Main < Problem
   getter n : Int32
-  getter a : Array(Int32)
-  getter w : Array(Int32) # 辺の数
+  getter k : Int32
+  getter a : Array(Tuple(Int32, Int32, Int32))
 
-  def initialize(@n)
-    @a = Array.new(n, -1)
-    @w = Array.new(n, 0)
+  def initialize(@n, @k, @a)
   end
 
-  def find(i)
-    a[i] < 0 ? i : (a[i] = find(a[i]))
-  end
-
-  def same?(i, j)
-    find(i) == find(j)
-  end
-
-  def size(i)
-    -a[find(i)]
-  end
-
-  # 辺の数
-  def weight(i)
-    w[find(i)]
-  end
-
-  def unite(i, j)
-    i = find(i)
-    j = find(j)
-    if i == j
-      w[i] += 1
-      return
+  def self.read(io : IO)
+    n = io.gets.to_s.to_i
+    k = io.gets.to_s.to_i
+    a = Array.new(k) do
+      cmd, x, y = io.gets.to_s.split.map(&.to_i.- 1)
+      cmd += 1
+      {cmd, x, y}
     end
-    i, j = j, i if a[i] > a[j]
-    a[i] += a[j]
-    a[j] = i
-    w[i] += w[j] + 1
+    new(n, k, a)
   end
-  
-  def gsize
-    n.times.map{|i|find(i)}.uniq.size
-  end
-end
 
-n,m = gets.to_s.split.map { |v| v.to_i }
-uf = UnionFindTree.new(n*3)
-
-ans = 0_i64
-m.times do
-  cmd,i,j = gets.to_s.split.map { |v| v.to_i }
-  if i < 1 || n < i || j < 1 || n < j
-    ans += 1
-  else
-    a_i = i
-    b_i = i + n
-    c_i = i + n * 2
-    
-    a_j = j
-    b_j = j + n
-    c_j = j + n * 2
-
-    case cmd
-    when 1
-      if uf.same?(a_i, b_j) && uf.same?(a_i, c_j) && uf.same?(b_i, a_j) && uf.same?(b_i, c_j) && uf.same?(c_i, a_j) && uf.same?(c_i, a_j)
-        ans += 1
-      else
-        uf.unite(a_i, a_j)
-        uf.unite(b_i, b_j)
-        uf.unite(c_i, c_j)
+  def solve
+    uf = UnionFindTree.new(n*3)
+    a.each_with_index do |(cmd, x, y), i|
+      if param_error?(x, y)
+        puts "i = #{i + 1}, param error"
+        next
       end
-    when 2
-      if uf.same?(a_i, a_j) && uf.same?(a_i, c_j) && uf.same?(b_i, b_j) && uf.same?(b_i, a_j) && uf.same?(c_i, c_j) && uf.same?(c_i, b_j)
-        ans += 1
-      else
-        uf.unite(a_i, b_j)
-        uf.unite(b_i, c_j)
-        uf.unite(c_i, a_j)
+
+      tx = types(x)
+      ty = types(y)
+
+      case cmd
+      when 1 # xとyは同じ種類
+        if same_error?(tx, ty, uf)
+          puts "i = #{i + 1}, same error"
+        else
+          3.times do |i|
+            uf.unite tx[i], ty[i]
+          end
+        end
+      when 2 # xはyを食べる
+        if eat_error?(tx, ty, uf)
+          puts "i = #{i + 1}, eat error"
+        else
+          3.times do |i|
+            j = (i + 1) % 3
+            uf.unite tx[i], ty[j]
+          end
+        end
       end
     end
   end
+
+  def param_error?(x, y)
+    return true if x < 0 || n <= x
+    return true if y < 0 || n <= y
+    return false
+  end
+
+  def same_error?(tx, ty, uf)
+    3.times do |i|
+      3.times do |j|
+        return true if i != j && uf.same?(tx[i], ty[j])
+      end
+    end
+    return false
+  end
+
+  def eat_error?(tx, ty, uf)
+    3.times do |i|
+      3.times do |j|
+        return true if (i + 1) % 3 != j && uf.same?(tx[i], ty[j])
+      end
+    end
+    return false
+  end
+
+  def types(x)
+    {x, x + n, x + n * 2}
+  end
+
+  def run
+    # pp! self
+    puts solve
+  end
 end
 
-puts ans
-
+Main.read(<<-EOS
+100
+7
+1 101 1
+2 1 2
+2 2 3
+2 3 3
+1 1 3
+2 3 1
+1 5 5
+EOS
+).run

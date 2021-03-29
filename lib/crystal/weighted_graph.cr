@@ -1,46 +1,60 @@
-require "crystal/problem"
-
-alias V = Int32
-alias C = Int64
-alias E = Tuple(Int32,Int64)
-
-# 重み付き有向グラフ
-#
-# `V`は頂点、`E`は辺、`C`はコストの型を表す
-# E = Tuple(V,C)を前提とする
-abstract class WeightedGraph < Problem
-  INF = C::MAX
+# 重み付きグラフ
+abstract class WeightedGraph
   getter n : Int32
+  getter g : Array(Array(Tuple(Int32,Int64)))
   delegate "[]", to: g
 
   def initialize(@n)
+    @g = Array.new(n){ [] of Tuple(Int32,Int64) }
   end
 
-  # 辺を追加する
+  # fromからtoに重みcostの辺を追加する
   #
-  # 頂点の番号は`0-indexed`
-  abstract def add_edge(a : Int, b : Int, c : Int) : Nil
-
-  # 双方向に辺を追加する
-  #
-  # 頂点の番号は`0-indexed`
-  def add_both_edge(a : Int, b : Int, c : Int) : Nil
-    add_edge(a, b, c)
-    add_edge(b, a, c)
+  # origin : 0-indexed or 1-indexed
+  # both : 無向グラフ、有向グラフ
+  def add_edge(
+    from : Int32,
+    to : Int32,
+    cost : Int64,
+    origin : Int32 = 0,
+    both : Bool = true
+  )
+    i = from - origin
+    j = to - origin
+    g[i] << {j, cost}
+    g[j] << {i, cost}
   end
 
-  # 辺を追加する
+  # 辺の集合edgesを追加する
   #
-  # 頂点の番号は`1-indexed`
-  def add_edge_1_indexed(a : Int, b : Int, c : Int) : Nil
-    add_edge(a - 1, b - 1, c)
+  # ```
+  # add_edge([{1,2,3_i64},{2,3,4_i64}])
+  # ```
+  def add_edge(
+    edges : Array(Tuple(Int32,Int64)),
+    origin : Int32 = 0,
+    both : Bool = true
+  )
+    edges.each do |from, to, cost|
+      add_edge(from, to, cost, origin, both)
+    end
   end
 
-  # 双方向に辺を追加する
+  # 文字列から辺を追加する
   #
-  # 頂点の番号は`1-indexed`
-  def add_both_edge_1_indexed(a : Int, b : Int, c : Int) : Nil
-    add_edge_1_indexed(a - 1, b - 1, c)
-    add_edge_1_indexed(b - 1, a - 1, c)
+  # ```
+  # add_edge("1 2;2 3;3 4")
+  # add_edge("1 2\n2 3\n3 4")
+  # ```
+  def add_edge(
+    edges : String,
+    origin : Int32 = 0,
+    both : Bool = true
+  )
+    edges.split(/[;\n]/).each do |edge|
+      from, to, cost = edge.split.map(&.to_i)
+      cost = cost.to_i64
+      add_edge(from, to, cost, origin, both)
+    end
   end
 end

@@ -1,7 +1,306 @@
+# require "crystal/mod_int"
+struct ModInt
+  MAX   = 100_000
+  # MOD = 10_i64 ** 9 + 7
+  MOD = 998_244_353_i64
 
-# require "crystal/bit_set"
-# 集合のbit表現ためのInt拡張
+  class_getter f = Array(ModInt).new(MAX)
+  getter v : Int64
+
+  def self.f(n)
+    f << 1.to_m if f.empty?
+    f.size.upto(n) do |i|
+      f << f.last * i
+    end
+    f[n]
+  end
+
+  def self.p(n, k)
+    return ModInt.zero if n < k
+    n.f // (n - k).f
+  end
+
+  def self.c(n, k)
+    return ModInt.zero if n < k
+    p(n, k) // k.f
+  end
+
+  def self.h(n, k)
+    c(n + k - 1, k)
+  end
+
+  def initialize(v)
+    @v = v.to_i64 % MOD
+  end
+
+  {% for op in %w(+ - *) %}
+    def {{op.id}}(b)
+      ModInt.new(v {{op.id}} (b.to_i64 % MOD))
+    end
+  {% end %}
+
+  def **(b)
+    a = self
+    ans = 1.to_m
+    while b > 0
+      ans *= a if b.odd?
+      b //= 2
+      a *= a
+    end
+    return ans
+  end
+
+  def inv
+    self ** (MOD - 2)
+  end
+
+  def //(b)
+    self * b.to_m.inv
+  end
+
+  def self.zero
+    new(0)
+  end
+
+  def ==(b)
+    v == b.to_i64
+  end
+
+  def to_m
+    self
+  end
+
+  delegate to_i64, to: v
+  delegate to_s, to: v
+  delegate inspect, to: v
+end
+
 struct Int
+  def to_m
+    ModInt.new(to_i64)
+  end
+
+  def f
+    ModInt.f(self)
+  end
+
+  def p(k)
+    ModInt.p(self, k)
+  end
+
+  def c(k)
+    ModInt.c(self, k)
+  end
+
+  def h(k)
+    ModInt.h(self, k)
+  end
+end
+
+
+# require "crystal/problem"
+# 問題共通テンプレート
+abstract class Problem
+  macro make_array(i, v)
+    Array.new({{i}}){ {{v}} }
+  end
+
+  macro make_array(i, j, v)
+    Array.new({{i}}){ Array.new({{j}}){ {{v}} } }
+  end
+
+  macro make_array(i, j, k, v)
+    Array.new({{i}}){ Array.new({{j}}){ Array.new({{k}}){ {{v}} } } }
+  end
+
+  macro make_array(i, j, k, l, v)
+    Array.new({{i}}){ Array.new({{j}}){ Array.new({{k}}){ Array.new({{l}}){ {{v}} } } } }
+  end
+
+  macro chmax(target, other)
+    {{target}} = ({{other}}) if ({{target}}) < ({{other}})
+  end
+
+  macro chmin(target, other)
+    {{target}} = ({{other}}) if ({{target}}) > ({{other}})
+  end
+
+  def self.read
+    read(STDIN)
+  end
+
+  def self.read(input : String)
+    read(IO::Memory.new(input))
+  end
+
+  private def div_ceil(a, b)
+    (a + b - 1) // b
+  end
+end
+
+
+# require "crystal/prime"
+
+# 素数クラス
+#
+# エラストテレスの篩で、自身を割る最小の素数をクラス変数として持つ
+# 素数判定と、高速な素因数分解に利用
+class Prime
+  N = 300_000
+  extend Enumerable(Int32)
+  class_getter div : Array(Int32) = sieve(N)
+  class_getter each : PrimeIterator = PrimeIterator.new(div)
+
+  # エラストテレスの篩
+  #
+  # ```
+  # seive(3) # => [false, false, true, true]
+  # ```
+  def self.sieve(n : Int32) : Array(Int32)
+    Array.new(n + 1, &.itself).tap do |dp|
+      dp[0] = -1
+      dp[1] = -1
+      m = Math.sqrt(n).ceil.to_i
+      2.upto(m) do |i|
+        next if dp[i] != i
+        (i*i).step(to: n, by: i) do |j|
+          dp[j] = i if dp[j] == j
+        end
+      end
+    end
+  end
+
+  # 素数判定
+  #
+  # ```
+  # Prime.is_Prime(7) # => true
+  # ```
+  def self.is_prime?(n)
+    div[n] == n
+  end
+
+  # 素数列挙
+  #
+  # ```
+  # Prime.first(4).to_a # => [2, 3, 5, 7]
+  # ```
+  def self.each(&block : Int32 -> _)
+    while true
+      value = each.next
+      break if value.is_a?(Iterator::Stop::INSTANCE)
+      yield value.as(Int32)
+    end
+  end
+
+  # 高速な素因数分解
+  #
+  # ```
+  # Prime.prime_division(72) # => {2 => 3, 3 => 2}
+  # ```
+  def self.prime_division(n : Int) : Hash(Int32, Int32)
+    Hash(Int32, Int32).new(0).tap do |dp|
+      while n > 1
+        i = div[n]
+        dp[i] += 1
+        n //= i
+      end
+    end
+  end
+
+  # 素因数
+  #
+  # ```
+  # Prime.prime_factor(72) # => Set{2, 3}
+  # ```
+  def self.prime_factor(n : Int) : Set(Int32)
+    n.prime_division.keys.to_set
+  end
+
+  # 約数（1と自身を含む）
+  #
+  # ```
+  # Prime.factors(72) # => [1, 2, 3, 4, 6, 8, 9, 12, 18, 24, 36, 72]
+  # ```
+  def self.factors(n : Int)
+    Array(Int64).new.tap do |dp|
+      m = Math.sqrt(n).to_i
+      1.upto(m) do |i|
+        next unless n.divisible_by?(i)
+        dp << i
+        dp << n // i if i * i != n
+      end
+    end.sort
+  end
+
+  # 約数のペアを列挙
+  #
+  # ```
+  # Prime.each_factors_pair(6)
+  # ```
+  def self.each_factors_pair(n : Int)
+    m = Math.sqrt(n).to_i
+    1.upto(m) do |i|
+      next unless n.divisible_by?(i)
+      j = n // i
+      yield i, j
+      yield j, i if i != j
+    end
+  end
+
+  # 約数の個数
+  #
+  # ```
+  # Prime.factor_num(72) # => 12
+  # ```
+  def self.factor_num(n : Int32) : Int32
+    factor_num(n.prime_division)
+  end
+
+  # 素因数分解から約数の個数を求める
+  #
+  # ```
+  # f = {2 => 1, 3 => 2}
+  # Prime.factor_num(f) # => 6
+  # ```
+  def self.factor_num(h : Hash(Int32, Int32)) : Int32
+    h.values.reduce(1) do |acc, v|
+      acc * (v + 1)
+    end
+  end
+
+  private class PrimeIterator
+    include Iterator(Int32)
+    getter div : Array(Int32)
+    getter i : Int32
+
+    def initialize(@div)
+      @i = 2
+    end
+
+    def next
+      while i <= N && div[i] != i
+        @i += 1
+      end
+      if i > N
+        stop
+      else
+        begin i ensure @i += 1 end
+      end
+    end
+  end
+end
+
+# 素数関連メソッドの拡張
+struct Int
+  # 素数判定
+  #
+  # ```
+  # 7.prime? # => true
+  # ```
+  def prime?
+    Prime.is_prime?(self)
+  end
+
   # 割り切る
   #
   # ```
@@ -12,342 +311,141 @@ struct Int
     b.divisible_by?(self)
   end
 
-  # 部分集合の列挙（空集合除く）
+  # 高速な素因数分解
   #
   # ```
-  # 3.subsets.map(&.to_bit(2)).to_a # => ["11","10","01"]
+  # 72.prime_division # => {2 => 3, 3 => 2}
   # ```
-  def subsets
-    SubsetIterator.new(self)
+  def prime_division
+    Prime.prime_division(self)
   end
 
-  # 真部分集合の列挙（空集合除く）
+  # 素因数
   #
   # ```
-  # 3.proper_subsets.map(&.to_bit(2)).to_a # => ["11","10","01"]
+  # 72 # => Set{2, 3}
   # ```
-  def proper_subsets
-    ProperSubsetIterator.new(self)
+  def prime_factor
+    Prime.prime_factor(self)
   end
 
-  def each_partision
-    proper_subsets.each do |s|
-      t = self - s
-      yiels s,t if s > t
+  # 約数の個数
+  #
+  # ```
+  # 72.factor_num # => 12
+  # ```
+  def factor_num
+    Prime.factor_num(self)
+  end
+
+  def factors
+    Prime.factors(self)
+  end
+
+  # 約数のペアを列挙
+  def each_factors_pair
+    one = self // self
+    m = one * Math.sqrt(self).to_i
+    one.upto(m) do |i|
+      next unless divisible_by?(i)
+      j = self // i
+      yield i, j
+      yield j, i if i != j
     end
   end
+end
 
-  # 指定サイズの部分集合の辞書順列挙
+class Hash
+  # 素因数分解を保った掛け算
   #
   # ```
-  # 3.fix_size_subsets(2).map(&.to_bit(2)).to_a #=> ["011","101","110"]
+  # a = {2 => 1, 3 => 2}
+  # b = {2 => 2, 5 => 2}
+  # a * b # => {2 => 3, 3 => 2, 5 => 2}
   # ```
-  def fix_size_subsets(k)
-    FixSizeSubsetIterator.new(to_i64, k.to_i64)
-  end
-
-  # 集合の要素の列挙
-  #
-  # ```
-  # 10.bit_elements.to_a # => [1, 3]
-  # ```
-  def bit_elements
-    BitElementIterator.new(self)
-  end
-
-  # 省略名
-  def bits
-    bit_elements
-  end
-
-  # ゼロ埋め*n*桁指定での２進数表記
-  #
-  # ```
-  # 10.to_bit(4) # => "1010"
-  # ```
-  def to_bit(n)
-    "%0#{n}b" % self
-  end
-
-  # ゼロ埋め*n*桁での補集合（反転）
-  #
-  # ```
-  # 10.inv(4).to_bit(4) # => "0101"
-  # ```
-  def inv(n)
-    self ^ ((1_i64 << n) - 1)
-  end
-
-  # atの逆
-  #
-  # ```
-  # 1.of([4, 7, 1]) # => 7
-  # ```
-  def of(a)
-    a[self]
-  end
-
-  def on(k)
-    to_i64 | (1 << k)
-  end
-
-  def off(k)
-    to_i64 & ~(1 << k)
-  end
-
-  def lsb
-    self & -self
-  end
-
-  def msb
-    Math.ilogb(self)
-  end
-
-  def div_ceil(b)
-    (self + b - 1) // b
-  end
-
-  def exp2
-    1_i64 << self
-  end
-
-  # 部分集合の列挙
-  #
-  # ```
-  # SubsetIterator.new(3).map(&.to_bit(2)).to_a # => ["11","10","01"]
-  # ```
-  private class SubsetIterator
-    include Iterator(Int64)
-    getter v : Int64
-    getter b : Int64
-
-    def initialize(v)
-      @v = v.to_i64
-      @b = @v
-    end
-
-    def next
-      if b > 0
-        begin b ensure @b = (b - 1) & v end
-      else
-        stop
-      end
-    end
-  end
-
-  # 真部分集合の列挙
-  #
-  # ```
-  # ProperSubsetIterator.new(3).map(&.to_bit(2)).to_a # => ["11","10","01"]
-  # ```
-  private class ProperSubsetIterator
-    include Iterator(Int64)
-    getter v : Int64
-    getter b : Int64
-
-    def initialize(v)
-      @v = v.to_i64
-      @b = @v
-    end
-
-    def next
-      @b = (b - 1) & v
-      if b > 0
-        b
-      else
-        stop
-      end
-    end
-  end
-
-  # サイズKの部分集合の列挙
-  #
-  # ```
-  # FixSizeSubsetIterator.new(3, 2).map(&.to_bit(3)).to_a # => ["011","101","110"]
-  # ```
-  private class FixSizeSubsetIterator
-    include Iterator(Int64)
-    getter n : Int64
-    getter k : Int64
-    getter b : Int64
-
-    def initialize(@n, @k)
-      @b = (1_i64 << k) - 1
-    end
-
-    def next
-      if b < (1 << n)
-        begin
-          b
-        ensure
-          x = b & -b
-          y = b + x
-          @b = ((b & ~y) // x >> 1) | y
+  def *(b : self)
+    dup.tap do |ans|
+      b.each do |k, v|
+        if ans.has_key?(k)
+          ans[k] += v
+        else
+          ans[k] = v
         end
+      end
+    end
+  end
+
+  # 素因数分解から元の数
+  #
+  # ```
+  # a = {2 => 1, 3 => 2}
+  # a.to_i # => 18
+  # ```
+  def to_i
+    reduce(1) do |acc, (k, v)|
+      acc * k ** v
+    end
+  end
+
+  # 素因数分解から元の数
+  #
+  # ```
+  # a = {2 => 1, 3 => 2}
+  # a.to_i64 # => 18
+  # ```
+  def to_i64
+    reduce(1_i64) do |acc, (k, v)|
+      acc * k ** v
+    end
+  end
+
+  # 素因数分解から元の数
+  #
+  # ```
+  # a = {2 => 1, 3 => 2}
+  # a.to_i64 # => 18
+  # ```
+  def to_m
+    reduce(1.to_m) do |acc, (k, v)|
+      acc * k.to_m ** v
+    end
+  end
+end
+
+
+class Main < Problem
+  getter n : Int32
+  getter m : Int32
+ 
+  def initialize(@n, @m)
+  end
+
+  def self.read
+    n, m = gets.to_s.split.map(&.to_i)
+    new(n, m)
+  end
+
+  def solve
+    q = Deque.new((1..m).to_a.map{|i|[i]})
+    ans = 0_i64
+    while q.size > 0
+      v = q.shift
+      if v.size == n
+        pp v.join(" ")
+        ans += 1
       else
-        stop
+        j = v.last
+        j.step(by: j, to: m) do |nv|
+          q << v + [nv]
+        end
       end
     end
+    return ans
   end
 
-  # 集合の要素の列挙
-  #
-  # ```
-  # BitElementIterator.new(10).to_a # => [1, 3]
-  # ```
-  private class BitElementIterator
-    include Iterator(Int32)
-    getter v : Int64
-    getter i : Int32
-
-    def initialize(v)
-      @v = v.to_i64
-      @i = 0
-    end
-
-    def next
-      while (1_i64 << i) <= v && v.bit(i) == 0
-        @i += 1
-      end
-      if (1_i64 << i) > v
-        stop
-      else
-        begin i ensure @i += 1 end
-      end
-    end
+  def run
+    puts solve
   end
 end
 
-class BitSet(N)
-
-  # ブロックの評価値で初期化
-  #
-  # ```
-  # BitSet(3).make(&.odd) # => 0b010
-  # ```
-  def self.make(&f : Int32 -> Bool) : Int64
-    v = 0_i64
-    N.times do |i|
-      next unless f.call(i)
-      v |= 1_i64 << i
-    end
-    return v
-  end
-
-  # 真偽値の配列で初期化
-  #
-  # ```
-  # BitSet(3).make([true, false, false]) # => 0b001
-  # ```
-  def self.make(a : Array(Bool)) : Int64
-    make { |i| a[i] }
-  end
-
-  # グラフの隣接リスト(0-indexed)から初期化
-  # ```
-  # BitSet(3).make([1,2]) # => 0b110
-  # ```
-  def self.make(a : Array(Int32)) : Int64
-    v = 0_i64
-    a.each do |i|
-      v |= 1_i64 << i
-    end
-    return v
-  end
-end
-
-l = gets.to_s.to_i
-d = Math.ilogb(l)
-m = 2 ** d
-D = 20
-(D-1).times do |i|
-  puts "#{i+1} #{i+2} 0"
-  puts "#{i+1} #{i+2} #{2**i}" if 2**i < m
-end
-
-(d-1).downto(0) do |i|
-  if l.bit(i) == 1
-    puts "#{i+1} 20 #{m}"
-    m += 2
-  else
-    m += 2 if m != 2 ** d
-  end
-end
-
-# [1] 2^0
-# | --0-- |
-#
-# [2] 2^1
-# | --0-- |
-# | --1-- |
-#
-# [3] 2^1 + 2^0
-# | --0-- | --0-- |
-# | --1-- |
-# | --2---------- |
-#
-# [4] 2^2
-# | --0-- | --0-- |
-# | --1-- | --2-- |
-#
-#
-# [5] 2^2 + 2^0
-# | --0-- | --0-- | --0-- |
-# | --1-- | --2-- |
-# | --4------------------ |
-#
-# [6] 110 = 11 +
-# | --0-- | --0-- | --0-- |
-# | --1-- | --2-- |
-#         | --4---------- |
-#
-# [7] 2^2 + 2^1 + 2^0
-# | --0-- | --0-- | --0-- |
-# | --1-- | --2-- |
-#         | ----------4-- |
-# | ----------6---------- |
-#
-# [8] 2^3
-# | --0-- | --0-- | --0-- |
-# | --1-- | --2-- | --4-- |
-#
-# [9] 2^3 + 2^0
-# | --0-- | --0-- | --0-- | --0-- |
-# | --1-- | --2-- | --4-- |
-# | --------------------------8-- |
-#
-# [10] 2^3 + 2^1
-# | --0-- | --0-- | --0-- | --0-- |
-# | --1-- | --2-- | --4-- |
-#         | ------------------8-- |
-#
-# [11] 2^3 + 2^1 + 2^0
-# | --0-- | --0-- | --0-- | --0-- |
-# | --1-- | --2-- | --4-- |
-#         | ------------------8-- |
-# | -------------------------10-- |
-#
-# [12]
-# | --0-- | --0-- | --0-- | --0-- |
-# | --1-- | --2-- | --4-- |
-#                 | ----------8-- |
-#
-# [13] 1101
-# | --0-- | --0-- | --0-- | --0-- |
-# | --1-- | --2-- | --4-- |
-#                 | ----------8-- |
-# | -------------------------12-- |
-#
-# [14]
-# | --0-- | --0-- | --0-- | --0-- |
-# | --1-- | --2-- | --4-- |
-#                 | ----------8-- |
-#         | -----------------12-- |
-#
-# [15]
-# | --0-- | --0-- | --0-- | --0-- |
-# | --1-- | --2-- | --4-- |
-#                 | ----------8-- |
-#         | -----------------12-- |
-# | -------------------------14-- |
-#
+Main.read.run

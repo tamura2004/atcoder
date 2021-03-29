@@ -32,7 +32,7 @@ describe Int do
   end
 
   it "flip Array#at" do
-    1.of([4, 7, 1]).should eq 7
+    0b101.of([4, 7, 1]).should eq [4, 1]
   end
 
   it "on" do

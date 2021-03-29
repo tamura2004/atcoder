@@ -76,13 +76,15 @@ struct Int
     self ^ ((1_i64 << n) - 1)
   end
 
-  # atの逆
+  # values_atの逆
   #
   # ```
-  # 1.of([4, 7, 1]) # => 7
+  # 0b101.of([4, 7, 1]) # => [4, 1]
   # ```
   def of(a)
-    a[self]
+    bits.map do |i|
+      a[i]
+    end.to_a
   end
 
   def on(k)
