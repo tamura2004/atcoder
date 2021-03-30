@@ -4,6 +4,7 @@ require "time"
 require "colorize"
 
 LANG_EXT = {
+  ".dot" => "dot",
   ".rb" => "ruby",
   ".cpp" => "cpp",
   ".jl" => "julia",
@@ -28,6 +29,7 @@ COMPILE = {
 }
 
 EXECUTE = {
+  "dot" => "cat %s | graph-easy --from=dot --as_ascii",
   "ruby" => "ruby %s",
   "cpp" => "./a.out",
   "julia" => "julia src/main.jl",

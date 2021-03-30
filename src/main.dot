@@ -1,0 +1,7 @@
+digraph sample {
+  "x" -> "-x" [label = 1];
+  "x" -> "-y" [label = "-y-x"];
+  "x" -> "y" [label = "y-x"];
+  "-x" -> "y" [label = "y+x"];
+  "-y" -> "y" [label = "1"];
+}
