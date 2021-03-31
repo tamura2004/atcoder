@@ -1,5 +1,5 @@
 require "crystal/priority_queue"
-require "crystal/list_graph"
+require "crystal/weighted_graph"
 
 # ダイクストラ法により単一始点最短経路を求める
 #
@@ -14,21 +14,25 @@ require "crystal/list_graph"
 # [4] <-2- [3]
 # ```
 # g = Dijkstra.new(4)
-# g.add_edge 1,2,2
-# g.add_edge 2,3,2
-# g.add_edge 1,3,3
-# g.add_edge 3,4,2
-# g.add_edge 1,4,7
+# g.add "1 2 2"
+# g.add "2 3 2"
+# g.add "1 3 3"
+# g.add "3 4 2"
+# g.add "1 4 7"
 # g.solve(0) # => [0,2,3,5]
 # ```
-class Dijkstra < ListGraph
+class Dijkstra < WeightedGraph
+  alias Vertex = Int32
+  alias Cost = Int64
+  alias Edge = Tuple(Vertex,Cost)
+  INF = Cost::MAX//2
 
   # ダイクストラ法により*init*始点の最短経路を求める
   #
   # 始点のパラメータ*init*は0-indexed
   # 結果はコストの配列(`Array(Cost)`)
-  def solve(init : V) : Array(C)
-    q = PriorityQueue(E).new { |a, b| a.last > b.last }
+  def solve(init : Vertex) : Array(Cost)
+    q = PriorityQueue(Edge).new { |a, b| a.last > b.last }
     q << {init, 0_i64}
 
     seen = Array.new(n, false)

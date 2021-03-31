@@ -11,11 +11,11 @@ describe Dijkstra do
     #  V      v V
     # [4] <-2- [3]
     g = Dijkstra.new(4)
-    g.add_edge_1_indexed 1, 2, 2
-    g.add_edge_1_indexed 2, 3, 2
-    g.add_edge_1_indexed 1, 3, 3
-    g.add_edge_1_indexed 3, 4, 2
-    g.add_edge_1_indexed 1, 4, 7
+    g.add "1 2 2"
+    g.add "2 3 2"
+    g.add "1 3 3"
+    g.add "3 4 2"
+    g.add "1 4 7"
     g.solve(0).should eq [0, 2, 3, 5]
   end
 
@@ -77,15 +77,15 @@ class ARC109A
     # 水平な廊下
     100.times do |i|
       j = i + 100
-      g.add_both_edge i, j, x
+      g.add i, j, x.to_i64, both: true
     end
 
     # 斜めの廊下と縦の階段
     99.times do |i|
       j = i + 100
-      g.add_both_edge i + 1, j, x
-      g.add_both_edge i, i + 1, y
-      g.add_both_edge j, j + 1, y
+      g.add i + 1, j, x.to_i64, both: true
+      g.add i, i + 1, y.to_i64, both: true
+      g.add j, j + 1, y.to_i64, both: true
     end
 
     g.solve(a - 1)[100 + b - 1]
@@ -105,8 +105,8 @@ class ABC035D
     a = io.gets.to_s.split.map { |v| v.to_i64 }
     g = Dijkstra.new(n)
     m.times do
-      i, j, cost = io.gets.to_s.split.map { |v| v.to_i64 }
-      g.add_edge_1_indexed(i, j, cost)
+      # i, j, cost = io.gets.to_s.split.map { |v| v.to_i64 }
+      g.add io.gets.to_s
     end
     new(n, m, t, a, g)
   end

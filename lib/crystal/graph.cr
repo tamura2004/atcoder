@@ -11,11 +11,15 @@ class Graph
     @g = Array.new(n) { [] of Int32 }
   end
 
-  def add_edge(
+  # fromからtoに辺を追加する
+  #
+  # origin : 0-indexed or 1-indexed
+  # both : 無向グラフ、有向グラフ
+  def add(
     from : Int32,
     to : Int32,
     origin : Int32 = 0,
-    both : Bool = true
+    both : Bool = false
   )
     i = from - origin
     j = to - origin
@@ -23,27 +27,34 @@ class Graph
     g[j] << i if both
   end
 
-  def add_edge(
+  # 辺の集合edgesを追加する
+  #
+  # ```
+  # add [[0,1],[1,2]]
+  # ```
+  def add(
     edges : Array(Array(Int32)),
     origin : Int32 = 0,
-    both : Bool = true
+    both : Bool = false
   )
     edges.each do |(from, to)|
-      add_edge(from, to, origin, both)
+      add(from, to, origin, both)
     end
   end
 
-  def add_edge(
+  # 文字列から辺を追加する
+  def add(
     edges : String,
-    origin : Int32 = 0,
-    both : Bool = true
+    origin : Int32 = 1,
+    both : Bool = false
   )
-    edges.split(/[;\n]/).each do |edge|
+    edges.split(/[|;\n]/).each do |edge|
       from, to = edge.split.map(&.to_i)
-      add_edge(from, to, origin, both)
+      add(from, to, origin, both)
     end
   end
 
+  # 2部グラフ判定
   def is_bipartite?
     color = Array.new(n, -1)
     n.times do |i|
@@ -63,20 +74,3 @@ class Graph
     return true
   end
 end
-
-# Graph
-# def add_edge(e : E)
-# end
-# MatrixGraph < Matrix
-# BitGraph
-
-# 辺の型を気にするのはGraph型だけ
-
-# 双方向かどうか＝＞辺の追加メソッドで使い分け
-# include Connectable(E)
-# def add_edge(e : E)
-#   g
-# end
-
-# g = Graph.new(n)
-# g.add_edge(n, STDIN)

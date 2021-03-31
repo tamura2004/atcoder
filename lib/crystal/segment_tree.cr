@@ -29,7 +29,7 @@ class SegmentTree(T)
   end
   
   # 一点更新、区間最小、要素数で初期化
-  def self.rmq(n : Int32)
+  def self.range_min_query(n : Int32)
     values = Array.new(n){ T::MAX }
     new(values, unit: T::MAX) do |x,y|
       Math.min(x,y)
@@ -37,7 +37,7 @@ class SegmentTree(T)
   end
   
   # 一点更新、区間最小
-  def self.rmq(values : Array(T))
+  def self.range_min_query(values : Array(T))
     new(values, unit: T::MAX) do |x,y|
       Math.min(x,y)
     end

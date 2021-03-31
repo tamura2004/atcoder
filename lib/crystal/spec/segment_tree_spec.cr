@@ -50,14 +50,33 @@ describe SegmentTree do
     st[0..2].should eq ({6, 25})
   end
 
-  it "range min" do
-    st = SegmentTree(Int32).rmq(10)
+  it "一点更新、区間最小、要素数で初期化" do
+    st = SegmentTree(Int32).range_min_query(10)
     st[1] = 10
     st[2] = 5
     st[3] = 20
     st[1..].should eq 5
     st[2..].should eq 5
     st[3..].should eq 20
-
+  end
+  
+  it "range sum query" do
+    st = SegmentTree(Int32).range_sum_query(10)
+    st[1] = 10
+    st[2] = 5
+    st[3] = 20
+    st[1..].should eq 35
+    st[2..].should eq 25
+    st[3..].should eq 20
+  end
+  
+  it "range max query" do
+    st = SegmentTree(Int32).range_max_query(10)
+    st[1] = 10
+    st[2] = 5
+    st[3] = 20
+    st[1..].should eq 20
+    st[2..].should eq 20
+    st[3..].should eq 20
   end
 end

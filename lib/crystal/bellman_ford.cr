@@ -1,47 +1,56 @@
-macro chmin(target, other)
-  {{target}} = ({{other}}) if ({{target}}) > ({{other}})
-end
-
+require "crystal/weighted_graph"
 
 # ベルマンフォード法により最短経路を求める
 #
+# 負閉路に含まれる点[3][4]を持つ場合
+#             +-----+
+#             |  1  |
+#             +-----+
+#               |
+#               | 1
+#               v
+# +---+  -1   +-----+
+# | 5 | <---- |  2  |
+# +---+       +-----+
+#               |
+#               | 1
+#               v
+#             +-----+
+#             |  3  | <+
+#             +-----+  |
+#               |      |
+#               | -1   | -1
+#               v      |
+#             +-----+  |
+#             |  4  | -+
+#             +-----+
 # ```
-# g = Graph.new(3)
-# g[0] << {0, 1, 10_i64}
-# g[1] << {1, 2, -5_i64}
-# g[0] << {0, 2, 6_i64}
+# g = Graph.new(5)
+# g.add 1,2,1
+# g.add 2,3,1
+# g.add 3,4,-1
+# g.add 4,3,-1
+# g.add 2,5,-1
 # dp, neg = g.bellman_ford(0)
-# dp[2].should eq 5
+# dp # => [0, 1, -8, -7, 0]
+# neg # => [false, false, true, true, false]
 # ```
-class Graph
-  alias Edge = Tuple(Int32,Int32,Int64)
-  
+class BellmanFord < WeightedGraph
   INF = Int64::MAX
 
-  getter n : Int32
-  getter g : Array(Array(Edge))
-
-  def initialize(@n)
-    @g = Array.new(n){ [] of Edge }
-  end
-
-  def add(a, b, c)
-    g[a - 1] << {a - 1, b - 1, c.to_i64}
-  end
-
   # 負閉路に含まれる点 := neg
-  def bellman_ford(init)
+  def solve(init)
     dp = Array.new(n, INF)
     neg = Array.new(n, false)
 
     dp[init] = 0_i64
     n.times do |i|
-      g.each do |v|
-        v.each do |from, to, cost|
-          next if dp[from] == INF
-          if dp[to] > dp[from] + cost
-            dp[to] = dp[from] + cost
-            neg[to] = true if i >= n - 1
+      n.times do |v|
+        g[v].each do |nv, cost|
+          next if dp[v] == INF
+          if dp[nv] > dp[v] + cost
+            dp[nv] = dp[v] + cost
+            neg[nv] = true if i >= n - 1
           end
         end
       end
@@ -49,14 +58,12 @@ class Graph
 
     # 負閉路から到達できる点もnegに含める
     n.times do |i|
-      g.each do |v|
-        v.each do |from, to, cost|
-          neg[to] ||= neg[from]
+      n.times do |v|
+        g[v].each do |nv, cost|
+          neg[nv] ||= neg[v]
         end
       end
     end
     return ({dp, neg})
   end
-
-  delegate "[]", to: @g
 end
