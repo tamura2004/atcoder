@@ -1,28 +1,32 @@
-require "crystal/weighted_graph"
+require "crystal/tree"
 
-class Main < WeightedGraph
-  getter dp : Array(Int32)
-
-  def initialize(@n)
-    super(n)
-    @dp = Array.new(n, 0)
-  end
-
-  def dfs(v, pv)
-    return 0 if g[v].size == 1 && pv != -1
-
-    dp[v] = g[v].max_of do |nv, cost|
-      next 0 if nv == pv
-      dfs(nv, v) + cost
-    end
-  end
-
+macro chmax(target, other)
+  {{target}} = ({{other}}) if ({{target}}) < ({{other}})
 end
 
-g = Main.new(4)
-g.add "0 1 1;1 2 2;2 3 4", origin: 0, both: true
-g.dfs(0,-1)
+n = gets.to_s.to_i
+a = Array.new(n-1){ gets.to_s.to_i }
+g = Main.new(n)
+g.read_plist(a)
+puts g.solve.join("\n")
 
-pp! g
+class Main < Tree
+  def solve
+    tsort!
 
-# [0]--1--[1]--2--[2]--4--[3]
+    dp = Array.new(n, 1) # 部分木の状態
+    ans = Array.new(n, 0) # 部分木の答え
+
+    dfs do |v, nv|
+      dp[v] += dp[nv]
+      chmax ans[v], dp[nv]
+    end
+
+    bfs do |v, nv|
+      chmax ans[nv], dp[v] - dp[nv]
+      dp[nv] = dp[v]
+    end
+
+    return ans
+  end
+end

@@ -3,9 +3,9 @@ require "nokogiri"
 require "open-uri"
 
 users = %w[
-  zukeyama0424
   MasahiroTada108
 ]
+# zukeyama0424
 # yamamichi
 # iaduf123
 # kohara1213
