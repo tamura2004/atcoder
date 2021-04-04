@@ -1,3 +1,4 @@
+# modint
 struct ModInt
   MAX   = 100_000
   MOD = 10_i64 ** 9 + 7

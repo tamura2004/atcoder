@@ -1,32 +1,20 @@
-require "crystal/tree"
+names = %w(
+  nil
+  un
+  bi
+  tri
+  quad
+  pent
+  hex
+  sept
+  oct
+  enn
+)
 
-macro chmax(target, other)
-  {{target}} = ({{other}}) if ({{target}}) < ({{other}})
-end
+n = gets.to_s.chars.map(&.to_i)
+ans = n.map{|i|names[i]}.join + "ium"
+ans = ans.gsub(/ii/,"i")
+ans = ans.gsub(/nnn/,"nn")
 
-n = gets.to_s.to_i
-a = Array.new(n-1){ gets.to_s.to_i }
-g = Main.new(n)
-g.read_plist(a)
-puts g.solve.join("\n")
+puts ans.camelcase
 
-class Main < Tree
-  def solve
-    tsort!
-
-    dp = Array.new(n, 1) # 部分木の状態
-    ans = Array.new(n, 0) # 部分木の答え
-
-    dfs do |v, nv|
-      dp[v] += dp[nv]
-      chmax ans[v], dp[nv]
-    end
-
-    bfs do |v, nv|
-      chmax ans[nv], dp[v] - dp[nv]
-      dp[nv] = dp[v]
-    end
-
-    return ans
-  end
-end

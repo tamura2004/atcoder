@@ -57,6 +57,7 @@ class Prime
   # Prime.prime_division(72) # => {2 => 3, 3 => 2}
   # ```
   def self.prime_division(n : Int) : Hash(Int32, Int32)
+    # return prime_division(n.to_i64) if n > N
     Hash(Int32, Int32).new(0).tap do |dp|
       while n > 1
         i = div[n]
@@ -170,7 +171,7 @@ struct Int
     b.divisible_by?(self)
   end
 
-  # 高速な素因数分解
+  # 素因数分解
   #
   # ```
   # 72.prime_division # => {2 => 3, 3 => 2}
@@ -211,6 +212,41 @@ struct Int
       yield i, j
       yield j, i if i != j
     end
+  end
+
+  # 三角数
+  #
+  # Ti = 1+2+3+...+i = i(i+1)//2の時
+  # 自身以下の最大の三角数のiを求める
+  # 三角数は自身を正の整数に分割できる最大数
+  def trinum_index
+    (Math.sqrt(self * 8 + 1).to_i64 - 1) // 2
+  end
+end
+
+# 大きな数の素因数分解等
+struct Int64
+  # 素因数分解
+  #
+  # ```
+  # Prime.prime_division(72) # => {2 => 3, 3 => 2}
+  # ```
+  def prime_division : Hash(Int64, Int32)
+    n = self
+    Hash(Int64, Int32).new(0_i64).tap do |dp|
+      m = Math.sqrt(n).to_i64
+      2_i64.upto(m) do |i|
+        while n.divisible_by?(i)
+          dp[i] += 1
+          n //= i
+        end
+      end
+      dp[n.to_i64] += 1 if n != 1
+    end
+  end
+
+  def prime_factor : Set(Int64)
+    prime_division.keys.to_set
   end
 end
 

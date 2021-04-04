@@ -1,6 +1,14 @@
 require "spec"
 require "../prime"
 
+describe Int64 do
+  it "prime_division" do
+    n = 817781778177
+    want = ({3 => 1, 7 => 1, 13 => 2, 17 => 1, 37 => 2, 9901 => 1})
+    n.prime_division.should eq want
+  end
+end
+
 describe Int do
   it "prime?" do
     7.prime?.should eq true
@@ -47,7 +55,7 @@ describe Prime do
   end
 
   it "双子素数" do
-    ans = Prime.take_while(&.<= 40).each_cons(2).select do |(i,j)|
+    ans = Prime.take_while(&.<= 40).each_cons(2).select do |(i, j)|
       (i - j).abs <= 2
     end.to_a
     ans.should eq [[17, 19], [29, 31]]
