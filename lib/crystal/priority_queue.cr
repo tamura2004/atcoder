@@ -2,10 +2,17 @@ class PriorityQueue(T)
   getter f : T, T -> Bool
   getter a : Deque(T)
 
-  forward_missing_to a
+  delegate size, to: a
+  delegate empty?, to: a
+  delegate "[]", to: a
+  # forward_missing_to a
 
   def self.lesser
     new { |a,b| a > b }
+  end
+
+  def self.greater
+    new { |a,b| a < b }
   end
 
   def initialize(&block : T, T -> Bool)
