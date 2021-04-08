@@ -20,6 +20,11 @@ class SegmentTree(T)
     new(n)
   end
 
+  # 一点更新、区間加算、配列で初期化
+  def self.range_sum_query(values : Array(T))
+    new(values)
+  end
+
   # 一点更新、区間最大、要素数で初期化
   def self.range_max_query(n : Int32)
     values = Array.new(n){ T.zero }
@@ -93,8 +98,8 @@ class SegmentTree(T)
   end
 
   def sum(i : Int32, j : Int32) : T
-    raise "Bad index i=#{i}" unless (0...n).includes?(i)
-    raise "Bad index j=#{j}" unless (1..n).includes?(j)
+    # raise "Bad index i=#{i}" unless (0...n).includes?(i)
+    # raise "Bad index j=#{j}" unless (1..n).includes?(j)
 
     i += n; j += n
     left = right = unit
