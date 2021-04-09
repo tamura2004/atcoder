@@ -1,73 +1,24 @@
-require "crystal/priority_queue"
-require "crystal/problem"
+n = gets.to_s.to_i64
+a = Array.new(n){ gets.to_s.chars.map(&.to_i) }
 
-class Main < Problem
-  alias Pair = Tuple(Int32, Int32)
+n.times do |i|
+  a[i][i] = 1
+end
 
-  getter n : Int32
-  getter k : Int32
-  getter q : PriorityQueue(Pair) # foods not eat
-  getter r : PriorityQueue(Pair) # foods eaten
-  getter seen : Array(Bool)      # check foods eaten
-  getter sat : Int64             # 種類ボーナス無しの満足度
-  getter types : Int64             # 種類ボーナス無しの満足度
-
-  def initialize(@n, @k, @q, @r, @seen, @sat, @types)
-  end
-
-  def self.read(io : IO)
-    n, k = io.gets.to_s.split.map(&.to_i)
-    q = PriorityQueue(Pair).lesser
-    r = PriorityQueue(Pair).greater
-    seen = Array.new(n, false)
-
-    td = Array.new(n) do
-      t, d = io.gets.to_s.split.map(&.to_i)
-      t -= 1
-      {d, t}
-    end.to_a.sort.reverse
-
-    sat = 0_i64
-    types = 0_i64
-
-    n.times do |i|
-      d, t = td[i]
-      if i < k
-        sat += d
-        if !seen[t]
-          seen[t] = true
-          types += 1
-        else
-          q << {d, t}
-        end
-      else
-        if !seen[t]
-          seen[t] = true
-          r << {d, t}
-        end
+n.times do |k|
+  n.times do |i|
+    n.times do |j|
+      if a[i][k] & a[k][j] == 1
+        a[i][j] = 1
       end
     end
-
-    new(n, k, q, r, seen, sat, types)
-  end
-
-  def solve
-    ans = sat + types ** 2
-    while q.size > 0 && r.size > 0
-      qd,qt = q.pop
-      rd,rt = r.pop
-      @types += 1
-      @sat += rd - qd
-
-      chmax ans, sat + types ** 2
-    end
-    ans
-  end
-
-  def run
-    # pp! self
-    puts solve
   end
 end
 
-Main.read.run
+a = a.transpose
+
+ans = n.times.sum do |i|
+  1.0f64 / a[i].sum
+end
+
+pp ans
