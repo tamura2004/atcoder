@@ -63,6 +63,15 @@ class LazySegmentTree(X, A)
     )
   end
 
+  def self.range_update_range_min(_x)
+    new(
+      Proc(X, X, X).new { |x, y| Math.min x, y },
+      Proc(X, A, X).new { |x, a| Math.min x, a },
+      Proc(A, A, A).new { |a, b| Math.min a, b },
+      _x
+    )
+  end
+
   def initialize(
     fxx : Proc(X, X, X),
     fxa : Proc(X, A, X),
@@ -113,7 +122,7 @@ class LazySegmentTree(X, A)
     recalc_above(i)
   end
 
-  def [](i : Int32, y : X?)
+  def []=(i : Int32, y : X?)
     set(i, y)
   end
 
@@ -154,6 +163,11 @@ class LazySegmentTree(X, A)
     lo = r.begin || 0
     hi = (r.end || n - 1) + (r.excludes_end? ? 0 : 1)
     fold(lo, hi) || default
+  end
+
+  def [](i : Int)
+    j = i.to_i
+    fold(j, j)
   end
 
   def update(i : Int32, j : Int32, b : A)
