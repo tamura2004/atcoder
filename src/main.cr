@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 require "crystal/lazy_segment_tree"
 
 # o o o x
