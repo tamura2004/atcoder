@@ -1,59 +1,35 @@
 # 遅延評価セグメント木
+#
+# ```
+# # range add range sum
+# alias Pair = Tuple(Int64, Int64)
+# st = LazySegmentTree(Pair, Int64).new(
+#   Proc(Pair, Pair, Pair).new { |(x, n), (y, m)| Pair.new x + y, n + m },
+#   Proc(Pair, Int64, Pair).new { |(x, n), a| Pair.new x + n * a, n },
+#   Proc(Int64, Int64, Int64).new { |a, b| a + b },
+#   n: 4,
+#   init: Pair.new(0_i64, 1_i64)
+# ) # => [0, 0, 0, 0]
+# st[..2] = 2_i64 # => [2, 2, 2, 0]
+# st[2..] = 3_i64 # => [2, 2, 5, 3]
+# st[1..2] = 4_i64 # => [2, 6, 9, 3]
+# st[0..].should eq Pair.new(20_i64, 4_i64)
+# # ```
 class LazySegmentTree(X, A)
-  getter fxx : Proc(X, X, X)
-  getter fxa : Proc(X, A, X)
-  getter faa : Proc(A, A, A)
-  getter x_unit : X
-  getter a_unit : A
   getter n : Int32
-  getter x : Array(X)
-  getter a : Array(A)
+  getter x : Array(X?)
+  getter a : Array(A?)
+  getter fxx : Proc(X?, X?, X?)
+  getter fxa : Proc(X?, A?, X?)
+  getter faa : Proc(A?, A?, A?)
 
-  # 区間更新、区間最小
-  def self.range_update_range_min(n : Int32)
-    values = Array(X).new(n){ X::MAX }
-    range_update_range_min(values)
-  end
-  
-  # 区間更新、区間最小
-  def self.range_update_range_min(n : Int32, init : X)
-    values = Array(X).new(n){ init }
-    range_update_range_min(values)
-  end
-  
-  # 区間更新、区間最小
-  def self.range_update_range_min(values : Array(X))
-    new(
-      Proc(X, X, X).new { |x, y| Math.min x, y },
-      Proc(X, A, X).new { |x, a| Math.min x, a },
-      Proc(A, A, A).new { |a, b| Math.min a, b },
-      X::MAX,
-      A::MAX,
-      values,
-    )
-  end
-
-  # 区間更新、区間最大
-  def self.range_update_range_max(values : Array(X))
-    new(
-      Proc(X, X, X).new { |x, y| Math.max x, y },
-      Proc(X, A, X).new { |x, a| Math.max x, a },
-      Proc(A, A, A).new { |a, b| Math.max a, b },
-      X.zero,
-      A.zero,
-      values,
-    )
-  end
-
-  # 区間加算、区間最小
-  def self.range_add_range_min(values : Array(X))
+  # 区間加算、区間合計
+  def self.range_add_range_min(_x)
     new(
       Proc(X, X, X).new { |x, y| Math.min x, y },
       Proc(X, A, X).new { |x, a| x + a },
       Proc(A, A, A).new { |a, b| a + b },
-      X::MAX,
-      A.zero,
-      values
+      _x
     )
   end
 
@@ -68,51 +44,89 @@ class LazySegmentTree(X, A)
   # |0 b| * |0 a| = |0 b|
   # |0 1|   |0 1|   |0 1|
   #
-  def self.range_update_range_sum(values : Array(X))
+  # ```
+  # alias X = Tuple(Int64, Int64)
+  # alias A = Int64
+  # unit = X.new(0_i64, 1_i64)
+  # _x = Array.new(10) { unit }
+  # st = LazySegmentTree(X, A).range_update_range_sum(_x)
+  # st[3..5] = 10
+  # st[4..6] = 20 #=> [0,0,0,10,20,20,20,0,0,0,0]
+  # st[2..4] # => 30
+  # ```
+  def self.range_update_range_sum(_x)
     new(
       Proc(X, X, X).new { |(x0, x1), (y0, y1)| {x0 + y0, x1 + y1} },
-      Proc(X, A, X).new { |(x0, x1), a| a ? {x1 * a, x1} : {x0, x1} },
-      Proc(A, A, A).new { |a, b| a && b ? b : b ? b : nil },
-      X.new(0_i64, 1_i64),
-      nil.as(A?),
-      values
+      Proc(X, A, X).new { |(x0, x1), a| {x1 * a, x1} },
+      Proc(A, A, A).new { |a, b| b },
+      _x
+    )
+  end
+
+  def self.range_update_range_min(_x)
+    new(
+      Proc(X, X, X).new { |x, y| Math.min x, y },
+      Proc(X, A, X).new { |x, a| Math.min x, a },
+      Proc(A, A, A).new { |a, b| Math.min a, b },
+      _x
     )
   end
 
   def initialize(
-    @fxx : Proc(X, X, X),
-    @fxa : Proc(X, A, X),
-    @faa : Proc(A, A, A),
-    @x_unit,
-    @a_unit,
-    values : Array(X),
+    fxx : Proc(X, X, X),
+    fxa : Proc(X, A, X),
+    faa : Proc(A, A, A),
+    n : Int32,
+    init : X? = nil
   )
-    @n = Math.max 2, Math.pw2ceil(values.size)
-    @x = Array(X).new(@n*2, x_unit)
-    @a = Array(A).new(@n*2, a_unit)
+    x = Array(X?).new(n, init)
+    initialize(fxx, fxa, faa, x)
+  end
 
-    values.each_with_index do |v, i|
+  def initialize(
+    fxx : Proc(X, X, X),
+    fxa : Proc(X, A, X),
+    faa : Proc(A, A, A),
+    _x : Array(X?)
+  )
+    @fxx = Proc(X?, X?, X?).new do |x, y|
+      x && y ? fxx.call(x, y) : x ? x : y ? y : nil
+    end
+
+    @fxa = Proc(X?, A?, X?).new do |x, a|
+      x && a ? fxa.call(x, a) : x ? x : nil
+    end
+
+    @faa = Proc(A?, A?, A?).new do |a, b|
+      a && b ? faa.call(a, b) : a ? a : b ? b : nil
+    end
+
+    @n = Math.max 2, Math.pw2ceil(_x.size)
+    @x = Array(X?).new(@n*2, nil)
+    @a = Array(A?).new(@n*2, nil)
+
+    _x.each_with_index do |v, i|
       x[i + n] = v
     end
 
     (n - 1).downto(1) do |i|
-      x[i] = fxx.call x[lch(i)], x[rch(i)]
+      x[i] = @fxx.call x[lch(i)], x[rch(i)]
     end
   end
 
-  def set(i : Int32, y : X)
+  def set(i : Int32, y : X?)
     i += n
     propagate_above(i)
     x[i] = y
-    a[i] = a_unit
+    a[i] = nil
     recalc_above(i)
   end
 
-  def []=(i : Int32, y : X)
+  def []=(i : Int32, y : X?)
     set(i, y)
   end
 
-  def fold(i : Int32, j : Int32) : X
+  def fold(i : Int32, j : Int32) : X?
     i += n
     j += n
 
@@ -122,8 +136,8 @@ class LazySegmentTree(X, A)
     propagate_above(i0)
     propagate_above(j0)
 
-    left = x_unit
-    right = x_unit
+    left = nil.as(X?)
+    right = nil.as(X?)
     while i < j
       if i.odd?
         left = fxx.call left, eval(i)
@@ -139,15 +153,21 @@ class LazySegmentTree(X, A)
     fxx.call left, right
   end
 
-  def [](r : Range(Int32?, Int32?)) : X
+  def [](r : Range(Int32?, Int32?)) : X?
     lo = r.begin || 0
     hi = (r.end || n - 1) + (r.excludes_end? ? 0 : 1)
     fold(lo, hi)
   end
 
-  def [](i : Int) : X
+  def [](r : Range(Int32?, Int32?), default : X) : X
+    lo = r.begin || 0
+    hi = (r.end || n - 1) + (r.excludes_end? ? 0 : 1)
+    fold(lo, hi) || default
+  end
+
+  def [](i : Int)
     j = i.to_i
-    fold(j, j + 1)
+    fold(j, j)
   end
 
   def update(i : Int32, j : Int32, b : A)
@@ -198,11 +218,11 @@ class LazySegmentTree(X, A)
   end
 
   def propagate(i)
-    return if a[i] == a_unit
+    return if a[i].nil?
     a[lch(i)] = faa.call a[lch(i)], a[i]
     a[rch(i)] = faa.call a[rch(i)], a[i]
     x[i] = eval(i)
-    a[i] = a_unit
+    a[i] = nil
   end
 
   @[AlwaysInline]

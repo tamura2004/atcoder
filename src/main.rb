@@ -1,7 +1,12 @@
-k = gets.to_s.to_i
+def g(n, k)
+  (n / k).to_i * (1 + n / k).to_i * k / 2
+end
 
-cnt = 1.upto(1000000).map do |i|
-  (k * i).to_s.chars.map(&:to_i).sum
-end.tally
+def f(n)
+  1.upto(n).sum do |k|
+    g(n, k)
+  end
+end
 
-pp cnt
+n = gets.to_s.to_i
+pp f(n)

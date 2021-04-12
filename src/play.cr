@@ -1,2 +1,2 @@
-require "crystal/prime"
-pp 1961.prime_division
+a=[1,2,3]
+puts a.join"\n"

@@ -34,10 +34,11 @@ class Tree < Graph
       v = q.pop
       if v < 0
         g[~v].each_with_index do |nv, i|
-          yield ~v, nv, i
+          yield ~v, nv, i,1
         end
       else
-        g[v].each do |nv|
+        g[v].each_with_index do |nv,i|
+          yield v,nv,i,0
           q << ~nv
           q << nv
         end
