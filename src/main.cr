@@ -1,13 +1,15 @@
-def f(s)
-  n = s.size
-  return false if n.odd?
-  (n//2).times.all? do |i|
-    (s[i] == 'p' && s[n-i-1] == 'q') ||
-    (s[i] == 'q' && s[n-i-1] == 'p') ||
-    (s[i] == 'b' && s[n-i-1] == 'd') ||
-    (s[i] == 'd' && s[n-i-1] == 'b')
+def solve
+  h,w,a,b = gets.to_s.split.map(&.to_i64)
+  return false if a > w // 2
+  return false if b > h // 2
+
+  h.times do |y|
+    w.times do |x|
+      print (x < a) ^ (y < b) ? '0' : '1'
+    end
+    puts
   end
+  true
 end
 
-s = gets.to_s
-puts f(s) ? "Yes" : "No"
+puts "No" unless solve
