@@ -1,15 +1,9 @@
-def solve
-  h,w,a,b = gets.to_s.split.map(&.to_i64)
-  return false if a > w // 2
-  return false if b > h // 2
+a,b,x = gets.to_s.split.map(&.to_f64)
 
-  h.times do |y|
-    w.times do |x|
-      print (x < a) ^ (y < b) ? '0' : '1'
-    end
-    puts
-  end
-  true
+# 半分より多い
+if a ** 2 * b < x * 2
+
+else
 end
 
-puts "No" unless solve
+pp! Math.atan2(0,1)
