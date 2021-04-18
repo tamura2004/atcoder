@@ -5,7 +5,7 @@ require "crystal/mod_int"
 # エラストテレスの篩で、自身を割る最小の素数をクラス変数として持つ
 # 素数判定と、高速な素因数分解に利用
 class Prime
-  N = 300_000
+  N = 1_000_000
   extend Enumerable(Int32)
   class_getter div : Array(Int32) = sieve(N)
   class_getter each : PrimeIterator = PrimeIterator.new(div)
