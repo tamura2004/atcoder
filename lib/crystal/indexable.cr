@@ -46,9 +46,19 @@ module Indexable(T)
     end.to_a
   end
 
+  # orによる畳み込み
   def or : T
     reduce(T.zero) do |acc,b|
       acc | b
     end
+  end
+
+  # 値->indexの配列
+  def idx
+    ans = Array.new(size,-1)
+    each_with_index do |v,i|
+      ans[v] = i
+    end
+    ans
   end
 end

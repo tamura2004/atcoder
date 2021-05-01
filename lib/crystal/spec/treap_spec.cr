@@ -6,13 +6,18 @@ describe Treap do
     t = Treap(Int32).new
     t.min.should eq nil
     t.max.should eq nil
-    t.insert(10)
+    t.cnt.should eq 0
+
+    t << 10
     t.min.should eq 10
     t.max.should eq 10
-    t.insert(20)
+    t.cnt.should eq 1
+
+    t << 20
     t.min.should eq 10
     t.max.should eq 20
     t.cnt.should eq 2
+
     t.delete(10)
     t.cnt.should eq 1
     t.min.should eq 20

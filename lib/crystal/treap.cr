@@ -9,7 +9,7 @@ class Treap(T)
     def initialize(@v : T)
       @pri = rand(Int32::MAX)
       @left = @right = nil
-      @cnt = 0
+      @cnt = 1
     end
 
     def insert(x : T)
@@ -51,6 +51,10 @@ class Treap(T)
           end
         end
       end
+    end
+
+    def <<(x : T)
+      insert(x)
     end
 
     def update
@@ -204,6 +208,10 @@ class Treap(T)
     end
   end
 
+  def <<(x : T)
+    insert(x)
+  end
+
   def delete(x : T)
     case root = @root
     when Nil
@@ -263,7 +271,7 @@ class Treap(T)
 
   def cnt
     case root = @root
-    when Nil then 0
+    when Nil  then 0
     when Node then root.cnt
     end
   end
