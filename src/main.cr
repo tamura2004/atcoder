@@ -1,43 +1,90 @@
-require "crystal/indexable"
+require "crystal/priority_queue"
+require "crystal/weighted_graph"
 
-n,m,xn = gets.to_s.split.map(&.to_i)
-g = Array.new(n){ [] of Tuple(Int32,Int32) }
-m.times do
-  a,b,c = gets.to_s.split.map(&.to_i)
-  a -= 1
-  b -= 1
-  g[a] << {b,c}
-  g[b] << {a,c}
-end
-xs = gets.to_s.split.map(&.to_i64)
+# ダイクストラ法により単一始点最短経路を求める
+#
+# 頂点を`Vertex`、辺を`Edge`、コストを`Cost`として持つ
+# 有向グラフを対象とする。
+#
+# [1] -2-> [2]
+#  | \      |
+#  7   3    2
+#  |     \  |
+#  V      v V
+# [4] <-2- [3]
+# ```
 
-seen = Array.new(n, -1)
-cnt = Array.new(n, 0)
-seen[0] = 0
-q = Deque.new([0])
+h,w = gets.to_s.split.map(&.to_i)
+a = Array.new(h){ gets.to_s.split.map(&.to_i64) }
+b = Array.new(h-1){ gets.to_s.split.map(&.to_i64) }
 
-xs.each_with_index do |x, i|
-  tmp = Deque(Int32).new
-  while q.size > 0
-    v = q.shift
-    g[v].each do |nv,cost|
-      next if x < cost
-      next if seen[nv] != -1
-      cnt[v] += 1
-      seen[nv] = i
-      tmp << nv
-    end
-    tmp << v if cnt[v] < g[v].size
+g = Dijkstra.new(2*h*w)
+
+h.times do |y|
+  (w-1).times do |x|
+    v = y * w + x
+    nv = v + 1
+    g.add v, nv, a[y][x], both: true
   end
-  q = tmp
 end
 
-ans = Array.new(xn, 0)
-seen.each_with_index do |v|
-  next if v == -1
-  ans[v] += 1
+(h-1).times do |y|
+  w.times do |x|
+    v = y * w + x
+    nv = v + w
+    g.add v, nv, b[y][x], both: false
+  end
 end
-puts ans.cs[1..].join("\n")
+
+(h-1).times do |y|
+  w.times do |x|
+    v = (y + 1) * w + x + w * h
+    nv = v - w
+    g.add v, nv, 1_i64, both: false
+  end
+end
+
+h.times do |y|
+  w.times do |x|
+    v = y * w + x
+    nv = v + w * h
+    g.add v, nv, 1_i64, both: false
+    g.add nv, v, 0_i64, both: false
+  end
+end
+
+ans = g.solve(0)
+
+pp ans[h*w-1]
 
 
+class Dijkstra < WeightedGraph
+  alias Vertex = Int32
+  alias Cost = Int64
+  alias Edge = Tuple(Vertex,Cost)
+  INF = Cost::MAX//2
 
+  # ダイクストラ法により*init*始点の最短経路を求める
+  #
+  # 始点のパラメータ*init*は0-indexed
+  # 結果はコストの配列(`Array(Cost)`)
+  def solve(init : Vertex) : Array(Cost)
+    q = PriorityQueue(Edge).new { |a, b| a.last > b.last }
+    q << {init, 0_i64}
+
+    seen = Array.new(n, false)
+    costs = Array.new(n, INF)
+
+    while q.size > 0
+      v, cost = q.pop
+      next if seen[v]
+      seen[v] = true
+      costs[v] = cost
+      g[v].each do |nv, ncost|
+        next if seen[nv]
+        q << {nv, cost + ncost}
+      end
+    end
+    return costs
+  end
+end
