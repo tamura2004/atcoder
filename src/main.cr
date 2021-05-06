@@ -1,43 +1,32 @@
-require "crystal/indexable"
+require "crystal/mod_int"
 
-n,m,xn = gets.to_s.split.map(&.to_i)
-g = Array.new(n){ [] of Tuple(Int32,Int32) }
-m.times do
-  a,b,c = gets.to_s.split.map(&.to_i)
-  a -= 1
-  b -= 1
-  g[a] << {b,c}
-  g[b] << {a,c}
-end
-xs = gets.to_s.split.map(&.to_i64)
+n,m = gets.to_s.split.map(&.to_i)
+a = gets.to_s.split.map(&.to_i).sort.reverse
+b = gets.to_s.split.map(&.to_i).sort.reverse
+a << -1
+b << -1
 
-seen = Array.new(n, -1)
-cnt = Array.new(n, 0)
-seen[0] = 0
-q = Deque.new([0])
+pp solve(n,m,a,b)
 
-xs.each_with_index do |x, i|
-  tmp = Deque(Int32).new
-  while q.size > 0
-    v = q.shift
-    g[v].each do |nv,cost|
-      next if x < cost
-      next if seen[nv] != -1
-      cnt[v] += 1
-      seen[nv] = i
-      tmp << nv
+def solve(n,m,a,b)
+  i = 0
+  j = 0
+
+  ans = 1.to_m
+  (n*m).downto(1) do |x|
+    case
+    when a[i] == x && b[j] == x
+      i += 1
+      j += 1
+    when a[i] == x
+      i += 1
+      ans *= j
+    when b[j] == x
+      j += 1
+      ans *= i
+    else
+      ans *= (i * j) - (n * m - x)
     end
-    tmp << v if cnt[v] < g[v].size
   end
-  q = tmp
+  return ans
 end
-
-ans = Array.new(xn, 0)
-seen.each_with_index do |v|
-  next if v == -1
-  ans[v] += 1
-end
-puts ans.cs[1..].join("\n")
-
-
-

@@ -1,3 +1,4 @@
+# プライオリティキュー
 class PriorityQueue(T)
   getter f : T, T -> Bool
   getter a : Deque(T)

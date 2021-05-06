@@ -33,6 +33,13 @@ class SegmentTree(T)
     end
   end
   
+  # 一点更新、区間最大、要素で初期化
+  def self.range_max_query(values : Array(T))
+    new(values, unit: T.zero) do |x,y|
+      Math.max(x,y)
+    end
+  end
+  
   # 一点更新、区間最小、要素数で初期化
   def self.range_min_query(n : Int32)
     values = Array.new(n){ T::MAX }
@@ -41,7 +48,7 @@ class SegmentTree(T)
     end
   end
   
-  # 一点更新、区間最小
+  # 一点更新、区間最小、要素で初期化
   def self.range_min_query(values : Array(T))
     new(values, unit: T::MAX) do |x,y|
       Math.min(x,y)

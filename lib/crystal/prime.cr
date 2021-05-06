@@ -229,7 +229,8 @@ struct Int64
   # 素因数分解
   #
   # ```
-  # Prime.prime_division(72) # => {2 => 3, 3 => 2}
+  # a = 1_000_000_000_000_i64
+  # a.prime_division(72) # => {2 => 12, 5 => 12}
   # ```
   def prime_division : Hash(Int64, Int32)
     n = self
