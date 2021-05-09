@@ -37,7 +37,7 @@ module Indexable(T)
     reverse.cs.reverse
   end
 
-  # インデックス位置を除く両端の累積和を返す
+  # インデックス位置を除く両側の累積和を返す
   def csb : self
     lt = cs
     rt = csr
@@ -47,18 +47,55 @@ module Indexable(T)
   end
 
   # orによる畳み込み
+  # ```
+  # [0b011,0b110].or # #=> 0b111
+  # ```
   def or : T
     reduce(T.zero) do |acc,b|
       acc | b
     end
   end
 
-  # 値->indexの配列
+  # 要素が順列の時、置換の逆元。値から添え字の逆引き。
+  #
+  # ```
+  # a = [2,0,1]
+  # a.idx # => [1,2,0]
+  # ```
   def idx
     ans = Array.new(size,-1)
     each_with_index do |v,i|
       ans[v] = i
     end
     ans
+  end
+
+  # tallyの競プロパッチ、個数の型をInt64に、省略値を0に
+  #
+  # ```
+  # a = [1,1,1,2]
+  # a.tally # => { 1 => 3_i64, 2 => 1_i64 }
+  # ```
+  def tally
+    Hash(T,Int64).new(0_i64).tap do |ans|
+      each do |v|
+        ans[v] += 1
+      end
+    end
+  end
+
+  # 座標圧縮,0-origin
+  # 
+  # ```
+  # a = [1,1,200,1]
+  # a.compress # => [0,0,1,0]
+  # ```
+  def compress
+    ref = sort.uniq
+    map do |v|
+      ref.bsearch_index do |u|
+        v <= u
+      end.not_nil!
+    end
   end
 end

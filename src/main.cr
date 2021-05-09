@@ -1,18 +1,10 @@
-require "crystal/mod_int"
+require "crystal/indexable"
 
-n = gets.to_s.to_i64
-a = gets.to_s.split.map(&.to_i64)
+a = [1,1,1,1,1,3]
+b = a.tally
 
-b = [] of Int64
-a.each_cons_pair do |i, j|
-  b << j - i
-end
-
-cs = [1.to_m]
-2.upto(n - 1) do |i|
-  cs << cs[-1] + 1.to_m // i
-end
-
-ans = cs.zip(b).map { |i, j| i * j }.sum
-
-pp ans * (n - 1).f
+pp! b[0]
+pp! b[1]
+pp! b[1].class
+pp! a.compress
+pp! [2,0,1].idx
