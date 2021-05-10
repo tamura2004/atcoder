@@ -230,11 +230,11 @@ struct Int64
   #
   # ```
   # a = 1_000_000_000_000_i64
-  # a.prime_division(72) # => {2 => 12, 5 => 12}
+  # a.prime_division # => {2 => 12, 5 => 12}
   # ```
   def prime_division : Hash(Int64, Int32)
     n = self
-    Hash(Int64, Int32).new(0_i64).tap do |dp|
+    Hash(Int64, Int32).new(0).tap do |dp|
       m = Math.sqrt(n).to_i64
       2_i64.upto(m) do |i|
         while n.divisible_by?(i)
