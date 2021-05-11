@@ -1,3 +1,4 @@
+# F2におけるガウス・ジョルダン
 class BitMatrix
   DIGIT_SIZE = 64
 
