@@ -1,29 +1,17 @@
-require "big"
-require "crystal/prime"
+s = gets.to_s
+t = gets.to_s
 
-n = gets.to_s.to_i64
-a = Array.new(n){ (gets.to_s.to_big_d * 10 ** 9).to_i64 }
+n = s.size
+m = t.size
 
-dp = Hash(Tuple(Int32,Int32),Int64).new(0_i64)
-a.each do |v|
-  h = v.prime_division
-  i = h[2_i64]
-  j = h[5_i64]
-  dp[{i,j}] += 1
-end
-
-ans = 0_i64
-dp.each do |(i,j),k|
-  dp.each do |(ii,jj),kk|
-    next if i + ii < 18
-    next if j + jj < 18
-    if i == ii && j == jj 
-      ans += k * (k - 1)
-    else
-      ans += k * kk
+dp = Array.new(n+1){ Array.new(m+1, 0_u16) }
+n.times do |i|
+  m.times do |j|
+    if s[i] == t[j]
+      dp[i+1][j+1] = dp[i][j] + 1_u16
     end
   end
 end
 
-pp ans // 2
-
+ans = dp.map(&.max).max
+pp ans
