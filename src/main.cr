@@ -1,42 +1,18 @@
-class BitMatrix
-  DIGIT_SIZE = 64
-
-  getter n : Int32
-  getter a : Array(Int64)
-
-  def initialize(a)
-    @a = a.map(&.to_i64)
-    @n = a.size
-  end
-
-  def gauss_jordan
-    rank = 0
-    DIGIT_SIZE.times do |i|
-      if pivot = a.index(rank, &.bit(i).== 1)
-        a.swap(rank, pivot)
-      else
-        next
-      end
-
-      n.times do |row|
-        next if row == rank
-        next if a[row].bit(i) == 0
-        a[row] ^= a[rank]
-      end
-
-      rank += 1
-      break if rank >= n
-    end
-    rank
-  end
-
-  def show
-    n.times do |i|
-      puts a[i].to_s(2).rjust(8, '0').reverse
-    end
-  end
+def f(s)
+  s.chars.chunks(&.itself).map{|e,a|{e,a.size}}
 end
 
-m = BitMatrix.new([12,22,32,44])
-m.gauss_jordan
-m.show
+ans = 0
+s = gets.to_s
+t = f(s)
+t.each_cons(3) do |(j,o,i)|
+  next if j[0] != 'J'
+  next if o[0] != 'O'
+  next if i[0] != 'I'
+
+  next if j[1] < o[1]
+  next if i[1] < o[1]
+  ans = Math.max ans, o[1]
+end
+
+pp ans
