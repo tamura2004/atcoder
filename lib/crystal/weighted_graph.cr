@@ -23,14 +23,14 @@ abstract class WeightedGraph
   # origin : 0-indexed or 1-indexed
   # both : 無向グラフ、有向グラフ
   def add(
-    from : Int32,
-    to : Int32,
+    from : Int,
+    to : Int,
     cost : Int64,
     origin : Int32 = 0,
     both : Bool = false
   )
-    i = from - origin
-    j = to - origin
+    i = from.to_i - origin
+    j = to.to_i - origin
     g[i] << {j, cost}
     g[j] << {i, cost} if both
   end

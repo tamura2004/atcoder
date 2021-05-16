@@ -4,6 +4,7 @@ require "time"
 require "colorize"
 
 LANG_EXT = {
+  ".dart" => "dart",
   ".dot" => "dot",
   ".rb" => "ruby",
   ".cpp" => "cpp",
@@ -30,6 +31,7 @@ COMPILE = {
 }
 
 EXECUTE = {
+  "dart" => "dart %s",
   "dot" => "cat %s | graph-easy --from=dot --as_ascii",
   "ruby" => "ruby %s",
   "cpp" => "./a.out",
