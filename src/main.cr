@@ -1,22 +1,60 @@
-require "crystal/weighted_tree"
-require "crystal/xor_sum"
+class CCL
+  getter a : Array(Int64)
+  getter ready : Bool
 
-n = gets.to_s.to_i64
-g = WeightedTree.new(n)
+  def initialize
+    @a = [] of Int64
+    @ready = false
+  end
 
-(n-1).times do
-  v,nv,w = gets.to_s.split.map(&.to_i64)
-  g.add v, nv, w, both: true, origin: 1
+  def <<(x : Int)
+    raise "already commited" if ready
+    a << x.to_i64
+  end
+
+  def <<(xs : Array(Int))
+    xs.each do |x|
+      a << x.to_i64
+    end
+  end
+
+  def [](x : Int)
+    commit! unless ready
+    a.bsearch_index do |v|
+      x <= v
+    end.not_nil!
+  end
+
+  def [](xs : Array(Int))
+    xs.map do |x|
+      self[x]
+    end
+  end
+
+  private def commit!
+    a.sort!.uniq!
+    @ready = true
+  end
 end
 
-dp = Array.new(n, -1_i64)
-dp[0] = 0_i64
+w = 10
+h = 10
+x1 = [1,1,4,9,10]
+x2 = [6,10,4,9,10]
+y1 = [4,8,1,1,6]
+y2 = [4,8,10,5,10]
 
-g.bfs do |v, nv, w, q|
-  next if dp[nv] != -1
-  dp[nv] = dp[v] ^ w
-  q << nv
+cx = CCL.new
+cy = CCL.new
+
+[x1,x2].each do |xs|
+  cx << xs
+  cx << xs.map(&.+ 1)
 end
 
-ans = XORSum.new(dp).solve
-pp ans
+[y1,y2].each do |ys|
+  cy << ys
+  cy << ys.map(&.+ 1)
+end
+
+pp! cx[[1,4,6,9]]
