@@ -1,60 +1,58 @@
-class CCL
-  getter a : Array(Int64)
-  getter ready : Bool
-
-  def initialize
-    @a = [] of Int64
-    @ready = false
-  end
-
-  def <<(x : Int)
-    raise "already commited" if ready
-    a << x.to_i64
-  end
-
-  def <<(xs : Array(Int))
-    xs.each do |x|
-      a << x.to_i64
+struct Set(T)
+  def each_subset
+    (1<<size).times do |mask|
+      ans = Set(T).new
+      each_with_index do |v,i|
+        ans << v if mask.bit(i) == 1
+      end
+      yield ans
     end
   end
+end
 
-  def [](x : Int)
-    commit! unless ready
-    a.bsearch_index do |v|
-      x <= v
-    end.not_nil!
-  end
-
-  def [](xs : Array(Int))
-    xs.map do |x|
-      self[x]
+def prime_division(n)
+  m = Math.sqrt(n).to_i
+  ans = Set(Int32).new
+  2.upto(m) do |i|
+    while n % i == 0
+      n //= i
+      ans << i
     end
   end
+  ans << n if n != 1
+  ans
+end
 
-  private def commit!
-    a.sort!.uniq!
-    @ready = true
+n,m = gets.to_s.split.map(&.to_i)
+a = Array.new(n){ gets.to_s.to_i }
+b = a.map{|v| prime_division(v)}
+
+c = Array.new(100_001, 0)
+a.each do |v|
+  c[v] = 1
+end
+
+dp = Array.new(100_001, 0)
+2.upto(m) do |i|
+  i.step(by: i, to: 100_000) do |j|
+    dp[i] += c[j]
   end
 end
 
-w = 10
-h = 10
-x1 = [1,1,4,9,10]
-x2 = [6,10,4,9,10]
-y1 = [4,8,1,1,6]
-y2 = [4,8,10,5,10]
-
-cx = CCL.new
-cy = CCL.new
-
-[x1,x2].each do |xs|
-  cx << xs
-  cx << xs.map(&.+ 1)
+1.upto(m) do |i|
+  if i == 1
+    puts n
+  else
+    ans = n
+    prime_division(i).each_subset do |s|
+      next if s.empty?
+      j = s.to_a.product
+      if s.size.odd?
+        ans -= dp[j]
+      else
+        ans += dp[j]
+      end
+    end
+    puts ans
+  end
 end
-
-[y1,y2].each do |ys|
-  cy << ys
-  cy << ys.map(&.+ 1)
-end
-
-pp! cx[[1,4,6,9]]
