@@ -1,21 +1,21 @@
 require "natto"
 require "yaml"
 
-s = gets.chomp.gsub(/[\s　【】]/, "")
+s = gets.chomp
 m = Natto::MeCab.new
 
 dic = Hash.new { |h, k| h[k] = Hash.new(0) }
-m.enum_parse(s).each do |n|
-  puts "#{n.surface}\t#{n.feature}"
+# m.enum_parse(s).each do |n|
+#   puts "#{n.surface}\t#{n.feature}"
+# end
+
+m.enum_parse(s).map(&:surface).each_cons(4) do |a, b, c|
+  dic[[a, b]][c] += 1
 end
 
-# m.enum_parse(s).map(&:surface).each_cons(4) do |a, b, c|
-#   dic[[a, b]][c] += 1
-# end
-
-# open("nanohi.yaml", "w") do |fh|
-#   fh.write YAML.dump(dic)
-# end
+open("sato.yaml", "w") do |fh|
+  fh.write YAML.dump(dic)
+end
 
 # a, b = ans = nil
 # loop do

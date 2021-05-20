@@ -24,18 +24,6 @@ class CoodinateCompressLiner(T)
   delegate "[]", to: @idx
 end
 
-alias CCL = CoodinateCompressLiner(Int64)
-
-# 値の大小のみ残して元データは捨てて良い場合
-def compress(src)
-  ref = src.sort.uniq
-  src.map do |v|
-    ref.bsearch_index do |u|
-      v <= u
-    end.not_nil!
-  end
-end
-
 class CCL
   getter a : Array(Int64)
   getter ready : Bool
@@ -50,7 +38,7 @@ class CCL
     a << x.to_i64
   end
 
-  def <<(xs : Array(Int))
+  def add(xs : Array(Int))
     xs.each do |x|
       a << x.to_i64
     end

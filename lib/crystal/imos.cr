@@ -1,3 +1,4 @@
+# イモス法
 class IMOS(T)
   getter n : Int32
   getter a : Array(T)
