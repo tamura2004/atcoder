@@ -27,6 +27,13 @@ class Tree < Graph
     @g = h
   end
 
+  def dfs(v, pv = -1)
+    g[v].each do |nv|
+      yield v, nv
+    end
+  end
+
+
   # スタックを利用したDFS
   def dfs(init = 0)
     q = Deque.new([~init, init])
