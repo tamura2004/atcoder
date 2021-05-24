@@ -46,6 +46,13 @@ module Indexable(T)
     end.to_a
   end
 
+  # 累積最大値を返す
+  def cmax : self
+    each_with_object([T.zero]) do |v,h|
+      h << Math.max h[-1], v
+    end
+  end
+
   # orによる畳み込み
   # ```
   # [0b011,0b110].or # #=> 0b111
