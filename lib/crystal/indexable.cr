@@ -32,6 +32,15 @@ module Indexable(T)
     end
   end
 
+  # 自身が累積和の時[l, r)の区間和を求める
+  def range_sum(r : Range(Int?,Int?))
+    lo = r.begin || 0
+    lo = Math.max lo, 0
+    hi = (r.end || size - 1) + (r.excludes_end? ? 0 : 1)
+    hi = Math.min hi, size - 1
+    self[hi] - self[lo]
+  end
+
   # 右からの累積和を返す
   def csr : self
     reverse.cs.reverse
@@ -92,7 +101,9 @@ module Indexable(T)
   end
 
   # 座標圧縮,0-origin
-  # 
+  #
+  # NOTE:
+  #
   # ```
   # a = [1,1,200,1]
   # a.compress # => [0,0,1,0]

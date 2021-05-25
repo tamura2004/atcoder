@@ -1,45 +1,32 @@
-macro chmin(target, other)
-  {{target}} = ({{other}}) if ({{target}}) > ({{other}})
-end
+require "crystal/indexable"
 
-class Problem
-  getter n : Int32
-  getter a : Array(Int64)
-  getter dp : Array(Array(Int64?))
-  INF = Int64::MAX//4
+n,k = gets.to_s.split.map(&.to_i64)
+m = n * 3 + 1
 
-  def initialize
-    @n = gets.to_s.to_i
-    @a = gets.to_s.split.map(&.to_i64)
-    @dp = Array.new(n*2) { Array.new(n*2) { nil.as(Int64?) } }
-  end
+dp = Array.new(4){ Array.new(m, 0_i64) }
+dp[0][0] = 1_i64
 
-  def solve(i, j)
-    dp[i][j] ||= _solve(i,j)
-  end
-
-  def _solve(i, j)
-    case
-    when (j - i).even?
-      INF
-    when j - i == 1
-      dist(i, j)
-    else
-      cnt = dist(i, j) + solve(i+1, j-1)
-      (i+1).upto(j-2) do |k|
-        chmin cnt, solve(i,k) + solve(k+1,j)
-      end
-      cnt
-    end
-  end
-
-  private def dist(i, j)
-    (a[i] - a[j]).abs
-  end
-
-  def show
-    pp solve(0,n*2-1)
+3.times do |i|
+  cs = dp[i].cs
+  m.times do |j|
+    dp[i+1][j] = cs.range_sum(j-n...j)
   end
 end
 
-Problem.new.show
+# tot = a + b + c
+cs = dp[3].cs[1..]
+tot = cs.bsearch_index(&.>= k) || cs.size - 1
+k -= cs[tot-1]
+
+# pp dp[3]
+# pp dp[2]
+
+cs = dp[2][..tot-1].reverse.cs
+a = cs.bsearch_index(&.>= k) || cs.size - 1
+k -= cs[a-1]
+
+cs = dp[1][..tot-a-1].reverse.cs
+b = cs.bsearch_index(&.>= k) || cs.size - 1
+
+c = tot - a - b
+puts "#{a} #{b} #{c}"

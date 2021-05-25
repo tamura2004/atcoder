@@ -42,6 +42,19 @@ describe Indexable do
     [1,2,3].cs.should eq [0,1,3,6]
   end
 
+  it "range sum" do
+    [1,2,3].cs.range_sum(0..1).should eq 3
+    [1,2,3].cs.range_sum(1..2).should eq 5
+    [1,2,3].cs.range_sum(..1).should eq 3
+    [1,2,3].cs.range_sum(1..).should eq 5
+    [1,2,3].cs.range_sum(0...2).should eq 3
+    [1,2,3].cs.range_sum(0...).should eq 6
+    [1,2,3].cs.range_sum(...2).should eq 3
+    [1,2,3].cs.range_sum(-100..1).should eq 3
+    [1,2,3].cs.range_sum(-100..100).should eq 6
+    [1,2,3].cs.range_sum(..100).should eq 6
+  end
+
   it "csr" do
     [1,2,3].csr.should eq [6,5,3,0]
   end
