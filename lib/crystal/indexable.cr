@@ -117,3 +117,10 @@ module Indexable(T)
     end
   end
 end
+
+# インデックスから値へ
+struct Int
+  def of(a)
+    a[self]
+  end
+end

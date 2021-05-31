@@ -12,6 +12,26 @@ class Treap(T)
       @cnt = 1
     end
 
+    def find(x : T)
+      return true if x == v
+
+      if x < v
+        case left = @left
+        when Nil
+          return false
+        when Node
+          left.find(x)
+        end
+      else
+        case right = @right
+        when Nil
+          return Nil
+        when Node
+          right.find(x)
+        end
+      end
+    end
+
     def insert(x : T)
       @cnt += 1
       if x < v
@@ -197,6 +217,15 @@ class Treap(T)
 
   def initialize
     @root = nil
+  end
+
+  def find(x : T)
+    case root = @root
+    when Nil
+      return false
+    when Node
+      root.find(x)
+    end
   end
 
   def insert(x : T)

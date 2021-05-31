@@ -39,4 +39,8 @@ struct Complex(T)
   def manhattan
     real.abs + imag.abs
   end
+
+  def phase
+    Math.atan2 imag, real
+  end
 end
