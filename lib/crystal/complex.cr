@@ -43,4 +43,8 @@ struct Complex(T)
   def phase
     Math.atan2 imag, real
   end
+
+  def deg
+    Math.atan2(imag, real) * 180.0_f64 / Math::PI
+  end
 end

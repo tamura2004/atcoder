@@ -72,7 +72,7 @@ describe Indexable do
   end
 
   it "tally" do
-    a = [2,2,1,2,2]
+    a = [2,2,1,2,2].map(&.to_i64)
     b = a.tally
     b[0].should eq 0
     b[2].should eq 4
