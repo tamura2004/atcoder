@@ -1,64 +1,57 @@
-require "crystal/segment_tree"
-
-macro chmin(target, other)
-  {{target}} = ({{other}}) if ({{target}}) > ({{other}})
+macro chmax(target, other)
+  {{target}} = ({{other}}) if ({{target}}) < ({{other}})
 end
 
-n,k = gets.to_s.split.map(&.to_i)
-a = Array.new(n){ gets.to_s.split.map(&.to_i64) }
+require "crystal/complex"
 
-ref = a.flatten.sort.uniq
-b = a.map do |aa|
-  aa.map do |v|
-    ref.bsearch_index do |u|
-      v <= u
-    end.not_nil!
+# 角度の配列aから最も平たい角度を求める
+class SubProblem
+  getter n : Int32
+  getter a : Array(Float64)
+
+  def initialize(@a)
+    @n = a.size
+  end
+
+  def to_deg(d)
+    d <= 180.0_f64 ? d : 360.0_f64 - d
+  end
+
+  def solve
+    ans = -1.0_f64
+    hi = 0
+    n.times do |lo|
+      while hi < n - 1 && a[hi] - a[lo] < 180.0_f64
+        hi += 1
+      end
+
+      next if lo == hi
+      chmax ans, to_deg(a[hi] - a[lo])
+
+      next if hi == 0
+      chmax ans, to_deg(a[hi-1] - a[lo])
+    end
+    return ans
   end
 end
 
-ans = ref.size + 1
-kk = (k * k + 1) // 2
-sign = 1
+alias C = Complex(Int64)
 
-i = j = 0
-st = SegmentTree(Int32).range_sum_query(ref.size)
-k.times do |i|
-  k.times do |j|
-    st[b[i][j]] += 1
-  end
+n = gets.to_s.to_i
+xy = Array.new(n) do
+  x,y = gets.to_s.split.map(&.to_i64)
+  C.new x, y
 end
 
-loop do
-  chmin ans, st.bsearch(kk)
-
-  case
-  when i.even? && j < n - k
-    k.times do |ii|
-      st[b[i+ii][j]] -= 1
-      st[b[i+ii][j+k]] += 1
-    end
-    j += 1
-  when i.even? && j == n - k && i < n - k
-    k.times do |jj|
-      st[b[i][j+jj]] -= 1
-      st[b[i+k][j+jj]] += 1
-    end
-    i += 1
-  when i.odd? && j != 0
-    j -= 1
-    k.times do |ii|
-      st[b[i+ii][j]] += 1
-      st[b[i+ii][j+k]] -= 1
-    end
-  when i.odd? && j == 0 && i < n - k
-    k.times do |jj|
-      st[b[i][j+jj]] -= 1
-      st[b[i+k][j+jj]] += 1
-    end
-    i += 1
-  else
-    break
+ans = 0_f64
+n.times do |i|
+  a = [] of Float64
+  n.times do |j|
+    next if i == j
+    a << (xy[j] - xy[i]).deg
   end
+  a.sort!
+  chmax ans, SubProblem.new(a).solve
 end
 
-pp ref[ans]
+pp ans
