@@ -1,57 +1,30 @@
-macro chmax(target, other)
-  {{target}} = ({{other}}) if ({{target}}) < ({{other}})
-end
+require "crystal/indexable"
 
-require "crystal/complex"
+class Problem
+  getter s : String
+  getter a : Array(Int64)
+  getter b : Array(Int64)
 
-# 角度の配列aから最も平たい角度を求める
-class SubProblem
-  getter n : Int32
-  getter a : Array(Float64)
-
-  def initialize(@a)
-    @n = a.size
+  def initialize(@s)
+    @a = s.chars.map(&.==('A').to_unsafe.to_i64).cs
+    @b = s.chars.map(&.==('B').to_unsafe.to_i64).cs
   end
 
-  def to_deg(d)
-    d <= 180.0_f64 ? d : 360.0_f64 - d
-  end
-
-  def solve
-    ans = -1.0_f64
-    hi = 0
-    n.times do |lo|
-      while hi < n - 1 && a[hi] - a[lo] < 180.0_f64
-        hi += 1
-      end
-
-      next if lo == hi
-      chmax ans, to_deg(a[hi] - a[lo])
-
-      next if hi == 0
-      chmax ans, to_deg(a[hi-1] - a[lo])
-    end
-    return ans
+  def d(lo, hi)
+    (a[hi] - a[lo] - b[hi] + b[lo]) % 3
   end
 end
 
-alias C = Complex(Int64)
+s = Problem.new(gets.to_s)
+t = Problem.new(gets.to_s)
 
 n = gets.to_s.to_i
-xy = Array.new(n) do
-  x,y = gets.to_s.split.map(&.to_i64)
-  C.new x, y
-end
+n.times do
+  a,b,c,d = gets.to_s.split.map(&.to_i.- 1)
 
-ans = 0_f64
-n.times do |i|
-  a = [] of Float64
-  n.times do |j|
-    next if i == j
-    a << (xy[j] - xy[i]).deg
+  if s.d(a,b+1) == t.d(c,d+1)
+    puts "YES"
+  else
+    puts "NO"
   end
-  a.sort!
-  chmax ans, SubProblem.new(a).solve
 end
-
-pp ans
