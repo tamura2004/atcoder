@@ -1,30 +1,18 @@
-require "crystal/indexable"
+class PersistentArray(T)
+  getter v : T
+  getter ch : Array(self)?
 
-class Problem
-  getter s : String
-  getter a : Array(Int64)
-  getter b : Array(Int64)
-
-  def initialize(@s)
-    @a = s.chars.map(&.==('A').to_unsafe.to_i64).cs
-    @b = s.chars.map(&.==('B').to_unsafe.to_i64).cs
+  def initialize(@v)
+    @ch = nil
   end
 
-  def d(lo, hi)
-    (a[hi] - a[lo] - b[hi] + b[lo]) % 3
+  def set(i, val)
+  end
+
+  def get(i)
   end
 end
 
-s = Problem.new(gets.to_s)
-t = Problem.new(gets.to_s)
+arr = PersistentArray(Int32).new(0)
 
-n = gets.to_s.to_i
-n.times do
-  a,b,c,d = gets.to_s.split.map(&.to_i.- 1)
-
-  if s.d(a,b+1) == t.d(c,d+1)
-    puts "YES"
-  else
-    puts "NO"
-  end
-end
+pp arr
