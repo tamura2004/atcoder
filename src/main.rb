@@ -32,15 +32,15 @@ class Player
     @sp = sp
   end
 
-  def levelup
-    @exp += @lv
+  def levelup(e)
+    @exp += e
     if @lv * 10 <= @exp
       @lv += 1
       @pw = lv + rpw
       @hp = lv + rhp
-      "#{name}はレベルアップ！#{klass} #{status}"
+      "#{name}はレベルアップ！#{klass} #{to_s}"
     else
-      "#{name}は#{@lv}経験値を得た。"
+      "#{name}は#{e}経験値を得た。"
     end
   end
 
@@ -48,29 +48,26 @@ class Player
     @pw = lv + rpw
     @hp = lv + rhp
     @gp -= lv
-    "#{name}は死んだ。カント寺院で蘇生。#{lv}gp寄付した。"
+    gp >= 0
   end
 
   def to_s
     "#{race}の#{klass}#{lv}lv #{pw}/#{hp} #{gp}gp #{exp}xp"
   end
-
-  def status
-    "#{race}の#{klass}#{lv}lv #{pw}/#{hp} #{gp}gp #{exp}xp"
-  end
 end
 
 def d3
-  rand(3) - 1
+  rand(5) - 2
 end
 
 class Monster
   attr_accessor :name, :lv, :pw, :hp, :cdm
+  RANK= ["", "チーフ", "リーダー", "キング", "エンペラー", "ゴッド"]
   NAME = %w(ゴブリン オーク バグベア スケルトン ミノタウルス ゴーレム ドラゴン)
 
-  def initialize
-    @lv = rand(7)
-    @name = NAME[lv]
+  def initialize(base_lv)
+    @lv = base_lv + rand(3)
+    @name = NAME[lv % 7] + RANK[lv / 7]
     @pw = lv + d3
     @hp = lv + d3
     @cdm = Hash.new(0)
@@ -109,47 +106,6 @@ klasses = [
 
 def select_command(rs, a)
   rs.index{|r| r =~ a} || rand(rs.size)
-end
-
-class Menu
-  attr_accessor :yomi, :label
-
-  def initialize(yomi, label)
-    @yomi = yomi
-    @label = label
-  end
-end
-
-class Menues
-  attr_accessor :menues
-
-  def initialize
-    @menues = []
-  end
-
-  def <<(menu)
-    menues << menu
-  end
-
-  def message
-    msg = []
-    menues.each_with_index do |menu, i|
-      msg << "#{i+1}.[#{menu.yomi}]#{menu.label}"
-    end
-    msg.join(",")
-  end
-
-  def select(s)
-    case s
-    when /[1-9１-９]/
-      i = s.to_i - 1
-      (menues[i] || menues.sample).label
-    else
-      m = menues.find{|m| s =~ /#{m.yomi}/ || s =~ /#{m.label}/}
-      m ||= menues.sample
-      m.label
-    end
-  end
 end
 
 class Author
@@ -199,42 +155,67 @@ class Bot
   end
 end
 
-class TownMenues < Menues
-  LIST = [
+class Menu
+  attr_accessor :yomi, :label
+
+  def initialize(yomi, label)
+    @yomi = yomi
+    @label = label
+  end
+end
+
+class Menues
+  attr_accessor :menues
+
+  def initialize(items)
+    @menues = items.map do |item|
+      Menu.new(*item)
+    end
+  end
+
+  def <<(menu)
+    menues << menu
+  end
+
+  def message
+    msg = []
+    menues.each_with_index do |menu, i|
+      msg << "#{i+1}.[#{menu.yomi}]#{menu.label}"
+    end
+    msg.join(",")
+  end
+
+  def select(s)
+    case s
+    when /[1-9１-９]/
+      i = s.to_i - 1
+      (menues[i] || menues.sample).label
+    else
+      m = menues.find{|m| s =~ /#{m.yomi}/ || s =~ /#{m.label}/}
+      m ||= menues.sample
+      m.label
+    end
+  end
+end
+
+
+town_menues = Menues.new(
+  [
     ["お", "王城"],
     ["ぶ", "武器屋"],
     ["ぼ", "防具屋"],
     ["だ", "ダンジョン"],
   ]
+)
 
-  def initialize
-    super
-    LIST.each do |row|
-      menues << Menu.new(*row)
-    end
-  end
-end
-
-town_menues = TownMenues.new
-
-class DungeonMenues < Menues
-  LIST = [
+dungeon_menues = Menues.new(
+  [
     ["た", "戦う"],
     ["さ", "探す"],
     ["す", "進む"],
     ["に", "逃げる"],
   ]
-
-  def initialize
-    super
-    LIST.each do |row|
-      menues << Menu.new(*row)
-    end
-  end
-end
-
-town_menues = TownMenues.new
-dungeon_menues = DungeonMenues.new
+)
 
 bot = Bot.new
 bot.message do |event|
@@ -269,18 +250,25 @@ bot.message do |event|
   when pc.place == "リルガミン"
     case town_menues.select(event.content)
     when /王城/
-      event << "#{pc.name}は王城に行った。火防女「ソウルを探して下さい」"
+      event << "#{pc.name}は王城に行った。王様「支度金である」"
       pc.gp += pc.lv
-      pc.exp += pc.lv
+      pc.exp -= pc.lv
     when /武器/
-      event << "#{pc.name}は武器屋に行った。折れた直剣を#{pc.lv}gpで買った。"
-      pc.gp -= pc.lv
-      pc.pw += pc.lv
+      if pc.gp >= pc.lv
+        event << "#{pc.name}は武器屋に行った。折れた直剣を#{pc.lv}gpで買った。"
+        pc.gp -= pc.lv
+        pc.pw += pc.lv
+      else
+        event << "#{pc.name}は武器屋に行ったが所持金が足りない。"
+      end
     when /防具/
-      event << "#{pc.name}は武器屋に行った。汚れた鎧を#{pc.lv}gpで買った。"
-      pc.gp -= pc.lv
-      pc.hp += pc.lv
-
+      if pc.gp >= pc.lv
+        event << "#{pc.name}は防具屋に行った。汚れた鎧を#{pc.lv}gpで買った。"
+        pc.gp -= pc.lv
+        pc.hp += pc.lv
+      else
+        event << "#{pc.name}は防具屋に行ったが所持金が足りない。"
+      end
     when /ダンジョン/
       event << "#{pc.name}はダンジョンに入った"
       pc.place = "ダンジョン"
@@ -295,7 +283,7 @@ bot.message do |event|
       if m.dead?
         event << "#{m.to_s}は死んだ。"
         monsters.shift
-        event << pc.levelup
+        event << pc.levelup(m.lv)
       else
         dm = m.pw + d3
         event << "#{m.to_s}の反撃。#{dm}ダメージ。"
@@ -326,17 +314,23 @@ bot.message do |event|
   case pc.place
   when "ダンジョン"
     event << "#{pc.name}はダンジョンにいる。#{pc.to_s}"
-    monsters << Monster.new if monsters.empty?
+    monsters << Monster.new(pc.lv) if monsters.empty?
     event << monsters.first.to_s
     event << "#{pc.name}はどうする？#{dungeon_menues.message}"
   when "カント寺院"
-    event << pc.raisefromdead
-    event << pc.to_s
-    pc.place = "リルガミン"
+    if pc.raisefromdead
+      event << "#{pc.name}は死んだ。カント寺院で蘇生。#{pc.lv}gp寄付した。"
+      event << pc.to_s
+      pc.place = "リルガミン"
+    else
+      event << "#{pc.name}は死んだ。蘇生費用が無い。ロストしました。"
+      players.delete(id)
+    end
   end
 
   if pc.place == "リルガミン"
     event << "#{pc.name}はどうする？#{town_menues.message}"
+    event << pc.to_s
   end
 end
 
