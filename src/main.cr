@@ -1,30 +1,52 @@
-def f1(a, b, x)
-  (a + b + x)//2
-end
+class Graph
+  getter n : Int32
+  getter g : Array(Array(Int32))
 
-def f2(a, b, x)
-  Math.max b, a + x - (b - a)
-end
-
-def f(a, b, x)
-  return -1 if b - a > x
-  return b + x + 1 if b <= a
-  Math.max f1(a, b, x) + 1, f2(a, b, x) + 1
-end
-
-n, m = gets.to_s.split.map(&.to_i64)
-a = Array.new(m) { gets.to_s.to_i64 - 1 }
-
-ok = ->(x : Int64) {
-  pos = 0_i64
-  m.times do |i|
-    pos = f(pos, a[i], x)
-    break if pos < 0
+  def initialize(@n)
+    @g = Array.new(n){ [] of Int32 }
   end
-  pos >= n
-}
 
-lo = 0_i64
-hi = Int64::MAX
-ans = (lo..hi).bsearch(&ok)
-pp ans
+  def self.read
+    n,m = gets.to_s.split.map(&.to_i)
+    g = new(n)
+    m.times do
+      a,b = gets.to_s.split.map(&.to_i)
+      g.add a, b
+    end
+    g
+  end
+
+  def add(v, nv, origin = 1, both = false)
+    v = v.to_i - origin
+    nv = nv.to_i - origin
+    g[v] << nv
+    g[nv] << v if both
+  end
+
+  def bfs(v)
+    q = Deque.new([v])
+    seen = Array.new(n, false)
+    seen[v] = true
+    cnt = 1_i64
+    while q.size > 0
+      v = q.shift
+      g[v].each do |nv|
+        next if seen[nv]
+        seen[nv] = true
+        cnt += 1
+        q << nv
+      end
+    end
+    cnt
+  end
+
+  def solve
+    ans = 0_i64
+    n.times do |v|
+      ans += bfs(v)
+    end
+    pp ans
+  end
+end
+
+Graph.read.solve
