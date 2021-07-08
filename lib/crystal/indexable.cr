@@ -93,9 +93,9 @@ module Indexable(T)
   # a.tally # => { 1 => 3_i64, 2 => 1_i64 }
   # ```
   def tally
-    Hash(Int32,T).new(0_i64).tap do |ans|
+    Hash(T,Int64).new(0_i64).tap do |ans|
       each do |v|
-        ans[v.to_i] += 1
+        ans[v] += 1
       end
     end
   end

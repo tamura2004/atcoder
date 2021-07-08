@@ -1,11 +1,16 @@
 require "spec"
 require "../digit_dp"
 
-describe DigitDpProblem do
-  it "solve ABC154" do
-    DigitDpProblem(Int64).read("100 1").solve.should eq 19
-    DigitDpProblem(Int64).read("25 2").solve.should eq 14
-    DigitDpProblem(Int64).read("314159 2").solve.should eq 937
-    DigitDpProblem(Int64).read("9999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999 3").solve.should eq 117879300
+describe DigitDP do
+  it "usage" do
+    a = DigitDP.new("123")
+    dp = (0..3).map{ [0] * 2 }
+    dp[0][EDGE] = 1
+
+    a.each do |i, from, to, d|
+      # pp! [i, from, to, d]
+      dp[i+1][to] += dp[i][from]
+    end
+    dp[-1].sum.should eq 124 # (0..123).size == 124
   end
 end

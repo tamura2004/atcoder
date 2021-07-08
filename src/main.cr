@@ -1,52 +1,32 @@
-class Graph
-  getter n : Int32
-  getter g : Array(Array(Int32))
+require "crystal/digit_dp"
 
-  def initialize(@n)
-    @g = Array.new(n){ [] of Int32 }
-  end
+a, k = gets.to_s.split
+a = DigitDP.new(a)
+k = k.to_i64
+n = a.n
 
-  def self.read
-    n,m = gets.to_s.split.map(&.to_i)
-    g = new(n)
-    m.times do
-      a,b = gets.to_s.split.map(&.to_i)
-      g.add a, b
-    end
-    g
-  end
-
-  def add(v, nv, origin = 1, both = false)
-    v = v.to_i - origin
-    nv = nv.to_i - origin
-    g[v] << nv
-    g[nv] << v if both
-  end
-
-  def bfs(v)
-    q = Deque.new([v])
-    seen = Array.new(n, false)
-    seen[v] = true
-    cnt = 1_i64
-    while q.size > 0
-      v = q.shift
-      g[v].each do |nv|
-        next if seen[nv]
-        seen[nv] = true
-        cnt += 1
-        q << nv
+dp = Array.new(n+1) do
+  Array.new(2) do
+    Array.new(2) do |z|
+      if z == ZERO
+        { 1_i64 => 1_i64 }
+      else
+        Hash(Int64,Int64).new(0_i64)
       end
     end
-    cnt
-  end
-
-  def solve
-    ans = 0_i64
-    n.times do |v|
-      ans += bfs(v)
-    end
-    pp ans
   end
 end
 
-Graph.read.solve
+a.each_with_zero do |i, from, to, d, z|
+  dp[i][from][z].keys.each do |j|
+    jj = j * d
+    zz = PLUS
+
+    next if jj > k
+    next if z == ZERO && d == 0
+
+    dp[i+1][to][zz][jj] += dp[i][from][z][j]
+  end
+end
+
+pp dp
