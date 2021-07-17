@@ -36,12 +36,12 @@ class DigitDP
   def each_with_zero
     n.times do |i|
       [EDGE, FREE].each do |from|
-        [ZERO,PLUS].each do |zero|
+        [ZERO,PLUS].each do |z|
           10.times do |d|
             to = from == EDGE && d == a[i] ? EDGE : FREE
             next if from == EDGE && d > a[i]
-            next if from == FREE && to == FREE && i == 0
-            yield i, from, to, d, zero
+            nz = (d != 0 || z == PLUS) ? PLUS : ZERO
+            yield i, from, to, d, z, nz
           end
         end
       end
