@@ -1,8 +1,14 @@
 {
+  "require crystal lib": {
+    "prefix": "require",
+    "body": [
+      "require \"crystal/$0\""
+    ]
+  },
   "get array of integer from stdin": {
     "prefix": "in",
     "body": [
-      "gets.to_s.split.map { |v| v.to_i64 }"
+      "gets.to_s.split.map(&.to_i64)"
     ]
   },
   "get integer from stdin": {
@@ -23,22 +29,46 @@
       "Array.new($1){ $0 }"
     ]
   },
-  "MOD": {
-    "prefix": "mod",
+  "make 2D array": {
+    "prefix": "vvi",
     "body": [
-      "MOD = 10_i64 ** 9 + 7"
+      "Array.new($1){ Array.new($2) { $0 } }"
     ]
   },
-  "Int64 zero": {
-    "prefix": "zero",
+  "make 3D array": {
+    "prefix": "vvvi",
     "body": [
-      "0_i64"
+      "Array.new($1){ Array.new($2) { Array.new($3) { $0 } } }"
     ]
   },
-  "Int64 one": {
-    "prefix": "one",
+  "make 4D array": {
+    "prefix": "vvvvi",
     "body": [
-      "0_i64"
+      "Array.new($1){ Array.new($2) { Array.new($3) { Array.new($4) { $0 } } } }"
+    ]
+  },
+  "make 2D array for dp": {
+    "prefix": "dp2",
+    "body": [
+      "def dp2(i, j, v)",
+      "  (1..i).map { (1..j).map { v } }",
+      "end"
+    ]
+  },
+  "make 3D array for dp": {
+    "prefix": "dp3",
+    "body": [
+      "def dp3(i, j, k, v)",
+      "  (1..i).map { (1..j).map { (1..k).map { v } } }",
+      "end"
+    ]
+  },
+  "make 4D array for dp": {
+    "prefix": "dp2",
+    "body": [
+      "def dp4(i, j, k, l, v)",
+      "  (1..i).map { (1..j).map { (1..k).map { (1..l).map { v } } } }",
+      "end"
     ]
   },
   "type Int64": {
@@ -113,12 +143,28 @@
       "String"
     ]
   },
-  "type Pair": {
-    "prefix": "pair",
+  "type long Pair": {
+    "prefix": "tll",
     "body" : [
-      "alias Pair = Tuple(Int64, Int64)",
-      "alias Pair = NamedTuple(lo: Int64, hi: Int64)",
-      "record Pair, lo : Int64, hi : Int64"
+      "Tuple(Int64,Int64)",
+    ]
+  },
+  "type int Pair": {
+    "prefix": "tii",
+    "body" : [
+      "Tuple(Int32,Int32)",
+    ]
+  },
+  "type long tri": {
+    "prefix": "tlll",
+    "body" : [
+      "Tuple(Int64,Int64,Int64)",
+    ]
+  },
+  "type int tri": {
+    "prefix": "tiii",
+    "body" : [
+      "Tuple(Int32,Int32,Int32)",
     ]
   },
   "chmax" : {
@@ -143,52 +189,27 @@
       "a.each_with_object([0_i64]) { |v, h| h << h[-1] + v }"
     ]
   },
-  "modint" : {
-    "prefix": "modint",
+  "hash init" : {
+    "prefix": "counter",
     "body": [
-      "# ModInt",
-      "record ModInt, value : Int64 = 0_i64 do",
-      "  MOD = 1_000_000_007_i64",
-      "  def +(other); ModInt.new((@value + other.to_i64 % MOD) % MOD); end",
-      "  def <<(other); ModInt.new((@value << other) % MOD); end",
-      "  delegate inspect, to: @value",
-      "  delegate to_s, to: @value",
-      "  delegate to_i64, to: @value",
-      "end"
-    ]
-  },
-  "prime division" : {
-    "prefix": "prime",
-    "body": [
-      "def prime_division(n : Int64)",
-      "  m = Math.sqrt(n).to_i64",
-      "  Hash(Int64,Int64).new(0_i64).tap do |ans|",
-      "    2_i64.upto(m) do |i|",
-      "      while n % i == 0",
-      "        ans[i] += 1",
-      "        n //= i",
-      "      end",
-      "    end",
-      "    ans[n] += 1 if n != 1",
-      "  end",
-      "end",
-      "",
-      "$0"
+      "Hash(Int64,Int64).new { |h,k| h[k] = nil }"
     ]
   },
   "Class template": {
     "prefix": "class",
     "body": [
-      "class Problem",
+      "require \"crystal/problem\"",
+      "",
+      "class Main < Problem",
       "  getter n : Int32",
       "  getter a : Array(Int64)",
       "",
       "  def initialize(@n, @a)",
       "  end",
       "",
-      "  def self.read",
-      "    n = gets.to_s.to_i",
-      "    a = gets.to_s.split.map { |v| v.to_i64 }",
+      "  def self.read(io : IO)",
+      "    n = io.gets.to_s.to_i",
+      "    a = io.gets.to_s.split.map(&.to_i64)",
       "    new(n, a)",
       "  end",
       "",
@@ -196,12 +217,12 @@
       "  end",
       "",
       "  def run",
-      "    pp self",
+      "    pp! self",
       "    puts solve",
       "  end",
       "end",
       "",
-      "Problem.read.run"
+      "Main.read.run",
     ]
   }
 }

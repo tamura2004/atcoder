@@ -48,3 +48,5 @@ struct Complex(T)
     Math.atan2(imag, real) * 180.0_f64 / Math::PI
   end
 end
+
+alias C = Complex(Int64)

@@ -1,73 +1,42 @@
+require "crystal/priority_queue"
 
-UNKNOWN = -1
-WIN = 0
-LOSE = 1
+n,m,q  = gets.to_s.split.map(&.to_i64)
 
-class Graph
-  getter n : Int32
-  getter g : Array(Array(Int32))
-  getter head : Hash(String,Array(Int32))
-  getter tail : Hash(String,Array(Int32))
-  getter ind : Array(Int32)
-  getter outd : Array(Int32)
-  getter win : Array(Bool)
-  getter seen : Array(Bool)
-  
-  def initialize
-    @n = gets.to_s.to_i
-    @ind = Array.new(n, 0)
-    @outd = Array.new(n, 0)
-    @win = Array.new(n, false)
-    @seen = Array.new(n, false)
+g = Array.new(n){ [] of Tuple(Int32,Int64) }
+m.times do
+  a,b,c = gets.to_s.split.map(&.to_i)
+  g[a-1] << { b-1, c.to_i64 }
+  g[b-1] << { a-1, c.to_i64 }
+end
+x = gets.to_s.split.map(&.to_i64)
 
-    @head = Hash(String,Array(Int32)).new do |h,k|
-      h[k] = [] of Int32
-    end
+pq = PriorityQueue(Tuple(Int64,Int32,Int32)).lesser
+nex = PriorityQueue(Tuple(Int64,Int32,Int32)).lesser
+seen = Array.new(n){ false }
+ans = 1
 
-    @tail = Hash(String,Array(Int32)).new do |h,k|
-      h[k] = [] of Int32
-    end
-
-    n.times do |i|
-      s = gets.to_s
-      h = s[0,3]
-      t = s[-3,3]
-      head[h] << i
-      tail[t] << i
-    end
-
-    @g = Array.new(n){ [] of Int32 }
-
-    keys = head.keys & tail.keys
-    keys.each do |key|
-      head[key].each do |nv|
-        tail[key].each do |v|
-          g[v] << nv
-          ind[nv] += 1
-          outd[v] += 1
-        end
-      end
-    end
-  end
-
-  # vを取ることが勝ちである
-  def dfs(v)
-    return nil if seen[v]
-    seen[v] = true
-
-    # どこにも行けないなら、勝ち
-    if g[v].empty?
-      win[v] = true
-    else
-      win[v] = g[v].all? do |nv|
-        dfs(nv)
-      end
-      win[v] = !win[v]
-    end
-  end
+seen[0] = true
+g[0].each do |v, cost|
+  pq << { cost, 0, v}
 end
 
-g = Graph.new
-pp g.dfs(2)
+q.times do |i|
+  while pq.size > 0 && pq[0][0] <= x[i]
+    c,v,nv = pq.pop
+    next if seen[nv]
+    seen[nv] = true
+    ans += 1
+    g[nv].each do |nnv, ncost|
+      next if seen[nnv]
+      nex << { ncost, nv, nnv }
+    end
+  end
 
-pp g
+  while nex.size > 0
+    pq << nex.pop
+  end
+
+  puts ans
+end
+
+
