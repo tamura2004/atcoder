@@ -6,7 +6,7 @@ public class Main {
     var n = sc.nextInt();
     var k = sc.nextInt();
 
-    System.out.println(add(n,j));
+    System.out.println(add(n,k));
     sc.close();
   }
 
