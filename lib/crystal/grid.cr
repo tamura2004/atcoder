@@ -25,6 +25,14 @@ class Grid
     end
   end
 
+  def each(i)
+    y,x = from_index(i)
+    each(y,x) do |ny,nx|
+      j = to_index(ny,nx)
+      yield j
+    end
+  end
+
   def each
     h.times do |y|
       w.times do |x|
@@ -71,7 +79,24 @@ class Grid
     y < 0 || h <= y || x < 0 || w <= x
   end
 
+  def outside?(i)
+    i < 0 || h * w <= i
+  end
+
   def wall?(y, x)
     g[y][x] == '#'
+  end
+
+  def wall?(i)
+    y, x = from_index(i)
+    wall?(y, x)
+  end
+
+  def from_index(i)
+    { i // w, i % w }
+  end
+
+  def to_index(y, x)
+    y * w + x
   end
 end

@@ -1,22 +1,4 @@
-# 木
-class Tree
-  getter n : Int32
-  getter g : Array(Array(Int32))
-
-  delegate "[]", to: g
-
-  def initialize(n)
-    @n = n.to_i
-    @g = Array.new(n){ [] of Int32 }
-  end
-
-  def add(v, nv, origin = 1, both = true)
-    v = v.to_i - origin
-    nv = nv.to_i - origin
-    g[v] << nv
-    g[nv] << v
-  end
-end
+require "crystal/tree"
 
 # 最小共通祖先
 #
@@ -26,7 +8,7 @@ end
 # g.add 2,3
 # g.add 2,4
 # g.add 1,5
-
+#
 # lca = LCA.new(g)
 # pp lca.query(2, 5, origin = 1) #=> 1
 # pp lca.query(3, 4, origin = 1) #=> 2
@@ -43,7 +25,7 @@ class LCA
     @n = g.n
 
     k = 1
-    while (k << 1) < n
+    while (1 << k) < n
       k += 1
     end
 
