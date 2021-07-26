@@ -107,7 +107,7 @@ class Tree
   end
 
   # オイラーツアーを利用した最小共通祖先
-  def lca
+  def lca(origin = 0)
     dep = depth
     par = parent
     ent, lev, idx = euler_tour
@@ -119,8 +119,22 @@ class Tree
     st = SegmentTree.range_min_query(values: val, unit: {Int32::MAX, Int32::MAX})
 
     ->(u : Int32, v : Int32) {
+      u -= origin
+      v -= origin
       u, v = v, u if ent[u] > ent[v]
-      st[ent[u]..ent[v]][1]
+      st[ent[u]..ent[v]][1] + origin
     }
+  end
+
+  # デバッグ用：アスキーアートで可視化
+  def debug(origin = 0)
+    File.open("debug.dot", "w") do |fh|
+      fh.puts "digraph tree {"
+      bfs do |v,nv|
+        fh.puts "  #{v + origin} -- #{nv + origin}"
+      end
+      fh.puts "}"
+    end
+    puts `cat debug.dot | graph-easy --from=dot --as_ascii`
   end
 end

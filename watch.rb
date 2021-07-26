@@ -18,6 +18,7 @@ LANG_EXT = {
   ".java" => "java",
   ".kt" => "kotlin",
   ".cs" => "csharp",
+  ".go" => "go",
 }
 
 COMPILE = {
@@ -28,6 +29,7 @@ COMPILE = {
   "java" => "javac -d dist src/Main.java",
   "kotlin" => "kotlinc src/main.kt -include-runtime -d dist/kotlin.jar -XXLanguage:+InlineClasses",
   "csharp" => "mcs src/main.cs -out:dist/csharp.exe",
+  "go" => "go build -buildmode=exe -o ./dist/go.out ./src/main.go",
 }
 
 EXECUTE = {
@@ -48,6 +50,7 @@ EXECUTE = {
   "java" => "java -classpath dist Main",
   "kotlin" => "kotlin dist/kotlin.jar",
   "csharp" => "mono dist/csharp.exe",
+  "go" => "./dist/go.out",
 }
 
 class Task

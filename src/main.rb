@@ -1,27 +1,21 @@
-require "pathname"
-require "digest/md5"
+n,k = gets.to_s.split.map{ |v| v.to_i }
+a = gets.to_s.split.map{ |v| v.to_i }
 
-basedir = Pathname.new("/home")
+ans = 0
+cnt = Hash.new(0)
+n.times do |i|
+  key = a[i]
+  cnt[key] += 1
 
-submits = [
-  ["001/empty.txt", 1],
-  ["001/hello.txt", 1],
-  ["001/three.txt", 2],
-  ["001/clone.txt", 1],
-  ["001/hundred.txt", 2],
-  ["001/middle.txt", 3],
-  ["002/target.txt", 10],
-  ["003/range.txt", 10],
-  ["004/output.txt", 30],
-  ["005/target.txt", 1],
-  ["005/time.txt", 1],
-]
-
-Pathname.new("/home/").children.each do |path|
-  next unless path.directory?
-  submits.each do |name, point|
-    file = path + name
-    md5 = Digest::MD5.file(file).to_s
-    pp [name, point, md5]
+  j = i - k
+  if j >= 0
+    key = a[j]
+    cnt[key] -= 1
+    cnt.delete(key) if cnt[key] == 0
   end
+
+  b = cnt.keys.size
+  ans = b if ans < b
 end
+
+pp ans
