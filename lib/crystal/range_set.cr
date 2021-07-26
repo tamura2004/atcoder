@@ -5,14 +5,22 @@ struct Range(B, E)
   end
 
   def &(b : self) : self
-    Math.max(@begin, b.begin)..Math.max(@end, b.end)
+    Math.max(@begin, b.begin)..Math.min(@end, b.end)
+  end
+
+  def widen
+    empty? ? self : (@begin - 1)..(@end + 1)
+  end
+
+  def empty?
+    @begin > @end
   end
 end
 
 class RangeSet(T)
   getter s : Set(Range(T,T))
 
-  def initialize
+  def initializ
     @s = Set(Range(T,T)).new
   end
 

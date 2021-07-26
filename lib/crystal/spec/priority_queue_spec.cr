@@ -31,7 +31,7 @@ describe PriorityQueue do
   end
 
   it "usage min heap" do
-    pq = PriorityQueue(Int32).new { |a, b| a > b }
+    pq = PriorityQueue(Int32).lesser
     pq << 5
     pq << 4
     pq << 3

@@ -86,6 +86,13 @@ class Tree
     end
   end
 
+  # *root*を根とした時に葉か
+  def leaf(root = 0)
+    bfs(root, true) do |v, nv, ans|
+      ans[v] = false
+    end
+  end
+
   # *root*を根としたオイラーツアー
   def euler_tour
     enter = [-1] * n
