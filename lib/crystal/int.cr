@@ -1,4 +1,8 @@
 struct Int
+  def relu
+    Math.max(self, 0)
+  end
+
   def f
     1.upto(self).product(&.itself)
   end
@@ -16,10 +20,10 @@ struct Int
     getter v : Int64
     getter by : Int64
     getter to : Int64
-  
+
     def initialize(@v, @by, @to)
     end
-  
+
     def next
       if v <= to
         begin v ensure @v *= by end
@@ -28,5 +32,5 @@ struct Int
       end
     end
   end
-  
+
 end

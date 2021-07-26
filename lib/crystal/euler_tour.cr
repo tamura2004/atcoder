@@ -1,8 +1,15 @@
 require "crystal/tree"
 
+# オイラーツアー
+# https://maspypy.com/euler-tour-%E3%81%AE%E3%81%8A%E5%8B%89%E5%BC%B7
+# [1] - [2] - [3] - [4]
+#   \[6] \[5]
+#
+# enter 0 1 2 4 6 9
+# leave 11 8 5 5 7 10
+# index 1 2 3 4 -4 -3 5 -5 -2 6 -6 -1
 class EulerTour
   getter n : Int32
-  getter idx : Int32
   getter g : Tree
 
   getter enter : Array(Int32)
@@ -11,7 +18,6 @@ class EulerTour
 
   def initialize(@g)
     @n = g.n
-    @idx = 0
 
     @enter = [-1] * n
     @leave = [-1] * n
@@ -21,33 +27,15 @@ class EulerTour
   end
 
   def dfs(v)
-    enter[v] = idx
-    @idx += 1
-    @index << v
-    
+    enter[v] = index.size
+    index << v + 1
+
     g[v].each do |nv|
       next if enter[nv] != -1
       dfs(nv)
-      @index << v
     end
 
-    if enter[v] == @idx - 1
-      leave[v] = enter[v]
-    else
-      leave[v] = idx
-      @idx += 1
-      @index << v
-    end
+    leave[v] = index.size
+    index << -(v + 1)
   end
 end
-
-g = Tree.new(6)
-g.add 1, 2
-g.add 2, 3
-g.add 3, 4
-g.add 2, 5
-g.add 1, 6
-
-et = EulerTour.new(g)
-pp et.index.map(&.+ 1)
-

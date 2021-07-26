@@ -14,7 +14,7 @@ class SegmentTree(T)
   getter unit : T
   getter xs : Array(T)
   getter fx : Proc(T, T, T)
-  
+
   # 一点更新、区間加算、要素数で初期化
   def self.range_sum_query(n : Int32)
     new(n)
@@ -32,14 +32,14 @@ class SegmentTree(T)
       Math.max(x,y)
     end
   end
-  
+
   # 一点更新、区間最大、要素で初期化
   def self.range_max_query(values : Array(T))
     new(values, unit: T.zero) do |x,y|
       Math.max(x,y)
     end
   end
-  
+
   # 一点更新、区間最小、要素数で初期化
   def self.range_min_query(n : Int32)
     values = Array.new(n){ T::MAX }
@@ -47,10 +47,17 @@ class SegmentTree(T)
       Math.min(x,y)
     end
   end
-  
+
   # 一点更新、区間最小、要素で初期化
   def self.range_min_query(values : Array(T))
     new(values, unit: T::MAX) do |x,y|
+      Math.min(x,y)
+    end
+  end
+
+  # 一点更新、区間最小、要素で初期化
+  def self.range_min_query(values : Array(T), unit : T)
+    new(values, unit) do |x,y|
       Math.min(x,y)
     end
   end
