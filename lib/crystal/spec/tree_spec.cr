@@ -25,7 +25,23 @@ describe Tree do
     tr = sample_tree
     tr.parent.should eq [-1, 3, 0, 0, 3]
   end
-
+  
+  # 葉
+  it "usage leaf" do
+    tr = sample_tree
+    leaf = tr.leaf
+    leaf[4].should eq true
+    leaf[0].should eq false
+  end
+    
+  # 次数
+  it "usage degree" do
+    tr = sample_tree
+    degree = tr.degree
+    degree[3].should eq 3
+    degree[0].should eq 2
+  end
+    
   # 深さ優先検索
   it "usage dfs" do
     tr = sample_tree

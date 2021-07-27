@@ -72,6 +72,33 @@ class Tree
     end
   end
 
+  # 帰りがけ順の深さ優先検索
+  def dfs_leave(root = 0)
+    dfs do |v, dir|
+      next if dir == ENTER
+      yield v
+    end
+  end
+
+  # 部分木の大きさ
+  def subtree(root = 0)
+    pa = parent
+    dp = [1] * n
+    dfs_leave(root) do |v|
+      dp[pa[v]] += dp[v] if pa[v] != -1
+    end
+    dp
+  end
+
+  # 子ノード
+  def children(root = 0)
+    ans = Array.new(n){ [] of Int32 }
+    bfs(root) do |v, nv|
+      ans[v] << nv
+    end
+    ans
+  end
+
   # *root*からの距離
   def depth(root = 0)
     bfs(root) do |v, nv, ans|
@@ -90,6 +117,13 @@ class Tree
   def leaf(root = 0)
     bfs(root, true) do |v, nv, ans|
       ans[v] = false
+    end
+  end
+
+  # ノードの次数
+  def degree
+    (0...n).map do |v|
+      g[v].size
     end
   end
 
@@ -137,7 +171,7 @@ class Tree
   def debug(origin = 0)
     File.open("debug.dot", "w") do |fh|
       fh.puts "digraph tree {"
-      bfs do |v,nv|
+      bfs do |v, nv|
         fh.puts "  #{v + origin} -- #{nv + origin}"
       end
       fh.puts "}"
