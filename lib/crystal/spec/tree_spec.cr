@@ -16,6 +16,11 @@ def sample_tree
   end
 end
 
+# 一つの頂点のみの木
+def single_dot_tree
+  Tree.new(1)
+end
+
 # 大きな木を３種類試す
 def each_type
   [
@@ -53,36 +58,50 @@ describe Tree do
     tr = sample_tree
     tr.depth.should eq [0, 2, 1, 1, 2]
     tr.depth(4).should eq [2, 2, 3, 1, 0]
-  end
 
+    single_dot_tree.depth.should eq [0]
+  end
+  
   # 親
   it "usage parent" do
     tr = sample_tree
     tr.parent.should eq [-1, 3, 0, 0, 3]
     tr.parent(4).should eq [3, 3, 0, 4, -1]
-  end
 
+    single_dot_tree.parent.should eq [-1]
+  end
+  
   # 葉
   it "usage leaf" do
     tr = sample_tree
     tr.leaf.should eq [false, true, true, false, true]
     tr.leaf(4).should eq [false, true, true, false, false]
-  end
 
+    single_dot_tree.leaf.should eq [true]
+  end
+  
   # 次数
   it "usage degree" do
     tr = sample_tree
     tr.degree.should eq [2, 1, 1, 3, 1]
-  end
 
+    single_dot_tree.degree.should eq [0]
+  end
+  
   # オイラーツアー
   it "usage euler_tour" do
     tr = sample_tree
     enter, leave, index = tr.euler_tour
-
+    
     enter.should eq [0, 4, 7, 1, 2]
     leave.should eq [9, 5, 8, 6, 3]
     index.should eq [0, 3, 4, -5, 1, -2, -4, 2, -3, -1]
+    
+    single_dot_tree.euler_tour.should eq ({
+      [0],
+      [1],
+      [0, -1]
+    })
   end
 
   # 最小共通祖先
@@ -92,6 +111,9 @@ describe Tree do
 
     lca.call(4, 2).should eq 0
     lca.call(1, 4).should eq 3
+
+    lca2 = single_dot_tree.lca
+    lca2.call(0, 0).should eq 0
   end
 
   # 部分木の大きさ
@@ -99,6 +121,8 @@ describe Tree do
     tr = sample_tree
     tr.subtree.should eq [5, 1, 1, 3, 1]
     tr.subtree(4).should eq [2, 1, 1, 4, 5]
+
+    single_dot_tree.subtree.should eq [1]
   end
 
   # 子ノード
@@ -106,6 +130,8 @@ describe Tree do
     tr = sample_tree
     tr.children.should eq [[2, 3], [] of Int32, [] of Int32, [1, 4], [] of Int32]
     tr.children(4).should eq [[2], [] of Int32, [] of Int32, [0, 1], [3]]
+
+    single_dot_tree.children.should eq [[] of Int32]
   end
 
   # 重心
@@ -113,6 +139,8 @@ describe Tree do
     tr = sample_tree
     tr.centroid.should eq 3
     tr.centroid(4).should eq 3
+
+    single_dot_tree.centroid.should eq 0
   end
 
   # 重心分解
@@ -120,7 +148,7 @@ describe Tree do
     tr = sample_tree
     centroid, trees = tr.centroid_decomposition
     centroid.should eq 3
-    trees.map(&.n).sort.should eq [1, 1, 2]
+    trees.map(&.first.n).sort.should eq [1, 1, 2]
   end
 end
 

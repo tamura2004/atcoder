@@ -200,6 +200,8 @@ class Tree
 
   # 重心
   def centroid(root = 0)
+    return 0 if n == 1
+    
     s = subtree(root)
     p = parent(root)
 
@@ -222,12 +224,13 @@ class Tree
       idx = [-1] * n
       idx[v] = i = 0
 
-      Tree.new(s[v]) do |tr|
+      tree = Tree.new(s[v]) do |tr|
         bfs(v, 0, pv) do |v, nv|
           idx[nv] = (i += 1)
           tr.add idx[v], idx[nv], origin = 0, both = true
         end
       end
+      { tree, idx }
     end
 
     {pv, trees}
