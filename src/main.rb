@@ -1,21 +1,25 @@
-n,k = gets.to_s.split.map{ |v| v.to_i }
-a = gets.to_s.split.map{ |v| v.to_i }
+n, m = gets.to_s.split.map { |v| v.to_i }
+$g = Array.new(n) { [] }
+$goal = [false] * n
 
-ans = 0
-cnt = Hash.new(0)
-n.times do |i|
-  key = a[i]
-  cnt[key] += 1
+m.times do
+  a, b = gets.to_s.split.map { |v| v.to_i - 1 }
+  $g[a] << b
+end
 
-  j = i - k
-  if j >= 0
-    key = a[j]
-    cnt[key] -= 1
-    cnt.delete(key) if cnt[key] == 0
+dfs = ->(v) do
+  return 0 if $goal[v]
+
+  $g[v].sum do |nv|
+    next 0 if $goal[nv]
+    $goal[nv] = true
+    dfs[nv]
   end
+end
 
-  b = cnt.keys.size
-  ans = b if ans < b
+ans = n.times.sum do |v|
+  $goal = [false] * n
+  dfs[v]
 end
 
 pp ans

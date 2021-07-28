@@ -20,6 +20,21 @@ class Tree
     yield self
   end
 
+  # テスト用グラフ
+  def self.make(n, type = :random)
+    new(n) do |g|
+      (1...n).each do |nv|
+        v = case type
+            when :bus then nv - 1
+            when :uni then 0
+            else           rand(0...nv)
+            end
+        g.add v, nv, origin = 0
+      end
+    end
+  end
+
+  # 辺の追加
   def add(v, nv, origin = 1, both = true)
     v = v.to_i - origin
     nv = nv.to_i - origin
@@ -28,80 +43,77 @@ class Tree
   end
 
   # 幅優先検索
-  def bfs(root = 0, init : _ = 0)
-    seen = [false] * n
-    seen[root] = true
+  def bfs(root = 0, init : _ = 0, pv = -1)
     ans = [init] * n
-    q = Deque.new([root])
+    q = Deque.new([{root, pv}])
 
     while q.size > 0
-      v = q.shift
+      v, pv = q.shift
+
       g[v].each do |nv|
-        next if seen[nv]
-        seen[nv] = true
+        next if nv == pv
         yield v, nv, ans
-        q << nv
+        q << {nv, v}
       end
     end
     return ans
+  end
+
+  # キューを利用した深さ優先検索
+  #
+  # yield v, 行き掛け := ENTER = 0
+  # yield v, 帰り掛け := LEAVE = 1
+  def dfsq(root = 0, pv = -1)
+    q = Deque.new([{~root, pv}, {root, pv}])
+
+    while q.size > 0
+      v, pv = q.pop
+      if v < 0
+        yield ~v, LEAVE, pv
+      else
+        yield v, ENTER, pv
+
+        g[v].each do |nv|
+          next if nv == pv
+          q << {~nv, v}
+          q << {nv, v}
+        end
+      end
+    end
   end
 
   # 深さ優先検索
   #
   # yield v, 行き掛け := ENTER = 0
   # yield v, 帰り掛け := LEAVE = 1
-  def dfs(root = 0)
-    seen = [false] * n
-    seen[root] = true
-    q = Deque.new([~root, root])
+  def dfs(root = 0, &block : Int32, Int32, Int32 -> Nil)
+    f = uninitialized Int32, Int32 -> Nil
 
-    while q.size > 0
-      v = q.pop
-      if v < 0
-        yield ~v, LEAVE
-      else
-        yield v, ENTER
+    f = ->(v : Int32, pv : Int32) do
+      block.call(v, ENTER, pv)
 
-        g[v].each do |nv|
-          next if seen[nv]
-          seen[nv] = true
-          q << ~nv
-          q << nv
-        end
+      g[v].each do |nv|
+        next if nv == pv
+        f.call(nv, v)
       end
+
+      block.call(v, LEAVE, pv)
     end
+
+    f.call(root, -1)
   end
 
   # 帰りがけ順の深さ優先検索
   def dfs_leave(root = 0)
-    dfs do |v, dir|
+    dfsq(root) do |v, dir|
       next if dir == ENTER
       yield v
     end
   end
 
-  # 部分木の大きさ
-  def subtree(root = 0)
-    pa = parent
-    dp = [1] * n
-    dfs_leave(root) do |v|
-      dp[pa[v]] += dp[v] if pa[v] != -1
-    end
-    dp
-  end
-
-  # 子ノード
-  def children(root = 0)
-    ans = Array.new(n){ [] of Int32 }
-    bfs(root) do |v, nv|
-      ans[v] << nv
-    end
-    ans
-  end
-
   # *root*からの距離
   def depth(root = 0)
-    bfs(root) do |v, nv, ans|
+    bfs(root, 0) do |v, nv, ans|
       ans[nv] = ans[v] + 1
     end
   end
@@ -128,12 +140,12 @@ class Tree
   end
 
   # *root*を根としたオイラーツアー
-  def euler_tour
+  def euler_tour(root = 0)
     enter = [-1] * n
     leave = [-1] * n
     index = [] of Int32
 
-    dfs(root = 0) do |v, dir|
+    dfsq(root) do |v, dir|
       case dir
       when ENTER
         enter[v] = index.size
@@ -167,8 +179,69 @@ class Tree
     }
   end
 
+  # 部分木の大きさ
+  def subtree(root = 0)
+    pa = parent(root)
+    dp = [1] * n
+    dfs_leave(root) do |v|
+      dp[pa[v]] += dp[v] if pa[v] != -1
+    end
+    dp
+  end
+
+  # 子ノード（隣接点から親を除外）
+  def children(root = 0)
+    ans = Array.new(n) { [] of Int32 }
+    bfs(root) do |v, nv|
+      ans[v] << nv
+    end
+    ans
+  end
+
+  # 重心
+  def centroid(root = 0)
+    s = subtree(root)
+    p = parent(root)
+
+    v = root
+    while true
+      nex = g[v].select(&.!= p[v])
+      size = nex.max_of { |v| s[v] }
+      nv = nex.max_by { |v| s[v] }
+      return v if size <= n // 2
+      v = nv
+    end
+  end
+
+  # 重心分解
+  def centroid_decomposition(root = 0)
+    pv = centroid(root)
+    s = subtree(pv)
+
+    trees = g[pv].map do |v|
+      idx = [-1] * n
+      idx[v] = i = 0
+
+      Tree.new(s[v]) do |tr|
+        bfs(v, 0, pv) do |v, nv|
+          idx[nv] = (i += 1)
+          tr.add idx[v], idx[nv], origin = 0, both = true
+        end
+      end
+    end
+
+    {pv, trees}
+  end
+
   # デバッグ用：アスキーアートで可視化
   def debug(origin = 0)
+    if n == 1
+      puts "+---+"
+      puts "| 0 |"
+      puts "+---+"
+      return
+    end
+
     File.open("debug.dot", "w") do |fh|
       fh.puts "digraph tree {"
       bfs do |v, nv|
