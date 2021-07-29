@@ -9,6 +9,7 @@ class Tree
   getter g : Array(Array(Int32))
 
   delegate "[]", to: g
+  def_equals n, g
 
   def initialize(n)
     @n = n.to_i
@@ -40,6 +41,15 @@ class Tree
     nv = nv.to_i - origin
     g[v] << nv
     g[nv] << v if both
+  end
+
+  # 頂点の追加
+  def add_vertex(v, origin = 1, both = true)
+    v = v.to_i - origin
+    g << [] of Int32
+    g[v] << n if n != 0
+    g[n] << v if both && n != 0
+    @n += 1
   end
 
   # 幅優先検索
@@ -112,9 +122,16 @@ class Tree
   end
 
   # *root*からの距離
-  def depth(root = 0)
-    bfs(root, 0) do |v, nv, ans|
+  def depth(root = 0, offset = 0)
+    bfs(root, offset) do |v, nv, ans|
       ans[nv] = ans[v] + 1
+    end
+  end
+
+  # 距離別にカウント
+  def depth_count(root = 0, offset = 0)
+    depth(root, offset).each_with_object([0] * (n + offset)) do |v, ans|
+      ans[v] += 1
     end
   end
 
@@ -201,7 +218,7 @@ class Tree
   # 重心
   def centroid(root = 0)
     return 0 if n == 1
-    
+
     s = subtree(root)
     p = parent(root)
 
@@ -220,27 +237,38 @@ class Tree
     pv = centroid(root)
     s = subtree(pv)
 
-    trees = g[pv].map do |v|
+    # {部分木の番号 -1は重心, 頂点番号}
+    dic = (1..n).map do
+      {-1, 0}
+    end
+
+    trees = g[pv].map_with_index do |v, j|
       idx = [-1] * n
       idx[v] = i = 0
+      dic[v] = {j, i}
 
-      tree = Tree.new(s[v]) do |tr|
+      Tree.new(s[v]) do |tr|
         bfs(v, 0, pv) do |v, nv|
           idx[nv] = (i += 1)
+          dic[nv] = {j, i}
           tr.add idx[v], idx[nv], origin = 0, both = true
         end
       end
-      { tree, idx }
     end
 
-    {pv, trees}
+    {pv, trees, dic}
   end
 
   # デバッグ用：アスキーアートで可視化
   def debug(origin = 0)
-    if n == 1
+    case n
+    when 0
+      puts "++"
+      puts "++"
+      return
+    when 1
       puts "+---+"
-      puts "| 0 |"
+      puts "| #{origin} |"
       puts "+---+"
       return
     end

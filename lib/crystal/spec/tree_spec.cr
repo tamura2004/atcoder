@@ -1,8 +1,6 @@
 require "spec"
 require "../tree"
 
-N = 200000
-
 # サンプルツリー
 # [1]-[3]
 #   `-[4]-[2]
@@ -20,6 +18,8 @@ end
 def single_dot_tree
   Tree.new(1)
 end
+
+N = 200000
 
 # 大きな木を３種類試す
 def each_type
@@ -53,13 +53,20 @@ describe Tree do
     end
   end
 
-  # 根からの深さ
+  # 根からの距離
   it "usage depth" do
     tr = sample_tree
     tr.depth.should eq [0, 2, 1, 1, 2]
     tr.depth(4).should eq [2, 2, 3, 1, 0]
-
+    
     single_dot_tree.depth.should eq [0]
+  end
+  
+  # 根からの距離を集計
+  it "usage depth_count" do
+    tr = sample_tree
+    tr.depth_count.should eq [1,2,2,0,0]
+    tr.depth_count(4).should eq [1,1,2,1,0]
   end
   
   # 親
@@ -146,9 +153,17 @@ describe Tree do
   # 重心分解
   it "usage centroid decomposition" do
     tr = sample_tree
-    centroid, trees = tr.centroid_decomposition
+    centroid, trees, dic = tr.centroid_decomposition
     centroid.should eq 3
-    trees.map(&.first.n).sort.should eq [1, 1, 2]
+    dic.should eq [{0, 0}, {1, 0}, {0, 1}, {-1, 0}, {2, 0}]
+    trees.map(&.n).sort.should eq [1, 1, 2]
+
+    single_dot_tree.centroid_decomposition.should eq ({
+      0,
+      [] of Tree,
+      [{-1,0}]
+    })
+
   end
 end
 

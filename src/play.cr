@@ -1,12 +1,7 @@
-struct Range(B,E)
-  def &(b : self) : self
-    Math.max(@begin, b.begin)..Math.min(@end, b.end)
-  end
-end
+require "crystal/tree"
 
-a = 1..10
-b = 8..13
-c = 12..14
+g = Tree.make(5, :bus)
+g.debug(1)
 
-pp (1..100) & (20..10)
-pp (1..100).includes? 20
+pp g.depth(root = 0, offset = 1)
+pp g.depth_count(root = 0, offset = 1)
