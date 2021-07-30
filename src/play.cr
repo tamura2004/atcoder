@@ -1,7 +1,14 @@
+require "benchmark"
+require "big"
+require "bit_array"
 require "crystal/tree"
 
-g = Tree.make(5, :bus)
-g.debug(1)
+N = 100000
 
-pp g.depth(root = 0, offset = 1)
-pp g.depth_count(root = 0, offset = 1)
+Benchmark.ips do |x|
+  x.report("uni remove") do
+    g = Tree.make(N, :uni)
+    g.remove(0)
+  end
+
+end

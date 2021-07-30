@@ -1,4 +1,5 @@
 require "crystal/segment_tree"
+require "bit_array"
 
 # 木（重みなし）
 class Tree
@@ -7,18 +8,25 @@ class Tree
 
   getter n : Int32
   getter g : Array(Array(Int32))
+  getter root : Int32
+  getter removed : BitArray
 
   delegate "[]", to: g
-  def_equals n, g
+  def_equals n, g, root, removed
 
   def initialize(n)
     @n = n.to_i
     @g = Array.new(n) { [] of Int32 }
+    @root = 0
+    @removed = BitArray.new(n)
   end
 
   def initialize(n, &block)
     initialize(n)
     yield self
+  end
+
+  def initialize(@n, @g, @root, @removed)
   end
 
   # テスト用グラフ
@@ -53,8 +61,7 @@ class Tree
   end
 
   # 幅優先検索
-  def bfs(root = 0, init : _ = 0, pv = -1)
-    ans = [init] * n
+  def bfs(root = @root, pv = -1)
     q = Deque.new([{root, pv}])
 
     while q.size > 0
@@ -62,18 +69,27 @@ class Tree
 
       g[v].each do |nv|
         next if nv == pv
-        yield v, nv, ans
+        next if removed[nv]
+        yield v, nv
         q << {nv, v}
       end
     end
-    return ans
+  end
+
+  # 幅優先検索（オブジェクト付）
+  def bfs_with_array(init, root = @root, pv = -1)
+    ans = [init] * n
+    bfs(root, pv) do |v, nv|
+      yield v, nv, ans
+    end
+    ans
   end
 
   # キューを利用した深さ優先検索
   #
   # yield v, 行き掛け := ENTER = 0
   # yield v, 帰り掛け := LEAVE = 1
-  def dfsq(root = 0, pv = -1)
+  def dfsq(root = @root, pv = -1)
     q = Deque.new([{~root, pv}, {root, pv}])
 
     while q.size > 0
@@ -96,7 +112,7 @@ class Tree
   #
   # yield v, 行き掛け := ENTER = 0
   # yield v, 帰り掛け := LEAVE = 1
-  def dfs(root = 0, &block : Int32, Int32, Int32 -> Nil)
+  def dfs(root = @root, &block : Int32, Int32, Int32 -> Nil)
     f = uninitialized Int32, Int32 -> Nil
 
     f = ->(v : Int32, pv : Int32) do
@@ -114,7 +130,7 @@ class Tree
   end
 
   # 帰りがけ順の深さ優先検索
-  def dfs_leave(root = 0)
+  def dfs_leave(root = @root)
     dfsq(root) do |v, dir|
       next if dir == ENTER
       yield v
@@ -122,29 +138,30 @@ class Tree
   end
 
   # *root*からの距離
-  def depth(root = 0, offset = 0)
-    bfs(root, offset) do |v, nv, ans|
+  def depth(root = @root, offset = 0)
+    bfs_with_array(-1, root) do |v, nv, ans|
+      ans[v] = offset if ans[v] == -1
       ans[nv] = ans[v] + 1
     end
   end
 
   # 距離別にカウント
-  def depth_count(root = 0, offset = 0)
-    depth(root, offset).each_with_object([0] * (n + offset)) do |v, ans|
+  def depth_count(root = @root, offset = 0)
+    depth(root, offset).each_with_object([0] * n) do |v, ans|
       ans[v] += 1
     end
   end
 
   # *root*を根とした時の親
-  def parent(root = 0)
-    bfs(root, -1) do |v, nv, ans|
+  def parent(root = @root)
+    bfs_with_array(-1, root) do |v, nv, ans|
       ans[nv] = v
     end
   end
 
   # *root*を根とした時に葉か
-  def leaf(root = 0)
-    bfs(root, true) do |v, nv, ans|
+  def leaf(root = @root)
+    bfs_with_array(true, root) do |v, nv, ans|
       ans[v] = false
     end
   end
@@ -157,7 +174,7 @@ class Tree
   end
 
   # *root*を根としたオイラーツアー
-  def euler_tour(root = 0)
+  def euler_tour(root = @root)
     enter = [-1] * n
     leave = [-1] * n
     index = [] of Int32
@@ -197,7 +214,7 @@ class Tree
   end
 
   # 部分木の大きさ
-  def subtree(root = 0)
+  def subtree(root = @root)
     pa = parent(root)
     dp = [1] * n
     dfs_leave(root) do |v|
@@ -207,7 +224,7 @@ class Tree
   end
 
   # 子ノード（隣接点から親を除外）
-  def children(root = 0)
+  def children(root = @root)
     ans = Array.new(n) { [] of Int32 }
     bfs(root) do |v, nv|
       ans[v] << nv
@@ -216,7 +233,7 @@ class Tree
   end
 
   # 重心
-  def centroid(root = 0)
+  def centroid(root = @root)
     return 0 if n == 1
 
     s = subtree(root)
@@ -226,14 +243,13 @@ class Tree
     while true
       nex = g[v].select(&.!= p[v])
       size = nex.max_of { |v| s[v] }
-      nv = nex.max_by { |v| s[v] }
       return v if size <= n // 2
-      v = nv
+      v = nex.max_by { |v| s[v] }
     end
   end
 
   # 重心分解
-  def centroid_decomposition(root = 0)
+  def centroid_decomposition(root = @root)
     pv = centroid(root)
     s = subtree(pv)
 
@@ -248,7 +264,7 @@ class Tree
       dic[v] = {j, i}
 
       Tree.new(s[v]) do |tr|
-        bfs(v, 0, pv) do |v, nv|
+        bfs_with_array(0, v, pv) do |v, nv|
           idx[nv] = (i += 1)
           dic[nv] = {j, i}
           tr.add idx[v], idx[nv], origin = 0, both = true
@@ -257,6 +273,55 @@ class Tree
     end
 
     {pv, trees, dic}
+  end
+
+  def centroid_decomposition_tree
+    trees = [self]
+    centroids = [] of Int32
+    depth_counts_from_centroid = [] of Array(Int32)
+    depth_counts_from_root = [] of Array(Int32)
+    depth_from_root = [] of Array(Int32)
+    dics = [] of Array(Tuple(Int32,Int32))
+    g = self.class.new(1)
+
+    q = Deque.new([0])
+    while q.size > 0
+      v = q.shift
+      tree = trees[v]
+
+      centroid, subtrees, dic = tree.centroid_decomposition
+      centroids << centroid
+      dics << dic.map { |tree_index, v| ({ tree_index + g.n, v }) }
+      depth_counts_from_centroid << tree.depth_count(root: centroid, offset: 0)
+      depth_counts_from_root << tree.depth_count(root: 0, offset: 1)
+      depth_from_root << tree.depth(root: 0, offset: 1)
+
+      subtrees.each do |subtree|
+        trees << subtree
+        q << g.n
+        g.add_vertex(v, origin: 0)
+      end
+    end
+
+    {
+      trees,
+      centroids,
+      dics,
+      depth_counts_from_centroid,
+      depth_counts_from_root,
+      depth_from_root,
+      g
+    }
+  end
+
+  # vを取り除いた残りの部分木
+  def remove(v)
+    next_removed = removed.dup
+    next_removed[v] = true
+
+    g[v].map do |nv|
+      self.class.new(@n, @g, nv, next_removed)
+    end
   end
 
   # デバッグ用：アスキーアートで可視化

@@ -36,7 +36,8 @@ describe Tree do
   # 幅優先検索
   it "not overflow bfs" do
     each_type do |tr|
-      tr.bfs do |v,nv,ans|
+      ans = [1] * N
+      tr.bfs do |v,nv|
         ans[nv] = ans[v] + 1
       end
     end
@@ -58,17 +59,17 @@ describe Tree do
     tr = sample_tree
     tr.depth.should eq [0, 2, 1, 1, 2]
     tr.depth(4).should eq [2, 2, 3, 1, 0]
-    
+
     single_dot_tree.depth.should eq [0]
   end
-  
+
   # 根からの距離を集計
   it "usage depth_count" do
     tr = sample_tree
     tr.depth_count.should eq [1,2,2,0,0]
     tr.depth_count(4).should eq [1,1,2,1,0]
   end
-  
+
   # 親
   it "usage parent" do
     tr = sample_tree
@@ -77,7 +78,7 @@ describe Tree do
 
     single_dot_tree.parent.should eq [-1]
   end
-  
+
   # 葉
   it "usage leaf" do
     tr = sample_tree
@@ -86,7 +87,7 @@ describe Tree do
 
     single_dot_tree.leaf.should eq [true]
   end
-  
+
   # 次数
   it "usage degree" do
     tr = sample_tree
@@ -94,16 +95,16 @@ describe Tree do
 
     single_dot_tree.degree.should eq [0]
   end
-  
+
   # オイラーツアー
   it "usage euler_tour" do
     tr = sample_tree
     enter, leave, index = tr.euler_tour
-    
+
     enter.should eq [0, 4, 7, 1, 2]
     leave.should eq [9, 5, 8, 6, 3]
     index.should eq [0, 3, 4, -5, 1, -2, -4, 2, -3, -1]
-    
+
     single_dot_tree.euler_tour.should eq ({
       [0],
       [1],
