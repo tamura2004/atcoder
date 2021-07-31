@@ -139,6 +139,8 @@ class Tree
 
   # *root*からの距離
   def depth(root = @root, offset = 0)
+    return [0] if n == 1
+    
     bfs_with_array(-1, root) do |v, nv, ans|
       ans[v] = offset if ans[v] == -1
       ans[nv] = ans[v] + 1
@@ -194,7 +196,7 @@ class Tree
   end
 
   # オイラーツアーを利用した最小共通祖先
-  def lca(origin = 0)
+  def lca(root = @root, origin = 0)
     dep = depth
     par = parent
     ent, lev, idx = euler_tour
@@ -273,45 +275,6 @@ class Tree
     end
 
     {pv, trees, dic}
-  end
-
-  def centroid_decomposition_tree
-    trees = [self]
-    centroids = [] of Int32
-    depth_counts_from_centroid = [] of Array(Int32)
-    depth_counts_from_root = [] of Array(Int32)
-    depth_from_root = [] of Array(Int32)
-    dics = [] of Array(Tuple(Int32,Int32))
-    g = self.class.new(1)
-
-    q = Deque.new([0])
-    while q.size > 0
-      v = q.shift
-      tree = trees[v]
-
-      centroid, subtrees, dic = tree.centroid_decomposition
-      centroids << centroid
-      dics << dic.map { |tree_index, v| ({ tree_index + g.n, v }) }
-      depth_counts_from_centroid << tree.depth_count(root: centroid, offset: 0)
-      depth_counts_from_root << tree.depth_count(root: 0, offset: 1)
-      depth_from_root << tree.depth(root: 0, offset: 1)
-
-      subtrees.each do |subtree|
-        trees << subtree
-        q << g.n
-        g.add_vertex(v, origin: 0)
-      end
-    end
-
-    {
-      trees,
-      centroids,
-      dics,
-      depth_counts_from_centroid,
-      depth_counts_from_root,
-      depth_from_root,
-      g
-    }
   end
 
   # vを取り除いた残りの部分木

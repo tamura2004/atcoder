@@ -62,12 +62,14 @@ describe Tree do
 
     single_dot_tree.depth.should eq [0]
   end
-
+  
   # 根からの距離を集計
   it "usage depth_count" do
     tr = sample_tree
     tr.depth_count.should eq [1,2,2,0,0]
     tr.depth_count(4).should eq [1,1,2,1,0]
+
+    single_dot_tree.depth_count.should eq [1]
   end
 
   # 親
