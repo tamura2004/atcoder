@@ -129,10 +129,8 @@ describe Tree do
   # 部分木の大きさ
   it "usage subtree" do
     tr = sample_tree
+    tr.set_subtree
     tr.subtree.should eq [5, 1, 1, 3, 1]
-    tr.subtree(4).should eq [2, 1, 1, 4, 5]
-
-    single_dot_tree.subtree.should eq [1]
   end
 
   # 子ノード
@@ -153,21 +151,6 @@ describe Tree do
     single_dot_tree.centroid.should eq 0
   end
 
-  # 重心分解
-  it "usage centroid decomposition" do
-    tr = sample_tree
-    centroid, trees, dic = tr.centroid_decomposition
-    centroid.should eq 3
-    dic.should eq [{0, 0}, {1, 0}, {0, 1}, {-1, 0}, {2, 0}]
-    trees.map(&.n).sort.should eq [1, 1, 2]
-
-    single_dot_tree.centroid_decomposition.should eq ({
-      0,
-      [] of Tree,
-      [{-1,0}]
-    })
-
-  end
 end
 
 # サンプルツリー

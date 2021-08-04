@@ -9,24 +9,22 @@ class Tree
   getter n : Int32
   getter g : Array(Array(Int32))
   getter root : Int32
-  getter removed : BitArray
+  getter dead : Array(Bool)
+  getter subtree : Array(Int32)
 
   delegate "[]", to: g
-  def_equals n, g, root, removed
 
   def initialize(n)
     @n = n.to_i
     @g = Array.new(n) { [] of Int32 }
     @root = 0
-    @removed = BitArray.new(n)
+    @dead = [false] * n
+    @subtree = [0] * n
   end
 
   def initialize(n, &block)
     initialize(n)
     yield self
-  end
-
-  def initialize(@n, @g, @root, @removed)
   end
 
   # テスト用グラフ
@@ -60,6 +58,32 @@ class Tree
     @n += 1
   end
 
+  # 親でなく除去されていない次のノード
+  def each(v = @root, pv = -1)
+    g[v].each do |nv|
+      next if nv == pv
+      next if dead[nv]
+      yield nv
+    end
+  end
+
+  def with_death(v)
+    dead[v] = true
+    yield
+    dead[v] = false
+  end
+
+  def each_centroids(v, &block : Int32 -> Nil)
+    c = centroid(v)
+    with_death(c) do
+      each(c) do |nv|
+        each_centroids(nv, &block)
+      end
+
+      block.call(c)
+    end
+  end
+
   # 幅優先検索
   def bfs(root = @root, pv = -1)
     q = Deque.new([{root, pv}])
@@ -67,9 +91,7 @@ class Tree
     while q.size > 0
       v, pv = q.shift
 
-      g[v].each do |nv|
-        next if nv == pv
-        next if removed[nv]
+      each(v, pv) do |nv|
         yield v, nv
         q << {nv, v}
       end
@@ -99,8 +121,7 @@ class Tree
       else
         yield v, ENTER, pv
 
-        g[v].each do |nv|
-          next if nv == pv
+        each(v, pv) do |nv|
           q << {~nv, v}
           q << {nv, v}
         end
@@ -216,13 +237,12 @@ class Tree
   end
 
   # 部分木の大きさ
-  def subtree(root = @root)
-    pa = parent(root)
-    dp = [1] * n
-    dfs_leave(root) do |v|
-      dp[pa[v]] += dp[v] if pa[v] != -1
+  def set_subtree(v = @root, pv = -1)
+    subtree[v] = 1
+    each(v, pv) do |nv|
+      set_subtree(nv, v)
+      subtree[v] += subtree[nv]
     end
-    dp
   end
 
   # 子ノード（隣接点から親を除外）
@@ -235,56 +255,17 @@ class Tree
   end
 
   # 重心
-  def centroid(root = @root)
-    return 0 if n == 1
-
-    s = subtree(root)
-    p = parent(root)
-
-    v = root
-    while true
-      nex = g[v].select(&.!= p[v])
-      size = nex.max_of { |v| s[v] }
-      return v if size <= n // 2
-      v = nex.max_by { |v| s[v] }
-    end
+  def centroid(v = @root)
+    set_subtree(v, -1)
+    dfs_centroid(v, -1, subtree[v])
   end
 
-  # 重心分解
-  def centroid_decomposition(root = @root)
-    pv = centroid(root)
-    s = subtree(pv)
-
-    # {部分木の番号 -1は重心, 頂点番号}
-    dic = (1..n).map do
-      {-1, 0}
+  private def dfs_centroid(v, pv, n)
+    each(v, pv) do |nv|
+      return dfs_centroid(nv, v, n) if subtree[nv] > n // 2
     end
 
-    trees = g[pv].map_with_index do |v, j|
-      idx = [-1] * n
-      idx[v] = i = 0
-      dic[v] = {j, i}
-
-      Tree.new(s[v]) do |tr|
-        bfs_with_array(0, v, pv) do |v, nv|
-          idx[nv] = (i += 1)
-          dic[nv] = {j, i}
-          tr.add idx[v], idx[nv], origin = 0, both = true
-        end
-      end
-    end
-
-    {pv, trees, dic}
-  end
-
-  # vを取り除いた残りの部分木
-  def remove(v)
-    next_removed = removed.dup
-    next_removed[v] = true
-
-    g[v].map do |nv|
-      self.class.new(@n, @g, nv, next_removed)
-    end
+    return v
   end
 
   # デバッグ用：アスキーアートで可視化

@@ -1,10 +1,14 @@
-require "./lib/ruby/priority_queue"
+n = gets.to_s.to_i
+q = []
 
-pq = PriorityQueue.greater
-10.times do
-  pq << rand(1000)
-end
-
-while pq.size > 0
-  pp pq.pop
+n.times do
+  t, x = gets.to_s.split.map { |v| v.to_i }
+  case t
+  when 1
+    q.unshift x
+  when 2
+    q << x
+  when 3
+    puts q[x - 1]
+  end
 end
