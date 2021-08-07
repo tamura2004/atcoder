@@ -1,29 +1,51 @@
-require "crystal/segment_tree"
+require "crystal/grid"
 
-w, n = gets.to_s.split.map(&.to_i)
-lrv = Array.new(n) do
-  l, r, v = gets.to_s.split.map(&.to_i64)
-  {l, r, v}
-end
-
-dp = (0..n).map do |i|
-  st = SegmentTree.new(values: [Int64::MIN] * (w + 1), unit: Int64::MIN) do |x, y|
-    Math.max(x, y)
-  end
-  st[0] = 0_i64
-  st
-end
-
-n.times do |i|
-  l, r, v = lrv[i]
-
-  (0..w).each do |j|
-    lo = j - r
-    hi = j - l
-
-    dp[i + 1][j] = Math.max(dp[i][j], dp[i][lo..hi] + v)
+class Grid
+  def each_with_dir(y, x)
+    (0..3).each do |dir|
+      dy, dx = DIR[dir]
+      ny = y + dy
+      nx = x + dx
+      next if outside?(ny,nx)
+      next if wall?(ny,nx)
+      yield ny,nx,dir
+    end
   end
 end
 
-puts Math.max(dp[-1][w], -1)
+h, w = gets.to_s.split.map(&.to_i)
+sy, sx = gets.to_s.split.map(&.to_i.- 1)
+gy, gx = gets.to_s.split.map(&.to_i.- 1)
 
+g = Grid.new(h, w, (1..h).map { gets.to_s })
+
+seen = (1..4).map { (1..h).map { [false] * w } }
+4.times do |i|
+  seen[i][sy][sx] = true
+end
+
+q = Deque.new(
+  (0..3).map do |i|
+    { 0, i, sy, sx }
+  end
+)
+
+while q.size > 0
+  cost, dir, y, x = q.shift
+  # pp! [cost,dir,y,x]
+  if y == gy && x == gx
+    puts cost
+    exit
+  end
+  seen[dir][y][x] = true
+
+  g.each_with_dir(y,x) do |ny,nx,ndir|
+    next if seen[ndir][ny][nx]
+
+    if dir == ndir
+      q.unshift({cost, ndir, ny, nx})
+    else
+      q << {cost + 1, ndir, ny, nx}
+    end
+  end
+end

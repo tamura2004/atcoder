@@ -40,6 +40,17 @@ class Grid
       end
     end
   end
+  
+  def each_with_dir(y, x)
+    (0..3).each do |dir|
+      dy, dx = DIR[dir]
+      ny = y + dy
+      nx = x + dx
+      next if outside?(ny,nx)
+      next if wall?(ny,nx)
+      yield ny,nx,dir
+    end
+  end
 
   def bfs(a : Array(Pair), &block)
     seen = Array.new(h) { Array.new(w, -1) }
