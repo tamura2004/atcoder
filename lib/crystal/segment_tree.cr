@@ -112,8 +112,8 @@ class SegmentTree(T)
   end
 
   def sum(i : Int32, j : Int32) : T
-    # raise "Bad index i=#{i}" unless (0...n).includes?(i)
-    # raise "Bad index j=#{j}" unless (1..n).includes?(j)
+    i = Math.max(i, 0)
+    j = Math.min(j,n-1)
 
     i += n; j += n
     left = right = unit
