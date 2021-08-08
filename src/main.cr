@@ -1,60 +1,34 @@
-require "crystal/ntt_convolution"
+require "crystal/mod_int"
+require "crystal/matrix"
 
-# ex. b := 4
-# c := [2,4,6,8]
-n, b, k = gets.to_s.split.map(&.to_i64)
+n, b, _ = gets.to_s.split.map(&.to_i)
 c = gets.to_s.split.map(&.to_i64)
 
-# [1,0,0,0]
-ans = [0_i64] * b
-ans[0] = 1_i64
+a = [0.to_m] * b
+c.each { |v| a[v%b] += 1 }
 
-# [2,0,2,0]
-unit = [0_i64] * b
-c.each { |c| unit[c % b] += 1 }
+m = Matrix(ModInt).zero(b)
 
-# 10
-d = 1_i64
-
-n.to_s(2).chars.map(&.to_i).each do |i|
-
-  # double
-  tmp = [0_i64] * b
-  ans.each_with_index do |n,m|
-    tmp[(m*d)%b] += n
-  end
-  
-  conv = convolution(ans, tmp, 10**9+7)
-  tmp.fill(0_i64)
-  conv.each_with_index do |n,m|
-    tmp[m%b] += n
-  end
-  
-  ans = tmp
-  d **= 2
-  d %= b
- 
-  # inc
-  if i == 1
-    tmp = [0_i64] * b
-    ans.each_with_index do |n,m|
-      tmp[(m*10_i64)%b] += n
-    end
-    conv = convolution(tmp, unit, 10**9+7)
-    tmp.fill(0_i64)
-    conv.each_with_index do |n,m|
-      tmp[m%b] += n
-    end
-    
-    ans = tmp
-    
-    if d == 1
-      d = 10_i64
-    else
-      d *= 10
-    end
-    d %= b
+b.times do |i|
+  c.each do |j|
+    jj = (i*10 + j) % b
+    m[jj, i] += 1
   end
 end
 
+ans = m ** (n-1) * a
 pp ans[0]
+
+# dp = (0..n).map { [0_i64] * b }
+# dp[0][0] = 1_i64
+
+# n.times do |i|
+#   b.times do |j|
+#     c.each do |k|
+#       nex = (j*10+k)%b
+#       dp[i+1][nex] += dp[i][j]
+#     end
+#   end
+# end
+
+# pp dp[-1][0]

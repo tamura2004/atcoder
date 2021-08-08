@@ -1,23 +1,23 @@
 class Matrix(T)
   getter n : Int32
   getter a : Array(Array(T))
- 
+
   def self.zero(n)
     new(n) { T.zero }
   end
- 
+
   def self.eye(n)
     new(n) { |i, j| i == j ? T.zero + 1 : T.zero }
   end
- 
+
   def initialize(@n)
     @a = Array.new(n) { |i| Array.new(n) { |j| yield i, j } }
   end
- 
+
   def initialize(@a)
     @n = a.size
   end
- 
+
   def *(b : self) : self
     Matrix(T).new(n) do |i, j|
       ans = T.zero
@@ -25,6 +25,14 @@ class Matrix(T)
         ans += self[i, k] * b[k, j]
       end
       ans
+    end
+  end
+
+  def *(b : Array(T)) : Array(T)
+    b.map_with_index do |v, i|
+      a.sum do |row|
+        row[i] * v
+      end
     end
   end
 
@@ -38,12 +46,12 @@ class Matrix(T)
     end
     ans
   end
- 
+
   @[AlwaysInline]
   def [](i,j)
     a[i][j]
   end
- 
+
   @[AlwaysInline]
   def []=(i,j,x)
     a[i][j] = x

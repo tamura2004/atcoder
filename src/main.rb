@@ -1,27 +1,12 @@
-n, m = gets.to_s.split.map { |v| v.to_i }
-a = gets.to_s.split.map { |v| v.to_i }
+n = gets.to_s.to_i
+a = gets.to_s.split.map { |v| v.to_i }.sort
+b = gets.to_s.split.map { |v| v.to_i }.sort
 
-cnt = (n - 1).times.map { |i| [a[i], a[i + 1]] }
-ans = cnt.sum { |a, b| (a - b).abs }
+ans = b.map { |v| v ^ a[0] }.uniq.select do |x|
+  b.map { |v| v ^ x }.sort == a
+end
 
-m.times do
-  l, r, v = gets.to_s.split.map { |v| v.to_i }
-
-  if l != 1
-    i = l - 2
-    pre = (cnt[i][0] - cnt[i][1]).abs
-    cnt[i][1] += v
-    aft = (cnt[i][0] - cnt[i][1]).abs
-    ans = ans - pre + aft
-  end
-
-  if r != n
-    i = r - 1
-    pre = (cnt[i][0] - cnt[i][1]).abs
-    cnt[i][0] += v
-    aft = (cnt[i][0] - cnt[i][1]).abs
-    ans = ans - pre + aft
-  end
-
-  pp ans
+puts ans.size
+ans.sort.each do |v|
+  pp v
 end
