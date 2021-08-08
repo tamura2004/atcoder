@@ -29,10 +29,8 @@ class Matrix(T)
   end
 
   def *(b : Array(T)) : Array(T)
-    b.map_with_index do |v, i|
-      a.sum do |row|
-        row[i] * v
-      end
+    a.map do |v|
+      v.zip(b).sum { |x, y| x*y }
     end
   end
 
@@ -41,19 +39,19 @@ class Matrix(T)
     m = Math.ilogb(k) + 1
     b = dup
     m.times do |i|
-      ans *= b if (k>>i).odd?
+      ans *= b if (k >> i).odd?
       b *= b
     end
     ans
   end
 
   @[AlwaysInline]
-  def [](i,j)
+  def [](i, j)
     a[i][j]
   end
 
   @[AlwaysInline]
-  def []=(i,j,x)
+  def []=(i, j, x)
     a[i][j] = x
   end
 
