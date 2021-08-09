@@ -28,18 +28,4 @@ class RollingHash
   def get(lo, hi)
     hash[hi] - hash[lo] * pow[hi - lo]
   end
-
-  def lcp(i,j)
-    lo = 0
-    hi = Math.min(n - i, n - j) + 1
-    while hi - lo > 1
-      mid = (lo + hi) // 2
-      if get(i,i+mid).to_u128 == get(j,j+mid).to_u128
-        lo = mid
-      else
-        hi = mid
-      end
-    end
-    return lo
-  end
 end

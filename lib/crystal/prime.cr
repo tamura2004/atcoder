@@ -82,7 +82,7 @@ class Prime
   # Prime.factors(72) # => [1, 2, 3, 4, 6, 8, 9, 12, 18, 24, 36, 72]
   # ```
   def self.factors(n : Int)
-    Array(Int64).new.tap do |dp|
+    Array(Int32).new.tap do |dp|
       m = Math.sqrt(n).to_i
       1.upto(m) do |i|
         next unless n.divisible_by?(i)
