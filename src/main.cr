@@ -1,30 +1,67 @@
-require "crystal/prime"
+class BTree
+  class_getter null = NilNode.new
 
-macro chmax(target, other)
-  {{target}} = ({{other}}) if ({{target}}) < ({{other}})
-end
+  class Node
+    property! left : self
+    property! right : self
 
-n = gets.to_s.to_i
-a, b = (1..n).map { gets.to_s.split.map(&.to_i) }.transpose
+    getter! val : Int32
+    getter! pri : Int32
+    getter! cnt : Int32
+    getter! sum : Int32
 
-ans = 0_i64
+    def initialize(@val, @pri)
+      @left = BTree.null
+      @right = BTree.null
+      @cnt = 1
+      @sum = val
+    end
 
-Prime.factors(a[0]).each do |x|
-  Prime.factors(b[0]).each do |y|
-    flag = true    
-    a[1...n].each do |a|
-      b[1..n].each do |b|
-        next if a % x == 0 && b % y == 0
-        next if b % x == 0 && a % y == 0
+    def null?
+      false
+    end
 
-        flag = false
-        break
+    def update
+      @cnt = ch.sum(&.cnt) + 1
+      @sum = ch.sum(&.sum) + 1
+      self
+    end
+
+    def rotate(b)
+      s = ch[1-b]
+      setch 1-b, s.ch[b]
+      s.setch b, self
+      update
+      s.update
+      s
+    end
+
+    def ch
+      { left, right }
+    end
+
+    def setch(b,v)
+      case b
+      when 0 then @left = v
+      when 1 then @right = v
       end
     end
-    next unless flag
+  end
 
-    chmax ans, x.to_i64.lcm(y.to_i64)
+  class NilNode < Node
+    def initialize
+      @left = self
+      @right = self
+      @val = @pri = @cnt = @sum = 0
+    end
+
+    def null?
+      true
+    end
   end
 end
 
-pp ans
+v1 = BTree::Node.new(2, 1)
+v2 = BTree::Node.new(3, 2)
+v3 = BTree::Node.new(4, 3)
+
