@@ -1,7 +1,16 @@
-class SegTree
+# セグメント木
+class SegmentTree
   attr_reader :size, :e, :f
   attr_accessor :seg
 
+  # SegTree.create(A,E,F) := モノイドA、単位元E、演算Fで初期化で初期化
+  # update(i,x) := A[i]をxに更新
+  # query(a,b) := 半開区間[a,b)でのA[i]の演算結果
+  #
+  # 単位元を追加してモノイドにする例（gcd）
+  # E = -1
+  # F = -> x,y { x == E ? y : y == E ? x : x.gcd(y) }
+  # T = SegTree.create(a,E,F)
   def self.create(a = [], e, f)
     n = 1
     n *= 2 while n < a.size
@@ -15,6 +24,7 @@ class SegTree
     this
   end
 
+  # SegTree.new(N,E,F) := 要素数N、単位元E、演算Fで初期化、ただしNは2の冪
   def initialize(n = 2 ** 32, e, f)
     @size = n
     @e = e
@@ -51,13 +61,3 @@ class SegTree
     { size: size, seg: seg }.to_s
   end
 end
-
-# SegTree.new(N,E,F) := 要素数N、単位元E、演算Fで初期化、ただしNは2の冪
-# SegTree.create(A,E,F) := モノイドA、単位元E、演算Fで初期化で初期化
-# update(i,x) := A[i]をxに更新
-# query(a,b) := 半開区間[a,b)でのA[i]の演算結果
-#
-# 単位元を追加してモノイドにする例（gcd）
-# E = -1
-# F = -> x,y { x == E ? y : y == E ? x : x.gcd(y) }
-# T = SegTree.create(a,E,F)

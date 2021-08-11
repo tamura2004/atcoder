@@ -140,12 +140,16 @@ class Task
 
     lib_listener = Listen.to("lib") do |params|
       parse_params(params)
-      next if path.extname != ".cr"
+      next if path.extname != ".cr" && path.extname != ".rb"
 
       if path.basename.to_s =~ /spec/
         src = path.relative_path_from(Pathname.pwd)
-      else
+      elsif path.basename.to_s =~ /test/
+        src = path.relative_path_from(Pathname.pwd)
+      elsif path.extname == ".cr"
         src = Pathname("lib/crystal/spec/#{path.basename(".cr")}_spec.cr")
+      elsif path.extname == ".rb"
+        src = Pathname("lib/ruby/test/test_#{path.basename}")
       end
 
       if !src.exist?
@@ -153,7 +157,7 @@ class Task
         next
       end
 
-      cmd = "crystal spec #{src}"
+      cmd = path.extname == ".cr" ? "crystal spec #{src}" : "ruby #{src}"
       o, e, s = Open3.capture3(cmd)
       if o =~ /0 failures, 0 errors/
         success o
