@@ -2,83 +2,118 @@ require "spec"
 require "../binary_tree"
 
 describe Treap do
-  it "rotate right" do
-    root = Treap::Node.new(10,10)
-    leaf = Treap::Node.new(20,20)
-    root.ch[0] = leaf
-
-    new_root = root.rotate(0)
-
-    new_root.key.should eq 20
-    new_root.ch[0].key.should eq 0
-    new_root.ch[1].key.should eq 10
+  it "nil node" do
+    Treap.nil_node.ch[0].val.should eq 0
+    Treap.nil_node.ch[1].val.should eq 0
   end
 
-  it "rotate left" do
-    root = Treap::Node.new(10,10)
-    leaf = Treap::Node.new(20,20)
-    root.ch[1] = leaf
-
-    new_root = root.rotate(1)
-
-    new_root.key.should eq 20
-    new_root.ch[0].key.should eq 10
-    new_root.ch[1].key.should eq 0
-  end
-
-  it "find" do
+  it "rotate" do
     t = Treap.new
-    t.insert 0,10,3
-    t.insert 0,9,2
-    t.insert 0,6,1
-    
-    t[0].should eq 6
-    t[1].should eq 9
-    t[2].should eq 10
+    t.insert 0, 1, 1
+    t.insert 1, 2, 2
+    t.insert 2, 3, 1
+
+    node = t.root.rotate(0)
+
+    node.val.should eq 1
+    node.ch[0].val.should eq 0
+    node.ch[1].val.should eq 2
   end
-  
+
+  it "rotate nil side" do
+    t = Treap.new
+    t.insert 0, 1, 2
+    t.insert 1, 2, 1
+
+    t.root.val.should eq 1
+    t.root.ch[0].val.should eq 0
+    t.root.ch[1].val.should eq 2
+
+    node = t.root.rotate(0)
+
+    node.val.should eq 0
+    node.ch[0].val.should eq 0
+    node.ch[1].val.should eq 0
+  end
+
+  it "insert" do
+    t = Treap.new
+    t.insert 0, 10
+    t.insert 0, 20
+    t.insert 2, 15 # => [20, 10, 15]
+
+    t[0].val.should eq 20
+    t[1].val.should eq 10
+    t[2].val.should eq 15
+  end
+
+  it "push" do
+    t = Treap.new
+    t << 10
+    t << 20
+    t << 15 # => [10, 20, 15]
+
+    t[0].val.should eq 10
+    t[1].val.should eq 20
+    t[2].val.should eq 15
+  end
+
   it "erase" do
     t = Treap.new
-    t.insert 0,10,3
-    t.insert 0,9,2
-    t.insert 0,6,1
+    t.insert 0, 100, 3
+    t.insert 0, 200, 2
+    t.insert 0, 300, 1 # => [300,200,100]
 
-    t[0].should eq 6
-    t[1].should eq 9
-    t[2].should eq 10
+    t.erase(1)
+    t[1].val.should eq 100
+  end
+
+  it "erase" do
+    t = Treap.new
+    t.insert 0, 100, 1
+    t.insert 0, 200, 2
+    t.insert 0, 300, 3 # => [300,200,100]
+
+    t.erase(1)
+    t[1].val.should eq 100
+  end
+
+
+  it "erase" do
+    t = Treap.new
+    t.insert 0, 100, 3
+    t.insert 1, 200, 2
+    t.insert 2, 300, 1
 
     t.erase(1)
 
-    t[0].should eq 6
-    t[1].should eq 10
+    t[1].val.should eq 300
   end
 
-  it "erace2" do
+  it "merge" do
     t = Treap.new
-    t.insert 0, 1, 1
-    t.insert 0, 2, 2
-    t.insert 0, 3, 1
-    t.insert 0, 4, 4
-    t.insert 0, 5, 1
-    t.insert 0, 6, 2
-    t.insert 0, 7, 1
+    t << 1
+    t << 2
+    t << 3
+    s = Treap.new
+    s << 4
+    s << 5
+    s << 6
+    t.merge(s)
 
-    t.erase(3)
-    t[3].should eq 4
+    6.times do |i|
+      t[i].val.should eq i + 1
+    end
   end
 
-  # it "merge" do
-  #   s = Treap.new
-  #   s.insert 0,1
-  #   s.insert 0,2
-  #   s.insert 0,3
+  it "split" do
+    t = Treap.new
+    6.times do |i|
+      t << i + 1
+    end
 
-  #   t = Treap.new
-  #   t.insert 0,4
-  #   t.insert 0,5
-  #   t.insert 0,6
-
-  #   s.merge(t)
-  #   s[4].should eq 4
-  # end
+    u, v = t.split(3)
+    u[1].val.should eq 2
+    v[1].val.should eq 5
+  end
 end
