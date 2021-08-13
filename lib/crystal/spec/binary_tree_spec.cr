@@ -116,4 +116,15 @@ describe Treap do
     u[1].val.should eq 2
     v[1].val.should eq 5
   end
+
+  it "lower bound" do
+    t = Treap.new
+    10.times do |i|
+      t << i * 10
+    end
+
+    t.lower_bound(19).should eq 2
+    t.lower_bound(20).should eq 2
+    t.lower_bound(21).should eq 3
+  end
 end

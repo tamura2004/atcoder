@@ -56,6 +56,10 @@ class Treap
     {Treap.new(left), Treap.new(right)}
   end
 
+  def lower_bound(x)
+    root.lower_bound(x)
+  end
+
   def debug
     puts "=== DEBUG ==="
     root.debug
@@ -141,6 +145,18 @@ class Treap
       end
     end
 
+    # 区間を[MIN, x)[x, MAX)に分けたときの
+    # 右区間の最小の要素が何番目か。
+    def lower_bound(x)
+      if val == x
+        ch[0].cnt
+      elsif val < x
+        ch[1].lower_bound(x) + ch[0].cnt + 1
+      else
+        ch[0].lower_bound(x)
+      end
+    end
+
     # 部分木のノード数の更新
     def update
       @cnt = ch.sum(&.cnt) + 1
@@ -191,6 +207,10 @@ class Treap
 
     def _erase
       self
+    end
+
+    def lower_bound(x)
+      0_i64
     end
 
     def update
