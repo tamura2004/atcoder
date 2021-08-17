@@ -47,15 +47,15 @@ describe Treap do
     t[2].val.should eq 15
   end
 
-  it "push" do
+  it "sorted push" do
     t = Treap.new
     t << 10
     t << 20
-    t << 15 # => [10, 20, 15]
+    t << 15 # => [10, 15, 20]
 
     t[0].val.should eq 10
-    t[1].val.should eq 20
-    t[2].val.should eq 15
+    t[1].val.should eq 15
+    t[2].val.should eq 20
   end
 
   it "erase" do
@@ -92,13 +92,13 @@ describe Treap do
 
   it "merge" do
     t = Treap.new
-    t << 1
-    t << 2
-    t << 3
+    t.insert 0,1
+    t.insert 1,2
+    t.insert 2,3
     s = Treap.new
-    s << 4
-    s << 5
-    s << 6
+    s.insert 0,4
+    s.insert 1,5
+    s.insert 2,6
     t.merge(s)
 
     6.times do |i|
@@ -109,7 +109,7 @@ describe Treap do
   it "split" do
     t = Treap.new
     6.times do |i|
-      t << i + 1
+      t.insert i,i + 1
     end
 
     u, v = t.split(3)
@@ -120,7 +120,7 @@ describe Treap do
   it "lower bound" do
     t = Treap.new
     10.times do |i|
-      t << i * 10
+      t.insert i, i * 10
     end
 
     t.lower_bound(19).should eq 2

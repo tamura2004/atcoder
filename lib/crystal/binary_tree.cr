@@ -25,9 +25,10 @@ class Treap
     @root = root.insert(i, val, rand(1..200000))
   end
 
-  # 末尾に値valのノードを挿入
+  # valの昇順を保つように挿入
   def <<(val)
-    @root = root.insert(root.cnt, val, rand(1..200000))
+    i = root.lower_bound(val)
+    @root = root.insert(i, val, rand(1..200000))
   end
 
   # i番目のノードの部分木を処理
@@ -111,7 +112,7 @@ class Treap
       ch[b][i]
     end
 
-    # i番目のノードを探して削除
+    # i番目のノードを探して処理
     def find(i, &block : Node -> Node)
       b, i, just = nex(i)
 

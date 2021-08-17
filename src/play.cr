@@ -1,14 +1,29 @@
-require "benchmark"
-require "big"
-require "bit_array"
-require "crystal/tree"
-
-N = 100000
-
-Benchmark.ips do |x|
-  x.report("uni remove") do
-    g = Tree.make(N, :uni)
-    g.remove(0)
+def solve2(n, k)
+  if k == 2
+    p 1
+    exit
   end
 
+  digits = [] of Int64
+  ret = n - 1
+  until ret == 0
+    digits << ret % k
+    ret //= k
+  end
+
+  digits.reverse!
+  ans = 0_i64
+  is_over = false
+  digits.each do |digit|
+    if digit == k - 1
+      is_over = true
+    end
+    ans *= k - 1
+    if is_over
+      ans += k - 2
+    else
+      ans += digit
+    end
+  end
+  ans + 1
 end

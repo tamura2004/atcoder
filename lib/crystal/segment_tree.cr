@@ -40,6 +40,20 @@ class SegmentTree(T)
     end
   end
 
+  # 一点更新、区間最大、要素と単位元で初期化
+  #
+  # ```
+  # alias Pair = Tuple(Int64,Int32)
+  # values = (0...n).map { |i| ({ 0_i64, i })}
+  # unit = { Int64::MIN//4, -1 }
+  # SegmentTree(Pair).range_max_query(values, unit)
+  # ```
+  def self.range_max_query(values : Array(T), unit : T)
+    new(values, unit: unit) do |x, y|
+      x < y ? y : x
+    end
+  end
+
   # 一点更新、区間最小、要素数で初期化
   def self.range_min_query(n : Int32)
     values = Array.new(n){ T::MAX }
