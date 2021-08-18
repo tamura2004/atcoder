@@ -14,23 +14,31 @@ class DigitDP
   getter a : Array(Int32)
   getter digit : Int32 # k進数
 
-  def initialize(a, digit = 10)
+  def initialize(a : Array(Int32), digit = 10)
     @a = a.map(&.to_i)
     @digit = digit.to_i
     @n = @a.size
   end
 
+  def initialize(s : String)
+    a = s.chars.map(&.to_i)
+    initialize(a)
+  end
+
   # 通常
   def each
+    leading_zero = true
     n.times do |i|
       [EDGE, FREE].each do |k|
         digit.times do |d|
           next if k == EDGE && a[i] < d
+          next if k == FREE && leading_zero
           kk = k == EDGE && d == a[i] ? EDGE : FREE
 
           yield i, k, d, kk
         end
       end
+      leading_zero &&= a[i] == 0
     end
   end
 

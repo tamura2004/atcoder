@@ -1,7 +1,23 @@
 require "spec"
 require "../digit_dp"
 
+macro make_array(value, *dims)
+  {% for dim in dims %} Array.new({{dim}}) { {% end %}
+    {{ value }}
+  {% for dim in dims %} } {% end %}
+end
+
 describe DigitDP do
+  it "usage" do
+    dd = DigitDP.new("1203")
+    dp = make_array(0_i64, dd.n + 1, 2)
+    dp[0][0] = 1_i64
+    dd.each do |i, k, d, kk|
+      dp[i + 1][kk] += dp[i][k]
+    end
+    dp[-1].sum.should eq 1204
+  end
+
   it "solve ABC007D" do
     a = "1"
     b = "1000000000000000000"
@@ -9,17 +25,9 @@ describe DigitDP do
   end
 end
 
-macro make_array(*dims)
-  {% for dim in dims %} Array.new({{dim}}) { {% end %}
-    {{ 0_i64 }}
-  {% for dim in dims %} } {% end %}
-end
-
 def solveABC007D(s : String)
-  a = s.chars.map(&.to_i)
-  n = a.size
-  dd = DigitDP.new(a)
-  dp = make_array(n + 1, 2, 2)
+  dd = DigitDP.new(s)
+  dp = make_array(0_i64, dd.n + 1, 2, 2)
   dp[0][0][0] = 1_i64
 
   dd.each do |i, k, d, kk|
