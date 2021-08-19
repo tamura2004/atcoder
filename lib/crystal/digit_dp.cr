@@ -6,6 +6,13 @@ FREE = 1
 ZERO = 0
 NONZ = 1
 
+# 多次元配列マクロ
+macro make_array(value, *dims)
+  {% for dim in dims %} Array.new({{dim}}) { {% end %}
+    {{ value }}
+  {% for dim in dims %} } {% end %}
+end
+
 # 桁DPのイテレータ
 #
 # 数字丁度=EDGE、以後自由=FREE
@@ -30,15 +37,14 @@ class DigitDP
     leading_zero = true
     n.times do |i|
       [EDGE, FREE].each do |k|
+        next if k == FREE && leading_zero
         digit.times do |d|
           next if k == EDGE && a[i] < d
-          next if k == FREE && leading_zero
           kk = k == EDGE && d == a[i] ? EDGE : FREE
-
-          yield i, k, d, kk
+          yield i, k, d, kk,leading_zero,a[i]
         end
       end
-      leading_zero &&= a[i] == 0
+      leading_zero = false if a[i] != 0
     end
   end
 

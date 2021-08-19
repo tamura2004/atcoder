@@ -1,44 +1,27 @@
 require "crystal/digit_dp"
 
-DigitDP.new([0,0,0,0,1], 2).each do |i,k,d,kk|
-  pp! [i,k,d,kk]
+macro chmax(target, other)
+  {{target}} = ({{other}}) if ({{target}}) < ({{other}})
 end
 
+MAX = 40
+n, k = gets.to_s.split.map(&.to_i64)
 
-# MAX_DIGIT = 3
-# def to_b(x)
-#   sprintf("%0#{MAX_DIGIT}b", k).chars.map(&.to_i)
-# end
+# ２進数桁毎の1の数
+tmp = gets.to_s.split.map(&.to_i64)
+cnt = (0...MAX).map do |i|
+  tmp.sum { |v| v.bit(i) }
+end
+cnt.reverse!
 
-# n,k = gets.to_s.split.map(&.to_i64)
-# a = gets.to_s.split.map(&.to_i64)
-# s = sprintf("%0#{MAX_DIGIT}b", k).chars.map(&.to_i)
+a = sprintf("%0#{MAX}b", k).chars.map(&.to_i)
 
-# count = -> (i : Int32, d : Int32) do
-#   a.sum do |v|
-#     v.bit(MAX_DIGIT - 1 - i) ^ d
-#   end
-# end
+dd = DigitDP.new(a, 2)
+dp = make_array(0_i64, dd.n + 1, 2)
 
-# pp count.call(9, 1)
+dd.each do |i,k,d,kk,lz,ai|
+  diff = d == 0 ? cnt[i] : n - cnt[i]
+  chmax dp[i+1][kk], dp[i][k] * 2 + diff
+end
 
-# ddp = DigitDP.new(s, 2)
-
-# macro make_array(value, *dims)
-#   {% for dim in dims %} Array.new({{dim}}) { {% end %}
-#     {{ value }}
-#   {% for dim in dims %} } {% end %}
-# end
-
-# macro chmax(target, other)
-#   {{target}} = ({{other}}) if ({{target}}) < ({{other}})
-# end
-
-# dp = make_array(0_i64, s.size + 1, 2, 2)
-
-# ddp.each_with_leading_zero do |i,j,k,d,jj,kk|
-#   cnt = count.call(i, d)
-#   chmax dp[i+1][jj][kk], dp[i][j][k] * 2 + cnt
-# end
-
-# pp dp
+pp dp[-1].max
