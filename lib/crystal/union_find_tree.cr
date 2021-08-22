@@ -1,29 +1,34 @@
 # 重み付きユニオンファインド木
-# グラフの連結成分ごとの頂点と辺の数
 #
 # ```
-# a = [{1,1},{1,2},{2,2},{3,3}] 
-# => 1を含む部分グラフの頂点2,辺3
+# a = [{1,1},{1,2},{2,2},{3,3}]
+# => 1を含む部分グラフの頂点2
 # uf = UnionFindTree.new(4)
 # a.each do |i,j|
 #   uf.unite(i,j)
 # end
-# uf.size(1) # => 2 
-# uf.weight(1) # => 3 
+# uf.size(1) # => 2
 #
 # ```
 class UnionFindTree
   getter n : Int32
   getter a : Array(Int32)
-  getter w : Array(Int32) # 辺の数
+  getter w : Array(Int64)
 
-  def initialize(@n)
+  def initialize(n)
+    @n = n.to_i
+
+    # マイナスなら要素数、ゼロ以上なら親のインデックス
     @a = Array.new(n, -1)
-    @w = Array.new(n, 0)
+
+    # 親ノードとの値の差分
+    @w = Array.new(n, 0_i64)
   end
 
   def find(i)
-    a[i] < 0 ? i : (a[i] = find(a[i]))
+    # マイナス=要素数を持つなら根なので自身を返す
+    # そうでなければ経路圧縮
+    a[i] < 0 ? i : (w[i] += w[a[i]]; a[i] = find(a[i]))
   end
 
   def same?(i, j)
@@ -34,25 +39,35 @@ class UnionFindTree
     -a[find(i)]
   end
 
-  # 辺の数
   def weight(i)
-    w[find(i)]
+    find(i)
+    w[i]
   end
 
-  def unite(i, j)
+  def diff(i, j)
+    weight(j) - weight(i)
+  end
+
+  def unite(i, j, wt = 0_i64)
+    wt = wt.to_i64
+    wt += weight(i)
+    wt -= weight(j)
+
     i = find(i)
     j = find(j)
-    if i == j
-      w[i] += 1
-      return
+    return if i == j
+
+    if a[i] > a[j]
+      i, j = j, i
+      wt = -wt
     end
-    i, j = j, i if a[i] > a[j]
+
     a[i] += a[j]
     a[j] = i
-    w[i] += w[j] + 1
+    w[j] = wt
   end
-  
+
   def gsize
-    n.times.map{|i|find(i)}.uniq.size
+    n.times.map { |i| find(i) }.uniq.size
   end
 end

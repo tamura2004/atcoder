@@ -22,14 +22,21 @@ describe UnionFindTree do
     s.same?(0, 3).should eq true
   end
 
+  it "weight" do
+    uf = UnionFindTree.new(10)
+    uf.unite 0, 1, 5
+    uf.unite 2, 3, 4
+    uf.unite 1, 2, 3
+    uf.diff(0, 3).should eq 12
+  end
+
   it "count num of path of connected partial graph" do
-    a = [{1,1},{1,2},{2,2},{3,3}]
+    a = [{1, 1}, {1, 2}, {2, 2}, {3, 3}]
     uf = UnionFindTree.new(4)
-    a.each do |i,j|
-      uf.unite(i,j)
+    a.each do |i, j|
+      uf.unite(i, j)
     end
     uf.size(1).should eq 2
-    uf.weight(1).should eq 3
   end
 
   it "solve acl practice A" do
@@ -60,7 +67,7 @@ describe UnionFindTree do
   end
 
   it "solve ARC027B" do
-    ARC027B.new(6,"PRBLMB","ARC027").solve.should eq 90
+    ARC027B.new(6, "PRBLMB", "ARC027").solve.should eq 90
   end
 end
 

@@ -1,5 +1,6 @@
 require "spec"
 require "../digit_dp"
+require "../mod_int"
 
 macro make_array(value, *dims)
   {% for dim in dims %} Array.new({{dim}}) { {% end %}
@@ -23,6 +24,11 @@ describe DigitDP do
     b = "1000000000000000000"
     solveABC007D(b).should eq 981985601490518016
   end
+
+  it "solve ABC129E" do
+    a = "1111111111111111111".chars.map(&.to_i)
+    solveABC129E(a).should eq 162261460
+  end
 end
 
 def solveABC007D(s : String)
@@ -38,4 +44,19 @@ def solveABC007D(s : String)
   end
 
   dp[-1][-1].sum
+end
+
+def solveABC129E(a)
+  dd = DigitDP.new(a, 2)
+  dp = make_array(0.to_m, dd.n + 1, 2)
+  dp[0][0] = 1.to_m
+  
+  dd.each do |i,k,d,kk|
+    cnt = 1
+    cnt = 2 if kk == EDGE && a[i] == 1
+    cnt = 2 if k == FREE && d == 0
+    dp[i+1][kk] += dp[i][k] * cnt
+  end
+
+  dp[-1].sum
 end

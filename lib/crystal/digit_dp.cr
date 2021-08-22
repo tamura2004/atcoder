@@ -41,7 +41,7 @@ class DigitDP
         digit.times do |d|
           next if k == EDGE && a[i] < d
           kk = k == EDGE && d == a[i] ? EDGE : FREE
-          yield i, k, d, kk,leading_zero,a[i]
+          yield i, k, d, kk, leading_zero, a[i]
         end
       end
       leading_zero = false if a[i] != 0

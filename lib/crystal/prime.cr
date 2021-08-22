@@ -5,15 +5,15 @@ require "crystal/mod_int"
 # エラストテレスの篩で、自身を割る最小の素数をクラス変数として持つ
 # 素数判定と、高速な素因数分解に利用
 class Prime
-  N = 1_000_000
+  MAX = 1_000_000
   extend Enumerable(Int32)
-  class_getter div : Array(Int32) = sieve(N)
+  class_getter div : Array(Int32) = sieve(MAX)
   class_getter each : PrimeIterator = PrimeIterator.new(div)
 
   # エラストテレスの篩
   #
   # ```
-  # seive(3) # => [false, false, true, true]
+  # seive(5) # => [-1, -1, 2, 3, 2]
   # ```
   def self.sieve(n : Int32) : Array(Int32)
     Array.new(n + 1, &.itself).tap do |dp|
@@ -51,13 +51,12 @@ class Prime
     end
   end
 
-  # 高速な素因数分解
+  # 素因数分解
   #
   # ```
   # Prime.prime_division(72) # => {2 => 3, 3 => 2}
   # ```
-  def self.prime_division(n : Int) : Hash(Int32, Int32)
-    # return prime_division(n.to_i64) if n > N
+  def self.prime_division(n : Int32) : Hash(Int32, Int32)
     Hash(Int32, Int32).new(0).tap do |dp|
       while n > 1
         i = div[n]
@@ -70,10 +69,28 @@ class Prime
   # 素因数
   #
   # ```
-  # Prime.prime_factor(72) # => Set{2, 3}
+  # Prime.prime_factor(72) # => [2, 3]
   # ```
-  def self.prime_factor(n : Int) : Set(Int32)
-    n.prime_division.keys.to_set
+  def self.prime_factors(n : Int32) : Array(Int32)
+    # n.prime_division.keys.to_set # to_setは遅い
+    Array(Int32).new.tap do |dp|
+      while n > 1
+        i = div[n]
+        dp << i if dp.empty? || dp.last != i
+        n //= i
+      end
+    end
+  end
+  
+  # 素因数を列挙
+  def self.each_prime_factor(n : Int32)
+    pre = -1
+    while n > 1
+      i = div[n]
+      yield i if pre == -1 || pre != i
+      pre = i
+      n //= i
+    end
   end
 
   # 約数（1と自身を含む）
@@ -81,39 +98,20 @@ class Prime
   # ```
   # Prime.factors(72) # => [1, 2, 3, 4, 6, 8, 9, 12, 18, 24, 36, 72]
   # ```
-  def self.factors(n : Int)
-    Array(Int32).new.tap do |dp|
-      m = Math.sqrt(n).to_i
-      1.upto(m) do |i|
-        next unless n.divisible_by?(i)
-        dp << i
-        dp << n // i if i * i != n
-      end
-    end.sort
+  def self.factors(n : Int32)
+    PrimeLarge(Int32).factors(n)
   end
-
-  # 約数のペアを列挙
+  
+  # 約数を列挙（1と自身を含む）
+  # ただし、順不同
   #
   # ```
-  # Prime.each_factors_pair(6)
+  # Prime.each_factors(12) do |i|
+  #   pp i # => 1, 12, 2, 6, 3, 4
+  # end
   # ```
-  def self.each_factors_pair(n : Int)
-    m = Math.sqrt(n).to_i
-    1.upto(m) do |i|
-      next unless n.divisible_by?(i)
-      j = n // i
-      yield i, j
-      yield j, i if i != j
-    end
-  end
-
-  # 約数の個数
-  #
-  # ```
-  # Prime.factor_num(72) # => 12
-  # ```
-  def self.factor_num(n : Int32) : Int32
-    factor_num(n.prime_division)
+  def self.each_factor(n : Int32, &block : Int32 -> Nil)
+    PrimeLarge(Int32).each_factor(n, &block)
   end
 
   # 素因数分解から約数の個数を求める
@@ -123,11 +121,10 @@ class Prime
   # Prime.factor_num(f) # => 6
   # ```
   def self.factor_num(h : Hash(Int32, Int32)) : Int32
-    h.values.reduce(1) do |acc, v|
-      acc * (v + 1)
-    end
+    PrimeLarge(Int32).factor_num(h)
   end
 
+  # 素数列挙のイテレータ
   private class PrimeIterator
     include Iterator(Int32)
     getter div : Array(Int32)
@@ -138,14 +135,117 @@ class Prime
     end
 
     def next
-      while i <= N && div[i] != i
+      while i <= MAX && div[i] != i
         @i += 1
       end
-      if i > N
+      if i > MAX
         stop
       else
         begin i ensure @i += 1 end
       end
+    end
+  end
+end
+
+# 大きな数の素数クラス
+#
+# Prime::MAXを超える数を対象
+# 試し割法で愚直に求める
+class PrimeLarge(T)
+
+  # 素数判定
+  def self.is_prime?(n : T) : Bool
+    ans = true
+    m = Math.sqrt(n).to_i
+    ans = 2.upto(m).none? do |i|
+      n % i == 0
+    end
+  end
+
+  # 素因数分解
+  def self.prime_division(n : T) : Hash(T, Int32)
+    Hash(T, Int32).new(0).tap do |dp|
+      m = T.new Math.sqrt(n)
+      T.new(2).upto(m) do |i|
+        while n.divisible_by?(i)
+          dp[i] += 1
+          n //= i
+        end
+      end
+      dp[n] += 1 if n != 1
+    end
+  end
+
+  # 素因数（素数の約数）
+  def self.prime_factors(n : T) : Array(T)
+    Array(T).new.tap do |dp|
+      m = T.new Math.sqrt(n)
+      T.new(2).upto(m) do |i|
+        while n.divisible_by?(i)
+          dp << i if dp.empty? || dp.last != i
+          n //= i
+        end
+      end
+      dp << n if n != 1
+    end
+  end
+
+  # 素因数の列挙
+  def self.each_prime_factor(n : T)
+    m = T.new Math.sqrt(n)
+    pre = -1
+    T.new(2).upto(m) do |i|
+      while n.divisible_by?(i)
+        yield i if pre != i
+        pre = i
+        n //= i
+      end
+    end
+    yield n if n != 1
+  end
+
+  # 約数（1と自身を含む）
+  #
+  # ```
+  # Prime.factors(72) # => [1, 2, 3, 4, 6, 8, 9, 12, 18, 24, 36, 72]
+  # ```
+  def self.factors(n : T)
+    Array(T).new.tap do |dp|
+      m = T.new Math.sqrt(n)
+      T.new(1).upto(m) do |i|
+        next unless n.divisible_by?(i)
+        dp << i
+        dp << n // i if i * i != n
+      end
+    end.sort
+  end  
+
+    # 約数を列挙（1と自身を含む）
+  # ただし、順不同
+  #
+  # ```
+  # Prime.each_factors(12) do |i|
+  #   pp i # => 1, 12, 2, 6, 3, 4
+  # end
+  # ```
+  def self.each_factor(n : T)
+    m = T.new Math.sqrt(n)
+    T.new(1).upto(m) do |i|
+      next unless n.divisible_by?(i)
+      yield i
+      yield n // i if i * i != n
+    end
+  end
+  
+  # 素因数分解から約数の個数を求める
+  #
+  # ```
+  # f = {2 => 1, 3 => 2}
+  # Prime.factor_num(f) # => 6
+  # ```
+  def self.factor_num(h : Hash(T, Int32)) : Int32
+    h.values.reduce(1) do |acc, v|
+      acc * (v + 1)
     end
   end
 end
@@ -157,60 +257,63 @@ struct Int
   # ```
   # 7.prime? # => true
   # ```
-  def prime?
-    Prime.is_prime?(self)
+  def is_prime?
+    if self > Prime::MAX
+      PrimeLarge(Int64).is_prime?(to_i64)
+    else
+      Prime.is_prime?(to_i)
+    end
   end
-
-  # 割り切る
-  #
-  # ```
-  # 3.div?(12) # => true
-  # 3.div?(7)  # => false
-  # ```
-  def div?(b)
-    b.divisible_by?(self)
-  end
-
+  
   # 素因数分解
   #
   # ```
   # 72.prime_division # => {2 => 3, 3 => 2}
   # ```
   def prime_division
-    Prime.prime_division(self)
+    if self > Prime::MAX
+      PrimeLarge(Int64).prime_division(to_i64)
+    else
+      Prime.prime_division(to_i)
+    end
   end
-
+  
   # 素因数
   #
   # ```
   # 72 # => Set{2, 3}
   # ```
-  def prime_factor
-    Prime.prime_factor(self)
+  def prime_factors
+    if self > Prime::MAX
+      PrimeLarge(Int64).prime_factors(to_i64)
+    else
+      Prime.prime_factors(to_i)
+    end
   end
-
-  # 約数の個数
+  
+  # 素因数の列挙
   #
   # ```
-  # 72.factor_num # => 12
+  # 72 # => Set{2, 3}
   # ```
-  def factor_num
-    Prime.factor_num(self)
+  def prime_factors(&block : Int -> Nil)
+    if self > Prime::MAX
+      PrimeLarge(Int64).prime_factors(to_i64, &block)
+    else
+      Prime.prime_factors(to_i, &block)
+    end
   end
-
+  
+  # 約数
+  #
+  # ```
+  # 12.factors # => [1, 2, 3, 4, 6, 12]
+  # ```
   def factors
-    Prime.factors(self)
-  end
-
-  # 約数のペアを列挙
-  def each_factors_pair
-    one = self // self
-    m = one * Math.sqrt(self).to_i
-    one.upto(m) do |i|
-      next unless divisible_by?(i)
-      j = self // i
-      yield i, j
-      yield j, i if i != j
+    if self > Prime::MAX
+      PrimeLarge(Int64).factors(to_i64)
+    else
+      Prime.factors(to_i)
     end
   end
 
@@ -221,33 +324,6 @@ struct Int
   # 三角数は自身を正の整数に分割できる最大数
   def trinum_index
     (Math.sqrt(self * 8 + 1).to_i64 - 1) // 2
-  end
-end
-
-# 大きな数の素因数分解等
-struct Int64
-  # 素因数分解
-  #
-  # ```
-  # a = 1_000_000_000_000_i64
-  # a.prime_division # => {2 => 12, 5 => 12}
-  # ```
-  def prime_division : Hash(Int64, Int32)
-    n = self
-    Hash(Int64, Int32).new(0).tap do |dp|
-      m = Math.sqrt(n).to_i64
-      2_i64.upto(m) do |i|
-        while n.divisible_by?(i)
-          dp[i] += 1
-          n //= i
-        end
-      end
-      dp[n.to_i64] += 1 if n != 1
-    end
-  end
-
-  def prime_factor : Set(Int64)
-    prime_division.keys.to_set
   end
 end
 

@@ -1,29 +1,27 @@
-def solve2(n, k)
-  if k == 2
-    p 1
-    exit
-  end
+require "benchmark"
+require "crystal/prime"
 
-  digits = [] of Int64
-  ret = n - 1
-  until ret == 0
-    digits << ret % k
-    ret //= k
+Benchmark.ips do |x|
+  x.report("convert hash to set") do
+    # Prime.prime_factor(510510)
+    ans = Hash(Int32,Int32).new(0)
+    ans[1] += 1
+    ans[2] += 1
+    ans[3] += 1
+    ans.keys.to_set
   end
-
-  digits.reverse!
-  ans = 0_i64
-  is_over = false
-  digits.each do |digit|
-    if digit == k - 1
-      is_over = true
-    end
-    ans *= k - 1
-    if is_over
-      ans += k - 2
-    else
-      ans += digit
-    end
+  
+  x.report("not use set") do
+    ans = [] of Int32
+    ans << 1
+    ans << 2
+    ans << 3
   end
-  ans + 1
+  
+  x.report("use set only") do
+    ans = Set(Int32).new
+    ans << 1
+    ans << 2
+    ans << 3
+  end
 end
