@@ -1,43 +1,35 @@
 n, m = gets.to_s.split.map { |v| v.to_i }
-s, t = m.times.map do
-  gets.to_s.split.map { |v| v.to_i - 1 }
-end.transpose
+g = Array.new(n) { [] }
 
-ix = [nil] * m
-m.times do |i|
-  ix[s[i]] = i
+m.times do
+  v, nv, w = gets.to_s.split.map { |v| v.to_i }
+  v -= 1
+  nv -= 1
+  g[v] << [nv, w]
+  g[nv] << [v, w]
 end
 
-# 依存関係のグラフ、hは入次数
-g = m.times.map { [] }
-h = [0] * m
+z = Array.new(n, 0)
+u = Array.new(n, 0)
 
-m.times do |v|
-  nv = ix[t[v]]
-  next if nv.nil?
-  g[v] << nv
-  h[nv] += 1
-end
+z[0] = 0
+u[0] = 1
 
-# 入次数0の頂点をキューに
-q = []
-m.times do |v|
-  if h[v] == 0
-    q << v
+f = ->(v, pv) do
+  g[v].each do |nv, w|
+    next if nv == pv
+    z[nv] = w - z[v]
+    u[nv] = w - u[v]
+    f.call(nv, v)
   end
 end
+f.call(0, -1)
 
-# トポロジカルソート、ansは結果
-ans = []
-while q.size > 0
-  v = q.shift
-  ans << v
-  g[v].each do |nv|
-    h[nv] -= 1
-    if h[nv] == 0
-      q << nv
-    end
-  end
+g = ->(v, nv, x) do
+  len = (x - z[v]) / (u[v] - z[v])
+  (u[nv] - z[nv]) * len + z[nv]
 end
 
-puts ans.size == m ? "No" : "Yes"
+pp g.call(0, 2, 15)
+pp g.call(0, 1, 15)
+pp g.call(0, 3, 15)

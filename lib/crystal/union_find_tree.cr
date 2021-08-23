@@ -28,7 +28,8 @@ class UnionFindTree
   def find(i)
     # マイナス=要素数を持つなら根なので自身を返す
     # そうでなければ経路圧縮
-    a[i] < 0 ? i : (w[i] += w[a[i]]; a[i] = find(a[i]))
+    # 先にfindを呼ぶことで累積和を実現
+    a[i] < 0 ? i : (r = find(a[i]); w[i] += w[a[i]]; a[i] = r)
   end
 
   def same?(i, j)
