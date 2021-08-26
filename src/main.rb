@@ -1,35 +1,45 @@
-n, m = gets.to_s.split.map { |v| v.to_i }
-g = Array.new(n) { [] }
+n, p, k = gets.to_s.split.map { |v| v.to_i }
+g = Array.new(n) { gets.to_s.split.map { |v| v.to_i } }
 
-m.times do
-  v, nv, w = gets.to_s.split.map { |v| v.to_i }
-  v -= 1
-  nv -= 1
-  g[v] << [nv, w]
-  g[nv] << [v, w]
-end
-
-z = Array.new(n, 0)
-u = Array.new(n, 0)
-
-z[0] = 0
-u[0] = 1
-
-f = ->(v, pv) do
-  g[v].each do |nv, w|
-    next if nv == pv
-    z[nv] = w - z[v]
-    u[nv] = w - u[v]
-    f.call(nv, v)
+# p以下で到達できる組の数
+solve = ->x do
+  gg = Array.new(n) do |i|
+    n.times.map do |j|
+      g[i][j] == -1 ? x : g[i][j]
+    end
   end
-end
-f.call(0, -1)
 
-g = ->(v, nv, x) do
-  len = (x - z[v]) / (u[v] - z[v])
-  (u[nv] - z[nv]) * len + z[nv]
+  n.times do |k|
+    n.times do |i|
+      n.times do |j|
+        cnt = gg[i][k] + gg[k][j]
+        gg[i][j] = cnt if gg[i][j] > cnt
+      end
+    end
+  end
+
+  ans = n.times.sum do |i|
+    n.times.count do |j|
+      gg[i][j] <= p
+    end
+  end
+
+  ans -= n
+  ans /= 2
+  ans
 end
 
-pp g.call(0, 2, 15)
-pp g.call(0, 1, 15)
-pp g.call(0, 3, 15)
+INF = 10 ** 13
+hi = (0..INF).bsearch { |i| k > solve.call(i) }
+lo = (0..INF).bsearch { |i| k >= solve.call(i) }
+lo = 1 if lo == 0
+
+if hi.nil?
+  if lo.nil?
+    puts 0
+  else
+    puts "Infinity"
+  end
+else
+  puts hi - lo
+end

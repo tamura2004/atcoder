@@ -1,2 +1,7 @@
-x = {1,2} + {3,4}
-pp x
+3.times do |y|
+  3.times do |x|
+    pp! [y,x]
+    x = 2
+  end
+end
+
