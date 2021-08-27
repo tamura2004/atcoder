@@ -2,12 +2,14 @@ CHMAX = <<EOS.lines
 macro chmax(target, other)
   {{target}} = ({{other}}) if ({{target}}) < ({{other}})
 end
+
 EOS
 
 CHMIN = <<EOS.lines
 macro chmin(target, other)
   {{target}} = ({{other}}) if ({{target}}) > ({{other}})
 end
+
 EOS
 
 MAKE_ARRAY = <<EOS.lines
@@ -16,6 +18,7 @@ macro make_array(value, *dims)
     {{ value }}
   {% for dim in dims %} } {% end %}
 end
+
 EOS
 
 src, target = ARGV
