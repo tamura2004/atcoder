@@ -6,13 +6,6 @@ FREE = 1
 ZERO = 0
 NONZ = 1
 
-# 多次元配列マクロ
-macro make_array(value, *dims)
-  {% for dim in dims %} Array.new({{dim}}) { {% end %}
-    {{ value }}
-  {% for dim in dims %} } {% end %}
-end
-
 # 桁DPのイテレータ
 #
 # 数字丁度=EDGE、以後自由=FREE
@@ -60,6 +53,17 @@ class DigitDP
 
             yield i, j, k, d, jj, kk
           end
+        end
+      end
+    end
+  end
+
+  # 先頭がゼロフラグ付き
+  def each_with_leading_zero_no_digit
+    n.times do |i|
+      [ZERO, NONZ].each do |j|
+        [EDGE, FREE].each do |k|
+          yield i, j, k
         end
       end
     end

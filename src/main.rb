@@ -1,10 +1,11 @@
-puts "server {"
-puts "  listen 80;"
-100.times do |i|
-  port = 8001 + i
-  puts ""
-  puts "  location /#{port}/ {"
-  puts "    proxy_pass http://localhost:#{port}/;"
-  puts "  }"
+def range_sum(a, b)
+  (a + b) * (b - a + 1) / 2
 end
-puts "}"
+
+ans = 0
+ans += range_sum(81, 100)
+ans += range_sum(51, 80) * 2
+# ans += 50 * 4
+# ans += 49
+
+pp ans

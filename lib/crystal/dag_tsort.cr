@@ -15,9 +15,13 @@ class Graph
   def initialize(n)
     @n = n.to_i
     @g = Array.new(n){ [] of Int32 }
+    @h = Array.new(n, 0)
   end
 
   def add(v,nv,origin=1,both=false)
+    v = v.to_i - origin
+    nv = nv.to_i - origin
+    
     g[v] << nv
     h[nv] += 1
     g[nv] << v if both

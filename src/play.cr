@@ -1,9 +1,12 @@
-require "readline"
-
-while line = Readline.readline("test> ", true)
-  begin
-    puts line
-  rescue e
-    puts e.message
-  end
+enum State
+  ZERO
+  EDGE
+  FREE
 end
+
+State.each do |state|
+  pp state
+  pp state == State::ZERO
+  pp state.value
+end
+

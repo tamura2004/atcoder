@@ -1,8 +1,18 @@
 struct Complex(T)
+  include Comparable(Complex(T))
+
   getter real : T
   getter imag : T
 
-  def initialize(@real : T, @imag : T = T.zero)
+  # 平面幾何で利用する場合を想定した辞書順ソート
+  def <=>(b : self)
+    ret = real <=> b.real
+    ret != 0 ? ret : imag <=> b.imag
+  end
+
+  def initialize(real : T, imag : T = T.zero)
+    @real = T.new(real)
+    @imag = T.new(imag)
   end
 
   def abs2
