@@ -201,25 +201,11 @@ def butterfly_inv(a : Array(Int64), mod : Int) : Nil
   end
 end
 
-def convolution_mini(p : Array(Int64), q : Array(Int64), mod : Int) : Array(Int64)
-  n = p.size
-  m = q.size
-  ans = Array.new(n + m - 1, 0_i64)
-  p.each_with_index do |a, i|
-    q.each_with_index do |b, j|
-      ans[i + j] += a * b % mod
-      ans[i + j] %= mod
-    end
-  end
-  ans
-end
-
-def convolution(p : Array(Int64), q : Array(Int64), mod : Int) : Array(Int64)
+def convolution(p : Array(Int64), q : Array(Int64), mod) : Array(Int64)
   n = p.size
   m = q.size
 
   return [] of Int64 if n == 0 || m == 0
-  return convolution_mini(p,q,mod) if n <= 60 || m <= 60
 
   z = 1_i64 << ceil_pow2(n + m - 1)
   a = Array.new(z) { |i| i < n ? p[i] : 0_i64 }

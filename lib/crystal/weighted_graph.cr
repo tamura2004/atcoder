@@ -26,7 +26,7 @@ abstract class WeightedGraph
     from : Int,
     to : Int,
     cost : Int64,
-    origin : Int32 = 0,
+    origin : Int32 = 1,
     both : Bool = false
   )
     i = from.to_i - origin

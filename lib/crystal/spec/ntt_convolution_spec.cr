@@ -21,7 +21,6 @@ describe "convolution" do
       g = a.dup
       h = b.dup
       e = convolution(a, b, MOD)
-      f = convolution_mini(c, d, MOD)
       e.should eq f
     end
   end
