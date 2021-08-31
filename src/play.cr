@@ -1,12 +1,3 @@
-enum State
-  ZERO
-  EDGE
-  FREE
-end
-
-State.each do |state|
-  pp state
-  pp state == State::ZERO
-  pp state.value
-end
-
+a = [1, 2, 3, 4]
+b = a.zip(0..).select(&.last.odd?).map(&.first)
+pp b
