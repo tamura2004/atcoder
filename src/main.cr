@@ -1,6 +1,6 @@
 require "crystal/boston_mori"
 
-p = [1]
-q = [1,0,-1]
+a = [1]
+b = [1,0,-2]
 
-pp BostonMori.new(p,q).solve(2)
+pp BostonMori.new(a,b).solve(8)

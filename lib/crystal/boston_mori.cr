@@ -12,9 +12,9 @@ class BostonMori
   def solve(n)
     q_rev = rev(q)
     while n > 0
-      @p = convolution(p, q_rev, 998244353)
+      @p = convolution(p, q_rev)
       @p = n.odd? ? odd(p) : even(p)
-      @q = convolution(q, q_rev, 998244353)
+      @q = convolution(q, q_rev)
       @q = even(q)
       q_rev = q
       q_rev = rev(q)
