@@ -136,7 +136,7 @@ def butterfly(a : Array(Int64), mod : Int) : Nil
   n = a.size
   h = ceil_pow2(n)
   se = butterfly_init(g, mod)
-  
+
   1.upto(h) do |ph|
     w = 1_i64 << (ph - 1)
     p = 1_i64 << (h - ph)
@@ -219,7 +219,7 @@ def convolution(p : Array(Int64), q : Array(Int64), mod : Int) : Array(Int64)
   m = q.size
 
   return [] of Int64 if n == 0 || m == 0
-  return convolution_mini(p,q,mod) if n <= 60 || m <= 60
+  # return convolution_mini(p,q,mod) if n <= 60 || m <= 60
 
   z = 1_i64 << ceil_pow2(n + m - 1)
   a = Array.new(z) { |i| i < n ? p[i] : 0_i64 }
