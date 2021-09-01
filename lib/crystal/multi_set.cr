@@ -44,6 +44,18 @@ class MultiSet
     @root = node.delete(Int64::MIN)
   end
 
+  def min
+    root.min
+  end
+
+  def max
+    root.max
+  end
+
+  def each(&block : Int64 -> _)
+    root.each(&block)
+  end
+
   def debug
     puts "==== DEBUG ===="
     root.debug
@@ -102,6 +114,20 @@ class MultiSet
       end
     end
 
+    def min
+      ch[0].nil_node? ? val : ch[0].min
+    end
+
+    def max
+      ch[1].nil_node? ? val : ch[1].max
+    end
+
+    def each(&block : Int64 -> _)
+      ch[0].each(&block)
+      block.call(val)
+      ch[1].each(&block)
+    end
+
     def debug(indent = 0)
       ch[1].debug(indent + 2)
       printf("%sv:%d p:%d\n", " " * indent, val, pri)
@@ -127,6 +153,9 @@ class MultiSet
 
     def insert(v, pri)
       Node.new(v, pri)
+    end
+
+    def each(&block : Int64 -> _)
     end
 
     def debug(indent = 0)

@@ -41,6 +41,10 @@ describe MultiSet do
     right << 50
     right << 60
     left.merge(right)
+
+    left.min.should eq 10
+    left.max.should eq 60
     left.debug
+    left.delete 60
   end
 end
