@@ -107,6 +107,7 @@ class Treap
 
     # i番目のノード
     def [](i)
+      i += cnt if i < 0
       b, i, just = nex(i)
       return self if just
       ch[b][i]
