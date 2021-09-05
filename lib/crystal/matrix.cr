@@ -10,10 +10,11 @@ class Matrix(T)
     new(n) { |i, j| i == j ? T.zero + 1 : T.zero }
   end
 
-  def initialize(@n)
+  def initialize(n)
+    @n = n.to_i
     @a = Array.new(n) { |i| Array.new(n) { |j| yield i, j } }
   end
-
+  
   def initialize(@a)
     @n = a.size
   end
@@ -28,7 +29,7 @@ class Matrix(T)
     end
   end
 
-  def *(b : Array(T)) : Array(T)
+  def *(b : Array(Int))
     a.map do |v|
       v.zip(b).sum { |x, y| x*y }
     end

@@ -19,6 +19,10 @@ class MultiSet
     root.find(v)
   end
 
+  def includes?(v)
+    root.find(v)
+  end
+
   def <<(v)
     v = v.to_i64
     pri = rand(Int32::MAX)

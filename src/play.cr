@@ -1,3 +1,4 @@
-a = [1, 2, 3, 4]
-b = a.zip(0..).select(&.last.odd?).map(&.first)
-pp b
+s = Set{1,2,3}
+
+pp s.includes?(1)
+pp s.includes?(5)
