@@ -83,7 +83,7 @@ class Treap
 
     def upper(k)
       if k <= val
-        left.nil? ? val : (wk = left.upper(k)).nil? ? val : wk < val ? wk : val
+        left.nil? ? val : left.upper(k)
       else
         right.nil? ? nil : right.upper(k)
       end
@@ -91,25 +91,10 @@ class Treap
 
     def lower(k)
       if val <= k
-        right.nil? ? val : (wk = right.lower(k)).nil? ? val : wk < val ? val : wk
+        right.nil? ? val : right.lower(k)
       else
         left.nil? ? nil : left.lower(k)
       end
     end
-  end
-end
-
-l, q = gets.split.map(&:to_i)
-tree = Treap.new
-tree << 0
-tree << l
-
-q.times do
-  c, x = gets.split.map(&:to_i)
-  case c
-  when 1
-    tree << x
-  when 2
-    pp tree.upper(x) - tree.lower(x)
   end
 end
