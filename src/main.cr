@@ -1,40 +1,26 @@
 require "crystal/treap_merge_split"
 
-alias Pair = Tuple(Int64,Int64)
+n = gets.to_s.to_i
+a = gets.to_s.split.map(&.to_i)
+b = a.zip(1..).sort.reverse
+tr = Treap{0,n+1}
 
-h, w = gets.to_s.split.map(&.to_i64)
-ab = Array.new(h) { gets.to_s.split.map(&.to_i64.- 1) }
+ans = 0_i64
 
-pairs = Treap(Pair).new
-moves = Treap(Int64).new
+b.each do |v, i|
+  l = tr.lower(i, eq = false) || 0
+  r = tr.upper(i, eq = false) || n + 1
+  tr << i
 
-w.times do |x|
-  pairs << { x, x }
-  moves << 0_i64
-end
-
-(1..h).each do |y|
-  lo, hi = ab[y-1]
-  hi += 1
-  left = { lo, 0_i64 }
-  right = { hi, Int64::MAX }
-
-  part, pairs = pairs.split(left..right)
-  part.each do |(a,b)|
-    moves.delete(a - b)
+  if l != 0
+    ll = tr.lower(l, eq = false) || 0
+    ans += (r - i).to_i64 * (l - ll) * v
   end
 
-  if part.size > 0
-    a, b = part.max.not_nil!
-    if hi < w
-      pairs << { hi, b }
-      moves << hi - b
-    end
-  end
-
-  if moves.size == 0
-    puts -1
-  else
-    puts moves.min.not_nil! + y
+  if r != n + 1
+    rr = tr.upper(r, eq = false) || n + 1
+    ans += (i - l).to_i64 * (rr - r) * v
   end
 end
+
+pp ans

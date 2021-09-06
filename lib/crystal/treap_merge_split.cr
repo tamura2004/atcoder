@@ -10,33 +10,37 @@ class Treap(T)
   end
 
   def size
-    (node = root) ? node.size : 0
+    root.try &.size || 0
   end
 
   def merge(other : self)
     return self if other.nil_tree?
-    @root = (node = @root) ? node.merge(other.root) : other.root
+    @root = root.try &.merge(other.root) || other.root
     self
   end
 
   def split(k : T, eq = true)
-    (node = root) ? node.split(k, eq) : { nil, nil }
+    root.try &.split(k, eq) || {nil, nil}
   end
 
-  def split(r : Range(T,T))
+  def split_at(k)
+    k += size if k < 0
+    root.try &.split_at(k) || {nil, nil}
+  end
+
+  def split(r : Range(T, T))
     lo = r.begin
     hi = r.end
     left, tail = split(lo, eq = false)
-    mid, right = tail ? tail.split(hi) : { nil, nil }
-    @root = left ? left.merge(right) : right
-    { Treap(T).new(mid), self }
-    # left, mid = split(lo, eq = )
+    mid, right = tail.try &.split(hi) || {nil, nil}
+    @root = left.try &.merge(right) || right
+    {Treap(T).new(mid), self}
   end
 
   def insert(v : T, pri : Int32)
     left, right = split(v)
     new_node = Node(T).new(v, pri)
-    left = left ? left.merge(new_node) : new_node
+    left = left.try &.merge(new_node) || new_node
     @root = left.merge(right)
     self
   end
@@ -47,44 +51,45 @@ class Treap(T)
 
   def delete(k : T)
     left, other = split(k, eq = false)
-    mid, right = other ? other.split(k) : { nil, nil }
-    @root = left ? left.merge(right) : right
+    mid, right = other.try &.split_at(1) || {nil, nil}
+    @root = left.try &.merge(right) || right
     self
   end
 
   def upper(k, eq = true)
-    (node = root).nil? ? nil : node.upper(k, eq)
+    root.try &.upper(k, eq)
   end
 
   def lower(k, eq = true)
-    (node = root).nil? ? nil : node.lower(k, eq)
+    root.try &.lower(k, eq)
   end
 
   def min
-    (node = root) ? node.min : nil
+    root.try &.min
   end
 
   def max
-    (node = root) ? node.max : nil
+    root.try &.max
   end
 
   def shift
-    if node = root
-      k, new_node = node.shift
-      @root = new_node
-      k
-    else
-      nil
-    end
-    # (node = root) ? (wk = node.shift) ? wk.val : nil : nil
+    fst, snd = root.try &.split_at(1) || {nil, nil}
+    @root = snd
+    fst.try &.val
+  end
+
+  def pop
+    fst, snd = root.try &.split_at(-1) || {nil, nil}
+    @root = fst
+    snd.try &.val
   end
 
   def each(&block : T -> _)
-    (node = root) && node.each(&block)
+    root.try &.each(&block)
   end
 
   def to_a
-    (node = root) ? node.to_a : [] of T
+    root.try &.to_a || [] of T
   end
 
   class Node(T)
@@ -101,7 +106,7 @@ class Treap(T)
     end
 
     def update
-      @size = (left.try(&.size) || 0) + (right.try(&.size) || 0) + 1
+      @size = (left.try &.size || 0) + (right.try &.size || 0) + 1
       self
     end
 
@@ -109,70 +114,74 @@ class Treap(T)
       return self if other.nil?
 
       if pri < other.pri
-        other.left = other.left ? merge(other.left) : self
+        other.left = other.left.try { |node| merge(node) } || self
         other.update
       else
-        @right = (node = @right) ? node.merge(other) : other
+        @right = right.try &.merge(other) || other
         update
       end
     end
 
     def split(k, eq = true)
       if val < k || (eq && k == val)
-        fst, snd = (node = right) ? node.split(k, eq) : { nil, nil }
+        fst, snd = right.try &.split(k, eq) || {nil, nil}
         @right = fst
-        { update, snd }
+        {update, snd}
       else
-        fst, snd = (node = left) ? node.split(k, eq) : { nil, nil }
+        fst, snd = left.try &.split(k, eq) || {nil, nil}
         @left = snd
-        { fst, update }
+        {fst, update}
+      end
+    end
+
+    # k番目より前と、k番目以降で分割 [min, k) [k, max)
+    def split_at(k)
+      k += size if k < 0
+      cnt = left.try &.size || 0
+      if cnt >= k
+        fst, snd = left.try &.split_at(k) || {nil, nil}
+        @left = snd
+        {fst, update}
+      else
+        fst, snd = right.try &.split_at(k - cnt - 1) || {nil, nil}
+        @right = fst
+        {update, snd}
       end
     end
 
     def upper(k, eq = true)
       if k < val || (eq && k == val)
-        (node = left) ? (wk = node.upper(k, eq)) ? Math.min(val, wk) : val : val
+        left.try(&.upper(k, eq)).try { |v| Math.min(v, val) } || val
       else
-        (node = right) ? node.upper(k, eq) : nil
+        right.try &.upper(k, eq)
       end
     end
 
     def lower(k, eq = true)
       if val < k || (eq && k == val)
-        (node = right) ? (wk = node.lower(k, eq)) ? Math.max(val, wk) : val : val
+        right.try(&.lower(k, eq)).try { |v| Math.max(v, val) } || val
       else
-        (node = left) ? node.lower(k, eq) : nil
+        left.try &.lower(k, eq)
       end
     end
 
     def min
-      (node = left) ? node.min : val
+      left.try &.min || val
     end
 
     def max
-      (node = right) ? node.max : val
-    end
-
-    def shift : Tuple(T?, Node(T)?)
-      # (node = left) ? node.left ? node.shift : (@left = nil; node) : nil
-      if node = left
-        k, new_node = node.shift
-        @left = new_node
-        { k, self }
-      else
-        { val, nil }
-      end
+      right.try &.max || val
     end
 
     def each(&block : T -> _)
-      (node = left) && node.each(&block)
+      left.try &.each(&block)
       block.call(val)
-      (node = right) && node.each(&block)
+      right.try &.each(&block)
     end
 
     def to_a
-      l = (node = left) ? node.to_a : [] of T
-      r = (node = right) ? node.to_a : [] of T
+      l = left.try &.to_a || [] of T
+      r = right.try &.to_a || [] of T
       l + [val] + r
     end
   end

@@ -27,7 +27,7 @@ COMPILE = {
   "ruby" => "cat %s | clip.exe",
   "crystal" => "ruby build.rb %s target.cr && cat target.cr | grep -v pp! |  clip.exe",
   "java" => "javac -d dist src/Main.java",
-  "kotlin" => "kotlinc src/main.kt -include-runtime -d dist/kotlin.jar -XXLanguage:+InlineClasses",
+  "kotlin" => "kotlinc src/main.kt -include-runtime -d dist/kotlin.jar",
   "csharp" => "mcs src/main.cs -out:dist/csharp.exe",
   "go" => "go build -buildmode=exe -o ./dist/go.out ./src/main.go",
 }
