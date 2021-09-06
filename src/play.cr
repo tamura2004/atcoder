@@ -1,6 +1,6 @@
 class Treap(T)
 
-  getter root : RealNode(T) | NilNode
+  property root : RealNode(T) | NilNode
 
   def initialize
     @root = NilNode
@@ -8,13 +8,14 @@ class Treap(T)
 
   class RealNode(T)
     getter size : Int32
-    property left : RealNode(T) | NilNode
-    property right : RealNode(T) | NilNode
+    getter ch : StaticArray(RealNode(T) | NilNode, 2)
 
     def initialize
       @size = 1
-      @left = NilNode
-      @right = NilNode
+      @ch = StaticArray[
+        NilNode.as(RealNode(T) | NilNode),
+        NilNode.as(RealNode(T) | NilNode)
+      ]
     end
   end
 
@@ -24,15 +25,9 @@ class Treap(T)
     def size
       0
     end
-
-    def left
-      NilNode
-    end
-
-    def left=(v)
-    end
   end
 end
 
 t = Treap(Int64).new
-t.root.left = Treap::RealNode(Int64).new
+t.root = Treap::RealNode(Int64).new
+pp t
