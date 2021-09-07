@@ -25,6 +25,12 @@ module Indexable(T)
     size - count_less(u)
   end
 
+  def count_range(r : Range(T?,T?))
+    lo = r.try &.begin || T::MIN
+    hi = (r.try &.end || T::MAX) + (r.excludes_end? ? -1 : 0)
+    count_more_or_equal(lo) - count_more(hi)
+  end
+
   # 累積和を返す
   def cs : self
     each_with_object([T.zero]) do |v, h|

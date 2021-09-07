@@ -38,6 +38,15 @@ describe Indexable do
     a.count_more_or_equal(5).should eq 0
   end
 
+  it "ソート済の配列に対し、範囲*r*に含まれる要素数を返す" do
+    a = [1,3,5,7,9]
+    a.count_range(3..7).should eq 3
+    a.count_range(..4).should eq 2
+    a.count_range(4..).should eq 3
+    a.count_range(4..10).should eq 3
+    a.count_range(0..10).should eq 5
+  end
+
   it "cs" do
     [1,2,3].cs.should eq [0,1,3,6]
   end
