@@ -54,7 +54,7 @@ class Grid
   def each
     h.times do |y|
       w.times do |x|
-        yield y,x
+        yield y,x,g[y][x]
       end
     end
   end

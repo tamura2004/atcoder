@@ -1,17 +1,17 @@
-s = gets.to_s.chars
-n = s.size
+require "crystal/rbst"
 
-plus = Array.new(n+1, 0_i64)
-minus = Array.new(n+1, 0_i64)
+l, q = gets.to_s.split.map(&.to_i64)
+tr = RBST(Int64).new
+tr << 0_i64
+tr << l
 
-(n-1).downto(0) do |i|
-  case s[i]
-  when '+' 
-    plus[i] += plus[i+1] + 1
-  when '-' 
-    minus[i] += minus[i+1] + 1
+q.times do
+  c, x = gets.to_s.split.map(&.to_i64)
+  case c
+  when 1
+    tr << x
+  when 2
+    ans = tr.upper(x).not_nil! - tr.lower(x).not_nil!
+    pp ans
   end
 end
-
-pp! plus
-pp! minus
