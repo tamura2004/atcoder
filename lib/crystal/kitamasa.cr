@@ -1,5 +1,6 @@
 require "crystal/mod_int"
 
+# kitamasa法
 def poww(a, n)
   return a if n == 1
   return poww(prod(a, a), n//2) if n % 2 == 0
