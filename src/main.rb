@@ -1,23 +1,16 @@
-w, h, n = gets.split.map(&:to_i)
+class Problem
+  def initialize(v)
+    @v = v
+  end
 
-left = 0
-right = w
-top = h
-bottom = 0
+  def one
+    initialize(10)
+  end
 
-n.times do
-  x, y, a = gets.split.map(&:to_i)
-  case a
-  when 1
-    left = x if left < x
-  when 2
-    right = x if right > x
-  when 3
-    bottom = y if bottom < y
-  when 4
-    top = y if top > y
+  def two
+    Problem.new(10)
   end
 end
 
-ans = (left...right).size * (bottom...top).size
-pp ans
+pp Problem.new(30).one.class
+pp Problem.new(30).two.class

@@ -1,23 +1,17 @@
-require "crystal/treap_merge_split"
+class Problem
+  getter v : Int32
 
-n, m = gets.to_s.split.map(&.to_i64)
-tr = Treap{m}
-
-ans = 0_i64
-n.times do
-  c = gets.to_s.to_i64
-  cnt = Int64::MAX
-
-  if lo = tr.lower(c)
-    chmin cnt, (lo - c).abs
+  def initialize(@v)
   end
 
-  if hi = tr.upper(c)
-    chmin cnt, (hi - c).abs
+  def one
+    initialize(10)
   end
 
-  ans += cnt
-  tr << c
+  def two
+    Problem.new(10)
+  end
 end
 
-pp ans
+pp Problem.new(30).initialize(20).class
+pp Problem.new(30).two.class
