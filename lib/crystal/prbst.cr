@@ -1,4 +1,4 @@
-class RBST(T)
+class PRBST(T)
   getter root : Node(T)?
 
   def initialize(@root : Node(T)? = nil)
@@ -15,7 +15,7 @@ class RBST(T)
   def merge(other : self)
     return self if other.nil_tree?
     node = root.try &.merge(other.root) || other.root
-    initialize(node)
+    PRBST(T).new(node)
   end
 
   def split(k : T, eq = true)
@@ -32,25 +32,35 @@ class RBST(T)
     hi = r.end
     left, tail = split(lo, eq = false)
     mid, right = tail.try &.split(hi) || {nil, nil}
-    both_side = left.try &.merge(right) || right
-    {initialize(mid), initialize(both_side)}
+    node = left.try &.merge(right) || right
+    {PRBST(T).new(mid), PRBST(T).new(node)}
+  end
+
+  def [](r : Range(T, T))
+    mid, other = split(r)
+    mid
   end
 
   def insert(v : T)
     left, right = split(v)
     new_node = Node(T).new(v)
     left = left.try &.merge(new_node) || new_node
-    initialize(left.merge(right))
+    RBST(T).new(left.merge(right))
   end
 
+  # 非永続
   def <<(v : T)
-    insert(v)
+    left, right = split(v)
+    new_node = Node(T).new(v)
+    left = left.try &.merge(new_node) || new_node
+    @root = left.merge(right)
   end
 
   def delete(k : T)
-    left, other = split(k, eq = false)
-    mid, right = other.try &.split_at(1) || {nil, nil}
-    initialize(left.try &.merge(right) || right)
+    lo, other = split(k, eq = false)
+    mid, hi = other.try &.split_at(1) || {nil, nil}
+    node = lo.try &.merge(hi) || hi
+    PRBST(T).new(node)
   end
 
   def upper(k, eq = true)
@@ -69,14 +79,18 @@ class RBST(T)
     root.try &.max
   end
 
+  # 非永続
   def shift
     fst, snd = root.try &.split_at(1) || {nil, nil}
-    initialize(snd)
+    @root = snd
+    fst.try &.val
   end
 
+  # 非永続
   def pop
     fst, snd = root.try &.split_at(-1) || {nil, nil}
-    initialize(fst)
+    @root = fst
+    snd.try &.val
   end
 
   def each(&block : T -> _)
@@ -89,7 +103,7 @@ class RBST(T)
 
   class Node(T)
     getter val : T
-    getter size : Int32
+    property size : Int32
     property left : Node(T)?
     property right : Node(T)?
 
@@ -100,10 +114,10 @@ class RBST(T)
     end
 
     def dup
-      node = initialize(val)
+      node = Node(T).new(val)
       node.size = size
       node.left = left
-      node.right = left
+      node.right = right
       node
     end
 
@@ -117,12 +131,12 @@ class RBST(T)
 
       if rand(size + other.size) < size
         node = dup
-        node.right = node.right.dup.try &.merge(other) || other
+        node.right = right.try &.merge(other) || other
         node.update
       else
-        other = other.dup
-        other.left = other.left.try { |node| merge(node) } || self
-        other.update
+        node = other.dup
+        node.left = node.left.try { |node| merge(node) } || self
+        node.update
       end
     end
 
