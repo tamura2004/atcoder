@@ -1,33 +1,25 @@
-class Treap(T)
+require "crystal/graph/shortest_path"
+require "crystal/graph/bridge"
 
-  property root : RealNode(T) | NilNode
-
-  def initialize
-    @root = NilNode
-  end
-
-  class RealNode(T)
-    getter size : Int32
-    getter ch : StaticArray(RealNode(T) | NilNode, 2)
-
-    def initialize
-      @size = 1
-      @ch = StaticArray[
-        NilNode.as(RealNode(T) | NilNode),
-        NilNode.as(RealNode(T) | NilNode)
-      ]
-    end
-  end
-
-  module NilNode
-    extend self
-
-    def size
-      0
-    end
-  end
+n, m = gets.to_s.split.map(&.to_i)
+edges = Array.new(m) do
+  v, nv = gets.to_s.split.map(&.to_i.- 1)
+  { v, nv }
 end
 
-t = Treap(Int64).new
-t.root = Treap::RealNode(Int64).new
-pp t
+ix = Hash(Tuple(Int32,Int32),Int32).new
+m.times do |i|
+  v, nv = edges[i]
+  ix[{v,nv}] = i
+end
+
+g = Graph.new(n, m) do |g, i|
+  v, nv = edges[i]
+  g.add v, nv, origin = 0
+end
+
+path = ShortestPath.new(g).solve
+bridge = Bridge.new(g).solve
+
+pp path
+pp bridge

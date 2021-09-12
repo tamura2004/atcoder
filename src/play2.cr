@@ -1,12 +1,9 @@
-require "crystal/bellman_ford"
+require "crystal/graph/bipartite"
 
-g = BellmanFord.new(6)
-g.add 1,2,1
-g.add 2,5,-1
-g.add 2,3,1
-g.add 3,4,-1
-g.add 4,3,-1
+g = Graph.new(3)
+g.add 1, 2
+g.add 2, 3
+g.add 1, 3
 
-dp, neg = g.solve(0)
-pp dp
-pp neg
+pp Bipartite.new(g).solve
+

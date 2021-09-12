@@ -12,6 +12,13 @@ class Graph
     @g = Array.new(n) { [] of Int32 }
   end
 
+  def initialize(n, m)
+    initialize(n)
+    m.times do |i|
+      yield self, i
+    end
+  end
+
   # vからnvに辺を追加する
   #
   # origin : 0-indexed or 1-indexed
@@ -21,29 +28,6 @@ class Graph
     nv = nv.to_i - origin
     g[v] << nv
     g[nv] << v if both
-  end
-
-  # 2部グラフ判定
-  #
-  # 2部グラフでなければfalse
-  # 2部グラフであれば、二色の色の塗分け方を返す
-  def is_bipartite?
-    color = Array.new(n, -1)
-    n.times do |i|
-      next if color[i] != -1
-      color[i] = 0
-      q = Deque.new([i])
-      while q.size > 0
-        v = q.shift
-        g[v].each do |nv|
-          return nil if color[v] == color[nv]
-          next if color[nv] != -1
-          color[nv] = 1 - color[v]
-          q << nv
-        end
-      end
-    end
-    return color
   end
 
   def bfs(root = 0)
