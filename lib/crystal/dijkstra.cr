@@ -21,17 +21,14 @@ require "crystal/weighted_graph"
 # g.add "1 4 7"
 # g.solve(0) # => [0,2,3,5]
 # ```
-class Dijkstra < WeightedGraph
-  alias Vertex = Int32
-  alias Cost = Int64
-  alias Edge = Tuple(Vertex,Cost)
-  INF = Cost::MAX//2
+struct Dijkstra
+  INF = Int64::MAX//4
 
   # ダイクストラ法により*init*始点の最短経路を求める
   #
   # 始点のパラメータ*init*は0-indexed
   # 結果はコストの配列(`Array(Cost)`)
-  def solve(init : Vertex) : Array(Cost)
+  def solve(init = 0) : Array(Cost)
     q = PriorityQueue(Edge).new { |a, b| a.last > b.last }
     q << {init, 0_i64}
 

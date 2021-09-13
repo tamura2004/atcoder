@@ -38,8 +38,11 @@ struct ShortestPath
     @par = Array.new(n, -1)
   end
 
-  def solve(start = 0, goal = n - 1)
-    bfs(start)
+  # dv -> dnv : 削除辺
+  def solve(start = 0, goal = n - 1, dv = -1, dnv = -1)
+    depth.fill(-1)
+    par.fill(-1)
+    bfs(start, dv, dnv)
 
     return nil if depth[goal] == -1
 
@@ -53,9 +56,10 @@ struct ShortestPath
     path.reverse
   end
 
-  def bfs(root)
+  def bfs(root, dv, dnv)
     depth[root] = 0
     g.bfs(root) do |v, nv|
+      next if v == dv && nv == dnv
       depth[nv] = depth[v] + 1
       par[nv] = v
     end

@@ -142,14 +142,17 @@ class Task
       parse_params(params)
       next if path.extname != ".cr" && path.extname != ".rb"
 
-      if path.basename.to_s =~ /spec/
-        src = path.relative_path_from(Pathname.pwd)
-      elsif path.basename.to_s =~ /test/
-        src = path.relative_path_from(Pathname.pwd)
-      elsif path.extname == ".cr"
-        src = Pathname("lib/crystal/spec/#{path.basename(".cr")}_spec.cr")
-      elsif path.extname == ".rb"
-        src = Pathname("lib/ruby/test/test_#{path.basename}")
+      src = path.relative_path_from(Pathname.pwd).to_s
+
+      case src
+      when /lib\/crystal\/spec/
+        src = Pathname src
+      when /lib\/ruby\/test/
+        src = Pathname src
+      when /lib\/crystal/
+        src = Pathname(src.to_s.gsub("lib/crystal", "lib/crystal/spec").gsub(".cr", "_spec.cr"))
+      else
+        src = Pathname(src.to_s.gsub("lib/ruby", "lib/ruby/test/test_").gsub(".cr", "_spec.cr"))
       end
 
       if !src.exist?

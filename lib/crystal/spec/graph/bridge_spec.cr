@@ -1,5 +1,5 @@
 require "spec"
-require "../graph/bridge"
+require "../../graph/bridge"
 
 describe Bridge do
   it "橋を列挙する" do

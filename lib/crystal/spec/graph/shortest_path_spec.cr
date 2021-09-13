@@ -1,5 +1,5 @@
 require "spec"
-require "../graph/shortest_path"
+require "../../graph/shortest_path"
 
 describe ShortestPath do
   it "頂点1からnまでの最短路のパスを求める" do

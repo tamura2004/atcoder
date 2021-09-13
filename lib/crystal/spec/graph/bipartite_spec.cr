@@ -1,5 +1,5 @@
 require "spec"
-require "../graph/bipartite"
+require "../../graph/bipartite"
 
 describe Bipartite do
   it "二部グラフでないならnilを返す" do

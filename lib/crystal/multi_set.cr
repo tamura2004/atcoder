@@ -1,3 +1,4 @@
+
 class MultiSet
   class_getter nil_node : Node = NilNode.new
   2.times { |i| @@nil_node.ch[i] = @@nil_node }
