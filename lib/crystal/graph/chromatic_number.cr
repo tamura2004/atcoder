@@ -10,9 +10,9 @@ module Graph
     delegate n, to: g
 
     def initialize(@g)
-      @ind = Array.new(n.bit, 0_i64)
+      @ind = Array.new(n.bit_size, 0_i64)
       ind[0] = 1_i64
-      @aux = Array.new(n.bit) { |s| sign(s) }
+      @aux = Array.new(n.bit_size) { |s| sign(s) }
     end
 
     # 包除原理計算用符号

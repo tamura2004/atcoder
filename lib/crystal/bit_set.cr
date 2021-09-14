@@ -10,20 +10,24 @@ end
 
 # 集合のbit表現ためのInt拡張
 struct Int
-  def bit
+  def to_bit
+    1_i64 << self
+  end
+
+  def bit_size
     1_i64 << self
   end
 
   def on(b)
-    self | b.bit
+    self | b.to_bit
   end
 
   def off(b)
-    self ^ b.bit
+    self ^ b.to_bit
   end
 
   def each_subset
-    bit.times do |s|
+    bit_size.times do |s|
       yield s
     end
   end

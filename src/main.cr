@@ -1,56 +1,38 @@
-require "crystal/graph"
-
-struct Problem
-  getter g : Graph
-  getter ans : Array(Int32)
-  getter seen : Array(Bool)
-  delegate n, to: g
-
-  def initialize(@g)
-    @ans = Array.new(n, 0)
-    @seen = Array.new(n, false)
-  end
-
-  def solve
-    dfs(0)
-
-    if ans[0] == 0
-      v = g[0][0]
-      ans[0], ans[v] = ans[v], ans[0]
+def get_cnt
+  Array.new(10) do |i|
+    cnt = 0
+    while i > 5
+      i = (i * 2) % 10
+      cnt += 1
     end
-    ans
-  end
-
-  def dfs(v)
-    return false if seen[v]
-    seen[v] = true
-
-    ch = [] of Int32
-    g[v].each do |nv|
-      ch << nv if dfs(nv)
-    end
-
-    case ch.size
-    when 0
-      true
-    when 1
-      nv = ch.first
-      ans[nv], ans[v] = v, nv
-      false
-    else
-      ch.each_with_index do |v, i|
-        nv = ch[i - 1]
-        ans[v] = nv
-      end
-      true
-    end
+    cnt
   end
 end
 
-n, m = gets.to_s.split.map(&.to_i)
-g = Graph.new(n, m) do |g, i|
-  v, nv = gets.to_s.split.map(&.to_i)
-  g.add v, nv
+cnt = get_cnt
+
+def solve(a, cnt)
+  a.map{|v|cnt[v]}.max
 end
-ans = Problem.new(g).solve
-puts ans.map(&.succ).join(" ")
+
+h, w = gets.to_s.split.map(&.to_i)
+n = Math.max(h, w)
+a = Array.new(h){ gets.to_s.split.map(&.to_i) }.flatten
+
+if a.all?(&.zero?)
+  puts "Yes 0"
+elsif a.includes?(5)
+  if h == 1 || w == 1
+    ans = Int32::MAX
+    n.times do |i|
+      next if a[i] != 5
+      chmin ans, solve(a[..i],cnt) + solve(a[i..],cnt) + 1
+    end
+    puts "Yes #{ans}"
+  else
+    ans = solve(a, cnt) + 1
+    puts "Yes #{ans}"
+  end
+else
+  puts "No"
+end
