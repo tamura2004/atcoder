@@ -98,11 +98,11 @@ class Graph
     end
 
     File.open("debug.dot", "w") do |fh|
-      fh.puts "digraph tree {"
+      fh.puts "graph tree {"
       n.times do |v|
         g[v].each do |nv|
-          next if v >= nv
-          fh.puts "  #{v + origin} -- #{nv + origin}"
+          # next if v >= nv
+          fh.puts "  #{v + origin} -> #{nv + origin};"
         end
       end
       fh.puts "}"

@@ -1,5 +1,5 @@
 require "spec"
-require "../bellman_ford"
+require "crystal/bellman_ford"
 
 describe BellmanFord do
   it "usage" do

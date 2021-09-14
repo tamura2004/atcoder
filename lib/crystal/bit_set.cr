@@ -1,5 +1,32 @@
+# aのk-bitをonにする
+macro bit_on(a, k)
+  {{a}} = {{a}}.on({{k}})
+end
+
+# aのk-bitをoffにする
+macro bit_off(a, k)
+  {{a}} = {{a}}.off({{k}})
+end
+
 # 集合のbit表現ためのInt拡張
 struct Int
+  def bit
+    1_i64 << self
+  end
+
+  def on(b)
+    self | b.bit
+  end
+
+  def off(b)
+    self ^ b.bit
+  end
+
+  def each_subset
+    bit.times do |s|
+      yield s
+    end
+  end
   # 割り切る
   #
   # ```
@@ -42,7 +69,7 @@ struct Int
   # ```
   def fix_size_subsets(k)
     FixSizeSubsetIterator.new(to_i64, k.to_i64)
-  end  
+  end
 
   # 集合の要素の列挙
   #
@@ -51,7 +78,7 @@ struct Int
   # ```
   def bit_elements
     BitElementIterator.new(self)
-  end  
+  end
 
   # 省略名
   def bits

@@ -1,22 +1,24 @@
-require "crystal/weighted_graph"
+# 隣接行列によるグラフ
+class MatrixGraph
+  INF = Int64::MAX//4
+  getter n : Int32
+  getter g : Array(Array(Int64))
+  delegate "[]", to: g
 
-# 隣接行列による重み付きグラフ
-class MatrixGraph < WeightedGraph
-  getter g : Array(Array(C))
-
-  def initialize(@n : V)
+  def initialize(n)
+    @n = n.to_i
     @g = Array.new(n) { Array.new(n, INF) }
-    n.times { |i| g[i][i] = C.zero }
+    n.times { |i| g[i][i] = 0_i64 }
   end
 
   # 辺を追加する
   #
   # 頂点の番号は`0-indexed`
-  def add_edge(a : Int, b : Int, c : Int) : Nil
-    v = V.new(a)
-    nv = V.new(b)
-    cost = C.new(c)
+  def add(v, nv, cost = 1_i64, origin = 1, both = true)
+    v = v.to_i - origin
+    nv = nv.to_i - origin
     g[v][nv] = cost
+    g[nv][v] = cost if both
   end
 
   # デバッグ用としてグラフを出力する（1-indexed）

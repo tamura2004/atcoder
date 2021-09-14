@@ -1,23 +1,21 @@
-require "crystal/problem"
 require "crystal/bit_set"
 
-# ビット集合リストによる重みなしグラフ
-class BitGraph < Problem
+# 重みなしグラフのビット集合表現
+class BitGraph
   getter n : Int32
   getter g : Array(Int64)
+  delegate "[]", to: g
 
-  def self.read
-    n, m = gets.to_s.split.map(&.to_i)
-    g = Array.new(n, 0_i64)
-    m.times do
-      a, b = gets.to_s.split.map(&.to_i.- 1)
-      g[a] |= b.exp2
-      g[b] |= a.exp2
-    end
-    new(n, g)
+  def initialize(n)
+    @n = n.to_i
+    @g = Array.new(n, 0_i64)
   end
 
-  def initialize(@n, @g)
+  def add(v, nv, origin = 1, both = true)
+    v = v.to_i - origin
+    nv = nv.to_i - origin
+    bit_on g[v], nv
+    bit_on g[nv], v if both
   end
 
   # 頂点の集合*s*がクリークであるか

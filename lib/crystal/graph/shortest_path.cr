@@ -57,11 +57,23 @@ struct ShortestPath
   end
 
   def bfs(root, dv, dnv)
+    seen = Array.new(n, false)
+    seen[root] = true
+    q = Deque.new([root])
     depth[root] = 0
-    g.bfs(root) do |v, nv|
-      next if v == dv && nv == dnv
-      depth[nv] = depth[v] + 1
-      par[nv] = v
+
+    while q.size > 0
+      v = q.shift
+      g[v].each do |nv|
+        next if v == dv && nv == dnv
+        next if seen[nv]
+        seen[nv] = true
+
+        depth[nv] = depth[v] + 1
+        par[nv] = v
+
+        q << nv
+      end
     end
   end
 end
