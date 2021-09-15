@@ -15,14 +15,25 @@ alias Edge = Tuple(Int32,Int32,Int64)
 # dp[2].should eq 5
 # ```
 class Graph
-  INF = Int64::MAX
-
   getter n : Int32
   getter g : Array(Array(Edge))
-
+  delegate "[]", to: @g
+  
   def initialize(@n)
     @g = Array.new(n){ [] of Edge }
   end
+  
+  def add(v,nv,origin=1,both=false)
+    v = v.to_i - 1
+    nv = nv.to_i - 1
+    g[v] << {nv,cost}
+    g[nv] << {v,cost} if both
+  end
+end
+
+
+module BellmanFord
+  INF = Int64::MAX
 
   def bellman_ford(init)
     dp = Array.new(n, INF)
@@ -51,7 +62,6 @@ class Graph
     return ({dp, neg})
   end
 
-  delegate "[]", to: @g
 end
 
 n,ml,md = gets.to_s.split.map { |v| v.to_i }
