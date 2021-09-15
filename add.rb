@@ -70,7 +70,7 @@ ARGV.each do |name|
 
     qname = (modules + [classname]).join("::")
 
-    fh.puts "include #{qname}"
+    fh.puts "include #{modules.join("::")}"
     fh.puts
 
     fh.puts "describe #{qname} do"
