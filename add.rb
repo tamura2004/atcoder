@@ -18,13 +18,21 @@ class Indent
   end
 end
 
+def camelcase(s)
+  s.split(/_/).map(&:capitalize).join
+end
+
+def snakecase(s)
+  s.split(/(?=[A-Z])/).map(&:downcase).join("_")
+end
+
 ind = Indent.new
 
 lib = Pathname.pwd + "lib/crystal"
 ARGV.each do |name|
   src = lib + (name + ".cr")
   spec = lib + "spec" + (name + "_spec.cr")
-  modules = name.split("/").map(&:capitalize)
+  modules = name.split("/").map { |s| camelcase(s) }
   classname = modules.pop
 
   if src.exist? || spec.exist?
@@ -55,13 +63,15 @@ ARGV.each do |name|
   spec.open("w") do |fh|
     fh.puts "require \"spec\""
 
-    cname = classname.downcase
-    mname = modules.map(&:downcase).join("/")
+    cname = snakecase(classname)
+    mname = modules.map { |s| snakecase(s) }.join("/")
 
     fh.puts "require \"crystal/#{mname}/#{cname}.cr\""
-    fh.puts
 
     qname = (modules + [classname]).join("::")
+
+    fh.puts "include #{qname}"
+    fh.puts
 
     fh.puts "describe #{qname} do"
     fh.puts " it \"usage\" do"
