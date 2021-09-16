@@ -1,42 +1,53 @@
-require "complex"
+class Tree
+  getter n : Int32
+  getter g : Array(Array(Int32))
+  getter size : Array(Int32)
 
-def to_complex_set(s)
-  ans = Set(Complex).new
-  s.each_with_index do |r, i|
-    r.each_with_index do |c, j|
-      ans << Complex.new(j, i) if c == '#'
+  def initialize(@n)
+    @g = Array.new(n){ [] of Int32 }
+    @size = [0] * n
+
+    (n-1).times do |i|
+      g[i] << i + 1
+      g[i+1] << i
     end
   end
-  ans
-end
 
-def left_just(s)
-  offset = s.map(&.real).min
-  s.map(&.- offset).to_set
-end
-
-def top_just(s)
-  offset = s.map(&.imag).min
-  s.map(&.- Complex.new(0, offset)).to_set
-end
-
-def rot90(s)
-  s.map(&.* Complex.new(0, 1)).to_set
-end
-
-n = gets.to_s.to_i64
-s = to_complex_set Array.new(n){ gets.to_s.chars }
-t = to_complex_set Array.new(n){ gets.to_s.chars }
-
-t = left_just(top_just(t))
-4.times do
-  s = left_just(top_just(s))
-  if s == t
-    puts "Yes"
-    exit
+  def dfs_start
+    size.fill(0)
+    dfs(0,-1)
   end
 
-  s = rot90(s)
+  def dfs(v,pv)
+    size[v] = 1
+    g[v].each do |nv|
+      next if nv == pv
+
+      dfs(nv,v)
+      size[v] += size[nv]
+    end
+  end
+
+  def self_dfs
+    size.fill(0)
+    dfs = uninitialized Int32, Int32 -> Nil
+    dfs = -> (v : Int32, pv : Int32) do
+      size[v] = 1
+      g[v].each do |nv|
+        next if nv == pv
+
+        dfs.call(nv, v)
+        size[v] += size[nv]
+      end
+    end
+    dfs.call(0, -1)
+  end
 end
 
-puts "No"
+g = Tree.new(100_000)
+
+g.dfs_start
+pp g.size[0]
+
+g.self_dfs
+pp g.size[0]
