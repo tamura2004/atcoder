@@ -17,7 +17,7 @@ module WeightedPairGraph
       seen.clear
 
       depth.clear
-      depth[root] = 0
+      depth[root] = Cost.zero
 
       q = PriorityQueue(Tuple(Cost, V)).lesser
       q << {0_i64, root}

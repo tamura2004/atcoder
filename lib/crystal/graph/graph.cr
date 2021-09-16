@@ -1,7 +1,7 @@
 # 重みなしグラフ
 module Graph
   alias V = Int32
-  
+
   class Graph
     getter n : Int32
     getter g : Array(Array(Int32))

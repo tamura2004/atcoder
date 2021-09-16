@@ -4,10 +4,10 @@ require "../min_cost_flow"
 describe MinCostFlow do
   it "usage" do
     edges = {
-      {from: 0, to: 1, cap: 1, cost: 100},
-      {from: 0, to: 2, cap: 2, cost: 200},
-      {from: 1, to: 3, cap: 3, cost: 300},
-      {from: 2, to: 3, cap: 4, cost: 400},
+      {from: 0, to: 1, cap: 1, cost: 100_i64},
+      {from: 0, to: 2, cap: 2, cost: 200_i64},
+      {from: 1, to: 3, cap: 3, cost: 300_i64},
+      {from: 2, to: 3, cap: 4, cost: 400_i64},
     }
     g = MinCostFlow.new(4)
     edges.each do |e|
@@ -17,7 +17,7 @@ describe MinCostFlow do
     # 0 -> 1 -> 3 * 1 = (100 + 300) * 1 =  400
     # 0 -> 2 -> 3 * 2 = (200 + 400) * 2 = 1200
   end
-  
+
   it "returns min cost flow" do
     ABC004D.new(2, 3, 4).solve.should eq 7
     ABC004D.new(17, 2, 34).solve.should eq 362

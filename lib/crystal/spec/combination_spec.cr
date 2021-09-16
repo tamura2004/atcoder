@@ -8,4 +8,3 @@ describe "combination" do
     c[60][30].should eq 118264581564861424
   end
 end
-

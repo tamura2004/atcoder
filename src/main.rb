@@ -1,3 +1,7 @@
-n = gets.to_i
-s = gets.chomp
-puts s[n - 1] == "o" ? "Yes" : "No"
+module A
+  class A
+  end
+end
+
+prepend A
+# A.new

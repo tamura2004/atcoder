@@ -20,7 +20,7 @@ end
 class RangeSet(T)
   getter s : Set(Range(T,T))
 
-  def initializ
+  def initialize
     @s = Set(Range(T,T)).new
   end
 

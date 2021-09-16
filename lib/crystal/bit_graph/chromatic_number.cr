@@ -1,10 +1,10 @@
-require "crystal/bit_graph"
+require "crystal/bit_graph/graph"
 
 # グラフの彩色数を求める
-module Graph
+module BitGraph
   struct ChromaticNumber
     MOD = 10_i64 ** 9 + 7
-    getter g : BitGraph
+    getter g : Graph
     getter ind : Array(Int64) # 独立集合
     getter aux : Array(Int64)
     delegate n, to: g

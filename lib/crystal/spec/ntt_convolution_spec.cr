@@ -1,7 +1,5 @@
 require "spec"
-require "../ntt_convolution"
-
-N   =       100
+require "crystal/ntt_convolution"
 
 describe "convolution" do
   # (2 + 3x)(4 + 5x) = 8 + 22x + 15x^2
@@ -13,8 +11,8 @@ describe "convolution" do
 
   it "random test" do
     10.times do
-      a = Array.new(N) { rand(0..MOD - 1).to_i64 }
-      b = Array.new(N) { rand(0..MOD - 1).to_i64 }
+      a = Array.new(100) { rand(0..MOD - 1).to_i64 }
+      b = Array.new(100) { rand(0..MOD - 1).to_i64 }
       c = a.dup
       d = b.dup
       g = a.dup

@@ -1,7 +1,5 @@
 require "spec"
-require "../coodinate_compress_segment_tree"
-
-alias Pair = Tuple(Int32, Int32)
+require "crystal/coodinate_compress_segment_tree"
 
 describe CoodinateCompressSegmentTree do
   it "usage, default range sum" do
@@ -46,7 +44,7 @@ describe CoodinateCompressSegmentTree do
     keys = [10_000_000, 20_000_000, 30_000_000]
     values = [{1, 2}, {2, 3}, {3, 4}]
     unit = {1, 0}
-    st = CCST(Int32, Pair).new(keys, values, unit) do |(x0, x1), (y0, y1)|
+    st = CCST(Int32, Tuple(Int32,Int32)).new(keys, values, unit) do |(x0, x1), (y0, y1)|
       {x0 * y0, x1 * y0 + y1}
     end
     st[10_000_000..30_000_000].should eq ({6, 25})

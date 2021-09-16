@@ -1,7 +1,5 @@
 require "spec"
-require "../lazy_segment_tree"
-
-alias Pair = Tuple(Int64, Int64)
+require "crystal/lazy_segment_tree"
 
 describe LazySegmentTree do
   it "range update range min" do
@@ -29,13 +27,10 @@ describe LazySegmentTree do
   end
 
   it "range update range sum" do
-    values = Array.new(4){ Pair.new(0_i64, 1_i64) }
-    st = LazySegmentTree(Pair, Int64?).range_update_range_sum(values)
+    values = Array.new(4){ Tuple(Int64,Int64).new(0_i64, 1_i64) }
+    st = LazySegmentTree(Tuple(Int64,Int64), Int64?).range_update_range_sum(values)
     st[0..] = 2_i64 # [2, 2, 2, 2]
     st[1..] = 3_i64 # [2, 3, 3, 3]
-    4.times do |i|
-      pp! [i, st[i]]
-    end
-    st[0..].should eq Pair.new(11_i64, 6_i64)
+    st[0..].should eq Tuple(Int64,Int64).new(11_i64, 6_i64)
   end
 end

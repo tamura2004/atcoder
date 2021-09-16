@@ -51,7 +51,11 @@ while flag
       seen[name] = true
       tmp << "\n"
       tmp << "# " + line
-      tmp += File.open("lib/crystal/#{name}.cr").readlines
+      if File.exist?("lib/crystal/#{name}.cr")
+        tmp += File.open("lib/crystal/#{name}.cr").readlines
+      else
+        tmp += File.open("lib/crystal/#{name}/#{name}.cr").readlines
+      end
       tmp << "\n"
       flag = true
     else
