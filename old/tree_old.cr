@@ -161,7 +161,7 @@ class Tree
   # *root*からの距離
   def depth(root = @root, offset = 0)
     return [0] if n == 1
-    
+
     bfs_with_array(-1, root) do |v, nv, ans|
       ans[v] = offset if ans[v] == -1
       ans[nv] = ans[v] + 1
