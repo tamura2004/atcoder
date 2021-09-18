@@ -66,7 +66,7 @@ ARGV.each do |name|
     cname = snakecase(classname)
     mname = modules.map { |s| snakecase(s) }.join("/")
 
-    fh.puts "require \"crystal/#{mname}/#{cname}.cr\""
+    fh.puts "require \"crystal/#{mname}/#{cname}\""
 
     qname = (modules + [classname]).join("::")
 

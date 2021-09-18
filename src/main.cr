@@ -1,15 +1,19 @@
-require "crystal/graph/scc"
+require "crystal/rbst"
+require "crystal/tree/depth"
+require "crystal/abc218/g/rec"
+include Abc218::G
 
-n, m = gets.to_s.split.map(&.to_i)
-g = Graph.new(n)
+n = gets.to_s.to_i64
+a = gets.to_s.split.map(&.to_i64)
 
-m.times do
+t = Tree.new(n)
+(n-1).times do
   v, nv = gets.to_s.split.map(&.to_i)
-  g.add v, nv, both: false
+  t.add v, nv
 end
 
-cg,cs,ix = SCC.new(g).solve
+medians = Rec.new(t,a).solve
+depth = Depth.new(t).solve
 
-ans = cs.map(&.size).map{|n| n.to_i64 * (n - 1) // 2}.sum
+ans = Solve.new(t,depth,medians).solve
 pp ans
-  

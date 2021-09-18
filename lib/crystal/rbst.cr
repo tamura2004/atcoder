@@ -1,3 +1,4 @@
+# RBSTによる多重集合
 class RBST(T)
   getter root : Node(T)?
 
@@ -61,6 +62,35 @@ class RBST(T)
 
   def lower(k, eq = true)
     root.try &.lower(k, eq)
+  end
+
+  def includes?(v)
+    root.try &.includes?(v)
+  end
+
+  # 先頭からk番目の要素
+  def at(k)
+    root.try &.at(k)
+  end
+
+  def [](k)
+    at(k)
+  end
+
+  # 中央値
+  def median
+    root.try(&.size).try do |s|
+      if s.odd?
+        at(s // 2)
+      else
+        at(s // 2).try do |left|
+          left
+          at((s - 1) // 2).try do |right|
+            (left + right) / 2
+          end
+        end
+      end
+    end
   end
 
   def min
@@ -160,6 +190,27 @@ class RBST(T)
         right.try(&.lower(k, eq)).try { |v| Math.max(v, val) } || val
       else
         left.try &.lower(k, eq)
+      end
+    end
+
+    def includes?(v)
+      return true if v == val
+      if v < val
+        left.try &.includes?(v)
+      else
+        right.try &.includes?(v)
+      end
+    end
+
+    def at(k)
+      ord = left.try &.size || 0
+
+      if k == ord
+        val
+      elsif k < ord
+        left.try &.at(k)
+      else
+        right.try &.at(k - ord - 1)
       end
     end
 
