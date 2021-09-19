@@ -4,8 +4,8 @@ require "crystal/mod_int"
 # ただし Ai <= 2 ** 60
 # ```
 # a = [0,1,2]
-# 0^1 + 1^2 + 0^2 + 0^1^2 = 1 + 3 + 2 + 3 = 9
-# XORSum.new(a).sum # => 9
+# 0^1 + 1^2 + 0^2 = 1 + 3 + 2 = 6
+# XORSum.new(a).sum # => 6
 # ```
 struct XORSum
   DIGIT = 60

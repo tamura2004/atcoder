@@ -30,6 +30,8 @@ ind = Indent.new
 
 lib = Pathname.pwd + "lib/crystal"
 ARGV.each do |name|
+  name = name.downcase
+
   src = lib + (name + ".cr")
   spec = lib + "spec" + (name + "_spec.cr")
   modules = name.split("/").map { |s| camelcase(s) }
@@ -74,8 +76,8 @@ ARGV.each do |name|
     fh.puts
 
     fh.puts "describe #{qname} do"
-    fh.puts " it \"usage\" do"
-    fh.puts " end"
+    fh.puts "  it \"usage\" do"
+    fh.puts "  end"
     fh.puts "end"
   end
 end

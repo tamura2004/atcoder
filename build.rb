@@ -28,18 +28,6 @@ target ||= "src/target.cr"
 seen = Hash.new(false)
 buf = File.open(src).readlines
 
-if buf.grep(/chmax/).size > 0 && buf.grep(/macro chmax/).size == 0
-  buf = CHMAX + buf
-end
-
-if buf.grep(/chmin/).size > 0 && buf.grep(/macro chmin/).size == 0
-  buf = CHMIN + buf
-end
-
-if buf.grep(/make_array/).size > 0 && buf.grep(/macro make_array/).size == 0
-  buf = MAKE_ARRAY + buf
-end
-
 flag = true
 while flag
   flag = false
@@ -47,6 +35,7 @@ while flag
   buf.each do |line|
     if line =~ /^require "crystal\/(.*)"/
       name = $1
+
       next if seen[name]
       seen[name] = true
       tmp << "\n"
@@ -63,6 +52,18 @@ while flag
     end
   end
   buf = tmp
+end
+
+if buf.grep(/chmax/).size > 0 && buf.grep(/macro chmax/).size == 0
+  buf = CHMAX + buf
+end
+
+if buf.grep(/chmin/).size > 0 && buf.grep(/macro chmin/).size == 0
+  buf = CHMIN + buf
+end
+
+if buf.grep(/make_array/).size > 0 && buf.grep(/macro make_array/).size == 0
+  buf = MAKE_ARRAY + buf
 end
 
 File.open(target, "w").write(buf.join)
