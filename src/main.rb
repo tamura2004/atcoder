@@ -1,7 +1,2 @@
-module A
-  class A
-  end
-end
-
-prepend A
-# A.new
+x = gets.to_i
+p x % 21
