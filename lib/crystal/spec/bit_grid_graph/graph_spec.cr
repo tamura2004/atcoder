@@ -18,36 +18,4 @@ describe BitGridGraph::Graph do
       "0001"
     ])
   end
-
-  it "connected component" do
-    g = Graph.new([
-      "0000",
-      "1111",
-      "1111",
-      "1001",
-    ])
-    g.connect.should eq 2
-  end
-
-  it "connected component" do
-    g = Graph.new([
-      "0000",
-      "1111",
-      "1001",
-      "1111",
-    ])
-    g.connect.should eq 3
-  end
-  
-  it "next candidate" do
-    g = Graph.new([
-      "0000",
-      "0110",
-      "0000",
-      "0000",
-    ])
-    g.next_candidate do |i|
-      i.debug
-    end
-  end
 end

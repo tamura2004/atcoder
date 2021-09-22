@@ -1,8 +1,8 @@
-module A
-  class A
-  end
-end
+require "crystal/bit_set"
 
-module A
-  pp A.new
-end
+x = 0_i64
+pp x.class
+x = x.on 31
+pp x.class
+pp x
+pp x.popcount

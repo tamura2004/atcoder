@@ -118,14 +118,6 @@ struct Int
     end.to_a
   end
 
-  def on(k)
-    to_i64 | (1 << k)
-  end
-
-  def off(k)
-    to_i64 & ~(1 << k)
-  end
-
   def lsb
     self & -self
   end
