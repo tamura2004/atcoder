@@ -1,39 +1,46 @@
-require "crystal/bit_grid_graph/graph"
-include BitGridGraph
+h, m, s = gets.to_s.split.map(&.to_i)
+c1, c2 = gets.to_s.split.map(&.to_i)
+h %= 12
+min = max = -1
+c = 0
 
-n = gets.to_s.to_i
-k = gets.to_s.to_i
+while c1 >= 0
+  s += 1
 
-s = Array.new(n){ gets.to_s.tr(".#","01") }
-g = Graph.new(s)
-
-seen = Hash(Graph,Bool).new(false)
-q = Deque(Graph).new
-
-g.each do |y,x|
-  next if g[y,x] == 1
-
-  ng = Graph.new(n,n)
-  ng[y,x] = 1
-  q << ng
-  seen[ng] = true
-end
-
-ans = 0_i64
-
-while q.size > 0
-  v = q.shift
-
-  if v.popcount == k
-    ans += 1
-  else
-    v.next_candidate do |nv|
-      next if nv & g.to_i64 != 0
-      next if seen[nv]
-      seen[nv] = true
-      q << nv
+  if s == 60
+    s = 0
+    m += 1
+    if m == 60
+      m = 0
+      h += 1
+      if h == 12
+        h = 0
+      end
     end
+  end
+
+  if s == (m * 60 + 58) // 59
+    c1 -= 1
+  end
+
+  if s == (h * 3600 - 660 * m + 10) // 11
+    c2 -= 1
+  end
+
+  c += 1
+
+  if c1 == 0 && c2 == 0
+    next if h == 0 && m == 0 && s == 0
+    if min == -1
+      min = c
+    end
+
+    max = c
   end
 end
 
-pp ans
+if min == -1
+  puts -1
+else
+  puts "#{min} #{max}"
+end

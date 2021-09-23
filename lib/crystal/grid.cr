@@ -129,4 +129,13 @@ class Grid
   def to_index(y, x)
     y * w + x
   end
+
+  def debug
+    puts "==DEBUG=="
+    puts "h = #{h}"
+    puts "w = #{w}"
+    h.times do |y|
+      puts g[y]
+    end
+  end
 end
