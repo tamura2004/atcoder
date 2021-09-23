@@ -26,10 +26,11 @@ struct Problem
 
     n.times do |v|
       dp.fill(1.to_m)
+      @sub = SubtreeSize.new(g).solve(v)
       dfs(v, -1)
       ans += dp[v]
     end
-    
+
     ans // 2
   end
 
