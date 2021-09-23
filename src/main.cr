@@ -1,46 +1,48 @@
-h, m, s = gets.to_s.split.map(&.to_i)
-c1, c2 = gets.to_s.split.map(&.to_i)
-h %= 12
-min = max = -1
-c = 0
+require "crystal/tree"
+require "crystal/tree/subtree_size"
+require "crystal/mod_int"
 
-while c1 >= 0
-  s += 1
+n = gets.to_s.to_i
+g = Tree.new(n)
 
-  if s == 60
-    s = 0
-    m += 1
-    if m == 60
-      m = 0
-      h += 1
-      if h == 12
-        h = 0
-      end
+(n-1).times do
+  v, nv = gets.to_s.split.map(&.to_i64)
+  g.add v, nv
+end
+
+struct Problem
+  getter g : Tree
+  delegate n, to: g
+  getter dp : Array(ModInt)
+  getter sub : Array(Int32)
+
+  def initialize(@g)
+    @dp = Array.new(n){ 1.to_m }
+    @sub = SubtreeSize.new(g).solve
+  end
+
+  def solve
+    ans = 0.to_m
+
+    n.times do |v|
+      dp.fill(1.to_m)
+      dfs(v, -1)
+      ans += dp[v]
     end
+    
+    ans // 2
   end
 
-  if s == (m * 60 + 58) // 59
-    c1 -= 1
-  end
+  def dfs(v, pv)
+    dp[v] = ModInt.f(sub[v] - 1)
 
-  if s == (h * 3600 - 660 * m + 10) // 11
-    c2 -= 1
-  end
-
-  c += 1
-
-  if c1 == 0 && c2 == 0
-    next if h == 0 && m == 0 && s == 0
-    if min == -1
-      min = c
+    g[v].each do |nv|
+      next if nv == pv
+      dfs(nv, v)
+      dp[v] *= dp[nv]
+      dp[v] //= ModInt.f(sub[nv])
     end
-
-    max = c
   end
 end
 
-if min == -1
-  puts -1
-else
-  puts "#{min} #{max}"
-end
+pp Problem.new(g).solve
