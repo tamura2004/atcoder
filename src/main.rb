@@ -1,7 +1,12 @@
-cnt = 0
-100000.times do
-  a = Array.new(99, rand).sort
-  cnt = a[29]
-end
+x = 1
+y = 1
 
-pp cnt / 1000
+10.times do
+  x = x + y
+
+  pp [x, y]
+
+  y = x + y
+
+  pp [x, y]
+end
