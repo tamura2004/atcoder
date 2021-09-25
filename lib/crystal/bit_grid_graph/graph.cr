@@ -6,7 +6,7 @@ module BitGridGraph
     getter h : Int32
     getter w : Int32
     getter g : Int64
-    delegate to_i64, popcount, hash, "&", "|", to: g
+    delegate to_i64, popcount, hash, "&", "|", ">>", "<<", to: g
 
     # hash, == を定義するとhashのkeyにできる
     def ==(b : self)
@@ -21,6 +21,12 @@ module BitGridGraph
     def initialize(@h, @w, @g)
     end
 
+    # g = Graph.new([
+    #   "1011",
+    #   "0101",
+    #   "0010",
+    #   "0001"
+    # ])
     def initialize(s : Array(String))
       @h = s.size
       @w = s.first.size
@@ -74,6 +80,26 @@ module BitGridGraph
 
     def ix(y, x)
       y * w + x
+    end
+
+    def to_a
+      ans = [] of Int64
+      gg = @g
+      ww = 1_i64 << w
+
+      h.times do
+        ans << gg % ww
+        gg //= ww
+      end
+      ans
+    end
+
+    def to_string_array
+      to_a.map{|s| "%0#{w}b" % s }.map(&.reverse)
+    end
+
+    def to_s
+      to_string_array.join
     end
 
     def debug

@@ -17,5 +17,13 @@ describe BitGridGraph::Graph do
       "0010",
       "0001"
     ])
+
+    g.to_string_array.should eq [
+      "1011",
+      "0101",
+      "0010",
+      "0001"
+    ]
+    g.to_s.should eq "1011010100100001"
   end
 end
