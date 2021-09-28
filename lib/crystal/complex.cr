@@ -10,6 +10,10 @@ struct Complex(T)
     ret != 0 ? ret : imag <=> b.imag
   end
 
+  def zero?
+    real.zero? && imag.zero?
+  end
+
   def initialize(real : T, imag : T = T.zero)
     @real = T.new(real)
     @imag = T.new(imag)
@@ -56,6 +60,10 @@ struct Complex(T)
 
   def deg
     Math.atan2(imag, real) * 180.0_f64 / Math::PI
+  end
+
+  def inspect
+    "#{real}+#{imag}i"
   end
 end
 
