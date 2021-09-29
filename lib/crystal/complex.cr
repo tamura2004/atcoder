@@ -10,6 +10,10 @@ struct Complex(T)
     ret != 0 ? ret : imag <=> b.imag
   end
 
+  def zero?
+    real.zero? && imag.zero?
+  end
+
   def initialize(real : T, imag : T = T.zero)
     @real = T.new(real)
     @imag = T.new(imag)
@@ -78,6 +82,8 @@ struct Complex(T)
     end
 
     {a, b, c}
+  def inspect
+    "#{real}+#{imag}i"
   end
 end
 
