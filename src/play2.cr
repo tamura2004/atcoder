@@ -1,9 +1,12 @@
-require "crystal/graph/bipartite"
+require "crystal/complex"
 
-g = Graph.new(3)
-g.add 1, 2
-g.add 2, 3
-g.add 1, 3
+v = C.new 100,2
+nv = C.new 100, 100
+a = v.vertial_bisector(nv)
 
-pp Bipartite.new(g).solve
+v = C.new 100,100
+nv = C.new 100, 2
+b = v.vertial_bisector(nv)
 
+pp! a
+pp! b

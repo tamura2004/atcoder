@@ -20,7 +20,7 @@ struct Complex(T)
   end
 
   def conj
-    Complex(T).new(real,-imag)
+    Complex(T).new(real, -imag)
   end
 
   def +(b : self)
@@ -56,6 +56,28 @@ struct Complex(T)
 
   def deg
     Math.atan2(imag, real) * 180.0_f64 / Math::PI
+  end
+
+  # 垂直二等分線
+  # ax + by + c = 0
+  def vertial_bisector(nv : self)
+    a = (self - nv).real
+    b = (self - nv).imag
+    c = nv.abs2 - abs2
+
+    g = a.gcd(b).gcd(c)
+
+    a //= g
+    b //= g
+    c //= g
+
+    if a < 0 || (a == 0 && b < 0) || (b == 0 && c < 0)
+      a *= -1
+      b *= -1
+      c *= -1
+    end
+
+    {a, b, c}
   end
 end
 

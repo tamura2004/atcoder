@@ -1,12 +1,13 @@
-x = 1
-y = 1
+n = gets.to_i
+p = gets.split.map(&:to_i)
+min = p[0]
 
-10.times do
-  x = x + y
-
-  pp [x, y]
-
-  y = x + y
-
-  pp [x, y]
+ans = 0
+n.times do |i|
+  if p[i] <= min
+    ans += 1
+    min = p[i]
+  end
 end
+
+puts ans
