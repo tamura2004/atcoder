@@ -1,36 +1,24 @@
-require "crystal/complex"
-
-def is_tokyakudaikei(v, nv, u, nu)
-  return false if (nv - v).cross(nu - u) != 0
-  t = v + nv - u - nu
-  return false if t.zero?
-  (nv - v).dot(t) == 0 && (nu - u).dot(t) == 0
-end
+require "crystal/modint9"
+require "crystal/tree"
+require "crystal/tree/depth"
 
 n = gets.to_s.to_i
-xyc = Array.new(n) do
-  x, y, c = gets.to_s.split.map(&.to_i64)
-  {C.new(x, y), c}
+g = Tree.new(n)
+(n-1).times do
+  v, nv = gets.to_s.split.map(&.to_i)
+  g.add v, nv
 end
 
-senbun = [] of {C, C, Int64, Float64}
-xyc.each do |v, c|
-  xyc.each do |nv, nc|
-    next if v == nv
-    senbun << {v, nv, c + nc, (nv - v).phase}
-  end
+depth = Depth.new(g).solve
+v = n.times.max_by do |i|
+  depth[i]
 end
 
-senbun.sort_by! do |v, nv, c, phase|
-  -c
-end
+depth = Depth.new(g).solve(v)
+dia = depth.max
+cnt = depth.count(dia)
+pp dia
+pp cnt
 
-ans = -1_i64
-senbun.each_cons_pair do |(v, nv, cv, pv), (u, nu, cu, pu)|
-  if is_tokyakudaikei(v, nv, u, nu)
-    chmax ans, cv + cu
-  end
-end
+g.debug
 
-pp ans
-pp senbun.group_by(&.[] 3)

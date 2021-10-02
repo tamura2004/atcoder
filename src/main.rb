@@ -1,13 +1,6 @@
-n = gets.to_i
-p = gets.split.map(&:to_i)
-min = p[0]
+c = 10
+d = 4
 
-ans = 0
-n.times do |i|
-  if p[i] <= min
-    ans += 1
-    min = p[i]
-  end
+(0..10).each do |t|
+  pp [t, c + d / (t + 1) + t]
 end
-
-puts ans

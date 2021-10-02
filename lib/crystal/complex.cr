@@ -42,6 +42,20 @@ struct Complex(T)
     )
   end
 
+  def *(i : Int)
+    Complex(T).new(
+      real * i,
+      imag * i
+    )
+  end
+
+  def //(i : Int)
+    Complex(T).new(
+      real // i,
+      imag // i
+    )
+  end
+
   def dot(b : self)
     (conj * b).real
   end
@@ -82,6 +96,8 @@ struct Complex(T)
     end
 
     {a, b, c}
+  end
+
   def inspect
     "#{real}+#{imag}i"
   end

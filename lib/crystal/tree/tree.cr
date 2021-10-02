@@ -11,7 +11,9 @@ class Tree
 
   def initialize(n)
     initialize(n)
-    yield self
+    (n-1).times do
+      yield self
+    end
   end
 
   # 辺の追加
