@@ -1,13 +1,8 @@
-n = gets.to_i
-p = gets.split.map(&:to_i)
-min = p[0]
+n, k = gets.split.map(&:to_i)
+s = 0
+2.upto(n) { s += s / ~-k + 1 }
+p s
 
-ans = 0
-n.times do |i|
-  if p[i] <= min
-    ans += 1
-    min = p[i]
-  end
-end
-
-puts ans
+pp k
+pp -k
+pp ~-k

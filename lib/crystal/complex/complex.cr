@@ -4,6 +4,11 @@ struct Complex(T)
   getter real : T
   getter imag : T
 
+  def self.read
+    real, imag = gets.to_s.split.map(&.to_i64)
+    new(real, imag)
+  end
+
   # 平面幾何で利用する場合を想定した辞書順ソート
   def <=>(b : self)
     ret = real <=> b.real
@@ -14,13 +19,17 @@ struct Complex(T)
     real.zero? && imag.zero?
   end
 
-  def initialize(real : T, imag : T = T.zero)
+  def initialize(real, imag = T.zero)
     @real = T.new(real)
     @imag = T.new(imag)
   end
 
   def abs2
     real * real + imag * imag
+  end
+
+  def abs
+    Math.sqrt(abs2)
   end
 
   def conj
@@ -82,6 +91,8 @@ struct Complex(T)
     end
 
     {a, b, c}
+  end
+
   def inspect
     "#{real}+#{imag}i"
   end

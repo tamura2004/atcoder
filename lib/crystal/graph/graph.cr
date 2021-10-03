@@ -86,7 +86,7 @@ class Graph
   end
 
   # デバッグ用：アスキーアートで可視化
-  def debug(origin = 1)
+  def debug(origin = 1, di = true)
     case n
     when 0
       puts "++"
@@ -99,16 +99,30 @@ class Graph
       return
     end
 
-    File.open("debug.dot", "w") do |fh|
-      fh.puts "digraph tree {"
-      n.times do |v|
-        g[v].each do |nv|
-          next if v >= nv
-          fh.puts "  #{v + origin} -- #{nv + origin};"
+    if di
+      File.open("debug.dot", "w") do |fh|
+        fh.puts "digraph tree {"
+        n.times do |v|
+          g[v].each do |nv|
+            next if v >= nv
+            fh.puts "  #{v + origin} -- #{nv + origin};"
+          end
         end
+        fh.puts "}"
       end
-      fh.puts "}"
+      puts `cat debug.dot | graph-easy --from=dot --as_ascii`
+    else
+      File.open("debug.dot", "w") do |fh|
+        fh.puts "graph tree {"
+        n.times do |v|
+          g[v].each do |nv|
+            next if v >= nv
+            fh.puts "  #{v + origin} -> #{nv + origin};"
+          end
+        end
+        fh.puts "}"
+      end
+      puts `cat debug.dot | graph-easy --from=dot --as_ascii`
     end
-    puts `cat debug.dot | graph-easy --from=dot --as_ascii`
   end
 end

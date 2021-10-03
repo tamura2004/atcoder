@@ -1,0 +1,168 @@
+	"type tuple long long": {
+		"prefix": "tll",
+		"body" : [
+			"Tuple(Int64,Int64)",
+		]
+	},
+	"type tuple int long": {
+		"prefix": "til",
+		"body" : [
+			"Tuple(Int32,Int64)",
+		]
+	},
+	"type tuple long int": {
+		"prefix": "tli",
+		"body" : [
+			"Tuple(Int64,Int32)",
+		]
+	},
+	"type tuple int int": {
+		"prefix": "tii",
+		"body" : [
+			"Tuple(Int32,Int32)",
+		]
+	},
+	"type tuple long long long": {
+		"prefix": "tlll",
+		"body" : [
+			"Tuple(Int64,Int64,Int64)",
+		]
+	},
+	"type tuple int long long": {
+		"prefix": "till",
+		"body" : [
+			"Tuple(Int32,Int64,Int64)",
+		]
+	},
+	"type tuple long int long": {
+		"prefix": "tlil",
+		"body" : [
+			"Tuple(Int64,Int32,Int64)",
+		]
+	},
+	"type tuple int int long": {
+		"prefix": "tiil",
+		"body" : [
+			"Tuple(Int32,Int32,Int64)",
+		]
+	},
+	"type tuple long long int": {
+		"prefix": "tlli",
+		"body" : [
+			"Tuple(Int64,Int64,Int32)",
+		]
+	},
+	"type tuple int long int": {
+		"prefix": "tili",
+		"body" : [
+			"Tuple(Int32,Int64,Int32)",
+		]
+	},
+	"type tuple long int int": {
+		"prefix": "tlii",
+		"body" : [
+			"Tuple(Int64,Int32,Int32)",
+		]
+	},
+	"type tuple int int int": {
+		"prefix": "tiii",
+		"body" : [
+			"Tuple(Int32,Int32,Int32)",
+		]
+	},
+	"type tuple long long long long": {
+		"prefix": "tllll",
+		"body" : [
+			"Tuple(Int64,Int64,Int64,Int64)",
+		]
+	},
+	"type tuple int long long long": {
+		"prefix": "tilll",
+		"body" : [
+			"Tuple(Int32,Int64,Int64,Int64)",
+		]
+	},
+	"type tuple long int long long": {
+		"prefix": "tlill",
+		"body" : [
+			"Tuple(Int64,Int32,Int64,Int64)",
+		]
+	},
+	"type tuple int int long long": {
+		"prefix": "tiill",
+		"body" : [
+			"Tuple(Int32,Int32,Int64,Int64)",
+		]
+	},
+	"type tuple long long int long": {
+		"prefix": "tllil",
+		"body" : [
+			"Tuple(Int64,Int64,Int32,Int64)",
+		]
+	},
+	"type tuple int long int long": {
+		"prefix": "tilil",
+		"body" : [
+			"Tuple(Int32,Int64,Int32,Int64)",
+		]
+	},
+	"type tuple long int int long": {
+		"prefix": "tliil",
+		"body" : [
+			"Tuple(Int64,Int32,Int32,Int64)",
+		]
+	},
+	"type tuple int int int long": {
+		"prefix": "tiiil",
+		"body" : [
+			"Tuple(Int32,Int32,Int32,Int64)",
+		]
+	},
+	"type tuple long long long int": {
+		"prefix": "tllli",
+		"body" : [
+			"Tuple(Int64,Int64,Int64,Int32)",
+		]
+	},
+	"type tuple int long long int": {
+		"prefix": "tilli",
+		"body" : [
+			"Tuple(Int32,Int64,Int64,Int32)",
+		]
+	},
+	"type tuple long int long int": {
+		"prefix": "tlili",
+		"body" : [
+			"Tuple(Int64,Int32,Int64,Int32)",
+		]
+	},
+	"type tuple int int long int": {
+		"prefix": "tiili",
+		"body" : [
+			"Tuple(Int32,Int32,Int64,Int32)",
+		]
+	},
+	"type tuple long long int int": {
+		"prefix": "tllii",
+		"body" : [
+			"Tuple(Int64,Int64,Int32,Int32)",
+		]
+	},
+	"type tuple int long int int": {
+		"prefix": "tilii",
+		"body" : [
+			"Tuple(Int32,Int64,Int32,Int32)",
+		]
+	},
+	"type tuple long int int int": {
+		"prefix": "tliii",
+		"body" : [
+			"Tuple(Int64,Int32,Int32,Int32)",
+		]
+	},
+	"type tuple int int int int": {
+		"prefix": "tiiii",
+		"body" : [
+			"Tuple(Int32,Int32,Int32,Int32)",
+		]
+	},
