@@ -51,6 +51,20 @@ struct Complex(T)
     )
   end
 
+  def *(i : Int)
+    Complex(T).new(
+      real * i,
+      imag * i
+    )
+  end
+
+  def //(i : Int)
+    Complex(T).new(
+      real // i,
+      imag // i
+    )
+  end
+
   def dot(b : self)
     (conj * b).real
   end

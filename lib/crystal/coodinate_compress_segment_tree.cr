@@ -18,6 +18,40 @@ class CoodinateCompressSegmentTree(K, V)
   getter fx : Proc(V, V, V)
   getter unit : V
 
+  def self.range_min_query(keys : Array(K), values : Array(V))
+    unit = V::MAX
+    fx = Proc(V, V, V).new do |a, b|
+      Math.min(a, b)
+    end
+    new(keys, values, unit, fx)
+  end
+
+  def self.range_min_query(keys : Array(K))
+    values = keys.map { Int64::MAX }
+    unit = Int64::MAX
+    fx = Proc(Int64, Int64, Int64).new do |a, b|
+      Math.min(a, b)
+    end
+    new(keys, values, unit, fx)
+  end
+
+  def self.range_max_query(keys : Array(K), values : Array(V))
+    unit = V::MIN
+    fx = Proc(V, V, V).new do |a, b|
+      Math.max(a, b)
+    end
+    new(keys, values, unit, fx)
+  end
+
+  def self.range_max_query(keys : Array(K))
+    values = keys.map { Int64::MIN }
+    unit = Int64::MIN
+    fx = Proc(Int64, Int64, Int64).new do |a, b|
+      Math.max(a, b)
+    end
+    new(keys, values, unit, fx)
+  end
+
   def initialize(
     keys : Array(K),
     values : Array(V) = keys.map { V.zero },

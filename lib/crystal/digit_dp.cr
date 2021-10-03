@@ -44,14 +44,14 @@ class DigitDP
   # 先頭がゼロフラグ付き
   def each_with_leading_zero
     n.times do |i|
-      [ZERO, NONZ].each do |j|
-        [EDGE, FREE].each do |k|
+      [ZERO, NONZ].each do |z|
+        [EDGE, FREE].each do |e|
           digit.times do |d|
-            next if k == EDGE && a[i] < d
-            jj = j == ZERO && d == 0 ? ZERO : NONZ
-            kk = k == EDGE && d == a[i] ? EDGE : FREE
+            next if e == EDGE && a[i] < d
+            zz = z == ZERO && d == 0 ? ZERO : NONZ
+            ee = e == EDGE && d == a[i] ? EDGE : FREE
 
-            yield i, j, k, d, jj, kk
+            yield i, z, e, d, zz, ee
           end
         end
       end
