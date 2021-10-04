@@ -98,8 +98,8 @@ class Prime
   # ```
   # Prime.factors(72) # => [1, 2, 3, 4, 6, 8, 9, 12, 18, 24, 36, 72]
   # ```
-  def self.factors(n : Int32)
-    PrimeLarge(Int32).factors(n)
+  def self.factors(n)
+    PrimeLarge.factors(n)
   end
   
   # 約数を列挙（1と自身を含む）
@@ -311,9 +311,9 @@ struct Int
   # ```
   def factors
     if self > Prime::MAX
-      PrimeLarge(Int64).factors(to_i64)
+      PrimeLarge(self).factors(self)
     else
-      Prime.factors(to_i)
+      Prime.factors(self)
     end
   end
 
