@@ -92,4 +92,14 @@ describe Indexable do
     a = [1,1,200,1]
     a.compress.should eq [0,0,1,0]
   end
+
+  it "csmin" do
+    a = [5,2,4,3]
+    a.csmin.should eq [5,2,2,2]
+  end
+
+  it "csmax" do
+    a = [1,3,2,4]
+    a.csmax.should eq [1,3,3,4]
+  end
 end

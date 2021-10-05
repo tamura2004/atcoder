@@ -38,6 +38,20 @@ module Indexable(T)
     end
   end
 
+  # 累積最大値
+  def csmax : self
+    each_with_object([T::MIN]) do |v, h|
+      h << Math.max h[-1], v
+    end[1..]
+  end
+
+  # 累積最小値
+  def csmin : self
+    each_with_object([T::MAX]) do |v, h|
+      h << Math.min h[-1], v
+    end[1..]
+  end
+
   # 自身が累積和の時[l, r)の区間和を求める
   def range_sum(r : Range(Int?,Int?))
     lo = r.begin || 0
@@ -127,12 +141,12 @@ module Indexable(T)
   macro get_rank(i)
     rank[{{i}}]? || -1
   end
-  
+
   # 接尾辞配列マクロ
   macro cost(i, k)
     { get_rank({{i}}), get_rank({{i}}+{{k}}) }
   end
-  
+
   # 接尾辞配列と順位を返す
   def suffix_array
     rank = (0..size).map { |i| i == size ? -1 : self[i] }
@@ -164,7 +178,7 @@ module Indexable(T)
     ->(t : self) do
       lo = 0
       hi = size
-      
+
       while hi - lo > 1
         mid = (lo + hi) // 2
         if self[sa[mid], t.size] < t
@@ -173,7 +187,7 @@ module Indexable(T)
           hi = mid
         end
       end
-      
+
       self[sa[hi], t.size] == t
     end
   end

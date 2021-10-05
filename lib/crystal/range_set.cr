@@ -1,3 +1,19 @@
+# struct Range(B, E)
+#   include Comparable(Range(B, E))
+
+#   def &(b : self)
+#     Math.max(@begin, b.begin)..Math.min(@end, b.end)
+#   end
+
+#   def <=>(b : self)
+#     { @begin, @end } <=> { b.begin, b.end }
+#   end
+
+#   def rev
+#     @end..@begin
+#   end
+# end
+
 struct Range(B, E)
   def merge(b : self) : self?
     return nil if b.end < @begin || @end < b.begin
