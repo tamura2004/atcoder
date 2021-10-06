@@ -2,6 +2,7 @@
 class IMOS(T)
   getter n : Int32
   getter a : Array(T)
+  delegate "[]", "[]=", to: a
 
   def initialize(@n)
     @a = Array.new(n, T.zero)

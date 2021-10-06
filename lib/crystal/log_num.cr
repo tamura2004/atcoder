@@ -84,4 +84,9 @@ record LogNum, v : Float64 do
   def to_i
     to_f.round.ceil
   end
+
+  # 自然対数の底から10を底に
+  def to_log10
+    LogNum.new(v / Math.log(10))
+  end
 end
