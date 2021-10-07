@@ -1,6 +1,6 @@
 class Grid
   DIR = [{0, 1}, {1, 0}, {0, -1}, {-1, 0}, {1, 1}, {1, -1}, {-1, 1}, {-1, -1}]
-  alias Pair = Tuple(Int32,Int32)
+  alias Pair = Tuple(Int32, Int32)
 
   getter h : Int32
   getter w : Int32
@@ -44,9 +44,9 @@ class Grid
   end
 
   def each(i)
-    y,x = from_index(i)
-    each(y,x) do |ny,nx|
-      j = to_index(ny,nx)
+    y, x = from_index(i)
+    each(y, x) do |ny, nx|
+      j = to_index(ny, nx)
       yield j
     end
   end
@@ -54,7 +54,7 @@ class Grid
   def each
     h.times do |y|
       w.times do |x|
-        yield y,x,g[y][x]
+        yield y, x, g[y][x]
       end
     end
   end
@@ -64,17 +64,16 @@ class Grid
       dy, dx = DIR[dir]
       ny = y + dy
       nx = x + dx
-      next if outside?(ny,nx)
-      next if wall?(ny,nx)
-      yield ny,nx,dir
+      next if outside?(ny, nx)
+      next if wall?(ny, nx)
+      yield ny, nx, dir
     end
   end
-
 
   def bfs(a : Array(Pair), &block)
     seen = Array.new(h) { Array.new(w, -1) }
     q = Deque(Pair).new
-    a.each do |y,x|
+    a.each do |y, x|
       seen[y][x] = 0
       q << {y, x}
     end
@@ -123,11 +122,23 @@ class Grid
   end
 
   def from_index(i)
-    { i // w, i % w }
+    {i // w, i % w}
   end
 
   def to_index(y, x)
     y * w + x
+  end
+
+  def zigzag
+    ans = [] of Tuple(Int32, Int32)
+    h.times do |y|
+      lo = y.even? ? 0 : w-1
+      hi = y.even? ? w-1 : 0
+      lo.to(hi) do |x|
+        ans << {y, x}
+      end
+    end
+    ans
   end
 
   def debug
