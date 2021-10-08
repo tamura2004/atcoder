@@ -272,9 +272,9 @@ struct Int
   # ```
   def prime_division
     if self > Prime::MAX
-      PrimeLarge(Int64).prime_division(to_i64)
+      PrimeLarge(self).prime_division(self)
     else
-      Prime.prime_division(to_i)
+      Prime.prime_division(self)
     end
   end
   

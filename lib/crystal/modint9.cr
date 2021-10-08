@@ -16,11 +16,13 @@ struct ModInt
 
   def self.p(n, k)
     return ModInt.zero if n < k
+    return ModInt.zero if k < 0
     n.f // (n - k).f
   end
 
   def self.c(n, k)
     return ModInt.zero if n < k
+    return ModInt.zero if k < 0
     p(n, k) // k.f
   end
 
