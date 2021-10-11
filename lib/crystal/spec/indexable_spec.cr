@@ -95,11 +95,11 @@ describe Indexable do
 
   it "csmin" do
     a = [5,2,4,3]
-    a.csmin.should eq [5,2,2,2]
+    a.csmin(head: false).should eq [5,2,2,2]
   end
 
   it "csmax" do
     a = [1,3,2,4]
-    a.csmax.should eq [1,3,3,4]
+    a.csmax(head: false).should eq [1,3,3,4]
   end
 end

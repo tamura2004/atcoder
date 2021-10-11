@@ -39,17 +39,19 @@ module Indexable(T)
   end
 
   # 累積最大値
-  def csmax : self
-    each_with_object([T::MIN]) do |v, h|
+  def csmax(head = true)
+    ans = each_with_object([T::MIN]) do |v, h|
       h << Math.max h[-1], v
-    end[1..]
+    end
+    head ? ans : ans[1..]
   end
 
   # 累積最小値
-  def csmin : self
-    each_with_object([T::MAX]) do |v, h|
+  def csmin(head = true)
+    ans = each_with_object([T::MAX]) do |v, h|
       h << Math.min h[-1], v
-    end[1..]
+    end
+    head ? ans : ans[1..]
   end
 
   # 自身が累積和の時[l, r)の区間和を求める

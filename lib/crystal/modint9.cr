@@ -23,7 +23,16 @@ struct ModInt
   def self.c(n, k)
     return ModInt.zero if n < k
     return ModInt.zero if k < 0
-    p(n, k) // k.f
+    if n <= MAX
+      p(n, k) // k.f
+    else
+      ans = 1.to_m
+      (1..k).each do |i|
+        ans *= (n + 1 - i)
+        ans //= i
+      end
+      ans
+    end
   end
 
   def self.h(n, k)

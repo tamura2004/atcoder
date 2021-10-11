@@ -37,6 +37,10 @@ ARGV.each do |name|
   modules = name.split("/").map { |s| camelcase(s) }
   classname = modules.pop
 
+  if modules.size > 0 && modules[0] =~ /^(Graph|Tree)$/
+    modules.shift
+  end
+
   if src.exist? || spec.exist?
     raise "File #{src} or #{spec} already exists."
   end
