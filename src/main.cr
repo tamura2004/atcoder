@@ -1,32 +1,17 @@
-require "crystal/abc222/e/path_count"
-require "crystal/abc222/e/knapsack"
-include Abc222::E
-include EdgeLabeledTree
+a = gets.to_s.chars.map(&.ord.- 'a'.ord)
+k = gets.to_s.to_i
 
-n, m, k = gets.to_s.split.map(&.to_i)
-a = gets.to_s.split.map(&.to_i.- 1)
-
-g = Tree.new(n)
-(n - 1).times do |i|
-  v, nv = gets.to_s.split.map(&.to_i64)
-  g.add v, nv, i
+n = a.size
+n.times do |i|
+  next if a[i] == 0
+  
+  if (26 - a[i]) <= k
+    k -= 26 - a[i]
+    a[i] = 0
+  end
 end
 
-st = PathCount.new(g)
-a.each_cons_pair do |v, nv|
-  st.solve(v, nv)
-end
+a[-1] += k
+a[-1] %= 26
 
-cnt = st.dp
-
-# r + b = sum
-# r - b = k
-# 2r = sum + k
-tot = cnt.sum + k
-if (cnt.sum + k).odd?
-  puts 0
-  exit
-end
-
-dp = Knapsack.new(st.dp).solve
-pp dp[tot//2]
+puts a.map(&.+('a'.ord).chr).join

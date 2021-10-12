@@ -37,7 +37,7 @@ ARGV.each do |name|
   modules = name.split("/").map { |s| camelcase(s) }
   classname = modules.pop
 
-  if modules.size > 0 && modules[0] =~ /^(Graph|Tree)$/
+  if modules.size > 0 && modules[0] =~ /^(Graph|Tree|Complex)$/
     modules.shift
   end
 
