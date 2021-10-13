@@ -1,17 +1,28 @@
-a = gets.to_s.chars.map(&.ord.- 'a'.ord)
-k = gets.to_s.to_i
-
-n = a.size
-n.times do |i|
-  next if a[i] == 0
-  
-  if (26 - a[i]) <= k
-    k -= 26 - a[i]
-    a[i] = 0
-  end
+h, w = gets.to_s.split.map(&.to_i)
+a = Array.new(h) do
+  gets.to_s.chars
 end
 
-a[-1] += k
-a[-1] %= 26
+puts solve(h,w,a) ? "Yes" : "No"
 
-puts a.map(&.+('a'.ord).chr).join
+def solve(h,w,a)
+  cnt = a.flatten.tally.values
+
+  if h.even? && w.even?
+    return false unless cnt.all?(&.even?)
+    cnt.sum(&.// 4) >= h * w // 4
+  elsif h.odd? && w.odd?
+    return false if cnt.count(&.odd?) != 1
+
+    j = cnt.index(&.odd?).not_nil!
+    cnt[j] -= 1
+
+    cnt.sum(&.// 4) >= (h - 1) // 2 * (w - 1) // 2
+  elsif h.odd? && w.even?
+    return false unless cnt.all?(&.even?)
+    cnt.sum(&.// 4) >= (h - 1) // 2 * w // 2
+  else
+    return false unless cnt.all?(&.even?)
+    cnt.sum(&.// 4) >= h // 2 * (w - 1) // 2
+  end
+end
