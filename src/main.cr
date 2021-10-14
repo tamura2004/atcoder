@@ -1,28 +1,19 @@
-h, w = gets.to_s.split.map(&.to_i)
-a = Array.new(h) do
-  gets.to_s.chars
-end
+require "crystal/indexable"
 
-puts solve(h,w,a) ? "Yes" : "No"
+n, k = gets.to_s.split.map(&.to_i64)
+a = gets.to_s.split.map(&.to_i64).map(&.gcd k).tally
 
-def solve(h,w,a)
-  cnt = a.flatten.tally.values
-
-  if h.even? && w.even?
-    return false unless cnt.all?(&.even?)
-    cnt.sum(&.// 4) >= h * w // 4
-  elsif h.odd? && w.odd?
-    return false if cnt.count(&.odd?) != 1
-
-    j = cnt.index(&.odd?).not_nil!
-    cnt[j] -= 1
-
-    cnt.sum(&.// 4) >= (h - 1) // 2 * (w - 1) // 2
-  elsif h.odd? && w.even?
-    return false unless cnt.all?(&.even?)
-    cnt.sum(&.// 4) >= (h - 1) // 2 * w // 2
-  else
-    return false unless cnt.all?(&.even?)
-    cnt.sum(&.// 4) >= h // 2 * (w - 1) // 2
+ans = 0_i64
+a.keys.each do |i|
+  a.keys.each do |j|
+    next unless i <= j
+    next unless (i * j).divisible_by?(k)
+    if i == j
+      ans += a[i] * (a[i] - 1) // 2
+    else
+      ans += a[i] * a[j]
+    end
   end
 end
+
+pp ans

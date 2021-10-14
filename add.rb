@@ -37,10 +37,6 @@ ARGV.each do |name|
   modules = name.split("/").map { |s| camelcase(s) }
   classname = modules.pop
 
-  if modules.size > 0 && modules[0] =~ /^(Graph|Tree|Complex)$/
-    modules.shift
-  end
-
   if src.exist? || spec.exist?
     raise "File #{src} or #{spec} already exists."
   end
@@ -52,6 +48,7 @@ ARGV.each do |name|
   # クラスファイルを作る
   src.open("w") do |fh|
     modules.each do |module_name|
+      next if module_name =~ /^(Graph|Tree|Complex)$/
       fh.puts ind.spc + "module #{module_name}"
       ind.inc
     end
@@ -60,6 +57,7 @@ ARGV.each do |name|
     fh.puts ind.spc + "end"
 
     modules.each do |module_name|
+      next if module_name =~ /^(Graph|Tree|Complex)$/
       ind.dec
       fh.puts ind.spc + "end"
     end
@@ -74,9 +72,10 @@ ARGV.each do |name|
 
     fh.puts "require \"crystal/#{mname}/#{cname}\""
 
+    modules.shift if modules.size > 0 && modules[0] =~ /^(Graph|Tree|Complex)$/
     qname = (modules + [classname]).join("::")
 
-    fh.puts "include #{modules.join("::")}"
+    fh.puts "include #{modules.join("::")}" if modules.size > 0
     fh.puts
 
     fh.puts "describe #{qname} do"
