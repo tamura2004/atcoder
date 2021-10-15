@@ -1,6 +1,6 @@
 # modint
 struct ModInt
-  MAX   = 100_000
+  MAX   = 1_000_000
   MOD = 10_i64 ** 9 + 7
 
   class_getter f = Array(ModInt).new(MAX)

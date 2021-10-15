@@ -1,19 +1,21 @@
-require "crystal/indexable"
+require "crystal/mod_int"
 
-n, k = gets.to_s.split.map(&.to_i64)
-a = gets.to_s.split.map(&.to_i64).map(&.gcd k).tally
-
-ans = 0_i64
-a.keys.each do |i|
-  a.keys.each do |j|
-    next unless i <= j
-    next unless (i * j).divisible_by?(k)
-    if i == j
-      ans += a[i] * (a[i] - 1) // 2
-    else
-      ans += a[i] * a[j]
-    end
-  end
+t = gets.to_s.to_i
+t.times do
+  n,a,b = gets.to_s.split.map(&.to_i64)
+  a,b = b,a unless a <= b
+  pp solve(a,b,n)
 end
 
-pp ans
+def solve(a,b,n)
+  return 0 if n < a + b
+
+  n = n.to_m
+  a = a.to_m
+  b = b.to_m
+
+  all = (n - a + 1) ** 2 * (n - b + 1) ** 2
+  inner = (n - b + 1) * (b - a + 1)
+  outer = (a - 2) * (a - 2 + 1) // 2 + (a - 1) * (n - a - b + 2)
+  all - (inner + outer * 2) ** 2
+end
