@@ -8,6 +8,7 @@ struct Int
   end
 
   def div_ceil(b : self)
+    raise "bad div_ceil by negative #{b}" if b < 0 && ENV["USER"] == "tamura"
     (self + b - 1) // b
   end
 

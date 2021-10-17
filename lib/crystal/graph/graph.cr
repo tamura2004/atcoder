@@ -116,7 +116,7 @@ class Graph
         fh.puts "graph tree {"
         n.times do |v|
           g[v].each do |nv|
-            next if v >= nv
+            # next if v >= nv
             fh.puts "  #{v + origin} -> #{nv + origin};"
           end
         end
