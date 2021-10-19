@@ -1,41 +1,46 @@
+require "crystal/indexable"
 n, k = gets.to_s.split.map(&.to_i)
-a = gets.to_s.split.map(&.to_i.- 1)
-s = Array.new(n) do
-  gets.to_s
-end
 
-cnt = Array.new(n, false)
-a.each do |i|
-  cnt[i] = true
-end
-
-t = (0...n).map do |i|
-  { s[i], cnt[i] }
-end.sort_by(&.first)
-
-lo = 0
-while lo < n && !t[lo].last
-  lo += 1
-end
-
-hi = lo
-while hi < n && t[hi].last
-  hi += 1
-end
-
-if (hi - lo) != k
-  puts -1
+if n == k
+  puts ""
   exit
 end
 
-head = t[lo].first
-tail = t[hi-1].first
-i = 0
-max = Math.min head.size, tail.size
-while i < max && head[i] == tail[i]
-  i += 1
+a = gets.to_s.split.map(&.to_i.- 1)
+s = Array.new(n) { gets.to_s }
+
+j = a.first
+len = Array.new(n) do |i|
+  lcp(s[i], s[j])
 end
-# pp! s
-# pp! head
-# pp! tail
-puts head[0,i]
+
+cnt = Array.new(n, 0)
+a.each do |i|
+  cnt[i] = 1
+end
+
+hi = Int32::MAX
+lo = Int32::MIN
+
+n.times do |i|
+  if cnt[i] == 1
+    chmin hi, len[i]
+  else
+    chmax lo, len[i]
+  end
+end
+
+if lo < hi
+  puts s[j][0, lo+1]
+else
+  puts -1
+end
+
+# 共通最長接頭辞
+def lcp(s, t)
+  i = 0
+  while i < s.size && i < t.size && s[i] == t[i]
+    i += 1
+  end
+  i
+end
