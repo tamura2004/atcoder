@@ -7,7 +7,7 @@ struct Rerooting(T)
   getter f1 : Proc(T, Int32, T)
   getter f2 : Proc(T, Int32, T)
   getter merge : Proc(T, T, T)
-  
+
   getter dp : Array(Array(T))
   # dp_v = g(merge(f(dp_c1,c1),..f(dp_ck,ck)),v)
 
@@ -53,17 +53,12 @@ struct Rerooting(T)
       val = merge.call(left[i], right[i+1])
       dfs2(nv, v, f2.call(val, v))
     end
-
-    # left = unit
-    # g[v].each_with_index do |nv, i|
-    #   if nv != pv
-    #     val = merge.call(left, right[i+1])
-    #     dfs2(nv, v, f2.call(val, v))
-    #   end
-    #   left = merge.call(left, f1.call(dp[v][i], nv))
-    # end
   end
-  
+
+  def debug
+    pp! dp
+  end
+
   def rec
     dfs1(0, -1)
     dfs2(0, -1, unit)
@@ -74,7 +69,6 @@ struct Rerooting(T)
     rec
     ans = Array.new(n, unit)
     n.times do |v|
-      # g[v].each_with_index do |nv, i|
       g[v].zip(dp[v]).each do |nv, a|
         ans[v] = merge.call(ans[v], f1.call(a, nv))
       end

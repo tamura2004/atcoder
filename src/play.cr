@@ -1,6 +1,5 @@
-a = [1, 5, 3, 6, 4]
-a.zip(0..).reverse_each do |v,i|
-  pp [v,i]
+x = [{1,2},{3,4}]
+
+x.each_with_index do |(a,b),i|
+  pp [a,b,i]
 end
-
-
