@@ -1,46 +1,34 @@
-require "crystal/indexable"
-n, k = gets.to_s.split.map(&.to_i)
+require "crystal/tree/rerooting"
+require "crystal/mod_int"
 
-if n == k
-  puts ""
-  exit
+alias T = Tuple(ModInt,Int32)
+alias V = Int32
+
+n = gets.to_s.to_i
+g = Tree.new(n)
+(n-1).times do
+  v, nv = gets.to_s.split.map(&.to_i64)
+  g.add v, nv
 end
 
-a = gets.to_s.split.map(&.to_i.- 1)
-s = Array.new(n) { gets.to_s }
+rr = Rerooting(T).new(
+  tree: g,
+  merge: -> (a : T, b : T) {
+    ai, aj = a
+    bi, bj = b
 
-j = a.first
-len = Array.new(n) do |i|
-  lcp(s[i], s[j])
-end
+    T.new(
+      ai * bi * (aj + bj).c(aj),
+      aj + bj
+    )
+  },
+  apply: -> (a : T, v : V) {
+    ai, aj = a
+    T.new(ai, aj + 1)
+  },
+  unit: { 1.to_m, 0 }
+)
+ans = rr.solve
+puts ans.map(&.first).join("\n")
 
-cnt = Array.new(n, 0)
-a.each do |i|
-  cnt[i] = 1
-end
-
-hi = Int32::MAX
-lo = Int32::MIN
-
-n.times do |i|
-  if cnt[i] == 1
-    chmin hi, len[i]
-  else
-    chmax lo, len[i]
-  end
-end
-
-if lo < hi
-  puts s[j][0, lo+1]
-else
-  puts -1
-end
-
-# 共通最長接頭辞
-def lcp(s, t)
-  i = 0
-  while i < s.size && i < t.size && s[i] == t[i]
-    i += 1
-  end
-  i
-end
+# pp rr

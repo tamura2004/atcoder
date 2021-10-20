@@ -2,21 +2,21 @@ require "spec"
 require "crystal/tree/rerooting"
 
 alias V = Int32
+alias T = Int64
 
 describe Rerooting do
   it "usage" do
     g = Tree.new(3)
     g.add 1, 2
     g.add 2, 3
+    m = 100
 
-    rr = Rerooting(V).new(
+    rr = Rerooting(T).new(
       g,
-      -> (a : V, v : V) { a + 1 },
-      -> (a : V, b : V) { Math.max a, b },
-      0,
-      -> (a : V, v : V) { a },
+      merge: ->(a : T, b : T) { (a * b) % m },
+      apply: ->(a : T, v : V) { (a + 1) % m },
+      unit: 1_i64
     )
-    pp rr.solve
-
+    rr.solve.should eq [3, 4, 3]
   end
 end

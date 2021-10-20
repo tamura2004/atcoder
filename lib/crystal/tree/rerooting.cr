@@ -3,77 +3,63 @@ require "crystal/tree"
 struct Rerooting(T)
   getter g : Tree
   delegate n, to: g
+  getter dp : Array(T)
+  getter lo : Array(Array(T))
+  getter hi : Array(Array(T))
+  getter merge : Proc(T,T,T)
+  getter apply : Proc(T,Int32,T)
+  getter unit : T
 
-  getter f1 : Proc(T, Int32, T)
-  getter f2 : Proc(T, Int32, T)
-  getter merge : Proc(T, T, T)
-
-  getter dp : Array(Array(T))
-  # dp_v = g(merge(f(dp_c1,c1),..f(dp_ck,ck)),v)
-
-  getter unit : T # mergeの単位元
-
-  def initialize(@g, @f1, @merge, @unit, @f2)
-    @dp = Array.new(n) do |v|
-      Array.new(g[v].size, unit)
+  def initialize(tree @g, @merge, @apply, @unit)
+    @dp = Array.new(n, unit)
+    @lo = Array.new(n) do |v|
+      Array.new(g[v].size + 1, unit)
     end
+    @hi = Array.new(n) do |v|
+      Array.new(g[v].size + 1, unit)
+    end
+  end
+
+  def solve
+    dfs1(0, -1)
+    dfs2(0, -1, unit)
+    dp
   end
 
   def dfs1(v, pv)
     ans = unit
     g[v].each_with_index do |nv, i|
       next if nv == pv
-      dp[v][i] = dfs1(nv, v)
-      ans = merge.call(ans, f1.call(dp[v][i], nv))
+      dfs1(nv, v)
+      cnt = lo[v][i + 1] = hi[v][i] = apply.call(dp[nv], nv)
+      ans = merge.call ans, cnt
     end
-    f2.call(ans, v)
+    dp[v] = ans
   end
 
   def dfs2(v, pv, from_par)
     g[v].each_with_index do |nv, i|
       if nv == pv
-        dp[v][i] = from_par
+        lo[v][i + 1] = from_par
+        hi[v][i] = from_par
+        dp[v] = merge.call dp[v], from_par
         break
       end
     end
 
-    nn = g[v].size
-    right = Array.new(nn+1, unit)
-    g[v].zip(0..).reverse_each do |nv,i|
-      right[i] = merge.call(right[i+1], f1.call(dp[v][i], nv))
+    m = lo[v].size - 1
+    0.upto(m - 1) do |i|
+      lo[v][i + 1] = merge.call lo[v][i + 1], lo[v][i]
     end
 
-    left = Array.new(nn+1, unit)
-    g[v].each_with_index do |nv, i|
-      left[i+1] = merge.call(left[i], f1.call(dp[v][i], nv))
+    m.downto(1) do |i|
+      hi[v][i - 1] = merge.call hi[v][i - 1], hi[v][i]
     end
 
     g[v].each_with_index do |nv, i|
       next if nv == pv
-      val = merge.call(left[i], right[i+1])
-      dfs2(nv, v, f2.call(val, v))
+      cnt = apply.call(merge.call(lo[v][i], hi[v][i + 1]), v)
+      dfs2(nv, v, cnt)
     end
-  end
-
-  def debug
-    pp! dp
-  end
-
-  def rec
-    dfs1(0, -1)
-    dfs2(0, -1, unit)
-    dp
-  end
-
-  def solve
-    rec
-    ans = Array.new(n, unit)
-    n.times do |v|
-      g[v].zip(dp[v]).each do |nv, a|
-        ans[v] = merge.call(ans[v], f1.call(a, nv))
-      end
-      ans[v] = f2.call(ans[v], v)
-    end
-    ans
   end
 end
