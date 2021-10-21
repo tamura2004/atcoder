@@ -1,29 +1,35 @@
-require "crystal/weighted_tree/rerooting"
-include WeightedTree
+require "crystal/graph/scc"
 
-n = gets.to_s.to_i64
-g = Tree.new(n)
-(n - 1).times do
-  v, nv, cost = gets.to_s.split.map(&.to_i64)
-  g.add v, nv, cost
+n = gets.to_s.to_i
+g = Graph.new(n*6)
+
+n.times do |x|
+  s = gets.to_s
+  n.times do |y|
+    if s[y] == '1'
+      g.add x, y + n
+    else
+      g.add x, y + n * 4
+    end
+  end
 end
-d = gets.to_s.split.map(&.to_i64)
 
-alias A = Int64
-alias V = Int32
-alias F1 = Proc(A, V, A, A)
-alias F2 = Proc(A, V, A)
-alias M = Proc(A, A, A)
+n.times do |x|
+  s = gets.to_s
+  n.times do |z|
+    if s[z] == '1'
+      g.add x, z + n * 2
+    else
+      g.add x, z + n * 5
+    end
+  end
+end
 
-rr = Rerooting(Int64).new(
-  g,
-  F1.new { |a, v, cost| Math.max(a, d[v]) + cost },
-  M.new { |a, b| Math.max a, b },
-  0_i64,
-  F2.new { |a, v| a }
-)
-
-ans = rr.solve
-puts ans.join("\n")
-
-pp g.g
+ans = true
+SCC.new(g).solve[1].each do |s|
+  pp s
+  if 1 < s.to_a.map { |v| v % (n*3) }.tally.values.max
+    puts -1
+    exit
+  end
+end

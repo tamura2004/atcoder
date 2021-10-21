@@ -14,7 +14,7 @@ class Matrix(T)
     @n = n.to_i
     @a = Array.new(n) { |i| Array.new(n) { |j| yield i, j } }
   end
-  
+
   def initialize(@a)
     @n = a.size
   end
@@ -44,6 +44,10 @@ class Matrix(T)
       b *= b
     end
     ans
+  end
+
+  def inv
+    b = a.zip(Matrix(T).eye(n).a).map { |u, v| u + v }
   end
 
   @[AlwaysInline]

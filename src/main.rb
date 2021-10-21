@@ -1,4 +1,9 @@
-require "matrix"
+a, b, c, d = gets.chomp.chars.map(&:to_i)
 
-m = Matrix[[2, -1, -1], [-1, 2, -1], [-1, -1, 2]]
-p m
+if a == b && b == c && c == d
+  puts "Weak"
+  elif (a + 1) % 10 == b && (b + 1) % 10 == c && (c + 1) % 10 == d
+  puts "Weak"
+else
+  puts "Strong"
+end
