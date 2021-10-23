@@ -28,4 +28,14 @@ class RollingHash
   def get(lo, hi)
     hash[hi] - hash[lo] * pow[hi - lo]
   end
+
+  def [](i : Int32, len : Int32)
+    get(i, i+len)
+  end
+
+  def [](r : Range(Int32?, Int32?))
+    lo = r.begin || 0
+    hi = (r.end || n - 1) + (r.excludes_end? ? 0 : 1)
+    get(lo, hi)
+  end
 end

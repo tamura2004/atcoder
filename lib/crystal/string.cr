@@ -2,6 +2,12 @@ require "crystal/indexable"
 
 # 文字列アルゴリズム
 class String
+
+  # 文字コードの配列から文字列に変換
+  def self.from(a)
+    a.map(&.chr).join
+  end
+
   # 文字コードの配列に変換
   def to_a
     chars.map(&.ord)
