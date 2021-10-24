@@ -1,8 +1,6 @@
-require "crystal/mod_int"
-
 # コンビネーション
 def combination(n,k)
-  ans = 1.to_m
+  ans = 1_i64
   (1..k).each do |i|
     ans *= (n + 1 - i)
     ans //= i
