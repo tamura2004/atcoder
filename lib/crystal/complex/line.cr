@@ -39,9 +39,3 @@ struct Line
   end
 end
 
-x = Line.new(0, 0, 1, 2)
-y = Line.new(2, -1, 0)
-
-pp! x
-pp! y
-pp! x == y

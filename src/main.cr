@@ -1,2 +1,2 @@
-pp 10.gcd(0)
-pp 0.gcd(10)
+a = Array.new(100, rand(100))
+pp a.hash
