@@ -1,7 +1,7 @@
 require "string_scanner"
 
 # 構文解析サンプル
-struct Scanner
+struct StringScannerSample
   getter s : StringScanner
   delegate scan, eos?, to: s
 
@@ -51,5 +51,3 @@ struct Scanner
     ans
   end
 end
-
-pp Scanner.new("2*(4+2*(2+3*3))").expression
