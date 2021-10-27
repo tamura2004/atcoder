@@ -1,7 +1,13 @@
 require "string_scanner"
 
 # 構文解析サンプル
-struct Scanner
+#
+# <expr> ::= <term>[('+'|'-')<term>]*
+# <term> ::= <factor>[('*'|'/')<factor>]*
+# <factor> ::= <number> | '(' <expr> ')'
+# <number> ::= [0-9]+
+#
+struct StringScannerSample
   getter s : StringScanner
   delegate scan, eos?, to: s
 
@@ -9,47 +15,47 @@ struct Scanner
     @s = StringScanner.new(s)
   end
 
-  def number
-    ans = 0_i64
-    if num = scan(/\d+/)
-      ans += num.to_i64
-    end
-    ans
-  end
-
-  def factor
-    if scan(/\(/)
-      ans = expression
-      scan(/\)/)
-      ans
-    else
-      number
-    end
-  end
-
-  def term
-    ans = number
-    if scan(/\*/)
-      ans *= factor
-    elsif scan(/\//)
-      ans /= factor
-    end
-    ans
-  end
-
-  def expression
+  # <expr> ::= <term>[('+'|'-')<term>]*
+  def expr
     ans = term
     while !eos?
-      if scan(/\+/)
-        ans += term
-      elsif scan(/\-/)
-        ans -= term
-      else
-        break
+      case
+      when scan(/\+/) then ans += term
+      when scan(/\-/) then ans -= term
+      else                 break
       end
     end
     ans
   end
+
+  # <term> ::= <factor>[('*'|'/')<factor>]*
+  def term
+    ans = factor
+    while !eos?
+      case
+      when scan(/\*/) then ans *= factor
+      when scan(/\//) then ans /= factor
+      else                 break
+      end
+    end
+    ans
+  end
+
+  # <factor> ::= <number> | '(' <expr> ')'
+  def factor
+    case
+    when scan(/\(/) then begin expr ensure scan(/\)/) end
+    else number
+    end
+  end
+
+  def number
+    scan(/\d+/).try &.to_i64 || 0_i64
+  end
 end
 
-pp Scanner.new("2*(4+2*(2+3*3))").expression
+while true
+  print "> "
+  s = gets.to_s
+  puts StringScannerSample.new(s).expr
+end
