@@ -1,73 +1,34 @@
-require "strscan"
-require "forwardable"
+# [EXPERIMENTAL]
+def convolution(a, b, mod: 998_244_353, k: 35, z: 99)
+  n = a.size
+  m = b.size
+  return [] if n == 0 || m == 0
 
-# 構文解析サンプル
-#
-# <expr> ::= <term>[('+'|'-')<term>]*
-# <term> ::= <factor>[('*'|'/')<factor>]*
-# <factor> ::= <number> | '(' <expr> ')'
-# <number> ::= [0-9]+
-#
-class Parser
-  extend Forwardable
-  def_delegators "@s", "eos?", "scan"
+  raise ArgumentError if a.min < 0 || b.min < 0
 
-  def initialize(s)
-    @s = StringScanner.new(s)
-  end
+  format = "%0#{k}x" # "%024x"
+  sa = ""
+  sb = ""
+  a.each { |x| sa << (format % x) }
+  b.each { |x| sb << (format % x) }
 
-  # <expr> ::= <term>[('+'|'-')<term>]*
-  def expr
-    ast = term
-    while !eos?
-      case
-      when scan(/\+/) then ast = ["+", ast, term]
-      when scan(/\-/) then ast = ["-", ast, term]
-      else break
-      end
-    end
-    ast
-  end
+  zero = "0"
+  s = zero * z + ("%x" % (sa.hex * sb.hex))
+  i = -(n + m - 1) * k - 1
 
-  # <term> ::= <factor>[('*'|'/')<factor>]*
-  def term
-    ast = factor
-    while !eos?
-      case
-      when scan(/\*/) then ast = ["*", ast, factor]
-      when scan(/\//) then ast = ["/", ast, factor]
-      else break
-      end
-    end
-    ast
-  end
-
-  # <factor> ::= <number> | '(' <expr> ')'
-  def factor
-    case
-    when scan(/\(/) then expr.tap { scan(/\)/) }
-    else number
-    end
-  end
-
-  def number
-    n = scan(/\d+/)
-    [n, nil, nil]
-  end
+  Array.new(n + m - 1) { (s[i + 1..i += k] || zero).hex % mod }
 end
 
-ast = Parser.new("1+2+3+4+5").expr
+s = gets.chomp.chars.map(&:to_i)
+t = gets.chomp.chars.map(&:to_i)
+n = s.size
+m = t.size
+rs = s.map { 1 - _1 }
+rt = t.map { 1 - _1 }
 
-def bfs(ast)
-  op, lo, hi = ast
-  case op
-  when /\d+/ then op.to_i
-  when "+" then bfs(lo) + bfs(hi)
-  when "-" then bfs(lo) - bfs(hi)
-  when "*" then bfs(lo) * bfs(hi)
-  when "/" then bfs(lo) / bfs(hi)
-  end
-end
+st = convolution(s, rt.reverse)
+ts = convolution(rs, t.reverse)
 
-# pp ast
-pp bfs(ast)
+cnt = st.zip(ts).map(&:sum)
+ans = cnt[m - 1..n - 1]
+puts ans.min
