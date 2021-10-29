@@ -18,6 +18,7 @@ LANG_EXT = {
   ".java" => "java",
   ".kt" => "kotlin",
   ".cs" => "csharp",
+  ".scm" => "gauche",
   ".go" => "go",
 }
 
@@ -50,6 +51,7 @@ EXECUTE = {
   "java" => "java -classpath dist Main",
   "kotlin" => "kotlin dist/kotlin.jar",
   "csharp" => "mono dist/csharp.exe",
+  "gauche" => "gosh src/main.scm",
   "go" => "./dist/go.out",
 }
 
