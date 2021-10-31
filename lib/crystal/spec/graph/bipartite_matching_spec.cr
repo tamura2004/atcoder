@@ -9,6 +9,6 @@ describe BipartiteMatching do
     g.add 2, 4
     g.add 4, 5
     g.add 4, 6
-    BipartiteMatching.new(g).solve.should eq 2
+    BipartiteMatching.new(g).solve.should eq ({2, [1, 0, -1, 4, 3, -1]})
   end
 end

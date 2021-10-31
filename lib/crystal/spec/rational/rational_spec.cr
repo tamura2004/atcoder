@@ -33,4 +33,14 @@ describe Rational do
     x.should eq y
     x.should eq z
   end
+
+  it "<=" do
+    a = R.new(1,0)
+    b = R.new(0,1)
+    c = R.new(1,2)
+    d = R.new(1,3)
+    (a <= b).should eq false
+    [a,b,c,d].max.should eq a
+    [a,b,c,d].min.should eq b
+  end
 end

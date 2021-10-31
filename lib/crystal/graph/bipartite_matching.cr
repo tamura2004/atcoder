@@ -34,7 +34,7 @@ struct BipartiteMatching
       end
     end
 
-    ans
+    { ans, match }
   end
 
   def dfs(v)

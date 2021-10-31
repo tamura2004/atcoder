@@ -1,5 +1,3 @@
-require "crystal/mod_int"
-
 # 素数クラス
 #
 # エラストテレスの篩で、自身を割る最小の素数をクラス変数として持つ
@@ -368,18 +366,6 @@ class Hash
   def to_i64
     reduce(1_i64) do |acc, (k, v)|
       acc * k ** v
-    end
-  end
-
-  # 素因数分解から元の数
-  #
-  # ```
-  # a = {2 => 1, 3 => 2}
-  # a.to_i64 # => 18
-  # ```
-  def to_m
-    reduce(1.to_m) do |acc, (k, v)|
-      acc * k.to_m ** v
     end
   end
 end

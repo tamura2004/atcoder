@@ -18,6 +18,10 @@ class Trie
     @root = Node.new(0)
   end
 
+  def <<(s)
+    add s
+  end
+  
   def add(s : String)
     now = root
     s.chars.each do |c|

@@ -1,9 +1,11 @@
 # 有理数クラス a / b
 struct Rational
+  include Comparable(self)
+
   getter a : Int64
   getter b : Int64
 
-  def initialize(a, b)
+  def initialize(a, b) # 分子、分母
     a = a.to_i64
     b = b.to_i64
 
@@ -27,4 +29,10 @@ struct Rational
       @b = b // gcd
     end
   end
+
+  def <=>(c : self)
+    a * c.b <=> c.a * b
+  end
 end
+
+alias R = Rational

@@ -10,7 +10,6 @@ module F2
       a.size
     end
 
-
     def sweep
       row = 0
       60.times do |i|
@@ -25,6 +24,11 @@ module F2
           break
         end
       end
+    end
+
+    def rank
+      sweep
+      a.count(&.!= 0)
     end
 
     # vの剰余空間

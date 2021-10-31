@@ -1,3 +1,5 @@
+require "crystal/rational"
+
 struct Complex(T)
   include Comparable(Complex(T))
 
@@ -77,8 +79,16 @@ struct Complex(T)
     real.abs + imag.abs
   end
 
+  # 偏角ソート用、有理数角度
   def phase
-    Math.atan2 imag, real
+    area = case
+    when imag >= 0 && real >= 0 then 0
+    when imag >= 0 && real <= 0 then 1
+    when imag <= 0 && real <= 0 then 2
+    when imag <= 0 && real >= 0 then 3
+    else 4
+    end
+    { area, R.new(imag, real) }
   end
 
   def deg
