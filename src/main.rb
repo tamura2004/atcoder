@@ -1,12 +1,6 @@
-n, m, q = gets.split.map(&:to_i)
-dp = (0..n).map { 1 << _1 }
-
-xy = Array.new(m) { gets.split.map { _1.to_i - 1 } }.sort
-xy.each do |x, y|
-  dp[y] |= dp[x]
-end
-
-ab = Array.new(q) { gets.split.map { _1.to_i - 1 } }
-ab.each do
-  puts dp[_2][_1] == 1 ? "Yes" : "No"
-end
+n = gets.to_i
+a = gets.chomp.chars.map { _1.ord - "a".ord }
+ans = a.map.with_index do |v, i|
+  2 ** i * v
+end.sum
+pp ans

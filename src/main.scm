@@ -1,2 +1,9 @@
-(use gauche.sequence)
-(print (delete-neighbor-dups '(1 1 1 2 3 4 4 2 2 3 1 1 3)))
+(use srfi-42)
+
+(define (combinations xs n)
+  (cond ((= n 1) (map list xs))
+    (else
+      (list-ec (: i xs) (: es (combinations (delete i xs) (- n 1)))
+        (cons i es)))))
+
+(print (combinations '(a b c d) 3))

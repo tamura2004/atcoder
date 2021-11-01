@@ -1,20 +1,28 @@
-n, m, q = gets.to_s.split.map(&.to_i)
+require "crystal/union_find_tree"
+require "crystal/priority_queue"
 
-xy = Array.new(m) { gets.to_s.split.map(&.to_i.- 1) }.sort
-ab = Array.new(q) { gets.to_s.split.map(&.to_i.- 1) }
+n,m = gets.to_s.split.map(&.to_i)
+q = PriorityQueue(Tuple(Int64,Int32,Int32)).lesser
+uf = UnionFindTree.new(n+1)
 
-ab.each_slice(64) do |ab|
-  dp = Array.new(n, 0_i64)
-  ab.each_with_index do |(a,b), i|
-    dp[a] = 1_i64 << i
-  end
-
-  xy.each do |(x, y)|
-    dp[y] |= dp[x]
-  end
-
-  ab.each_with_index do |(a,b), i|
-    puts dp[b].bit(i) == 1 ? "Yes" : "No"
-  end
+m.times do 
+  cost, v, nv = gets.to_s.split.map(&.to_i64)
+  v = v.to_i - 1
+  nv = nv.to_i
+  q << { cost, v, nv }
 end
 
+ans = 0_i64
+while q.size > 0
+  cost, v, nv = q.pop
+  next if uf.same?(v, nv)
+  uf.unite(v, nv)
+  ans += cost
+end
+
+if uf.gsize == 1
+  pp ans
+else
+  pp -1
+end
+  

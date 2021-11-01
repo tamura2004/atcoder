@@ -81,13 +81,7 @@ struct Complex(T)
 
   # 偏角ソート用、有理数角度
   def phase
-    area = case
-    when imag >= 0 && real >= 0 then 0
-    when imag >= 0 && real <= 0 then 1
-    when imag <= 0 && real <= 0 then 2
-    when imag <= 0 && real >= 0 then 3
-    else 4
-    end
+    area = (real < 0).to_unsafe
     { area, R.new(imag, real) }
   end
 

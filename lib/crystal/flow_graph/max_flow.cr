@@ -12,7 +12,7 @@ module FlowGraph
       @visit = Array.new(n, 0)
     end
 
-    def flow(start, target) : Cap
+    def solve(start = 0, target = n - 1) : Cap
       flow = 0_i64
 
       loop do

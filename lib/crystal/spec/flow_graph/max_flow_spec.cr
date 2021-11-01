@@ -16,7 +16,7 @@ describe MaxFlow do
     g.add 4, 7, 1, origin: 0
     g.add 6, 7, 1, origin: 0
     g.add 6, 7, 1, origin: 0
-    MaxFlow.new(g).flow(0, 7).should eq 2
+    MaxFlow.new(g).solve(0, 7).should eq 2
   end
   it "usage weighted" do
     g = Graph.new(5)
@@ -27,6 +27,6 @@ describe MaxFlow do
     g.add 3, 2, 3_i64, origin: 0
     g.add 2, 4, 5_i64, origin: 0
     g.add 3, 4, 8_i64, origin: 0
-    MaxFlow.new(g).flow(0, 4).should eq 11
+    MaxFlow.new(g).solve(0, 4).should eq 11
   end
 end

@@ -15,7 +15,7 @@ module FlowGraph
       @g = Array.new(n) { [] of E }
     end
 
-    def add(v, nv, cap, origin = 1)
+    def add(v, nv, cap, origin = 0)
       v = V.new(v) - origin
       nv = V.new(nv) - origin
       cap = Cap.new(cap)
