@@ -1,9 +1,32 @@
+(use gauche.array)
 (use srfi-42)
 
-(define (combinations xs n)
-  (cond ((= n 1) (map list xs))
-    (else
-      (list-ec (: i xs) (: es (combinations (delete i xs) (- n 1)))
-        (cons i es)))))
+(define h (read))
+(define w (read))
+(define a (tabulate-array (shape 0 h 0 w) (^(x y) (read))))
 
-(print (combinations '(a b c d) 3))
+(define (++ x) (+ x 1))
+(define (-- x) (- x 1))
+(define (mod7 x) (modulo (-- x) 7))
+(define (up? x y d) (= (+ x d) y))
+
+(define yoko
+  (vector-ec (: y h)
+    (sum-ec (: x w)
+      (array-ref a y x))))
+
+(define tate
+  (vector-ec (: x w)
+    (sum-ec (: y h)
+      (array-ref a y x))))
+
+(do-ec (: y h)
+  (:let row
+    (list-ec (: x w)
+      (:let i (vector-ref yoko y))
+      (:let j (vector-ref tate x))
+      (:let k (array-ref a y x))
+      (- (+ i j) k)))
+  (print
+    (string-join
+      (map number->string row) " ")))
