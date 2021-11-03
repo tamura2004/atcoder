@@ -1,6 +1,13 @@
-n = gets.to_i
-a = gets.chomp.chars.map { _1.ord - "a".ord }
-ans = a.map.with_index do |v, i|
-  2 ** i * v
-end.sum
-pp ans
+h, w = gets.split.map(&:to_i)
+a = Array.new(h) { gets.split.map(&:to_i) }
+
+yoko = a.map(&:sum)
+tate = a.transpose.map(&:sum)
+
+h.times do |y|
+  ans = []
+  w.times do |x|
+    ans << yoko[y] + tate[x] - a[y][x]
+  end
+  puts ans.join(" ")
+end
