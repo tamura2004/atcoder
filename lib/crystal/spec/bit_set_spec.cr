@@ -1,70 +1,41 @@
 require "spec"
 require "../bit_set"
 
+# bitを利用した集合表現
 describe Int do
-  it "割り切るか" do
-    3.div?(12).should eq true
-    3.div?(7).should eq false
+  it "elements" do
+    0b1010.elements.to_a.should eq [1, 3]
+    0b1010.elements.all?(&.odd?).should eq true
+    0b1010.elements.min_of(&.* 7).should eq 7
+    0b1010.elements.max_of(&.* 7).should eq 21
   end
 
-  it "部分集合の列挙（空集合除く）" do
-    3.subsets.to_a.should eq [0b11, 0b10, 0b01]
+  it "each_index" do
+    ans = [] of Int32
+    0b101.each_index do |i|
+      ans << i
+    end
+    ans.should eq [0, 2]
   end
 
-  it "真部分集合の列挙（空集合除く）" do
-    3.proper_subsets.to_a.should eq [0b10, 0b01]
+  it "subsets" do
+    0b101.subsets.to_a.should eq [0b101, 0b100, 0b001, 0b000]
   end
 
-  it "指定サイズの部分集合の辞書順列挙" do
-    3.fix_size_subsets(2).to_a.should eq [0b011, 0b101, 0b110]
+  it "each_subset" do
+    ans = [] of Int32
+    0b101.each_subset { |s| ans << s }
+    ans.should eq [0b101, 0b100, 0b001, 0b000]
   end
 
-  it "ビット位置の列挙" do
-    10.bits.to_a.should eq [1, 3]
+  it "of" do
+    a = [7, 3, 1]
+    [0, 2].map(&.of a).should eq [7, 1]
   end
 
-  it "ゼロ埋め*n*桁指定での２進数表記" do
-    10.to_bit(4).should eq "1010"
-  end
-
-  it "補集合" do
-    10.inv(4).should eq 0b0101
-  end
-
-  it "flip Array#at" do
-    0b101.of([4, 7, 1]).should eq [4, 1]
-  end
-
-  it "on" do
-    0b1010.on(2).should eq 0b1110
-    0b1010.on(1).should eq 0b1010
-  end
-
-  it "off" do
-    0b1010.off(1).should eq 0b1000
-    0b1010.off(2).should eq 0b1010
-  end
-
-  it "flip" do
-    0b1010.off(1).should eq 0b1000
-    0b1010.off(2).should eq 0b1010
-  end
-
-  it "lsb" do
-    0b1010.lsb.should eq 0b0010
-  end
-end
-
-describe BitSet do
-  it "ブロックの評価値で初期化" do
-    BitSet(3).make(&.odd?).should eq 0b010
-  end
-
-  it "真偽値の配列で初期化" do
-    BitSet(3).make([true, false, false]).should eq 0b001
-  end
-
-  it "グラフの隣接リスト(0-indexed)から初期化" do
-    BitSet(3).make([1, 2]).should eq 0b110
+  it "bit index iterator" do
+    0b101010.elements.all? do |i|
+      i.odd?
+    end.should eq true
   end
 end

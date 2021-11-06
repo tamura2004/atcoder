@@ -1,20 +1,21 @@
-n = gets.to_s.to_i
-s = gets.to_s.chars.map(&.ord.- 'A'.ord)
-t = gets.to_s.chars.map(&.ord.- 'A'.ord)
-puts conv(s) == conv(t) ? "Yes" : "No"
+require "crystal/bit_set"
+require "crystal/matrix_graph/graph"
+include MatrixGraph
 
-def conv(a)
-  q = Deque.new([] of Int32)
+n, m = gets.to_s.split.map(&.to_i)
+g = Graph.new(n)
+m.times do
+  v,nv = gets.to_s.split.map(&.to_i64)
+  g.add v, nv
+end
 
-  a.each do |v|
-    q << v
-    next if q.size < 3
-
-    case {q[-3], q[-2], q[-1]}
-    when {0, 1, 2}, {1, 2, 0}, {2, 0, 1}
-      q.pop(3)
+clique = Array.new(1<<n, false)
+(1<<n).times do |s|
+  clique[s] = s.elements.all? do |i|
+    s.elements.all? do |j|
+      i == j || g[i][j] == 1
     end
   end
-
-  q
 end
+
+pp clique.zip(0..)

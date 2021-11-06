@@ -11,6 +11,10 @@ struct Complex(T)
     new(real, imag)
   end
 
+  def self.zero
+    Complex(T).new(0,0)
+  end
+
   # 平面幾何で利用する場合を想定した辞書順ソート
   def <=>(b : self)
     ret = real <=> b.real

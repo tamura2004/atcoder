@@ -1,280 +1,239 @@
-# aのk-bitをonにする
-macro bit_on(a, k)
-  {{a}} = {{a}}.on({{k}})
-end
+# 集合のbit表現のためのInt拡張
+{% for t in ["Int", "UInt"] %}
+  {% for n in [8, 16, 32, 64, 128] %}
+    struct {{t.id}}{{n}}
 
-# aのk-bitをoffにする
-macro bit_off(a, k)
-  {{a}} = {{a}}.off({{k}})
-end
-
-# 集合のbit表現ためのInt拡張
-struct Int
-  def to_bit
-    1_i64 << self
-  end
-
-  def bit_size
-    1_i64 << self
-  end
-
-  def on(b)
-    self | b.to_bit
-  end
-
-  def off(b)
-    self ^ b.to_bit
-  end
-
-  def each_subset
-    bit_size.times do |s|
-      yield s
-    end
-  end
-  # 割り切る
-  #
-  # ```
-  # 3.div?(12) # => true
-  # 3.div?(7)  # => false
-  # ```
-  def div?(b)
-    b.divisible_by?(self)
-  end
-
-  # 部分集合の列挙（空集合除く）
-  #
-  # ```
-  # 3.subsets.map(&.to_bit(2)).to_a # => ["11","10","01"]
-  # ```
-  def subsets
-    SubsetIterator.new(self)
-  end
-
-  # 真部分集合の列挙（空集合除く）
-  #
-  # ```
-  # 3.proper_subsets.map(&.to_bit(2)).to_a # => ["11","10","01"]
-  # ```
-  def proper_subsets
-    ProperSubsetIterator.new(self)
-  end
-
-  def each_partision
-    proper_subsets.each do |s|
-      t = self - s
-      yiels s,t if s > t
-    end
-  end
-
-  # 指定サイズの部分集合の辞書順列挙
-  #
-  # ```
-  # 3.fix_size_subsets(2).map(&.to_bit(2)).to_a #=> ["011","101","110"]
-  # ```
-  def fix_size_subsets(k)
-    FixSizeSubsetIterator.new(to_i64, k.to_i64)
-  end
-
-  # 集合の要素の列挙
-  #
-  # ```
-  # 10.bit_elements.to_a # => [1, 3]
-  # ```
-  def bit_elements
-    BitElementIterator.new(self)
-  end
-
-  # 省略名
-  def bits
-    bit_elements
-  end
-
-  # ゼロ埋め*n*桁指定での２進数表記
-  #
-  # ```
-  # 10.to_bit(4) # => "1010"
-  # ```
-  def to_bit(n)
-    "%0#{n}b" % self
-  end
-
-  # ゼロ埋め*n*桁での補集合（反転）
-  #
-  # ```
-  # 10.inv(4).to_bit(4) # => "0101"
-  # ```
-  def inv(n)
-    self ^ ((1_i64 << n) - 1)
-  end
-
-  # values_atの逆
-  #
-  # ```
-  # 0b101.of([4, 7, 1]) # => [4, 1]
-  # ```
-  def of(a)
-    bits.map do |i|
-      a[i]
-    end.to_a
-  end
-
-  def lsb
-    self & -self
-  end
-
-  def msb
-    Math.ilogb(self)
-  end
-
-  def div_ceil(b)
-    (self + b - 1) // b
-  end
-
-  def exp2
-    1_i64 << self
-  end
-
-  # 部分集合の列挙
-  #
-  # ```
-  # SubsetIterator.new(3).map(&.to_bit(2)).to_a # => ["11","10","01"]
-  # ```
-  private class SubsetIterator
-    include Iterator(Int64)
-    getter v : Int64
-    getter b : Int64
-
-    def initialize(v)
-      @v = v.to_i64
-      @b = @v
-    end
-
-    def next
-      if b > 0
-        begin b ensure @b = (b - 1) & v end
-      else
-        stop
+      # 集合要素の列挙
+      #
+      # ```
+      # 0b101.bit_index.to_a #=> [0, 2]
+      # ```
+      def elements
+        BitElementsIterator.new(self)
       end
-    end
-  end
 
-  # 真部分集合の列挙
-  #
-  # ```
-  # ProperSubsetIterator.new(3).map(&.to_bit(2)).to_a # => ["11","10","01"]
-  # ```
-  private class ProperSubsetIterator
-    include Iterator(Int64)
-    getter v : Int64
-    getter b : Int64
-
-    def initialize(v)
-      @v = v.to_i64
-      @b = @v
-    end
-
-    def next
-      @b = (b - 1) & v
-      if b > 0
-        b
-      else
-        stop
-      end
-    end
-  end
-
-  # サイズKの部分集合の列挙
-  #
-  # ```
-  # FixSizeSubsetIterator.new(3, 2).map(&.to_bit(3)).to_a # => ["011","101","110"]
-  # ```
-  private class FixSizeSubsetIterator
-    include Iterator(Int64)
-    getter n : Int64
-    getter k : Int64
-    getter b : Int64
-
-    def initialize(@n, @k)
-      @b = (1_i64 << k) - 1
-    end
-
-    def next
-      if b < (1 << n)
-        begin
-          b
-        ensure
-          x = b & -b
-          y = b + x
-          @b = ((b & ~y) // x >> 1) | y
+      def each_index
+        elements.each do |i|
+          yield i
         end
-      else
-        stop
       end
-    end
-  end
 
-  # 集合の要素の列挙
-  #
-  # ```
-  # BitElementIterator.new(10).to_a # => [1, 3]
-  # ```
-  private class BitElementIterator
-    include Iterator(Int32)
-    getter v : Int64
-    getter i : Int32
+      # 集合の要素の列挙イテレータ
+      private class BitElementsIterator
+        include Iterator({{t.id}}{{n}})
+        getter v : {{t.id}}{{n}}
+        getter i : Int32
 
-    def initialize(v)
-      @v = v.to_i64
-      @i = 0
-    end
+        def initialize(@v)
+          @i = 0
+        end
 
-    def next
-      while (1_i64 << i) <= v && v.bit(i) == 0
-        @i += 1
+        def next
+          while i < {{n}} && v.bit(i) == 0
+            @i += 1
+          end
+
+          if i < {{n}}
+            begin i ensure @i += 1 end
+          else
+            stop
+          end
+        end
       end
-      if (1_i64 << i) > v
-        stop
-      else
-        begin i ensure @i += 1 end
+      
+      # 集合の真部分集合の列挙
+      # 自身と空集合を含む
+      #
+      # ```
+      # 0b101.subsets.to_a #=> [0b101, 0b100, 0b001, 0b000]
+      # ```
+      def subsets
+        SubsetIterator.new(self)
       end
+
+      def each_subset
+        SubsetIterator.new(self).each do |t|
+          yield t
+        end
+      end
+
+      private struct SubsetIterator
+        include Iterator({{t.id}}{{n}})
+        getter s : {{t.id}}{{n}}
+        getter t : {{t.id}}{{n}}
+        getter halt : Bool
+
+        def initialize(@s)
+          @t = s
+          @halt = false
+        end
+
+        def next
+          begin
+            halt ? stop : t
+          ensure
+            @t = (t - 1) & s
+            @halt = t == s
+          end
+        end
+      end
+
+      # 自身をインデックスとする参照
+      #
+      # ```
+      # a = [7,3,1]
+      # [0,2].map(&.of a) #=> [7, 1]
+      # ```
+      def of(a)
+        a[self]
+      end
+      
     end
-  end
-end
+  {% end %}
+{% end %}
 
-class BitSet(N)
 
-  # ブロックの評価値で初期化
-  #
-  # ```
-  # BitSet(3).make(&.odd) # => 0b010
-  # ```
-  def self.make(&f : Int32 -> Bool) : Int64
-    v = 0_i64
-    N.times do |i|
-      next unless f.call(i)
-      v |= 1_i64 << i
-    end
-    return v
-  end
+#   # 部分集合の列挙
+#   #
+#   # ```
+#   # SubsetIterator.new(3).map(&.to_bit(2)).to_a # => ["11","10","01"]
+#   # ```
+#   private class SubsetIterator
+#     include Iterator(Int64)
+#     getter v : Int64
+#     getter b : Int64
 
-  # 真偽値の配列で初期化
-  #
-  # ```
-  # BitSet(3).make([true, false, false]) # => 0b001
-  # ```
-  def self.make(a : Array(Bool)) : Int64
-    make { |i| a[i] }
-  end
+#     def initialize(v)
+#       @v = v.to_i64
+#       @b = @v
+#     end
 
-  # グラフの隣接リスト(0-indexed)から初期化
-  # ```
-  # BitSet(3).make([1,2]) # => 0b110
-  # ```
-  def self.make(a : Array(Int32)) : Int64
-    v = 0_i64
-    a.each do |i|
-      v |= 1_i64 << i
-    end
-    return v
-  end
-end
+#     def next
+#       if b > 0
+#         begin b ensure @b = (b - 1) & v end
+#       else
+#         stop
+#       end
+#     end
+#   end
+
+#   # 真部分集合の列挙
+#   #
+#   # ```
+#   # ProperSubsetIterator.new(3).map(&.to_bit(2)).to_a # => ["11","10","01"]
+#   # ```
+#   private class ProperSubsetIterator
+#     include Iterator(Int64)
+#     getter v : Int64
+#     getter b : Int64
+
+#     def initialize(v)
+#       @v = v.to_i64
+#       @b = @v
+#     end
+
+#     def next
+#       @b = (b - 1) & v
+#       if b > 0
+#         b
+#       else
+#         stop
+#       end
+#     end
+#   end
+
+#   # サイズKの部分集合の列挙
+#   #
+#   # ```
+#   # FixSizeSubsetIterator.new(3, 2).map(&.to_bit(3)).to_a # => ["011","101","110"]
+#   # ```
+#   private class FixSizeSubsetIterator
+#     include Iterator(Int64)
+#     getter n : Int64
+#     getter k : Int64
+#     getter b : Int64
+
+#     def initialize(@n, @k)
+#       @b = (1_i64 << k) - 1
+#     end
+
+#     def next
+#       if b < (1 << n)
+#         begin
+#           b
+#         ensure
+#           x = b & -b
+#           y = b + x
+#           @b = ((b & ~y) // x >> 1) | y
+#         end
+#       else
+#         stop
+#       end
+#     end
+#   end
+
+#   # 集合の要素の列挙
+#   #
+#   # ```
+#   # BitIndex.new(10).to_a # => [1, 3]
+#   # ```
+#   private class BitIndex
+#     include Iterator(Int32)
+#     getter v : Int64
+#     getter i : Int32
+
+#     def initialize(v)
+#       @v = v.to_i64
+#       @i = 0
+#     end
+
+#     def next
+#       while (1_i64 << i) <= v && v.bit(i) == 0
+#         @i += 1
+#       end
+#       if (1_i64 << i) > v
+#         stop
+#       else
+#         begin i ensure @i += 1 end
+#       end
+#     end
+#   end
+# end
+
+# class BitSet(N)
+
+#   # ブロックの評価値で初期化
+#   #
+#   # ```
+#   # BitSet(3).make(&.odd) # => 0b010
+#   # ```
+#   def self.make(&f : Int32 -> Bool) : Int64
+#     v = 0_i64
+#     N.times do |i|
+#       next unless f.call(i)
+#       v |= 1_i64 << i
+#     end
+#     return v
+#   end
+
+#   # 真偽値の配列で初期化
+#   #
+#   # ```
+#   # BitSet(3).make([true, false, false]) # => 0b001
+#   # ```
+#   def self.make(a : Array(Bool)) : Int64
+#     make { |i| a[i] }
+#   end
+
+#   # グラフの隣接リスト(0-indexed)から初期化
+#   # ```
+#   # BitSet(3).make([1,2]) # => 0b110
+#   # ```
+#   def self.make(a : Array(Int32)) : Int64
+#     v = 0_i64
+#     a.each do |i|
+#       v |= 1_i64 << i
+#     end
+#     return v
+#   end
+# end
