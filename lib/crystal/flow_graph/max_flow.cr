@@ -13,6 +13,9 @@ module FlowGraph
     end
 
     def solve(start = 0, target = n - 1) : Cap
+      start = V.new(start)
+      target = V.new(target)
+
       flow = 0_i64
 
       loop do

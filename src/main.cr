@@ -1,21 +1,19 @@
-require "crystal/bit_set"
-require "crystal/matrix_graph/graph"
-include MatrixGraph
+require "crystal/segment_tree"
 
-n, m = gets.to_s.split.map(&.to_i)
-g = Graph.new(n)
-m.times do
-  v,nv = gets.to_s.split.map(&.to_i64)
-  g.add v, nv
-end
+n,m = gets.to_s.split.map(&.to_i)
+lr = Array.new(m) { Tuple(Int32,Int32).from gets.to_s.split.map(&.to_i) }.group_by(&.first)
 
-clique = Array.new(1<<n, false)
-(1<<n).times do |s|
-  clique[s] = s.elements.all? do |i|
-    s.elements.all? do |j|
-      i == j || g[i][j] == 1
-    end
+ans = 0_i64
+st = SegmentTree(Int64).range_sum_query(300005)
+lr.keys.sort.each do |key|
+  lr[key].each do |l,r|
+    ans += st[l+1...r]
   end
+
+  lr[key].each do |l,r|
+    st[r] += 1
+  end
+
 end
 
-pp clique.zip(0..)
+pp ans
