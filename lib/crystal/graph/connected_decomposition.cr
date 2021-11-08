@@ -18,8 +18,8 @@ struct ConnectedDecomposition
       ix += 1
     end
 
-    vs = Array.new(ix, 0)
-    es = Array.new(ix, 0)
+    vs = Array.new(ix, 0_i64)
+    es = Array.new(ix, 0_i64)
     gs.each_with_index do |i,v|
       vs[i] += 1
       es[i] += g[v].size
