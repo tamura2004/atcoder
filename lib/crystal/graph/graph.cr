@@ -21,6 +21,11 @@ class Graph
     end
   end
 
+  def read
+    v, nv = gets.to_s.split.map(&.to_i64)
+    add v, nv
+  end
+
   # vからnvに辺を追加する
   #
   # origin : 0-indexed or 1-indexed
