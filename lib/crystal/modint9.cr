@@ -106,3 +106,9 @@ struct Int
     ModInt.h(self, k)
   end
 end
+
+module Enumerable(T)
+  def product(initial : ModInt)
+    reduce(initial) { |memo, e| memo * e }
+  end
+end
