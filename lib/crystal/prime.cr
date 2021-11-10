@@ -54,10 +54,10 @@ class Prime
   # ```
   # Prime.prime_division(72) # => {2 => 3, 3 => 2}
   # ```
-  def self.prime_division(n : Int32) : Hash(Int32, Int32)
-    Hash(Int32, Int32).new(0).tap do |dp|
+  def self.prime_division(n : T) forall T
+    Hash(T, T).new(T.zero).tap do |dp|
       while n > 1
-        i = div[n]
+        i = T.new div[n]
         dp[i] += 1
         n //= i
       end
@@ -149,20 +149,20 @@ end
 #
 # Prime::MAXを超える数を対象
 # 試し割法で愚直に求める
-class PrimeLarge(T)
+class PrimeLarge
 
   # 素数判定
-  def self.is_prime?(n : T) : Bool
+  def self.is_prime?(n : T) forall T
     ans = true
-    m = Math.sqrt(n).to_i
-    ans = 2.upto(m).none? do |i|
+    m = T.new Math.sqrt(n).to_i
+    ans = T.new(2).upto(m).none? do |i|
       n % i == 0
     end
   end
 
   # 素因数分解
-  def self.prime_division(n : T) : Hash(T, Int32)
-    Hash(T, Int32).new(0).tap do |dp|
+  def self.prime_division(n : T) forall T
+    Hash(T, T).new(T.zero).tap do |dp|
       m = T.new Math.sqrt(n)
       T.new(2).upto(m) do |i|
         while n.divisible_by?(i)
@@ -175,7 +175,7 @@ class PrimeLarge(T)
   end
 
   # 素因数（素数の約数）
-  def self.prime_factors(n : T) : Array(T)
+  def self.prime_factors(n : T) forall T
     Array(T).new.tap do |dp|
       m = T.new Math.sqrt(n)
       T.new(2).upto(m) do |i|
@@ -189,7 +189,7 @@ class PrimeLarge(T)
   end
 
   # 素因数の列挙
-  def self.each_prime_factor(n : T)
+  def self.each_prime_factor(n : T) forall T
     m = T.new Math.sqrt(n)
     pre = -1
     T.new(2).upto(m) do |i|
@@ -207,7 +207,7 @@ class PrimeLarge(T)
   # ```
   # Prime.factors(72) # => [1, 2, 3, 4, 6, 8, 9, 12, 18, 24, 36, 72]
   # ```
-  def self.factors(n : T)
+  def self.factors(n : T) forall T
     Array(T).new.tap do |dp|
       m = T.new Math.sqrt(n)
       T.new(1).upto(m) do |i|
@@ -226,7 +226,7 @@ class PrimeLarge(T)
   #   pp i # => 1, 12, 2, 6, 3, 4
   # end
   # ```
-  def self.each_factor(n : T)
+  def self.each_factor(n : T) forall T
     m = T.new Math.sqrt(n)
     T.new(1).upto(m) do |i|
       next unless n.divisible_by?(i)
@@ -241,7 +241,7 @@ class PrimeLarge(T)
   # f = {2 => 1, 3 => 2}
   # Prime.factor_num(f) # => 6
   # ```
-  def self.factor_num(h : Hash(T, Int32)) : Int32
+  def self.factor_num(h : Hash(T, Int32)) forall T
     h.values.reduce(1) do |acc, v|
       acc * (v + 1)
     end
@@ -257,7 +257,7 @@ struct Int
   # ```
   def is_prime?
     if self > Prime::MAX
-      PrimeLarge(Int64).is_prime?(to_i64)
+      PrimeLarge.is_prime?(to_i64)
     else
       Prime.is_prime?(to_i)
     end
@@ -270,9 +270,9 @@ struct Int
   # ```
   def prime_division
     if self > Prime::MAX
-      PrimeLarge(Int64).prime_division(to_i64)
+      PrimeLarge.prime_division(self)
     else
-      Prime.prime_division(to_i)
+      Prime.prime_division(self)
     end
   end
 
@@ -283,7 +283,7 @@ struct Int
   # ```
   def prime_factors
     if self > Prime::MAX
-      PrimeLarge(Int64).prime_factors(to_i64)
+      PrimeLarge.prime_factors(to_i64)
     else
       Prime.prime_factors(to_i)
     end
@@ -296,7 +296,7 @@ struct Int
   # ```
   def prime_factors(&block : Int -> Nil)
     if self > Prime::MAX
-      PrimeLarge(Int64).prime_factors(to_i64, &block)
+      PrimeLarge.prime_factors(to_i64, &block)
     else
       Prime.prime_factors(to_i, &block)
     end
@@ -322,50 +322,5 @@ struct Int
   # 三角数は自身を正の整数に分割できる最大数
   def trinum_index
     (Math.sqrt(self * 8 + 1).to_i64 - 1) // 2
-  end
-end
-
-class Hash
-  # 素因数分解を保った掛け算
-  #
-  # ```
-  # a = {2 => 1, 3 => 2}
-  # b = {2 => 2, 5 => 2}
-  # a * b # => {2 => 3, 3 => 2, 5 => 2}
-  # ```
-  def *(b : self)
-    dup.tap do |ans|
-      b.each do |k, v|
-        if ans.has_key?(k)
-          ans[k] += v
-        else
-          ans[k] = v
-        end
-      end
-    end
-  end
-
-  # 素因数分解から元の数
-  #
-  # ```
-  # a = {2 => 1, 3 => 2}
-  # a.to_i # => 18
-  # ```
-  def to_i
-    reduce(1) do |acc, (k, v)|
-      acc * k ** v
-    end
-  end
-
-  # 素因数分解から元の数
-  #
-  # ```
-  # a = {2 => 1, 3 => 2}
-  # a.to_i64 # => 18
-  # ```
-  def to_i64
-    reduce(1_i64) do |acc, (k, v)|
-      acc * k ** v
-    end
   end
 end
