@@ -79,7 +79,7 @@ class Prime
       end
     end
   end
-  
+
   # 素因数を列挙
   def self.each_prime_factor(n : Int32)
     pre = -1
@@ -99,7 +99,7 @@ class Prime
   def self.factors(n)
     PrimeLarge.factors(n)
   end
-  
+
   # 約数を列挙（1と自身を含む）
   # ただし、順不同
   #
@@ -216,7 +216,7 @@ class PrimeLarge(T)
         dp << n // i if i * i != n
       end
     end.sort
-  end  
+  end
 
     # 約数を列挙（1と自身を含む）
   # ただし、順不同
@@ -234,7 +234,7 @@ class PrimeLarge(T)
       yield n // i if i * i != n
     end
   end
-  
+
   # 素因数分解から約数の個数を求める
   #
   # ```
@@ -262,7 +262,7 @@ struct Int
       Prime.is_prime?(to_i)
     end
   end
-  
+
   # 素因数分解
   #
   # ```
@@ -270,12 +270,12 @@ struct Int
   # ```
   def prime_division
     if self > Prime::MAX
-      PrimeLarge(self).prime_division(self)
+      PrimeLarge(Int64).prime_division(to_i64)
     else
-      Prime.prime_division(self)
+      Prime.prime_division(to_i)
     end
   end
-  
+
   # 素因数
   #
   # ```
@@ -288,7 +288,7 @@ struct Int
       Prime.prime_factors(to_i)
     end
   end
-  
+
   # 素因数の列挙
   #
   # ```
@@ -301,7 +301,7 @@ struct Int
       Prime.prime_factors(to_i, &block)
     end
   end
-  
+
   # 約数
   #
   # ```

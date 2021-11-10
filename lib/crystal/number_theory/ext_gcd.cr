@@ -7,7 +7,7 @@ require "big"
 # 3x + 7y = 1 # => x = -2, y = 1, g = 1
 # ```
 def ext_gcd(a, b)
-  x, y, u, v = 1, 0, 0, 1
+  x, y, u, v = 1_i64, 0_i64, 0_i64, 1_i64
   while !b.zero?
     k = a // b
     x -= k * u

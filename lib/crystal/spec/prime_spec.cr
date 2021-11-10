@@ -1,6 +1,18 @@
 require "spec"
 require "../prime"
 
+V = [97, 97_i64, 1_000_000_007, 1_000_000_007_i64]
+
+describe Int do
+  it "is_prime?" do
+    V.each do |v|
+      v.is_prime?.should eq true
+      v.prime_division.should eq ({v => 1})
+      v.prime_factors.should eq [v]
+    end
+  end
+end
+
 describe Prime do
   it "is_prime?" do
     n = Prime::MAX
@@ -56,7 +68,7 @@ describe PrimeLarge do
     n = 81778177
     PrimeLarge.prime_factors(n).should eq [13, 17, 37, 73, 137]
   end
-  
+
   it "each prime factor" do
     n = 81778177
     i = 0
@@ -66,7 +78,7 @@ describe PrimeLarge do
       i += 1
     end
   end
-  
+
   it "factors" do
     n = 81778177
     PrimeLarge.factors(n).should eq [1, 13, 17, 37, 73, 137, 221, 481, 629, 949, 1241, 1781, 2329, 2701, 5069, 8177, 10001, 16133, 30277, 35113, 45917, 65897, 86173, 130013, 170017, 370037, 596921, 1120249, 2210221, 4810481, 6290629, 81778177]

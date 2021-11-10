@@ -40,7 +40,7 @@
           end
         end
       end
-      
+
       # 集合の真部分集合の列挙
       # 自身と空集合を含む
       #
@@ -87,7 +87,11 @@
       def of(a)
         a[self]
       end
-      
+
+      def inv(n = {{n}})
+        self ^ ((({{t.id}}{{n}}.zero + 1) << n) - 1)
+      end
+
     end
   {% end %}
 {% end %}
