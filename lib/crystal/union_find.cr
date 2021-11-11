@@ -19,6 +19,7 @@
 # ```
 struct UnionFind
   getter n : Int32
+  getter size : Int32
   getter parent : Array(Int32)
   getter v_size : Array(Int64)
   getter e_size : Array(Int64)
@@ -26,6 +27,7 @@ struct UnionFind
 
   def initialize(n)
     @n = n.to_i                      # 頂点数
+    @size = n                        # 連結成分数
     @parent = Array.new(n, &.itself) # 連結成分の根
     @v_size = Array.new(n, 1_i64)    # 連結成分の頂点数
     @e_size = Array.new(n, 0_i64)    # 連結成分の辺数
@@ -123,6 +125,7 @@ struct UnionFind
     if i == j
       e_size[i] += 1
     else
+      @size -= 1
       parent[j] = i
       v_size[i] += v_size[j]
       e_size[i] += e_size[j] + 1
@@ -210,18 +213,6 @@ struct UnionFind
   # ```
   def group_edge_size
     group_parents.map { |i| e_size[i] }
-  end
-
-  # 連結成分の大きさ
-  #
-  # ```
-  # uf = UnionFind.new(4)
-  # uf.unite(0, 1)
-  # uf.unite(1, 2)
-  # uf.group_size # => 2
-  # ```
-  def group_size
-    group_parents.size
   end
 
   # デバッグ用：アスキーアートで可視化
