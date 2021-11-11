@@ -1,23 +1,16 @@
-require "crystal/prime"
-require "crystal/bit_set"
-require "crystal/number_theory/ext_gcd"
+require "crystal/union_find"
+require "crystal/priority_queue"
 
-n = gets.to_s.to_i64 * 2
-a = n.prime_division #PrimeLarge(Int64).prime_division(n)
-b = a.map { |k, v| k ** v }
-m = a.size
+n, m = gets.to_s.split.map(&.to_i)
+uf = n.to_uf
 
-ans = (1 << m).times.min_of do |s|
-  x = s.elements.map(&.of b).product
-  y = s.inv(m).elements.map(&.of b).product
-
-
-  if cnt = crt(0, x, -1, y)
-    next Int64::MAX if cnt[0].zero?
-    cnt[0]
-  else
-    Int64::MAX
-  end
+m.times do
+  v, nv = gets.to_s.split.map(&.to_i)
+  uf.unite v, nv
 end
 
-pp ans
+q = PriorityQueue(Tuple(Int64,Int32)).lesser
+a = gets.to_s.split.map(&.to_i64)
+a.each_with_index do |cost, v|
+  q << {cost, v}
+end
