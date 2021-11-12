@@ -1,5 +1,2 @@
-cnt = 10.times.with_object([] of Int32) do |i, dp|
-  dp << i * 2
-end
-
-pp cnt
+x = {1 => 2, 3 => 4}
+pp x.select{|k,v|k > 2}

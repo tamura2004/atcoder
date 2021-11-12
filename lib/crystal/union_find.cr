@@ -9,6 +9,8 @@
 struct UnionFind
   getter n : Int32
   getter size : Int32
+  getter max_size : Int64
+  getter min_size : Hash(Int64, Int32)
   getter parent : Array(Int32)
   getter v_size : Array(Int64)
   getter e_size : Array(Int64)
@@ -17,10 +19,12 @@ struct UnionFind
   def initialize(n)
     @n = n.to_i                      # 頂点数
     @size = n                        # 連結成分数
+    @max_size = 1_i64                # 連結成分の最大の頂点数
     @parent = Array.new(n, &.itself) # 連結成分の根
     @v_size = Array.new(n, 1_i64)    # 連結成分の頂点数
     @e_size = Array.new(n, 0_i64)    # 連結成分の辺数
     @weight = Array.new(n, 0_i64)    # ポテンシャル
+    @min_size = {1_i64 => n}         # 連結成分の最小の頂点数
   end
 
   # 経路圧縮を行い、頂点`i`の親番号を返す
@@ -116,9 +120,21 @@ struct UnionFind
     else
       @size -= 1
       parent[j] = i
-      v_size[i] += v_size[j]
       e_size[i] += e_size[j] + 1
       weight[j] = wt
+
+      min_size[v_size[i]] -= 1
+      min_size[v_size[j]] -= 1
+
+      v_size[i] += v_size[j]
+
+      if min_size.has_key?(v_size[i])
+        min_size[v_size[i]] += 1
+      else
+        min_size[v_size[i]] = 1
+      end
+
+      @max_size = v_size[i] if @max_size < v_size[i]
     end
   end
 
@@ -190,6 +206,10 @@ struct UnionFind
   # ```
   def group_vertex_size
     group_parents.map { |i| v_size[i] }
+  end
+
+  def min_group_vertex_size
+    min_size.select{|k,v|v>0}.keys.min
   end
 
   # 連結成分の辺数の配列

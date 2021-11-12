@@ -1,29 +1,29 @@
 require "crystal/union_find"
-require "crystal/graph/triangle"
-require "crystal/fenwick_tree"
 
-n,m = gets.to_s.split.map(&.to_i)
-g = Graph.new(n)
-
-m.times do
-  v, nv = gets.to_s.split.map(&.to_i)
-  g.add v, nv
-end
-
-y = Array.new(n) { gets.to_s.to_i }
-if inversion_number(y).odd?
-  puts "NO"
-  exit
-end
-
+n, m, q = gets.to_s.split.map(&.to_i)
 uf = n.to_uf
-Triangle.new(g).solve.each do |i,j,k|
-  uf.unite i,j
-  uf.unite j,k
+
+e = Array.new(m) do
+  a, b, c = gets.to_s.split.map(&.to_i64)
+  a = a.to_i - 1
+  b = b.to_i - 1
+  {c, a, b}
+end.sort
+
+ans = [{1_i64, 0_i64}]
+e.each do |c, a, b|
+  uf.unite a, b
+  ans << { uf.min_group_vertex_size, c }
 end
 
-ans = n.times.all? do |i|
-  uf.same? i, y[i] - 1
-end
+# pp ans
 
-puts ans ? "YES" : "NO"
+q.times do
+  n = gets.to_s.to_i64
+  len = ans.bsearch(&.first.>= n).try &.last
+  if len
+    puts len
+  else
+    puts "trumpet"
+  end
+end
