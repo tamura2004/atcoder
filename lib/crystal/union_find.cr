@@ -3,19 +3,8 @@
 #
 # ```
 # uf = UnionFind.new(4)
-# uf.unite 0, 1, 10
-# uf.unite 1, 2, 20
-# uf.same?(0, 2)    # => true
-# uf.same?(0, 3)    # => false
-# uf.diff(0, 2)     # => 30
-# uf.diff(2, 0)     # => -30
-# uf.parents        # => [2, 3]
-# uf.children       # => [[0, 1, 2], [3]]
-# uf.vertex_size    # => [3, 1]
-# uf.vertex_size(0) # => 3
-# uf.edge_size      # => [2, 0]
-# uf.edge_size(0)   # => 2
-# uf.group_size     # => 2
+# uf = UF.new(4)
+# uf = 4.to_uf
 # ```
 struct UnionFind
   getter n : Int32

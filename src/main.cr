@@ -1,16 +1,29 @@
 require "crystal/union_find"
-require "crystal/priority_queue"
+require "crystal/graph/triangle"
+require "crystal/fenwick_tree"
 
-n, m = gets.to_s.split.map(&.to_i)
-uf = n.to_uf
+n,m = gets.to_s.split.map(&.to_i)
+g = Graph.new(n)
 
 m.times do
   v, nv = gets.to_s.split.map(&.to_i)
-  uf.unite v, nv
+  g.add v, nv
 end
 
-q = PriorityQueue(Tuple(Int64,Int32)).lesser
-a = gets.to_s.split.map(&.to_i64)
-a.each_with_index do |cost, v|
-  q << {cost, v}
+y = Array.new(n) { gets.to_s.to_i }
+if inversion_number(y).odd?
+  puts "NO"
+  exit
 end
+
+uf = n.to_uf
+Triangle.new(g).solve.each do |i,j,k|
+  uf.unite i,j
+  uf.unite j,k
+end
+
+ans = n.times.all? do |i|
+  uf.same? i, y[i] - 1
+end
+
+puts ans ? "YES" : "NO"
