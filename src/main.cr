@@ -1,29 +1,38 @@
-require "crystal/union_find"
+s = gets.to_s.chars.map(&.ord.- 'a'.ord)
+t = gets.to_s.chars.map(&.ord.- 'a'.ord)
+n = s.size
 
-n, m, q = gets.to_s.split.map(&.to_i)
-uf = n.to_uf
-
-e = Array.new(m) do
-  a, b, c = gets.to_s.split.map(&.to_i64)
-  a = a.to_i - 1
-  b = b.to_i - 1
-  {c, a, b}
-end.sort
-
-ans = [{1_i64, 0_i64}]
-e.each do |c, a, b|
-  uf.unite a, b
-  ans << { uf.min_group_vertex_size, c }
+if (t.uniq - s.uniq).size > 0
+  puts -1
+  exit
 end
 
-# pp ans
-
-q.times do
-  n = gets.to_s.to_i64
-  len = ans.bsearch(&.first.>= n).try &.last
-  if len
-    puts len
-  else
-    puts "trumpet"
+nex = Array.new(n+1) { Array.new(26, -1) }
+(n-1).downto(0) do |i|
+  26.times do |j|
+    nex[i][j] = nex[i+1][j]
+    nex[i][j] = i if j == s[i]
   end
 end
+
+ans = 0_i64
+lo = 0
+t.each do |c|
+  if nex[lo][c] != -1
+    lo = nex[lo][c] + 1
+  else
+    ans += 1
+    lo = 0
+    lo = nex[lo][c] + 1
+  end
+
+  if n <= lo
+    ans += 1
+    lo = 0
+  end
+end
+
+pp ans * n + lo
+
+
+
