@@ -24,6 +24,11 @@ class Tree
     g[nv] << v if both
   end
 
+  def read
+    v, nv = gets.to_s.split.map(&.to_i)
+    add v, nv
+  end
+
   # テスト用グラフ
   def self.make(n, type = :random)
     Tree.new(n) do |g|
