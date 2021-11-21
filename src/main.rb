@@ -1,16 +1,10 @@
-n = gets.to_i
+MOD = 998244353
+n, k, m = gets.split.map(&:to_i)
+# if m % MOD == 0
+#   pp 0
+#   exit
+# end
 
-cnt = 0
-ans = 0
-(1..n).map do |a|
-  break if n < a * a * a
-  (a..n).map do |b|
-    break if n < a * b * b
-    c = n / (a * b) - (b - 1)
-    cnt += 1
-    ans += c
-  end
-end
-
-pp cnt
+r = k.pow(n, MOD - 1)
+ans = m.pow(r, MOD)
 pp ans

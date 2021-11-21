@@ -40,7 +40,7 @@ class Lca
   def initialize(@g)
   end
 
-  def solve(root = 0, origin = 1)
+  def solve(root = 0, origin = 0)
     depth = Depth.new(g).solve(root)
     parent = Parent.new(g).solve(root)
     enter, leave, index = EulerTour.new(g).solve(root)

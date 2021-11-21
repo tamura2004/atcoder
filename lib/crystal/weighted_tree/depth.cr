@@ -4,10 +4,10 @@ module WeightedTree
   class Depth
     getter g : Tree
     delegate n, to: g
-    getter depth : Array(Int64)
+    getter depth : Array(Int32)
 
     def initialize(@g)
-      @depth = Array.new(n, 0_i64)
+      @depth = Array.new(n, 0)
     end
 
     def solve(root = 0)

@@ -1,24 +1,30 @@
-n = gets.to_s.to_i
-a = gets.to_s.split.map(&.to_i)
+require "crystal/modint9"
 
-cnt = a.zip(0..).group_by(&.first).transform_values(&.map &.last)
+n,k,m = gets.to_s.split.map(&.to_i64)
+# if m % ModInt::MOD == 0
+#   pp 0
+#   exit
+# end
 
-ans = 1
-i = 0
-cnt.keys.sort.each do |key|
-  if ix = cnt[key].bsearch_index(&.>= i)
-    if cnt[key].size == 1
-      i = cnt[key][ix]
-    elsif ix == 0
-      i = cnt[key][-1]
-    else
-      ans += 1
-      i = cnt[key][ix-1]
+x = modpow(k, n)
+ans = m.to_m ** x
+pp ans
+
+# a ** b (mod - 1)
+def modpow(a,b)
+  mod = ModInt::MOD - 1
+  ans = 1_i64
+  while b > 0
+    if b.odd?
+      ans %= mod
+      ans *= a 
+      ans %= mod
     end
-  else
-    ans += 1
-    i = cnt[key][-1]
+    b //= 2
+    a %= mod
+    a *= a
+    a %= mod
   end
+  ans
 end
 
-puts i == 0 ? ans - 1 : ans
