@@ -20,6 +20,7 @@ LANG_EXT = {
   ".cs" => "csharp",
   ".scm" => "gauche",
   ".go" => "go",
+  ".rs" => "rust",
 }
 
 COMPILE = {
@@ -31,6 +32,7 @@ COMPILE = {
   "kotlin" => "kotlinc src/main.kt -include-runtime -d dist/kotlin.jar",
   "csharp" => "mcs src/main.cs -out:dist/csharp.exe",
   "go" => "go build -buildmode=exe -o ./dist/go.out ./src/main.go",
+  "rust" => "cargo build",
 }
 
 EXECUTE = {
@@ -50,9 +52,10 @@ EXECUTE = {
   "nim" => "nim c -r --stdout:off --hints:off --warning[UnusedImport]:off src/main.nim",
   "java" => "java -classpath dist Main",
   "kotlin" => "kotlin dist/kotlin.jar",
-  "csharp" => "mono dist/csharp.exe",
+  "csharp" => "echo mono dist/csharp.exe",
   "gauche" => "gosh src/main.scm",
   "go" => "./dist/go.out",
+  "rust" => "target/debug/main",
 }
 
 class Task
