@@ -130,13 +130,13 @@ module Indexable(T)
   # a = [1,1,200,1]
   # a.compress # => [0,0,1,0]
   # ```
-  def compress
+  def compress(origin = 0)
     ref = sort.uniq
     map do |v|
       ref.bsearch_index do |u|
         v <= u
       end.not_nil!
-    end
+    end.map(&.+ origin)
   end
 
   # 接尾辞配列マクロ

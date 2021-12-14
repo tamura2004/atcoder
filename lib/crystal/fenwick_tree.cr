@@ -3,8 +3,9 @@ class FenwickTree(T)
   getter data : Array(T)
 
   # 要素数nで初期化
-  def initialize(@n : Int32)
-    @data = Array(T).new(n + 1, T.zero)
+  def initialize(n : Int)
+    @n = n.to_i
+    @data = Array(T).new(@n + 1, T.zero)
   end
 
   # 配列aで初期化
@@ -25,7 +26,7 @@ class FenwickTree(T)
     end
   end
 
-  # 0-inexed
+  # 1-inexed
   def []=(i : Int32, x : T)
     add(i, x)
   end
@@ -87,3 +88,5 @@ def inversion_number(a)
     ft[n] - ft[i]
   end
 end
+
+alias BIT = FenwickTree(Int64)
