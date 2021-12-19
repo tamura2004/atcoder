@@ -1,23 +1,39 @@
-require "crystal/indexable"
-require "crystal/fenwick_tree"
+require "crystal/matrix"
+require "crystal/modint9"
 
-n = gets.to_s.to_i64
-a = gets.to_s.split.map(&.to_i).compress(1)
-b = gets.to_s.split.map(&.to_i).compress(1)
+# 状態
+# 一致 0
+# 縦が一致 1
+# 横が一致 2
+# 不一致 3
 
-cnt = Hash(Tuple(Int32, Int32), Int64).new(0_i64)
-a.zip(b).each do |a, b|
-  cnt[{a, b}] += 1
+# 0 -> 1, 2
+# 1 -> 0, 1, 3
+# 2 -> 0, 2, 3
+# 3 -> 1, 2
+
+# | 0   1   1   0       |
+# | h-1 h-2 0   1       |
+# | w-1 0   w-2 1       |
+# | 0   w-1 h-1 (h+w-4) |
+
+def state(sy, sx, gy, gx)
+  return 0 if sy == gy && sx == gx
+  return 1 if sx == gx
+  return 2 if sy == gy
+  3
 end
 
-ab = a.zip(b).uniq.sort_by { |a, b| {a, -b} }
-bit = BIT.new(n)
+h, w, k = gets.to_s.split.map(&.to_i64)
+sy, sx, gy, gx = gets.to_s.split.map(&.to_i)
 
-ans = 0_i64
-ab.each do |a, b|
-  i = cnt[{a, b}]
-  bit[b] = i
-  ans += i * bit[b..]
-end
+m = Matrix(ModInt).new([
+  [0, 1, 1, 0],
+  [h - 1, h - 2, 0, 1],
+  [w - 1, 0, w - 2, 1],
+  [0, w - 1, h - 1, h + w - 4],
+])
+ans = m ** k
 
-pp ans
+i = state(sy, sx, gy, gx)
+pp ans[0][i]
