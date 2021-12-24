@@ -1,35 +1,26 @@
-require "yaml"
+require "json"
 
-class PivotWithValue
-  attr_accessor :col_keys, :row_cols_values, :no_label
+fn = %w(big samll red blue green yellow gold silver black white awesome wonderful silly pretty most great invisible running walking jumping slimy greedy honest goodman badguy hot cold cool)
 
-  def initialize(col_keys, row_cols_values, no_label = "−")
-    @col_keys = col_keys
-    @row_cols_values = row_cols_values
-    @no_label = no_label
+gn = %w(adam bob clis dave emma frank george hans ivan josef king lemmon mermaid ninbus orphen pike quick ringo sam tom uruk vim wolf xenon yasu zebra)
+
+customers = []
+100.times do
+  customer = {}
+  customer[:name] = [fn.sample, gn.sample].join(" ")
+  customer[:id] = rand(90000) + 10000
+  customer[:age] = rand(100)
+
+  customer[:accounts] = []
+  rand(10).times do
+    account = {}
+    account[:type] = %w(a b c d).sample
+    account[:number] = rand(1000)
+    account[:qtty] = rand(10000000)
+    customer[:accounts] << account
   end
 
-  def create
-    row_cols_values.inject([]) do |rows, (row_key, cols_values)|
-      rows << col_keys.inject([]) do |row, col_key|
-        row << (cols_values[col_key] || no_label)
-      end
-    end
-  end
+  customers << customer
 end
 
-col_keys = %w(a b c d e f)
-row_cols_values = YAML.load <<EOS
-A:
-  b: 1
-  c: 2
-B:
-  e: 1
-  f: 2
-C:
-  f: 1
-  b: 2
-EOS
-
-pp row_cols_values
-pp PivotWithValue.new(col_keys, row_cols_values).create
+puts JSON.pretty_generate(customers)

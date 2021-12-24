@@ -1,39 +1,25 @@
-require "crystal/matrix"
-require "crystal/modint9"
+# 1 + 1 + 2 + 4 + 8 + ...
+# 1 2 4 8
+# 2^n-1
 
-# 状態
-# 一致 0
-# 縦が一致 1
-# 横が一致 2
-# 不一致 3
+# i bitが最上位bitである数のうち
+# n以下であるものの数
+def calc(l, r, i)
+  lo = (1_i64 << i)
+  hi = (1_i64 << (i + 1))
 
-# 0 -> 1, 2
-# 1 -> 0, 1, 3
-# 2 -> 0, 2, 3
-# 3 -> 1, 2
+  chmax lo, l
+  chmin hi, r + 1
 
-# | 0   1   1   0       |
-# | h-1 h-2 0   1       |
-# | w-1 0   w-2 1       |
-# | 0   w-1 h-1 (h+w-4) |
-
-def state(sy, sx, gy, gx)
-  return 0 if sy == gy && sx == gx
-  return 1 if sx == gx
-  return 2 if sy == gy
-  3
+  (lo...hi).size
 end
 
-h, w, k = gets.to_s.split.map(&.to_i64)
-sy, sx, gy, gx = gets.to_s.split.map(&.to_i)
+n, l, r = gets.to_s.split.map(&.to_i64)
+ans = 0_i64
 
-m = Matrix(ModInt).new([
-  [0, 1, 1, 0],
-  [h - 1, h - 2, 0, 1],
-  [w - 1, 0, w - 2, 1],
-  [0, w - 1, h - 1, h + w - 4],
-])
-ans = m ** k
+100.times do |i|
+  next if n.bit(i) == 0
+  ans += calc(l, r, i)
+end
 
-i = state(sy, sx, gy, gx)
-pp ans[0][i]
+pp ans
