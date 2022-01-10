@@ -1,9 +1,11 @@
 # modint
 struct ModInt
-  MAX   = 1_000_000
+  LOW = 5_000
+  MAX   = 10_000_000
   MOD = 998_244_353_i64
 
-  class_getter f = Array(ModInt).new(MAX)
+  class_getter f = Array(ModInt).new
+  class_getter c = Array(Array(ModInt)).new
   getter v : Int64
 
   def self.f(n)
@@ -23,7 +25,20 @@ struct ModInt
   def self.c(n, k)
     return ModInt.zero if n < k
     return ModInt.zero if k < 0
-    if n <= MAX
+
+    case
+    when n <= LOW
+      c.size.upto(n) do |i|
+        c << Array.new(LOW+1) { ModInt.zero }
+        c[-1][0] = ModInt.new(1)
+        next if i.zero?
+
+        1.upto(LOW) do |j|
+          c[i][j] = c[i-1][j-1] + c[i-1][j]
+        end
+      end
+      c[n][k]
+    when n <= MAX
       p(n, k) // k.f
     else
       ans = 1.to_m

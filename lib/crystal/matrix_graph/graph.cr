@@ -1,7 +1,8 @@
 module MatrixGraph
   # 隣接行列によるグラフ
+  INF = Int64::MAX//4
+  
   class Graph
-    INF = Int64::MAX//4
     getter n : Int32
     getter g : Array(Array(Int64))
     delegate "[]", to: g
