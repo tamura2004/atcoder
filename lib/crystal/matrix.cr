@@ -15,7 +15,8 @@ class Matrix(T)
     @a = Array.new(n) { |i| Array.new(n) { |j| yield i, j } }
   end
 
-  def initialize(@a)
+  def initialize(a)
+    @a = a.map(&.map { |v| T.new(v) })
     @n = a.size
   end
 
@@ -53,6 +54,11 @@ class Matrix(T)
   @[AlwaysInline]
   def [](i, j)
     a[i][j]
+  end
+
+  @[AlwaysInline]
+  def [](i)
+    a[i]
   end
 
   @[AlwaysInline]
