@@ -1,3 +1,5 @@
-Array.product(1..3,4..6).each do |a|
-  pp a
+hoge = Proc(Tuple(Int32,Int32),Int32).new do |(x,y)|
+  x + y
 end
+
+pp hoge.call({1,2})
