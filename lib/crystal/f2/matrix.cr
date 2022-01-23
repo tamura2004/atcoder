@@ -19,6 +19,10 @@ module F2
       @h += 1
     end
 
+    def +(r)
+      Matrix(T).new(@a.dup + [r], @w)
+    end
+
     # 掃き出し法により正規形へ
     def solve
       row = 0
