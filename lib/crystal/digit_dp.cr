@@ -27,45 +27,17 @@ class DigitDP
 
   # 通常
   def each
-    leading_zero = true
     n.times do |i|
       [EDGE, FREE].each do |k|
-        next if k == FREE && leading_zero
+        next if i.zero? && k == FREE
         digit.times do |d|
           next if k == EDGE && a[i] < d
           kk = k == EDGE && d == a[i] ? EDGE : FREE
-          yield i, k, d, kk, leading_zero, a[i]
-        end
-      end
-      leading_zero = false if a[i] != 0
-    end
-  end
-
-  # 先頭がゼロフラグ付き
-  def each_with_leading_zero
-    n.times do |i|
-      [ZERO, NONZ].each do |z|
-        [EDGE, FREE].each do |e|
-          digit.times do |d|
-            next if e == EDGE && a[i] < d
-            zz = z == ZERO && d == 0 ? ZERO : NONZ
-            ee = e == EDGE && d == a[i] ? EDGE : FREE
-
-            yield i, z, e, d, zz, ee
-          end
-        end
-      end
-    end
-  end
-
-  # 先頭がゼロフラグ付き
-  def each_with_leading_zero_no_digit
-    n.times do |i|
-      [ZERO, NONZ].each do |j|
-        [EDGE, FREE].each do |k|
-          yield i, j, k
+          yield i, k, d, kk, a[i]
         end
       end
     end
   end
 end
+
+alias DD = DigitDP

@@ -1,29 +1,19 @@
-require "crystal/f2/matrix"
-include F2
+require "crystal/mod_int"
+require "crystal/dfa"
 
-n = gets.to_s.to_i
-c = gets.to_s.split.map(&.to_i64)
+m = gets.to_s.to_i
+a = gets.to_s.chars.map(&.to_i)
+n = a.size
 
-nn = 1 << n
+leq = LEQ(ModInt).new(a)
 
-m = Matrix(Int32).new([] of Int32, n)
-q = Deque.new([{m, 0_i64, 0}])
+mod = DFA(Int32, Int32, ModInt).new(
+  init: 0,
+  nex: ->(s : Int32, d : Int32, i : Int32) { (s + d) % m },
+  accept: ->(s : Int32) { s == 0 },
+  ok: ->(s : Int32) { false },
+  ng: ->(s : Int32) { false },
+)
 
-ans = Int64::MAX
-while q.size > 0
-  m, cost, i = q.shift
-  i += 1
-
-  if i == nn
-    if m.rank == n
-      chmin ans, cost
-    end
-  else
-    if !m.includes?(i)
-      q << {m + (i), cost + c[i - 1], i}
-    end
-    q << {m, cost, i}
-  end
-end
-
-pp ans
+ans = (leq + mod).count(n, (0..9).to_a)
+pp ans - 1
