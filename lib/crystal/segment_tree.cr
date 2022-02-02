@@ -102,7 +102,7 @@ class SegmentTree(T)
     end
   end
 
-  def set(i : Int32, v : T)
+  def set(i : Int::Primitive, v : T)
     raise "Bad index i=#{i}" unless (0...n).includes?(i)
 
     i += n
@@ -113,19 +113,19 @@ class SegmentTree(T)
     end
   end
 
-  def []=(i : Int32, v : T)
+  def []=(i : Int::Primitive, v : T)
     set(i, v)
   end
 
-  def get(i : Int32) : T
+  def get(i : Int::Primitive) : T
     xs[i + n]
   end
 
-  def [](i : Int32) : T
+  def [](i : Int::Primitive) : T
     get(i)
   end
 
-  def sum(i : Int32, j : Int32) : T
+  def sum(i : Int::Primitive, j : Int::Primitive) : T
     i = Math.max(i, 0)
     j = Math.min(j, n)
 
@@ -147,7 +147,7 @@ class SegmentTree(T)
     fx.call(left, right)
   end
 
-  def [](r : Range(Int32?, Int32?)) : T
+  def [](r : Range(Int::Primitive?, Int::Primitive?)) : T
     lo = r.begin || 0
     hi = (r.end || n - 1) + (r.excludes_end? ? 0 : 1)
     sum(lo, hi)
@@ -174,5 +174,9 @@ class SegmentTree(T)
       i <<= 1
     end
     puts "--------"
+  end
+
+  def debug
+    self.pp
   end
 end
