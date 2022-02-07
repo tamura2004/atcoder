@@ -56,7 +56,7 @@ class Prime
   # Prime.prime_division(72) # => {2 => 3, 3 => 2}
   # ```
   def self.prime_division(n : T) forall T
-    Hash(T, T).new(T.zero).tap do |dp|
+    Hash(T, Int64).new(0_i64).tap do |dp|
       while n > 1
         i = T.new div[n]
         dp[i] += 1
@@ -138,7 +138,7 @@ class PrimeLarge
   # PrimeLarge.prime_factors(72) # => { 2 => 3, 3 => 2 }
   # ```
   def self.prime_division(n : T) forall T
-    Hash(T, T).new(T.zero).tap do |dp|
+    Hash(T, Int64).new(0_i64).tap do |dp|
       m = T.new Math.sqrt(n)
       T.new(2).upto(m) do |i|
         while n.divisible_by?(i)

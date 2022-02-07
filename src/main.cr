@@ -1,97 +1,39 @@
-require "crystal/segment_tree"
+UP = 0
+RT = 1
+MOD = 100000
 
-record T, v : Int64 do
-  LIMIT = 2_000_000_i64
+w, h = gets.to_s.split.map(&.to_i)
+dp = make_array(0_i64, h, w, 2)
+dp[1][0][UP] = 1_i64
+dp[0][1][RT] = 1_i64
 
-  def +(b : self)
-    T.new(v <= Int64::MAX - b.v ? Math.min(LIMIT, v + b.v) : LIMIT)
-  end
+h.times do |y|
+  w.times do |x|
+    [UP,RT].each do |d|
+      case d
+      when UP
+        if y < h - 1
+          dp[y+1][x][UP] += dp[y][x][UP]
+          dp[y+1][x][UP] %= MOD
+        end
 
-  def self.zero
-    T.new(0)
-  end
+        if x < w - 2
+          dp[y][x+2][RT] += dp[y][x][UP]
+          dp[y][x+2][RT] %= MOD
+        end
+      when RT
+        if y < h - 2
+          dp[y+2][x][UP] += dp[y][x][RT]
+          dp[y+2][x][UP] %= MOD
+        end
 
-  delegate to_i64, to_s, inspect, to: v
-end
-
-a = "abab".chars.map(&.ord.- 'a'.ord)
-n = a.size
-
-right = make_array(-1, n, 2)
-left = make_array(-1, n, 2)
-
-cnt = make_array(-1, 2)
-(0...n).to_a.reverse.each do |i|
-  2.times do |j|
-    cnt[j] = i if a[i] == j
-    right[i][j] = cnt[j]
-  end
-end
-
-cnt = make_array(-1, 2)
-n.times do |i|
-  2.times do |j|
-    cnt[j] = i if a[i] == j
-    left[i][j] = cnt[j]
-  end
-end
-
-pp right
-pp left
-
-values = Array.new(5) { T.zero }
-st = SegmentTree(T).range_sum_query(values)
-st[4] = T.new(1)
-3.downto(0) do |i|
-  lo = i + 1
-  hi = 4
-  if lo < 4 && right[lo][a[i]] != -1
-    hi = right[lo][a[i]]
-  end
-  hi = 4 if hi == -1
-  st[i] = st[lo..hi]
-end
-
-st.debug
-
-3.downto(1) do |i|
-  j = left[i-1][a[i]]
-  if j != -1
-    st[j] += st[i]
+        if x < w - 1
+          dp[y][x+1][RT] += dp[y][x][RT]
+          dp[y][x+1][RT] %= MOD
+        end
+      end
+    end
   end
 end
 
-st.debug
-
-
-
-
-# st[0] = T.new Int64::MAX
-# st[1] = T.new Int64::MAX
-
-# pp st[0..]
-
-# ans = [] of String
-
-# (1<<4).times do |s|
-#   cnt = [] of Char
-#   4.times do |i|
-#     cnt << a[i] if s.bit(i) == 1
-#   end
-#   ans << cnt.join
-# end
-
-# pp ans.sort.uniq.zip(0..)
-
-# [{"", 0},
-#  {"a", 1},
-#  {"aa", 2},
-#  {"aab", 3},
-#  {"ab", 4},
-#  {"aba", 5},
-#  {"abab", 6},
-#  {"abb", 7},
-#  {"b", 8},
-#  {"ba", 9},
-#  {"bab", 10},
-#  {"bb", 11}]
+pp dp
