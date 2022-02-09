@@ -1,39 +1,55 @@
-UP = 0
-RT = 1
-MOD = 100000
+require "crystal/abstruct_graph/dijkstra"
+include AbstructGraph
 
-w, h = gets.to_s.split.map(&.to_i)
-dp = make_array(0_i64, h, w, 2)
-dp[1][0][UP] = 1_i64
-dp[0][1][RT] = 1_i64
+record V, v : Int32, rank : Int32
+record E, v : V, nv : V, color : Int32
+record S, cost : Int64, v : V do
+  include Comparable(S)
 
-h.times do |y|
-  w.times do |x|
-    [UP,RT].each do |d|
-      case d
-      when UP
-        if y < h - 1
-          dp[y+1][x][UP] += dp[y][x][UP]
-          dp[y+1][x][UP] %= MOD
-        end
+  def <=>(b : self)
+    cost <=> b.cost
+  end
+end
 
-        if x < w - 2
-          dp[y][x+2][RT] += dp[y][x][UP]
-          dp[y][x+2][RT] %= MOD
-        end
-      when RT
-        if y < h - 2
-          dp[y+2][x][UP] += dp[y][x][RT]
-          dp[y+2][x][UP] %= MOD
-        end
+n, m, q, l = gets.to_s.split.map(&.to_i)
+g = Graph(V, E).new
 
-        if x < w - 1
-          dp[y][x+1][RT] += dp[y][x][RT]
-          dp[y][x+1][RT] %= MOD
-        end
-      end
+RED  = 1
+BLUE = 2
+
+m.times do
+  i, j, color = gets.to_s.split.map(&.to_i)
+  33.times do |rank|
+    2.times do
+      i, j = j, i
+      v = V.new(i, rank)
+      nv = V.new(j, rank + (color == BLUE ? 1 : 0))
+      e = E.new(v, nv, color)
+      g.add v, e
     end
   end
 end
 
-pp dp
+nex = ->(s : S, e : E) {
+  if e.color == RED
+    S.new(s.cost + 2_i64 ** s.v.rank, e.nv)
+  else
+    S.new(s.cost * 2, e.nv)
+  end
+}
+
+v = V.new(1, 0)
+init = S.new(1_i64, v)
+dp = Dijkstra(V, E, S).new(g, nex).solve(init)
+
+q.times do
+  t = gets.to_s.to_i
+  ans = Int64::MAX
+  34.times do |rank|
+    if cnt = dp[V.new(t, rank)]
+      next if cnt == 0
+      chmin ans, cnt
+    end
+  end
+  pp ans
+end
