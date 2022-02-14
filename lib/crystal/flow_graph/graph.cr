@@ -26,11 +26,26 @@ module FlowGraph
       g[v] << E.new nv, rev_nv, cap
       g[nv] << E.new v, rev_v, Cap.zero
     end
-  end
 
-  @[AlwaysInline]
-  def add_cap(e : E, cost : Cap)
-    nv, rev, cap = e
-    E.new(nv, rev, cap + cost)
+    @[AlwaysInline]
+    def add_cap(e : E, cost : Cap)
+      nv, rev, cap = e
+      E.new(nv, rev, cap + cost)
+    end
+
+    def debug
+      File.open("debug.dot", "w") do |fh|
+        fh.puts "graph tree {"
+        n.times do |v|
+          g[v].each do |(nv,rv,cap)|
+            # next if v >= nv
+            next if cap == 0
+            fh.puts "  #{v} -> #{nv};"
+          end
+        end
+        fh.puts "}"
+      end
+      puts `cat debug.dot | graph-easy --from=dot --as_ascii`
+    end
   end
 end

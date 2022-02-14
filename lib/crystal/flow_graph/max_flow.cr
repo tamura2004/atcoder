@@ -3,7 +3,7 @@ require "crystal/flow_graph/graph"
 module FlowGraph
   struct MaxFlow
     getter g : Graph
-    delegate n, to: g
+    delegate n, add_cap, to: g
     getter depth : Array(Int32)
     getter visit : Array(Int32)
 
