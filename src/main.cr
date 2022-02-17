@@ -1,20 +1,34 @@
-require "crystal/union_find"
+n = gets.to_s.to_i
+a = Array.new(n) { gets.to_s.to_i }
 
-n, m = gets.to_s.split.map(&.to_i)
-uf = n.to_uf
+class Q
+  WHITE = 0
+  BLACK = 1
 
-e = Array.new(m) do
-  v, nv, c = gets.to_s.split.map(&.to_i64)
-  {c, v - 1, nv - 1}
+  getter q : Array(Array(Int32))
+
+  def initialize
+    @q = Array.new(2) { [] of Int32}
+  end
+
+  def tail
+    (q[WHITE][-1] < q[BLACK][-1]).to_unsafe
+  end
+
+  def add(stone, i)
+    if q[stone].empty?
+      q[stone] << i
+      return
+    end
+
+    q[stone].pop if i.even? && tail == stone
+    q[1-stone].pop if i.odd? && tail != stone
+    q[stone].pop if i.odd? && tail != stone
+    q[stone] << i
+  end
 end
 
-e.sort!
-
-ans = 0_i64
-e.each do |c, v, nv|
-  next if uf.same? v, nv
-  uf.unite v, nv
-  ans += c
-end
-
-pp ans
+q = Q.new
+q.add(1,0)
+q.add(1,1)
+pp q
