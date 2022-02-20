@@ -79,3 +79,5 @@ class PriorityQueue(T)
     (i - 1) >> 1
   end
 end
+
+alias PQ = PriorityQueue

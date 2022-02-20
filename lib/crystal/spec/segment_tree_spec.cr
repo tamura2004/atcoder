@@ -51,7 +51,7 @@ describe SegmentTree do
   end
 
   it "一点更新、区間最小、要素数で初期化" do
-    st = SegmentTree(Int32).range_min_query(10)
+    st = SegmentTree(Int32).min(10)
     st[1] = 10
     st[2] = 5
     st[3] = 20
@@ -61,7 +61,7 @@ describe SegmentTree do
   end
   
   it "range sum query" do
-    st = SegmentTree(Int32).range_sum_query(10)
+    st = SegmentTree(Int32).sum(10)
     st[1] = 10
     st[2] = 5
     st[3] = 20
@@ -71,7 +71,7 @@ describe SegmentTree do
   end
   
   it "range max query" do
-    st = SegmentTree(Int32).range_max_query(10)
+    st = SegmentTree(Int32).max(10)
     st[1] = 10
     st[2] = 5
     st[3] = 20

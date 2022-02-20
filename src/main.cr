@@ -1,34 +1,26 @@
-n = gets.to_s.to_i
-a = Array.new(n) { gets.to_s.to_i }
+require "crystal/fact_table"
 
-class Q
-  WHITE = 0
-  BLACK = 1
+n,x,y,z = gets.to_s.split.map(&.to_i64.abs)
+m = x + y + z
+d = n - m
 
-  getter q : Array(Array(Int32))
-
-  def initialize
-    @q = Array.new(2) { [] of Int32}
-  end
-
-  def tail
-    (q[WHITE][-1] < q[BLACK][-1]).to_unsafe
-  end
-
-  def add(stone, i)
-    if q[stone].empty?
-      q[stone] << i
-      return
-    end
-
-    q[stone].pop if i.even? && tail == stone
-    q[1-stone].pop if i.odd? && tail != stone
-    q[stone].pop if i.odd? && tail != stone
-    q[stone] << i
-  end
+if d < 0 || d.odd?
+  pp 0
+  exit
 end
 
-q = Q.new
-q.add(1,0)
-q.add(1,1)
-pp q
+a1 = n.c(x)
+a2 = (n-x).c(y)
+a3 = (n-x-y).c(z)
+if d == 0
+  ans = a1 * a2 * a3
+  pp ans
+else
+  ans = a1 * a2 * a3 * 6.to_m ** (d//2) * d.c(d//2)
+  pp ans
+end
+
+# pp! 3.c(2)
+# pp! (m-x).c(0)
+# pp! m
+# pp! 10.c(0)

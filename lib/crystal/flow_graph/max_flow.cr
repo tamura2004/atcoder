@@ -1,5 +1,23 @@
 require "crystal/flow_graph/graph"
 
+# 最大流/最小カット
+#
+# ```
+# include FlowGraph
+# g = Graph.new(8)
+# g.add 0, 1, 1
+# g.add 0, 2, 1
+# g.add 0, 3, 1
+# g.add 1, 4, 1
+# g.add 2, 4, 1
+# g.add 3, 4, 1
+# g.add 1, 5, 1
+# g.add 1, 6, 1
+# g.add 4, 7, 1
+# g.add 6, 7, 1
+# g.add 6, 7, 1
+# MaxFlow.new(g).solve(0, 7) # => 2
+# ```
 module FlowGraph
   struct MaxFlow
     getter g : Graph

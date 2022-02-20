@@ -28,6 +28,7 @@ struct UnionFind
   end
 
   # 経路圧縮を行い、頂点`i`の親番号を返す
+  # 
   # ```
   # uf = UnionFind.new(4)
   # uf.unite 0, 1
@@ -43,7 +44,7 @@ struct UnionFind
       parent[i] = ans
     end
   end
-
+  
   # 頂点`i`,`j`の連結判定
   #
   # ```
@@ -56,7 +57,7 @@ struct UnionFind
   def same?(i : Int, j : Int)
     find(i) == find(j)
   end
-
+  
   def same?(a : Array(Int))
     a.map { |i| find(i) }.uniq.size == 1
   end
@@ -64,7 +65,7 @@ struct UnionFind
   def same?(r : Range(Int, Int))
     r.map { |i| find(i) }.uniq.size == 1
   end
-
+  
   # 頂点のポテンシャル（重み）
   #
   # ```
@@ -77,7 +78,7 @@ struct UnionFind
     find(i)
     weight[i]
   end
-
+  
   # 頂点`i`,`j`のポテンシャル差を求める
   #
   # ```
@@ -90,7 +91,7 @@ struct UnionFind
   def diff(i, j)
     weight(j) - weight(i)
   end
-
+  
   # 頂点`i`と`j`をポテンシャル差`wt`で連結する
   #
   # ```
