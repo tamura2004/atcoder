@@ -43,7 +43,8 @@ class Multiset(T)
     left, tail = split(lo, eq = false)
     mid, right = tail.try &.split(hi) || {nil, nil}
     @root = left.try &.merge(right) || right
-    {Treap(T).new(mid), self}
+    # {Treap(T).new(mid), self}
+    {mid, self}
   end
 
   def insert(v : T)
