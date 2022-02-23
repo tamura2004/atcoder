@@ -35,7 +35,7 @@ class FactTable
     return 0.to_m if n < k
     return 0.to_m if k < 0
 
-    p(n, k) * finv[k]
+    f[n] * finv[n-k] * finv[k]
   end
 
   # c(n,k) = c(n,n-k)

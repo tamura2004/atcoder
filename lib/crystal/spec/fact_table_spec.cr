@@ -24,4 +24,8 @@ describe FactTable do
     1.h(5).should eq 1
     2.h(5).should eq 6
   end
+
+  it "large number" do
+    100_000.c(50_000).should eq 710154335
+  end
 end

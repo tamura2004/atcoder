@@ -58,6 +58,7 @@ class LazySegmentTree(X, A)
   end
 
   # 区間加算、区間最大
+  # 常に０以上を返す
   def self.range_add_range_max(values : Array(X))
     new(
       Proc(X, X, X).new { |x, y| Math.max x, y },
