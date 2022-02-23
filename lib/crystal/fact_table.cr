@@ -23,11 +23,7 @@ class FactTable
     return 0.to_m if n < k
     return 0.to_m if k < 0
 
-    ans = 1.to_m
-    k.times do |i|
-      ans *= n - i
-    end
-    ans
+    f[n] * finv[n-k]
   end
 
   def self.c(n, k)
