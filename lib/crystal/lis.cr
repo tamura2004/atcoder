@@ -15,7 +15,7 @@ class LIS(T)
   end
 
   def solve
-    dp = Array(T).new(n, T::MAX)
+    dp = Array(T).new(n+1, T::MAX)
     n.times do |i|
       j = dp.bsearch_index{|v| a[i] <= v} || 0
       dp[j] = a[i]
