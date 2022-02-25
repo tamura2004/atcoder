@@ -1,11 +1,24 @@
-require "crystal/lis"
+require "crystal/union_find"
 
-n = gets.to_s.to_i
-a = Array.new(n) do
-  x, r = gets.to_s.split.map(&.to_i64)
-  {x+r,x-r}
-end.sort.map(&.[1].* -1)
+n,q = gets.to_s.split.map(&.to_i)
+uf = (n*2).to_uf
 
-# pp! a
-lis = LIS(Int64).new(a)
-pp lis.solve
+q.times do
+  w,x,y,z = gets.to_s.split.map(&.to_i64)
+  x -= 1
+  y -= 1
+
+  case w
+  when 1
+    if z.even?
+      uf.unite x, y
+      uf.unite x+n, y+n
+    else
+      uf.unite x+n, y
+      uf.unite x, y+n
+    end
+  when 2
+    ans = uf.same?(x,y) || uf.same?(x+n,y+n)
+    puts ans ? "YES" : "NO"
+  end
+end

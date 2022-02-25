@@ -1,7 +1,7 @@
 require "crystal/modint9"
 
 class FactTable
-  K = 10_000_001
+  K = 100_001
   class_getter f : Array(ModInt) = [] of ModInt
   class_getter finv : Array(ModInt) = [] of ModInt
   class_getter inv : Array(ModInt) = [] of ModInt
