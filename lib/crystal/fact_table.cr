@@ -1,71 +1,72 @@
-require "crystal/modint9"
-
+# 事前計算によりO(1)で二項係数を求める
+#
 class FactTable
-  K = 100_001
-  class_getter f : Array(ModInt) = [] of ModInt
-  class_getter finv : Array(ModInt) = [] of ModInt
-  class_getter inv : Array(ModInt) = [] of ModInt
+  getter m : Int32
+  getter f : Array(ModInt)
+  getter finv : Array(ModInt)
+  getter inv : Array(ModInt)
 
-  def self.init
-    f << 1.to_m
-    (1..K).each { |i| f << f.last * i }
+  def initialize(m)
+    @m = m.to_i
+    @f = [ModInt.new(1)]
+    (1..m).each { |i| f << f.last * i }
 
-    finv << f[K].inv
-    (1..K).each { |i| finv << finv.last * (K + 1 - i) }
-    # finv << 1.to_m
+    @finv = [f[m].inv]
+    (1..m).each { |i| finv << finv.last * (m + 1 - i)}
     finv.reverse!
 
-    inv << 1.to_m
-    (1..K).each { |i| inv << finv[i] * f[i - 1] }
+    @inv = [ModInt.new(1)]
+    (1..m).each { |i| inv << finv[i] * f[i - 1]}
   end
 
-  def self.p(n, k)
-    return 0.to_m if n < k
-    return 0.to_m if k < 0
+  def p(n, k)
+    return ModInt.zero if n < k
+    return ModInt.zero if k < 0
 
     f[n] * finv[n-k]
   end
 
-  def self.c(n, k)
-    raise "overflow #{k}" if K < k
-    return 0.to_m if n < k
-    return 0.to_m if k < 0
+  def c(n, k)
+    raise "overflow #{k}" if m < k
+    return ModInt.zero if n < k
+    return ModInt.zero if k < 0
 
     f[n] * finv[n-k] * finv[k]
   end
 
   # c(n,k) = c(n,n-k)
   # h(n,k) = c(n+k-1,n) = c(n+k-1,n+k-1-n) = c(n+k-1,k-1)
-  def self.h(k, n)
+  def h(k, n)
     c(n + k - 1, k - 1)
   end
 end
 
-alias FT = FactTable
-FT.init
-
 struct Int
+  MAX = 1_000_000
+  class_getter ft : FactTable = FactTable.new(MAX)
+
   def f
-    FT.f[self]
+    @@ft.f[self]
   end
 
   def inv
-    FT.inv[self]
+    @@ft.inv[self]
   end
 
   def finv
-    FT.finv[self]
+    @@ft.finv[self]
   end
 
   def p(k)
-    FT.p(self, k)
+    @@ft.p(self,k)
   end
 
   def c(k)
-    FT.c(self, k)
+    @@ft.c(self,k)
   end
 
   def h(k)
-    FT.h(self, k)
+    @@ft.h(self,k)
   end
 end
+

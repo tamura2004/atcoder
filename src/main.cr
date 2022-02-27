@@ -1,24 +1,57 @@
-require "crystal/union_find"
+require "crystal/graph"
 
-n,q = gets.to_s.split.map(&.to_i)
-uf = (n*2).to_uf
+n, k = gets.to_s.split.map(&.to_i64)
+a = gets.to_s.split.map(&.to_i64)
 
-q.times do
-  w,x,y,z = gets.to_s.split.map(&.to_i64)
-  x -= 1
-  y -= 1
+g = Graph.new(n)
+n.times do |v|
+  nv = (v + a[v]) % n
+  g.add v, nv, origin: 0, both: false
+end
 
-  case w
-  when 1
-    if z.even?
-      uf.unite x, y
-      uf.unite x+n, y+n
-    else
-      uf.unite x+n, y
-      uf.unite x, y+n
+pp Problem.new(g).solve(a, k)
+
+class Problem
+  getter g : Graph
+  delegate n, to: g
+  getter knot : Int32        # ループの開始
+  getter ix : Array(Int32)   # 頂点毎の訪問番号
+  getter path : Array(Int32) # 訪問順の頂点列
+
+  def initialize(@g)
+    @knot = -1
+    @ix = Array.new(n, -1)
+    @path = [] of Int32
+  end
+
+  def solve(a, k)
+    dfs(0, 0)
+    loop_len = path.size - knot
+
+    ans = 0_i64
+    path.each_with_index do |v, i|
+      next if k <= i
+      if i < knot
+        ans += a[v]
+      else
+        ans += a[v] * ((k + loop_len - 1 - i) // loop_len)
+      end
     end
-  when 2
-    ans = uf.same?(x,y) || uf.same?(x+n,y+n)
-    puts ans ? "YES" : "NO"
+
+    ans
+  end
+
+  def dfs(v, i)
+    if ix[v] != -1
+      @knot = ix[v]
+      return
+    else
+      ix[v] = i
+      path << v
+    end
+
+    g[v].each do |nv|
+      dfs(nv, i + 1)
+    end
   end
 end

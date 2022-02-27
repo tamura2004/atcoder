@@ -1,4 +1,5 @@
 require "spec"
+require "crystal/modint9"
 require "crystal/fact_table"
 
 describe FactTable do
@@ -16,6 +17,10 @@ describe FactTable do
     3.c(2).should eq 3
     2.c(2).should eq 1
     2.c(3).should eq 0
+    0.c(0).should eq 1
+    0.c(1).should eq 0
+    1.c(0).should eq 1
+    -1.c(1).should eq 0
   end
 
   it "repeated combination" do

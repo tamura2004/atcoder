@@ -1,43 +1,7 @@
 # modint
 struct ModInt
-  MAX   = 1_000_000
   MOD = 10_i64 ** 9 + 7
-
-  class_getter f = Array(ModInt).new(MAX)
   getter v : Int64
-
-  def self.f(n)
-    f << 1.to_m if f.empty?
-    f.size.upto(n) do |i|
-      f << f.last * i
-    end
-    f[n]
-  end
-
-  def self.p(n, k)
-    return ModInt.zero if n < k
-    return ModInt.zero if k < 0
-    n.f // (n - k).f
-  end
-
-  def self.c(n, k)
-    return ModInt.zero if n < k
-    return ModInt.zero if k < 0
-    if n <= MAX
-      p(n, k) // k.f
-    else
-      ans = 1.to_m
-      (1..k).each do |i|
-        ans *= (n + 1 - i)
-        ans //= i
-      end
-      ans
-    end
-  end
-
-  def self.h(n, k)
-    c(n + k - 1, k)
-  end
 
   def initialize(v)
     @v = v.to_i64 % MOD
@@ -88,21 +52,5 @@ end
 struct Int
   def to_m
     ModInt.new(to_i64)
-  end
-
-  def f
-    ModInt.f(self)
-  end
-
-  def p(k)
-    ModInt.p(self, k)
-  end
-
-  def c(k)
-    ModInt.c(self, k)
-  end
-
-  def h(k)
-    ModInt.h(self, k)
   end
 end
