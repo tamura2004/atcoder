@@ -70,8 +70,16 @@ class Multiset(T)
     root.try &.upper(k, eq)
   end
 
+  def upper_index(k, eq = true)
+    root.try &.upper_index(k, eq)
+  end
+
   def lower(k, eq = true)
     root.try &.lower(k, eq)
+  end
+
+  def lower_index(k, eq = true)
+    root.try &.lower_index(k, eq)
   end
 
   def includes?(v)
@@ -187,6 +195,7 @@ class Multiset(T)
       end
     end
 
+    # k以下（未満）の最大値
     def upper(k, eq = true)
       if k < val || (eq && k == val)
         left.try(&.upper(k, eq)).try { |v| Math.min(v, val) } || val
@@ -195,11 +204,33 @@ class Multiset(T)
       end
     end
 
+    # 値がk以下（未満）の最大のインデックス
+    # 存在しなければnil
+    def upper_index(k, eq = true)
+      if val < k || (eq && k == val)
+        pos = left.try &.size || 0
+        right.try(&.upper_index(k, eq)).try(&.+(pos + 1)) || pos
+      else
+        left.try(&.upper_index(k, eq))
+      end
+    end
+
     def lower(k, eq = true)
       if val < k || (eq && k == val)
         right.try(&.lower(k, eq)).try { |v| Math.max(v, val) } || val
       else
         left.try &.lower(k, eq)
+      end
+    end
+
+    # 値がk以上（超える）の最小のインデックス
+    # 存在しなければnil
+    def lower_index(k, eq = true)
+      pos = left.try &.size || 0
+      if val > k || (eq && k == val)
+        left.try(&.lower_index(k, eq)) || pos
+      else
+        right.try(&.lower_index(k, eq)).try(&.+(pos + 1))
       end
     end
 
@@ -255,3 +286,5 @@ module Indexable(T)
     end
   end
 end
+
+alias RBST = Multiset

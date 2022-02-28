@@ -1,5 +1,5 @@
 require "spec"
-require "../rbst"
+require "crystal/multiset"
 
 describe RBST do
   it "init nil tree" do
@@ -101,6 +101,52 @@ describe RBST do
     t[7].should eq 8
     t[8].should eq 9
     t[9].should eq nil
+  end
+
+  it "[]" do
+    t = [5,4,4,3,2].to_multiset
+    t[0].should eq 2
+    t[1].should eq 3
+    t[2].should eq 4
+    t[3].should eq 4
+    t[4].should eq 5
+  end
+
+  it "upper_index" do
+    t = [2,3,4,4,4,5,6].to_multiset
+    t.upper_index(1).should eq nil
+    t.upper_index(2).should eq 0
+    t.upper_index(4).should eq 4
+    t.upper_index(5).should eq 5
+    t.upper_index(7).should eq 6
+  end
+
+
+  it "upper_index" do
+    t = [2,3,4,4,4,5,6].to_multiset
+    t.upper_index(1, eq: false).should eq nil
+    t.upper_index(2, eq: false).should eq nil
+    t.upper_index(4, eq: false).should eq 1
+    t.upper_index(5, eq: false).should eq 4
+    t.upper_index(7, eq: false).should eq 6
+  end
+
+  it "lower_index" do
+    t = [2,3,4,4,4,5,6].to_multiset
+    t.lower_index(1).should eq 0
+    t.lower_index(2).should eq 0
+    t.lower_index(4).should eq 2
+    t.lower_index(5).should eq 5
+    t.lower_index(7).should eq nil
+  end
+
+  it "lower_index" do
+    t = [2,3,4,4,4,5,6].to_multiset
+    t.lower_index(1, eq: false).should eq 0
+    t.lower_index(2, eq: false).should eq 1
+    t.lower_index(4, eq: false).should eq 5
+    t.lower_index(5, eq: false).should eq 6
+    t.lower_index(7, eq: false).should eq nil
   end
 
   it "median" do
