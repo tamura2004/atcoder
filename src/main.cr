@@ -1,46 +1,35 @@
-# この後で最初に登場するindex
-def ix_after(s)
-  ans = Array.new(s.size) { Array.new(26, nil.as(Int32?)) }
-  s.chars.zip(0..).reverse_each do |c, i|
-    if i < s.size - 1
-      26.times do |j|
-        ans[i][j] = ans[i + 1][j]
-      end
-    end
+require "crystal/complex"
 
-    ans[i][c.ord - 'a'.ord] = i
-  end
-  ans
+n, m = gets.to_s.split.map(&.to_i64)
+
+nc = Array.new(n) do
+  x, y, r = gets.to_s.split.map(&.to_i64)
+  {C.new(x, y), r}
 end
 
-# 候補
-def candi(s)
-  ix = ix_after(s)
-
-  s.chars.each_index do |i|
-    pre = s[0...i]
-
-    26.times do |j|
-      next if ix[i][j].nil?
-
-      yield pre + (j + 'a'.ord).chr
-    end
-  end
+mc = Array.new(m) do
+  x, y = gets.to_s.split.map(&.to_i64)
+  C.new(x, y)
 end
 
-# main
-n = gets.to_s.to_i
-ss = Array.new(n) do
-  gets.to_s
-end.sort_by(&.size).reverse.map(&.reverse)
+m == 0 && p(nc.map(&.[1]).min) + exit
 
-tr = Hash(String,Int64).new(0_i64)
-ans = 0_i64
+# 円の直径をxにできない（の最小値）
+# あるNの円との距離が,r+x未満
+# あるMの円との距離が,2x未満
+q = ->(x : Float64 | Int32) {
+  x = x.to_f64
 
-ss.each do |s|
-  ans += tr[s]
-  candi(s) do |cs|
-    tr[cs] += 1
+  a1 = nc.product(mc).any? do |(z, r), w|
+    (z - w).abs2 < (x + r) ** 2
   end
-end
+
+  a2 = mc.combinations(2).any? do |(z, w)|
+    (z - w).abs < (x * 2) ** 2
+  end
+
+  a1 || a2
+}
+
+ans = (0..1e10).bsearch(&q)
 pp ans
