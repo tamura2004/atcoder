@@ -21,6 +21,20 @@ end
 
 EOS
 
+QUIT = <<EOS.lines
+macro quit(msg)
+  puts({{msg}}) + exit
+end
+
+EOS
+
+DIVCEIL = <<EOS.lines
+macro divceil(a, b)
+  ((({{a}}) + ({{b}}) - 1) // ({{b}}))
+end
+
+EOS
+
 src, target = ARGV
 src ||= "src/main.cr"
 target ||= "src/target.cr"
@@ -64,6 +78,14 @@ end
 
 if buf.grep(/make_array/).size > 0 && buf.grep(/macro make_array/).size == 0
   buf = MAKE_ARRAY + buf
+end
+
+if buf.grep(/quit/).size > 0 && buf.grep(/macro quit/).size == 0
+  buf = QUIT + buf
+end
+
+if buf.grep(/divceil/).size > 0 && buf.grep(/macro divceil/).size == 0
+  buf = DIVCEIL + buf
 end
 
 File.open(target, "w").write(buf.join)
