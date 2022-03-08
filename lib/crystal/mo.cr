@@ -40,6 +40,8 @@ class Mo
   DEL = 1
   TOT = 2
 
+  LOGN = 20 # 2 ** LOGN >= MAX_n
+
   getter n : Int32                       # 数列の長さ
   getter m : Int32                       # 分割数
   getter q : Int32                       # クエリ数
@@ -48,11 +50,40 @@ class Mo
 
   def initialize(@n, @q, @lr)
     @m = Math.max 1, n // Math.sqrt(q)
+    # @ix = (0...q).to_a.sort_by do |i|
+    #   l, r = lr[i]
+    #   sign = (l // m).odd? ? -1 : 1
+    #   {l // m, r * sign}
+    # end
+    ord = lr.map{|l,r| triangleorder(l,r)}
     @ix = (0...q).to_a.sort_by do |i|
-      l, r = lr[i]
-      sign = (l // m).odd? ? -1 : 1
-      {l // m, r * sign}
+      ord[i]
     end
+  end
+
+  def triangleorder(l, r)
+    d = 0_i64
+    s = (1i64 << LOGN) + 1
+    while s > 1
+      if l >= s
+        d += (36i64 * s * s) >> 4
+        l -= s
+        r -= s
+      elsif l + r > (s << 1)
+        d += (24i64 * s * s) >> 4
+        l = l + 1
+        r = (s << 1) - r
+        l, r = r, l
+      elsif r > s
+        d += (12i64 * s * s) >> 4
+        l = s - l
+        r = r - s - l
+        l, r = r, l
+      end
+      s >>= 1
+    end
+    d += l + r - 1
+    d
   end
 
   def solve
