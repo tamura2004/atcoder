@@ -1,4 +1,12 @@
-a = [1,2,3]
-b = [4,5]
+1000.times do
+  x = rand(1..1000)
+  a = rand(1..1000)
+  d = rand(1..1000)
 
-pp a.product(b)
+  left = (x + a * d) // d
+  right = x // d + a
+
+  if left != right
+    pp! [x,a,d,left,right]
+  end
+end

@@ -181,4 +181,4 @@ class SegmentTree(T)
   end
 end
 
-alias ST = SegmentTree
+alias ST = SegmentTree(Int64)

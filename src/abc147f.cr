@@ -1,18 +1,16 @@
-n,x,d = gets.to_s.split.map(&.to_i64)
-got = Got.new(n, x, d).solve
-pp got
+# n,x,d = gets.to_s.split.map(&.to_i64)
 
-# 900.times do
-#   n = rand(1i64..16i64)
-#   x = rand(1i64..100i64) - 50
-#   d = rand(1i64..100i64) - 50
-#   got = Got.new(n, x, d).solve
-#   want = Want.new(n, x, d).solve
-#   if got != want
-#     pp! [n, x, d]
-#     pp! [got, want]
-#   end
-# end
+1000.times do
+  n = rand(1i64..12i64)
+  x = rand(1i64..100i64)
+  d = rand(1i64..100i64)
+  got = Got.new(n, x, d).solve
+  want = Want.new(n, x, d).solve
+  if got != want
+    pp! [n, x, d]
+    pp! [got, want]
+  end
+end
 
 class Want
   getter n : Int64
@@ -50,25 +48,16 @@ class Got
   end
 
   def rec
-    (0i64..n).each do |i|
+    (0..n).each do |i|
       k = x * i
       j = (x * i) % d
       lo = (0i64...i).sum
       hi = (n - i...n).sum
-      # lo = sum(0i64, i)
-      # hi = sum(n - i, n)
       cnt[j] << {lo + k // d, hi + k // d}
     end
   end
 
-  def sum(a,b)
-    return 0_i64 if a >= b
-    (a + b - 1) * (b - a) // 2
-  end
-
   def solve
-    return 0 if x.zero? && d.zero?
-    return n + 1 if d.zero?
     rec
     ans = 0_i64
     cnt.each do |a|
