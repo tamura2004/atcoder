@@ -1,95 +1,92 @@
-n,x,d = gets.to_s.split.map(&.to_i64)
-got = Got.new(n, x, d).solve
-pp got
+require "crystal/ntt_convolution"
+require "crystal/indexable"
 
-# 900.times do
-#   n = rand(1i64..16i64)
-#   x = rand(1i64..100i64) - 50
-#   d = rand(1i64..100i64) - 50
-#   got = Got.new(n, x, d).solve
-#   want = Want.new(n, x, d).solve
-#   if got != want
-#     pp! [n, x, d]
-#     pp! [got, want]
-#   end
-# end
+# n, m = gets.to_s.split.map(&.to_i64)
+# a = gets.to_s.split.map(&.to_i64).sort
 
-class Want
-  getter n : Int64
-  getter x : Int64
-  getter d : Int64
+n = 100000i64
+m = n ** 2
+a = [100000i64] * n
 
-  def initialize(@n, @x, @d)
-  end
+got = Got.new(n, m, a).solve
+want = Want.new(n, m, a).solve
 
-  def solve
-    ans = Set(Int64).new
-    (1 << n).times do |s|
-      cnt = 0_i64
-      n.times do |i|
-        if s.bit(i) == 1
-          cnt += x + d * i
-        end
-      end
-      ans << cnt
-    end
-    ans.size
-  end
+# pp got
+# pp want
+
+if got != want
+  pp! n
+  pp! m
+  # pp! a
+
+  pp! got
+  pp! want
 end
 
 class Got
   getter n : Int64
-  getter x : Int64
-  getter d : Int64
-  getter cnt : Array(Array(Tuple(Int64, Int64)))
+  getter m : Int64
+  getter a : Array(Int64)
 
-  def initialize(@n, @x, @d)
-    @cnt = Array.new(d.abs) do
-      [] of Tuple(Int64, Int64)
-    end
-  end
-
-  def rec
-    (0i64..n).each do |i|
-      k = x * i
-      j = (x * i) % d
-      lo = (0i64...i).sum
-      hi = (n - i...n).sum
-      # lo = sum(0i64, i)
-      # hi = sum(n - i, n)
-      cnt[j] << {lo + k // d, hi + k // d}
-    end
-  end
-
-  def sum(a,b)
-    return 0_i64 if a >= b
-    (a + b - 1) * (b - a) // 2
+  def initialize(@n, @m, @a)
   end
 
   def solve
-    return 0 if x.zero? && d.zero?
-    return n + 1 if d.zero?
-    rec
-    ans = 0_i64
-    cnt.each do |a|
-      marge(a).each do |r|
-        ans += r[1] - r[0] + 1
-      end
+    rest = m
+    z = Array.new(100_001, 0_i64)
+    w = Array.new(100_001, 0_i64)
+
+    a.each do |v|
+      z[v] += 1
+      w[v] += 1
     end
+
+    cnt = convolution(z, w)
+    pp! cnt.last(20)
+
+    ans = 0_i64
+    cnt.zip(0i64..).reverse_each do |num, val|
+      x = Math.min(rest, num)
+      ans += x * val
+      rest -= x
+      break if rest <= 0
+    end
+
     ans
   end
+end
 
-  def marge(a)
-    a.sort_by!(&.[0])
-    ans = [] of Tuple(Int64, Int64)
-    a.each do |l, r|
-      if ans.empty? || ans[-1][1] < l
-        ans << {l, r}
-      else
-        pl, pr = ans.pop
-        ans << {Math.min(pl, l), Math.max(pr, r)}
-      end
+class Want
+  getter n : Int64
+  getter m : Int64
+  getter a : Array(Int64)
+
+  def initialize(@n, @m, @a)
+  end
+
+  def solve
+    cs = a.reverse.cs
+
+    # xに関する命題：足してxを超える値はM個以上選べない
+    # <=> M個選べる最大値は足してXである
+    max = (0i64..1000000i64).bsearch do |x|
+      a.sum do |v|
+        a.count_more(x - v)
+      end < m
+    end.not_nil!
+
+    # 足してmaxの合計値を累積和から求める
+    ans = a.sum do |x|
+      i = a.count_more_or_equal(max - x)
+      cs[i] + x * i
     end
-    ans
+
+    # 足してmaxの個数の合計
+    cnt = a.sum do |x|
+      a.count_more_or_equal(max - x)
+    end
+
+    # 境界が余る場合の処理
+    ans - (cnt - m) * max
   end
 end
