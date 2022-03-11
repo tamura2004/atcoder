@@ -1,4 +1,4 @@
-def _fft(a)
+def fft(a)
   n = a.size
   return a if n == 1
   w = Complex.polar(1, -2 * Math::PI / n)
@@ -7,15 +7,17 @@ def _fft(a)
   a1.zip(a2).flatten
 end
 
-def fft(a)
-  n = a.size
-  _fft(a).map { _1 / Complex(n, 0) }
-end
-
 def ifft(a)
-  _fft(a.map { _1.conj }).map { _1.conj }
+  fft(a.map(&:conj)).map(&:conj).map { _1.real / a.size }
 end
 
-x = [1, 2, 3, 4]
-y = [5, 6, 7, 8]
-pp ifft(fft(x).zip(fft(y)).map { |i, j| i * j })
+def conv(a, b)
+  a1 = fft(a)
+  b1 = fft(b)
+  c = a1.zip(b1).map { _1 * _2 }.to_a
+  fft(c.map(&:conj)).map(&:conj).map { _1.real / a.size }.map(&:round)
+end
+
+x = [1, 1, 1, 1, 0, 0, 0, 0]
+y = [1, 1, 1, 1, 0, 0, 0, 0]
+pp conv(x, y)
