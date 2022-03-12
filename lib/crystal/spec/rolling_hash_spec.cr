@@ -11,6 +11,14 @@ describe RollingHash do
     ABC141E.new("zaqrzarqazaqaarqaa").lcp.should eq 4 # arqa
     ABC141E.new("aaaaaaaaa").lcp.should eq 4
   end
+
+  it "usage string" do
+    s = RollingHash.new("0101")
+t = RollingHash.new("01")
+s[2,2].should eq t[0,2] # true
+s[1,2].should_not eq t[0,2] # false
+
+  end
 end
 
 class ABC141E < RollingHash

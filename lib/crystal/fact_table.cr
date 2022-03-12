@@ -27,7 +27,7 @@ class FactTable
   end
 
   def c(n, k)
-    raise "overflow #{k}" if m < k
+    raise "overflow #{m} < #{k}" if m < k
     return ModInt.zero if n < k
     return ModInt.zero if k < 0
 
@@ -68,5 +68,12 @@ struct Int
   def h(k)
     @@ft.h(self,k)
   end
-end
 
+  def pow(k)
+    if k >= 0
+      to_m ** k
+    else
+      (to_m ** (-k)).inv
+    end
+  end
+end
