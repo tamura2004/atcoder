@@ -1,23 +1,23 @@
 # `Indexable`モジュール拡張
 module Indexable(T)
   # ソート済の配列に対し*u*未満の要素数を返す
-  def count_less(u : T) : T
-    T.new(bsearch_index { |v| u <= v } || size)
+  def count_less(u : T) : Int64
+    Int64.new(bsearch_index { |v| u <= v } || size)
   end
 
   # ソート済の配列に対し*u*以下の要素数を返す
-  def count_less_or_equal(u : T) : T
-    T.new(bsearch_index { |v| u < v } || size)
+  def count_less_or_equal(u : T) : Int64
+    Int64.new(bsearch_index { |v| u < v } || size)
   end
 
   # ソート済の配列に対し*u*を越える要素数を返す
-  def count_more(u : T) : T
-    T.new(size) - count_less_or_equal(u)
+  def count_more(u : T) : Int64
+    Int64.new(size) - count_less_or_equal(u)
   end
 
   # ソート済の配列に対し*u*以上の要素数を返す
-  def count_more_or_equal(u : T) : T
-    T.new(size) - count_less(u)
+  def count_more_or_equal(u : T) : Int64
+    Int64.new(size) - count_less(u)
   end
 
   def count_range(r : Range(T?, T?))

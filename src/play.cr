@@ -1,15 +1,6 @@
-require "crystal/mod_int"
-require "crystal/fact_table"
+require "complex"
 
-(1..10).each do |n|
-  got = (0..n).sum do |j|
-    n.c(j) * j
-  end
+x = Complex.new(1,0)
+z = Complex.new(0,1)
 
-  want = 2.to_m ** (n - 1) * n
-  if got != want
-    pp! n
-    pp! got
-    pp! want
-  end
-end
+pp (x - z).abs2
