@@ -41,9 +41,23 @@ class FactTable
   end
 end
 
+class Pw2Table
+  getter m : Int32
+  getter pw2 : Array(ModInt)
+
+  def initialize(m)
+    @m = m.to_i
+    @pw2 = [ModInt.zero + 1]
+    m.times do
+      pw2 << pw2[-1] * 2
+    end
+  end
+end
+
 struct Int
   MAX = 1_000_000
   class_getter ft : FactTable = FactTable.new(MAX)
+  class_getter pw2 : Pw2Table = Pw2Table.new(MAX)
 
   def f
     @@ft.f[self]
@@ -70,10 +84,19 @@ struct Int
   end
 
   def pow(k)
-    if k >= 0
-      to_m ** k
+    # 2べきは頻度が多いので高速化
+    if self == 2
+      if k >= 0
+        @@pw2.pw2[k]
+      else
+        @@pw2.pw2[-k].inv
+      end
     else
-      (to_m ** (-k)).inv
+      if k >= 0
+        to_m ** k
+      else
+        (to_m ** (-k)).inv
+      end
     end
   end
 end

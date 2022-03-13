@@ -33,4 +33,18 @@ describe FactTable do
   it "large number" do
     100_000.c(50_000).should eq 710154335
   end
+
+  it "pow" do
+    3.pow(0).should eq 1
+    3.pow(1).should eq 3
+    3.pow(2).should eq 9
+    3.pow(1_000_000).should eq 383419790
+  end
+
+  it "pow2" do
+    2.pow(0).should eq 1
+    2.pow(1).should eq 2
+    2.pow(2).should eq 4
+    2.pow(1_000_000).should eq 421273117
+  end
 end
