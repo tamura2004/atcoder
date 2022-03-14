@@ -210,8 +210,35 @@ module Indexable(T)
 
     return {lcp, sa, rank}
   end
-end
 
+  # KMP法のテーブルを作成
+  def kmp
+    n = size.to_i64
+    dp = Array.new(n+1, -1_i64)
+    j = -1_i64
+
+    n.times do |i|
+      while j >= 0 && self[i] != self[j]
+        j = dp[j]
+      end
+
+      j += 1
+      dp[i+1] = j
+    end
+    dp
+  end
+  
+  # kmp最小反復
+  # 
+  # ```
+  # 3文字繰り返しなど検出
+  # "abcabc".chars.kmp_report # => [1, 1, 2, 3, 3, 3, 3]
+  # ```
+  def kmp_repeat
+    kmp.zip(0..).map{|i,j|j-i}
+  end
+end
+  
 # インデックスから値へ
 struct Int
   def of(a)

@@ -1,40 +1,31 @@
-require "crystal/geography"
+# n, d, a = gets.to_s.split.map(&.to_i64)
+# x, h = Array.new(n){gets.to_s.split.map(&.to_i64)}.sort.transpose
 
-n = gets.to_s.to_i
-xy = Array.new(n) do
-  x,y = gets.to_s.split.map(&.to_i64)
-  Point.new(x,y)
-end
+# heat = 0_i64
+# ans = 0_i64
+# lo = hi = 0
+# while lo < n && hi < n  
+#   while hi < n && x[hi] <= x[lo] + d * 2
+#     h[hi] += heat
+#     hi += 1
+#   end
 
-xy.each_combination(3) do |(a,b,c)|
-  cnt = [] of Point
-  rr = [] of Float64
-  [a,b,c].each_permutation(3) do |(x,y,z)|
-    l1 = Line.new(x,y)
-    l2 = Line.new(z,y)
+#   cnt = divceil(h[lo] - heat, a)
+#   ans += cnt
+#   heat += cnt * a
 
-    o = l1.virtical_bisctor.crosspoint(l2.virtical_bisctor)
-    cnt << o
-    
-    [x,y,z].each do |w|
-      rr << (w - o).abs
-    end
-  end
+#   while lo < hi && h[lo] <= heat
+#     lo += 1
+#   end
+# end
 
-  if (cnt.map(&.imag).max - cnt.map(&.imag).min).abs > 1
-    pp! [a,b,c]
-    pp! cnt
-  end
+# pp ans
 
-  if (cnt.map(&.real).max - cnt.map(&.real).min).abs > 1
-    pp! [a,b,c]
-    pp! cnt
-  end
-  
-  if (rr.min - rr.max).abs > 1
-    pp! [a,b,c]
-    pp! cnt
-    pp! rr
-  end
+require "crystal/segment_tree"
 
+st = ST.sum(10)
+st[3] += 1
+st[7] -= 1
+10.times do |i|
+  pp st[..i]
 end

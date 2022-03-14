@@ -24,8 +24,8 @@ describe Line do
     line1 = Line.new(Point.new(8, 3), Point.new(7, 1))
     line0.crosspoint(line1).should eq Point.new(5.5, -2)
     
-    line2 = line0.vertiacl_bisector
-    line3 = line1.vertiacl_bisector
+    line2 = line0.virtical_bisector
+    line3 = line1.virtical_bisector
     line2.crosspoint(line3).should eq Point.new(5.5, 3)
   end
   

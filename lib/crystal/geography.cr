@@ -118,10 +118,28 @@ struct Line
   end
 
   # 垂直二等分線
-  def virtical_bisctor
+  def virtical_bisector
     x = (a + b) / 2
     y = x + ab * 1.i
     Line.new(x, y)
+  end
+end
+
+# 円
+struct Circle
+  getter c : Point # 中心
+  getter r : Float64 # 半径
+
+  def initialize(@c,@r)
+  end
+
+  def initialize(x,y,@r)
+    @c = Point.new(x,y)
+  end
+
+  # 点が円に含まれる
+  def includes?(t : Point)
+    (t - c).abs < r + EPS
   end
 end
 
