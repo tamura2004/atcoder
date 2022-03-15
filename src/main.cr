@@ -1,31 +1,11 @@
-# n, d, a = gets.to_s.split.map(&.to_i64)
-# x, h = Array.new(n){gets.to_s.split.map(&.to_i64)}.sort.transpose
+require "crystal/tree/lca"
 
-# heat = 0_i64
-# ans = 0_i64
-# lo = hi = 0
-# while lo < n && hi < n  
-#   while hi < n && x[hi] <= x[lo] + d * 2
-#     h[hi] += heat
-#     hi += 1
-#   end
+n = 5
+g = Tree.new(n)
+g.add 1, 2
+g.add 1, 3
+g.add 2, 4
+g.add 2, 5
 
-#   cnt = divceil(h[lo] - heat, a)
-#   ans += cnt
-#   heat += cnt * a
-
-#   while lo < hi && h[lo] <= heat
-#     lo += 1
-#   end
-# end
-
-# pp ans
-
-require "crystal/segment_tree"
-
-st = ST.sum(10)
-st[3] += 1
-st[7] -= 1
-10.times do |i|
-  pp st[..i]
-end
+lca = Lca.new(g).solve
+pa = Parent.new(g).solve

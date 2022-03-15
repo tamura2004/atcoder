@@ -49,7 +49,7 @@ class Lca
       i >= 0 ? {depth[i], i} : {depth[parent[~i]], parent[~i]}
     end
 
-    st = SegmentTree.range_min_query(values: val, unit: {Int32::MAX, Int32::MAX})
+    st = SegmentTree.min(values: val, unit: {Int32::MAX, Int32::MAX})
 
     ->(u : Int32, v : Int32) {
       u -= origin
