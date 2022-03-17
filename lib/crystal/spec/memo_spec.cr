@@ -3,11 +3,11 @@ require "../memo"
 
 describe Memo do
   it "solve fibonacci" do
-    Fibonacci.new.f(9).should eq 34
+    Fibonacci[9].should eq 34
   end
 
   it "solve Ackermann function" do
-    Ackermann.new.f(3, 3).should eq 61
+    Ackermann[3, 3].should eq 61
   end
 end
 
