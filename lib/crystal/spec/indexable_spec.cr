@@ -38,6 +38,58 @@ describe Indexable do
     a.count_more_or_equal(5).should eq 0
   end
 
+  it "ソート済の配列に対し、*u*以下の上限のindexを返す" do
+    a = [1,3,5,5,5,7,7,9]
+    a.upper_bound(0).should eq -1
+    a.upper_bound(1).should eq 0
+    a.upper_bound(2).should eq 0
+    a.upper_bound(3).should eq 1
+    a.upper_bound(4).should eq 1
+    a.upper_bound(5).should eq 4
+    a.upper_bound(6).should eq 4
+    a.upper_bound(7).should eq 6
+    a.upper_bound(8).should eq 6
+    a.upper_bound(9).should eq 7
+    a.upper_bound(10).should eq 7
+    a.upper_bound(0, eq: false).should eq -1
+    a.upper_bound(1, eq: false).should eq -1
+    a.upper_bound(2, eq: false).should eq 0
+    a.upper_bound(3, eq: false).should eq 0
+    a.upper_bound(4, eq: false).should eq 1
+    a.upper_bound(5, eq: false).should eq 1
+    a.upper_bound(6, eq: false).should eq 4
+    a.upper_bound(7, eq: false).should eq 4
+    a.upper_bound(8, eq: false).should eq 6
+    a.upper_bound(9, eq: false).should eq 6
+    a.upper_bound(10, eq: false).should eq 7
+  end
+
+  it "ソート済の配列に対し、*u*以上の下限のindexを返す" do
+    a = [1,3,5,5,5,7,7,9]
+    a.lower_bound(0).should eq 0
+    a.lower_bound(1).should eq 0
+    a.lower_bound(2).should eq 1
+    a.lower_bound(3).should eq 1
+    a.lower_bound(4).should eq 2
+    a.lower_bound(5).should eq 2
+    a.lower_bound(6).should eq 5
+    a.lower_bound(7).should eq 5
+    a.lower_bound(8).should eq 7
+    a.lower_bound(9).should eq 7
+    a.lower_bound(10).should eq 8
+    a.lower_bound(0, eq: false).should eq 0
+    a.lower_bound(1, eq: false).should eq 1
+    a.lower_bound(2, eq: false).should eq 1
+    a.lower_bound(3, eq: false).should eq 2
+    a.lower_bound(4, eq: false).should eq 2
+    a.lower_bound(5, eq: false).should eq 5
+    a.lower_bound(6, eq: false).should eq 5
+    a.lower_bound(7, eq: false).should eq 7
+    a.lower_bound(8, eq: false).should eq 7
+    a.lower_bound(9, eq: false).should eq 8
+    a.lower_bound(10, eq: false).should eq 8
+  end
+
   it "ソート済の配列に対し、範囲*r*に含まれる要素数を返す" do
     a = [1,3,5,7,9]
     a.count_range(3..7).should eq 3

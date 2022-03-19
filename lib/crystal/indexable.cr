@@ -20,6 +20,16 @@ module Indexable(T)
     Int64.new(size) - count_less(u)
   end
 
+  # ソート済の配列に対し、*u*以下の上限のindexを返す
+  def upper_bound(u : T, eq = true) : Int32
+    (bsearch_index { |v| eq ? u < v : u <= v } || size) - 1
+  end
+
+  # ソート済の配列に対し、*u*以上の下限のindexを返す
+  def lower_bound(u : T, eq = true) : Int32
+    bsearch_index { |v| eq ? u <= v : u < v } || size
+  end
+
   def count_range(r : Range(T?, T?))
     lo = r.try &.begin || T::MIN
     hi = (r.try &.end || T::MAX) + (r.excludes_end? ? -1 : 0)

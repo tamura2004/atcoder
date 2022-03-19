@@ -19,7 +19,7 @@
 #   def g(m, n)
 #     return n + 1 if m == 0
 #     return f(m - 1, 1) if n == 0
-#     f(m - 1, f(m, n - 1))
+#     f(m - 1, f(m, n - 1)) # <------------------- fを呼ぶ！
 #   end
 # end
 # Ackermann[3, 3] # => 61
