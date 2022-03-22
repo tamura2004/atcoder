@@ -127,19 +127,57 @@ end
 
 # 円
 struct Circle
-  getter c : Point # 中心
+  getter c : Point   # 中心
   getter r : Float64 # 半径
 
-  def initialize(@c,@r)
+  def initialize(@c, r)
+    @r = r.to_f64
   end
 
-  def initialize(x,y,@r)
-    @c = Point.new(x,y)
+  def initialize(x, y, @r)
+    @c = Point.new(x, y)
   end
 
   # 点が円に含まれる
   def includes?(t : Point)
     (t - c).abs < r + EPS
+  end
+
+  # 2つの円の交差判定
+  # 戻り値は共通接線の数
+  def intersect?(t : Circle)
+    d = (c - t.c).abs
+    return 4 if r + t.r + EPS < d             # 離れている
+    return 3 if ((r + t.r).abs - d).abs < EPS # 外接している
+    return 1 if ((r - t.r).abs - d).abs < EPS # 外接している
+    return 0 if d < (r - t.r).abs - EPS       # 内包している
+    return 2                                  # 交差している
+  end
+
+  def cross_point(t : Circle)
+    ans = [] of Point
+    d = (c - t.c).abs
+    case intersect?(t)
+    when 0,4
+    when 3
+      ans << (c * t.r + t.c * r) / (r * t.r)
+    when 1
+      if t.r < r - EPS
+        ans << c + (t.c - c) * (r / d)
+      else
+        ans << t.c + (c - t.c) * (t.r / d)
+      end
+    when 2
+      rc1 = (r * r + d * d - t.r * t.r) / (d * 2)
+      rs1 = Math.sqrt((r * r - rc1 * rc1).abs)
+      rs1 = 0.0 if (r - rc1.abs) < EPS
+      e12 = (t.c - c) / (t.c - c).abs
+      ans << c + rc1 * e12 + rs1 * e12 * Point.new(0, 1)
+      ans << c + rc1 * e12 + rs1 * e12 * Point.new(0, -1)
+    else
+      raise "circle intersect error"
+    end
+    ans
   end
 end
 

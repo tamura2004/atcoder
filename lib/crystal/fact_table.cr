@@ -36,6 +36,8 @@ class FactTable
 
   # c(n,k) = c(n,n-k)
   # h(n,k) = c(n+k-1,n) = c(n+k-1,n+k-1-n) = c(n+k-1,k-1)
+  # k種類から重複を許してn個取る
+  # nを0個以上でk分割
   def h(k, n)
     c(n + k - 1, k - 1)
   end

@@ -70,6 +70,10 @@ class Multiset(T)
     root.try &.upper(k, eq)
   end
 
+  def index(k)
+    root.try &.index(k)
+  end
+
   def upper_index(k, eq = true)
     root.try &.upper_index(k, eq)
   end
@@ -212,6 +216,19 @@ class Multiset(T)
         right.try(&.upper_index(k, eq)).try(&.+(pos + 1)) || pos
       else
         left.try(&.upper_index(k, eq))
+      end
+    end
+
+    # 値がkのインデックス
+    # 存在しなければnil
+    def index(k)
+      if val == k
+        left.try &.size || 0
+      elsif val < k
+        pos = left.try &.size || 0
+        right.try(&.index(k)).try(&.+(pos + 1)) || pos
+      else
+        left.try(&.index(k))
       end
     end
 

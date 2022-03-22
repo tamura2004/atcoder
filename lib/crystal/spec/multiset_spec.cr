@@ -149,6 +149,15 @@ describe RBST do
     t.lower_index(7, eq: false).should eq nil
   end
 
+  it "index" do
+    t = [2,3,4,4,4,5,6].to_multiset
+    t.index(1).should eq nil
+    t.index(2).should eq 0
+    t.index(4).in?([2,3,4]).should eq true
+    t.index(5).should eq 5
+    t.index(7).should eq nil
+  end
+
   it "median" do
     t = RBST{1,1,1,2,2,4}
     t.median.should eq 1.5

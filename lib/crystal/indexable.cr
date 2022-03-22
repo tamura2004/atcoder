@@ -43,6 +43,14 @@ module Indexable(T)
     end
   end
 
+  # 累積xor
+  def csxor(head = true)
+    ans = each_with_object([T.zero]) do |v, h|
+      h << (h[-1] ^ v)
+    end
+    head ? ans : ans[1..]
+  end
+
   # 累積最大値
   def csmax(head = true)
     ans = each_with_object([T::MIN]) do |v, h|

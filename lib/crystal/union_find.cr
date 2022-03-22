@@ -18,17 +18,17 @@ struct UnionFind
 
   def initialize(n)
     @n = n.to_i                      # 頂点数
-    @size = n                        # 連結成分数
+    @size = n.to_i                   # 連結成分数
     @max_size = 1_i64                # 連結成分の最大の頂点数
     @parent = Array.new(n, &.itself) # 連結成分の根
     @v_size = Array.new(n, 1_i64)    # 連結成分の頂点数
     @e_size = Array.new(n, 0_i64)    # 連結成分の辺数
     @weight = Array.new(n, 0_i64)    # ポテンシャル
-    @min_size = {1_i64 => n}         # 連結成分の最小の頂点数
+    @min_size = {1_i64 => @n}         # 連結成分の最小の頂点数
   end
 
   # 経路圧縮を行い、頂点`i`の親番号を返す
-  # 
+  #
   # ```
   # uf = UnionFind.new(4)
   # uf.unite 0, 1
@@ -44,7 +44,7 @@ struct UnionFind
       parent[i] = ans
     end
   end
-  
+
   # 頂点`i`,`j`の連結判定
   #
   # ```
@@ -57,7 +57,7 @@ struct UnionFind
   def same?(i : Int, j : Int)
     find(i) == find(j)
   end
-  
+
   def same?(a : Array(Int))
     a.map { |i| find(i) }.uniq.size == 1
   end
@@ -65,7 +65,7 @@ struct UnionFind
   def same?(r : Range(Int, Int))
     r.map { |i| find(i) }.uniq.size == 1
   end
-  
+
   # 頂点のポテンシャル（重み）
   #
   # ```
@@ -78,7 +78,7 @@ struct UnionFind
     find(i)
     weight[i]
   end
-  
+
   # 頂点`i`,`j`のポテンシャル差を求める
   #
   # ```
@@ -91,7 +91,7 @@ struct UnionFind
   def diff(i, j)
     weight(j) - weight(i)
   end
-  
+
   # 頂点`i`と`j`をポテンシャル差`wt`で連結する
   #
   # ```
@@ -210,7 +210,7 @@ struct UnionFind
   end
 
   def min_group_vertex_size
-    min_size.select{|k,v|v>0}.keys.min
+    min_size.select { |k, v| v > 0 }.keys.min
   end
 
   # 連結成分の辺数の配列
