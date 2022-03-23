@@ -156,7 +156,7 @@ class AVLTree(T)
 
     def inspect
       # "\n([#{val},#{height},#{balance}] #{left.inspect} #{right.inspect})"
-      "(#{val} #{left.try &.inspect} #{right.try &.inspect})"
+      "(#{val} #{left.inspect} #{right.inspect})"
     end
 
     def debug(indent = 0)
@@ -167,8 +167,8 @@ class AVLTree(T)
   end
 end
 
-tr = AVLTree(Int32).new
-40.times do |i|
-  tr.insert rand(1000)
-end
-tr.debug
+# tr = AVLTree(Int32).new
+# 40.times do |i|
+#   tr.insert rand(1000)
+# end
+# tr.debug
