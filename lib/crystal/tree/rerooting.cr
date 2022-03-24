@@ -1,5 +1,40 @@
 require "crystal/tree"
 
+# 全方位木DP
+#
+# ```
+# # https://atcoder.jp/contests/abc160/tasks/abc160_f
+#
+# alias T = Tuple(ModInt, Int32) # 場合の数、部分木の頂点数
+# alias V = Int32
+#
+# n = gets.to_s.to_i
+# g = Tree.new(n)
+# (n - 1).times do
+#   v, nv = gets.to_s.split.map(&.to_i64)
+#   g.add v, nv
+# end
+#
+# rr = Rerooting(T).new(
+#   tree: g,
+#   merge: ->(a : T, b : T) {
+#     ai, aj = a
+#     bi, bj = b
+#
+#     T.new(
+#       ai * bi * (aj + bj).c(aj),
+#       aj + bj
+#     )
+#   },
+#   apply: ->(a : T, v : V) {
+#     ai, aj = a
+#     T.new(ai, aj + 1)
+#   },
+#   unit: {1.to_m, 0}
+# )
+# ans = rr.solve
+# puts ans.map(&.first).join("\n")
+# ```
 struct Rerooting(T)
   getter g : Tree
   delegate n, to: g
