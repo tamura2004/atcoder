@@ -3,105 +3,113 @@ require "crystal//avl_tree"
 
 describe AVLTree do
   it "usage" do
-    tr = AVLTree(Int32).new
-    3.times do |i|
-      tr.insert i
-    end
-    # tr.inspect.should eq "(1 (0 . .) (2 . .))"
-    tr.at(1).should eq 1
-    tr.size.should eq 3
+    tr = (1..100).to_a.to_ordered_set
+    tr.size.should eq 100
+    tr.root.try(&.height).should eq 7 # log2(100)=6.6..なので平衡している
   end
-  
-  it "delete" do
-    tr = AVLTree(Int32).new
-    tr.insert 11
-    tr.insert 29
-    tr.insert 89
 
+  it "delete" do
+    tr = AVLTree{11, 29, 89}
     tr.delete 29
     tr.at(1).should eq 89
     tr.delete 89
     tr.at(0).should eq 11
-    # tr.inspect.should eq "(11 . .)"
   end
-  
+
   it "lower" do
-    tr = AVLTree(Int32).new
-    tr.insert 1
-    tr.insert 3
-    tr.insert 5
-    tr.insert 7
+    tr = AVLTree{1,3,5}
 
-    tr.lower(0).should eq nil
-    tr.lower(4).should eq 3
-    tr.lower(5, eq: false).should eq 3
-    tr.lower(5).should eq 5
+    # 以下
+    [nil,1,1,3,3,5,5].each_with_index do |want, i|
+      tr.lower(i).should eq want
+    end
+    
+    # 未満
+    [nil,nil,1,1,3,3,5].each_with_index do |want, i|
+      tr.lower(i, eq: false).should eq want
+    end
+    
+    # 以下のインデックス
+    [nil,0,0,1,1,2,2].each_with_index do |want, i|
+      tr.lower_index(i).should eq want
+    end
 
-    tr.lower_index(0).should eq nil
-    tr.lower_index(1).should eq 0
-    tr.lower_index(4).should eq 1
-    tr.lower_index(5, eq: false).should eq 1
-    tr.lower_index(5).should eq 2
-    tr.lower_index(9).should eq 3
+    # 未満のインデックス
+    [nil,nil,0,0,1,1,2].each_with_index do |want, i|
+      tr.lower_index(i,eq: false).should eq want
+    end
 
-    tr.lower_count(0).should eq 0
-    tr.lower_count(1).should eq 1
-    tr.lower_count(4).should eq 2
-    tr.lower_count(5, eq: false).should eq 2
-    tr.lower_count(5).should eq 3
-    tr.lower_count(9).should eq 4
+    # 以下の個数
+    [0,1,1,2,2,3,3].each_with_index do |want, i|
+      tr.lower_count(i).should eq want
+    end
+
+    # 未満の個数
+    [0,0,1,1,2,2,3].each_with_index do |want, i|
+      tr.lower_count(i,eq:false).should eq want
+    end
   end
-  
+
   it "upper" do
-    tr = AVLTree(Int32).new
-    tr.insert 1
-    tr.insert 3
-    tr.insert 5
-    tr.insert 7
+    tr = AVLTree{1,3,5}
 
-    tr.upper(4).should eq 5
-    tr.upper(5, eq: false).should eq 7
-    tr.upper(5).should eq 5
+    # 以上
+    [1,1,3,3,5,5,nil].each_with_index do |want, i|
+      tr.upper(i).should eq want
+    end
+    
+    # 越える
+    [1,3,3,5,5,nil,nil].each_with_index do |want, i|
+      tr.upper(i, eq: false).should eq want
+    end
+    
+    # 以上のインデックス
+    [0,0,1,1,2,2,nil].each_with_index do |want, i|
+      tr.upper_index(i).should eq want
+    end
 
-    tr.upper_index(0).should eq 0
-    tr.upper_index(1).should eq 0
-    tr.upper_index(2).should eq 1
-    tr.upper_index(3).should eq 1
-    tr.upper_index(4).should eq 2
-    tr.upper_index(5).should eq 2
-    tr.upper_index(6).should eq 3
-    tr.upper_index(7).should eq 3
-    tr.upper_index(7, eq: false).should eq nil
-    tr.upper_index(8).should eq nil
-    tr.upper_index(9).should eq nil
+    # 越えるのインデックス
+    [0,1,1,2,2,nil,nil].each_with_index do |want, i|
+      tr.upper_index(i,eq: false).should eq want
+    end
 
-    tr.upper_count(0).should eq 4
-    tr.upper_count(1).should eq 4
-    tr.upper_count(2).should eq 3
-    tr.upper_count(3).should eq 3
-    tr.upper_count(4).should eq 2
-    tr.upper_count(5).should eq 2
-    tr.upper_count(6).should eq 1
-    tr.upper_count(7).should eq 1
-    tr.upper_count(7, eq: false).should eq 0
-    tr.upper_count(8).should eq 0
-    tr.upper_count(9).should eq 0
+    # 以上の個数
+    [3,3,2,2,1,1,0].each_with_index do |want, i|
+      tr.upper_count(i).should eq want
+    end
+
+    # 越えるの個数
+    [3,2,2,1,1,0,0].each_with_index do |want, i|
+      tr.upper_count(i,eq:false).should eq want
+    end
+  end
+
+  # 小さいほうからk番目
+  it "at" do
+    tr = AVLTree{1,3,5}
+    [1,3,5,nil].each_with_index do |want, k|
+      tr.at(k).should eq want
+    end
   end
   
+  # 大きいほうからk番目
   it "at" do
-    tr = AVLTree(Int32).new
-    tr.insert 1
-    tr.insert 3
-    tr.insert 5
-    tr.insert 7
-
-    tr.at(2).should eq 5
-    tr.at(3).should eq 7
+    tr = AVLTree{1,3,5}
+    [1,5,3,1].each_with_index do |want, k|
+      tr.at(-k).should eq want
+    end
+  end
+  
+  it "min max" do
+    tr = AVLTree{1,3,5}
+    tr.min.should eq 1
+    tr.max.should eq 5
   end
 
-  it "min max" do
-    tr = [1,3,5,7].to_ordered_set
-    tr.min.should eq 1
-    tr.max.should eq 7
+  it "insert at" do
+    tr = AVLTree{1,1,1,1,1,1,1,1,1,1}
+    tr.insert_at(3,3)
+    tr.insert_at(7,7)
+    pp tr
   end
 end

@@ -68,4 +68,23 @@ describe Int32 do
       n.to_i64.factors.should eq want
     end
   end
+
+  # 三角数
+  it "trinum" do
+    1.trinum_index.should eq 1
+    2.trinum_index.should eq 2
+    3.trinum_index.should eq 2
+    4.trinum_index.should eq 3
+    5.trinum_index.should eq 3
+    6.trinum_index.should eq 3
+    7.trinum_index.should eq 4
+    8.trinum_index.should eq 4
+    9.trinum_index.should eq 4
+    10.trinum_index.should eq 4
+
+    1.trinum.should eq 1
+    2.trinum.should eq 3
+    3.trinum.should eq 6
+    4.trinum.should eq 10
+  end
 end

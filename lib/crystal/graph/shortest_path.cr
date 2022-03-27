@@ -40,6 +40,9 @@ struct ShortestPath
 
   # dv -> dnv : 削除辺
   def solve(start = 0, goal = n - 1, dv = -1, dnv = -1)
+    start = start.to_i
+    goal = goal.to_i
+    
     depth.fill(-1)
     par.fill(-1)
     bfs(start, dv, dnv)

@@ -9,6 +9,10 @@ class AVLTree(T)
     @root = root.try &.insert(v) || Node(T).new(v)
   end
 
+  def insert_at(i : Int32, v : T)
+    @root = root.try &.insert_at(i, v) || Node(T).new(v)
+  end
+
   def <<(v : T)
     insert(v)
   end
@@ -29,6 +33,7 @@ class AVLTree(T)
     @root.try &.lower(v, eq)
   end
 
+  # v以下（未満）の最大のインデックス
   def lower_index(v, eq = true)
     @root.try &.lower_index(v, eq)
   end
@@ -38,7 +43,7 @@ class AVLTree(T)
     @root.try(&.lower_index(v, eq)).try(&.succ) || 0
   end
 
-  # v以上（超える）の最小値
+  # v以上（より大きい）の最小値
   def upper(v, eq = true)
     @root.try &.upper(v, eq)
   end
@@ -47,7 +52,7 @@ class AVLTree(T)
     @root.try &.upper_index(v, eq)
   end
 
-  # v以上（を超える）要素数
+  # v以上（より大きい）要素数
   def upper_count(v, eq = true)
     @root.try(&.upper_index(v, eq)).try{ |v| (@root.try(&.size) || 0) - v} || 0
   end
@@ -72,6 +77,7 @@ class AVLTree(T)
     @root.try &.max
   end
 
+  # 最大値を削除して返す
   def pop
     @root, node = root.try &.pop || {nil.as(Node(T)?), nil.as(Node(T)?)}
     node
@@ -90,8 +96,16 @@ class AVLTree(T)
     @root.try &.size || 0
   end
 
+  def clear
+    @root = nil
+  end
+
   def inspect
     @root.inspect
+  end
+
+  def to_a
+    @root.try &.to_a || [] of T
   end
 
   def debug
@@ -116,14 +130,25 @@ class AVLTree(T)
 
     # 挿入
     def insert(v)
-      return self if v == val
-      if v < val
+      # return self if v == val
+      if v <= val
         @left = left.try &.insert(v) || Node(T).new(v)
       else
         @right = right.try &.insert(v) || Node(T).new(v)
       end
       update
       re_balance
+    end
+
+    # i番目に挿入
+    def insert_at(i, v)
+      ord = left_size
+      if i <= ord
+        @left = left.try &.insert_at(i, v) || Node(T).new(v)
+      else
+        @right = right.try &.insert_at(i - ord - 1, v) || Node(T).new(v)
+      end
+      update.re_balance
     end
 
     # 削除
@@ -213,7 +238,8 @@ class AVLTree(T)
 
     # 小さいほうからk番目のノードの値(0-origin)
     def at(k)
-      ord = left.try &.size || 0
+      return at(size + k) if k < 0
+      ord = left_size
       if k == ord
         val
       elsif k < ord
@@ -306,10 +332,24 @@ class AVLTree(T)
       right.try &.balance || 0
     end
 
+    @[AlwaysInline]
+    private def left_to_a
+      left.try &.to_a || [] of T
+    end
+
+    @[AlwaysInline]
+    private def right_to_a
+      right.try &.to_a || [] of T
+    end
+
     def inspect
       # "(#{val} #{left.inspect} #{right.inspect})".gsub(/nil/, ".")
       "(#{left.inspect} #{val} #{right.inspect})".gsub(/nil/, ".")
       # "(#{left.inspect} #{[val, size, height, balance]} #{right.inspect})".gsub(/nil/, ".")
+    end
+
+    def to_a
+      left_to_a + [val] + right_to_a
     end
 
     def debug(indent = 0)
