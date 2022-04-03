@@ -22,11 +22,11 @@ describe Mo do
 
     mo.solve do |cmd, i|
       case cmd
-      when Mo::ADD
+      when CMD::ADD
         cnt.add(i)
-      when Mo::DEL
+      when CMD::DEL
         cnt.del(i)
-      when Mo::TOT
+      when CMD::TOT
         ans[i] = cnt.tot
       end
     end

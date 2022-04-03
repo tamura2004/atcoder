@@ -1,37 +1,24 @@
-require "crystal/weighted_pair_graph/dijkstra"
-include WeightedPairGraph
+require "crystal/prime"
 
-n, m, s = gets.to_s.split.map(&.to_i)
-chmin s, 2500
-g = Graph.new(both: false)
-m.times do
-  v, nv, a, b = gets.to_s.split.map(&.to_i64)
-  v = v.to_i - 1
-  nv = nv.to_i - 1
+MAX = 1_000_000
 
-  (0..2500).each do |c|
-    nc = c + a
-    next if 2500 < nc
+n = gets.to_s.to_i64
+a = gets.to_s.split.map(&.to_i64)
 
-    g.add v, nc, nv, c, b
-    g.add nv, nc, v, c, b
+cnt = a[0]
+a[1..].each do |v|
+  cnt = cnt.gcd(v)
+end
+quit "not coprime" if cnt != 1
+
+siv = Array.new(MAX + 1, false)
+a.each do |i|
+  quit "setwise coprime" if siv[i]
+  i.prime_factors.each do |j|
+    j.step(by: j, to: MAX) do |k|
+      siv[k] = true
+    end
   end
 end
 
-n.times do |v|
-  a, d = gets.to_s.split.map(&.to_i64)
-  2500.times do |c|
-    nc = c + a
-    next if 2500 < nc
-    g.add v, c, v, nc, d
-  end
-end
-
-cnt = Dijkstra.new(g).solve({0, s})
-ans = Array.new(n, Int64::MAX)
-cnt.each do |(v, _), cost|
-  # pp! [v, cost] if v != 0
-  chmin ans[v], cost
-end
-
-puts ans[1..].join("\n")
+puts "pairwise coprime"

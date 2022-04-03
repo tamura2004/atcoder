@@ -72,14 +72,14 @@ describe Int32 do
   # 三角数
   it "trinum" do
     1.trinum_index.should eq 1
-    2.trinum_index.should eq 2
+    2.trinum_index.should eq 1
     3.trinum_index.should eq 2
-    4.trinum_index.should eq 3
-    5.trinum_index.should eq 3
+    4.trinum_index.should eq 2
+    5.trinum_index.should eq 2
     6.trinum_index.should eq 3
-    7.trinum_index.should eq 4
-    8.trinum_index.should eq 4
-    9.trinum_index.should eq 4
+    7.trinum_index.should eq 3
+    8.trinum_index.should eq 3
+    9.trinum_index.should eq 3
     10.trinum_index.should eq 4
 
     1.trinum.should eq 1

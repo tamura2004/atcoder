@@ -88,7 +88,9 @@ struct Int
   def pow(k)
     # 2べきは頻度が多いので高速化
     if self == 2
-      if k >= 0
+      if k >= MAX
+        to_m ** k
+      elsif k >= 0
         @@pw2.pw2[k]
       else
         @@pw2.pw2[-k].inv

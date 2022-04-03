@@ -73,4 +73,9 @@ class Matrix(T)
       end
     end
   end
+
+  def inspect
+    w = a.map(&.max).max.to_s.size
+    a.map(&.map{|v|"%#{w}d" % v}.join(" ")).join("\n")
+  end
 end

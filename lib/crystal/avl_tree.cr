@@ -130,7 +130,7 @@ class AVLTree(T)
 
     # 挿入
     def insert(v)
-      # return self if v == val
+      return self if v == val
       if v <= val
         @left = left.try &.insert(v) || Node(T).new(v)
       else

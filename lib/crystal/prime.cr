@@ -245,7 +245,7 @@ struct Int
   # 自身以下の最大の三角数のiを求める
   # 三角数は自身を正の整数に分割できる最大数
   def trinum_index
-    self.class.new(((Math.sqrt(self * 8 + 1) - 1) / 2).ceil)
+    (Math.sqrt(self * 8 + 1).to_i64 - 1) // 2
   end
 
   # Ti = 1 + 2 + ... + self

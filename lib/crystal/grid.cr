@@ -6,7 +6,9 @@ class Grid
   getter w : Int32
   getter g : Array(String)
 
-  def initialize(@h, @w, @g)
+  def initialize(h, w, @g)
+    @h = h.to_i
+    @w = w.to_i
   end
 
   def self.read

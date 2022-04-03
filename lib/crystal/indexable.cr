@@ -107,6 +107,16 @@ module Indexable(T)
     end
   end
 
+  # xorによる畳み込み
+  # ```
+  # [0b011, 0b110].xor # #=> 0b101
+  # ```
+  def xor : T
+    reduce(T.zero) do |acc, b|
+      acc ^ b
+    end
+  end
+
   # 要素が順列の時、置換の逆元。値から添え字の逆引き。
   #
   # ```

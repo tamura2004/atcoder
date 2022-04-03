@@ -1,13 +1,13 @@
 # 有理数クラス a / b
+# structなのでキーになる
 struct Rational
-  include Comparable(self)
+  getter a : Int64 # 分子(常に0以上)
+  getter b : Int64 # 分母
+  def_equals_and_hash a, b
 
-  getter a : Int64
-  getter b : Int64
-
-  def initialize(a, b) # 分子、分母
-    a = a.to_i64
-    b = b.to_i64
+  def initialize(a, b)
+    a, b = {a, b}.map(&.to_i64)
+    a, b = {a, b}.map(&.-) if a < 0
 
     case
     when a.zero? && b.zero?
@@ -15,40 +15,39 @@ struct Rational
       @b = 0_i64
     when a.zero?
       @a = 0_i64
-      @b = sign(b)
+      @b = 1_i64
     when b.zero?
-      @a = sign(a)
+      @a = 1_i64
       @b = 0_i64
     else
-      if b < 0
-        a = -a
-        b = -b
-      end
       gcd = a.gcd(b)
       @a = a // gcd
       @b = b // gcd
     end
   end
 
-  def <=>(c : self)
-    case
-    when b.zero? && c.b.zero?
-      a <=> c.a
-    else
-      a * c.b <=> c.a * b
-    end
+  def +(t : self)
+    R.new(t.b*a + b*t.a, t.b * b)
   end
 
-  def mul(x,y)
-    y.zero? ? inf(x) : x * y
+  def inv
+    R.new(b, a)
   end
 
-  def inf(x)
-    x < 0 ? Int64::MIN : Int64::MAX
+  def -
+    R.new(a, -b)
   end
 
-  def sign(x)
-    x < 0 ? -1_i64 : 1_i64
+  def rot90
+    -inv
+  end
+
+  def zero?
+    a.zero? && b.zero?
+  end
+
+  def self.zero
+    R.new(0, 0)
   end
 
   def inspect
@@ -57,3 +56,10 @@ struct Rational
 end
 
 alias R = Rational
+
+class String
+  def to_r
+    a, b = split(/\//).map(&.to_i64)
+    R.new(a,b)
+  end
+end

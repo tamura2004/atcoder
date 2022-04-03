@@ -62,6 +62,9 @@ describe Indexable do
     a.upper_bound(8, eq: false).should eq 6
     a.upper_bound(9, eq: false).should eq 6
     a.upper_bound(10, eq: false).should eq 7
+
+    b = [-100, 100, 1000]
+    b.upper_bound(50).should eq 0 
   end
 
   it "ソート済の配列に対し、*u*以上の下限のindexを返す" do
