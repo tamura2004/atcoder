@@ -1,0 +1,180 @@
+	"type proc long": {
+		"prefix": "pl",
+		"body" : [
+			"Proc(Int64)",
+		]
+	},
+	"type proc int": {
+		"prefix": "pi",
+		"body" : [
+			"Proc(Int32)",
+		]
+	},
+	"type proc long long": {
+		"prefix": "pll",
+		"body" : [
+			"Proc(Int64,Int64)",
+		]
+	},
+	"type proc int long": {
+		"prefix": "pil",
+		"body" : [
+			"Proc(Int32,Int64)",
+		]
+	},
+	"type proc long int": {
+		"prefix": "pli",
+		"body" : [
+			"Proc(Int64,Int32)",
+		]
+	},
+	"type proc int int": {
+		"prefix": "pii",
+		"body" : [
+			"Proc(Int32,Int32)",
+		]
+	},
+	"type proc long long long": {
+		"prefix": "plll",
+		"body" : [
+			"Proc(Int64,Int64,Int64)",
+		]
+	},
+	"type proc int long long": {
+		"prefix": "pill",
+		"body" : [
+			"Proc(Int32,Int64,Int64)",
+		]
+	},
+	"type proc long int long": {
+		"prefix": "plil",
+		"body" : [
+			"Proc(Int64,Int32,Int64)",
+		]
+	},
+	"type proc int int long": {
+		"prefix": "piil",
+		"body" : [
+			"Proc(Int32,Int32,Int64)",
+		]
+	},
+	"type proc long long int": {
+		"prefix": "plli",
+		"body" : [
+			"Proc(Int64,Int64,Int32)",
+		]
+	},
+	"type proc int long int": {
+		"prefix": "pili",
+		"body" : [
+			"Proc(Int32,Int64,Int32)",
+		]
+	},
+	"type proc long int int": {
+		"prefix": "plii",
+		"body" : [
+			"Proc(Int64,Int32,Int32)",
+		]
+	},
+	"type proc int int int": {
+		"prefix": "piii",
+		"body" : [
+			"Proc(Int32,Int32,Int32)",
+		]
+	},
+	"type proc long long long long": {
+		"prefix": "pllll",
+		"body" : [
+			"Proc(Int64,Int64,Int64,Int64)",
+		]
+	},
+	"type proc int long long long": {
+		"prefix": "pilll",
+		"body" : [
+			"Proc(Int32,Int64,Int64,Int64)",
+		]
+	},
+	"type proc long int long long": {
+		"prefix": "plill",
+		"body" : [
+			"Proc(Int64,Int32,Int64,Int64)",
+		]
+	},
+	"type proc int int long long": {
+		"prefix": "piill",
+		"body" : [
+			"Proc(Int32,Int32,Int64,Int64)",
+		]
+	},
+	"type proc long long int long": {
+		"prefix": "pllil",
+		"body" : [
+			"Proc(Int64,Int64,Int32,Int64)",
+		]
+	},
+	"type proc int long int long": {
+		"prefix": "pilil",
+		"body" : [
+			"Proc(Int32,Int64,Int32,Int64)",
+		]
+	},
+	"type proc long int int long": {
+		"prefix": "pliil",
+		"body" : [
+			"Proc(Int64,Int32,Int32,Int64)",
+		]
+	},
+	"type proc int int int long": {
+		"prefix": "piiil",
+		"body" : [
+			"Proc(Int32,Int32,Int32,Int64)",
+		]
+	},
+	"type proc long long long int": {
+		"prefix": "pllli",
+		"body" : [
+			"Proc(Int64,Int64,Int64,Int32)",
+		]
+	},
+	"type proc int long long int": {
+		"prefix": "pilli",
+		"body" : [
+			"Proc(Int32,Int64,Int64,Int32)",
+		]
+	},
+	"type proc long int long int": {
+		"prefix": "plili",
+		"body" : [
+			"Proc(Int64,Int32,Int64,Int32)",
+		]
+	},
+	"type proc int int long int": {
+		"prefix": "piili",
+		"body" : [
+			"Proc(Int32,Int32,Int64,Int32)",
+		]
+	},
+	"type proc long long int int": {
+		"prefix": "pllii",
+		"body" : [
+			"Proc(Int64,Int64,Int32,Int32)",
+		]
+	},
+	"type proc int long int int": {
+		"prefix": "pilii",
+		"body" : [
+			"Proc(Int32,Int64,Int32,Int32)",
+		]
+	},
+	"type proc long int int int": {
+		"prefix": "pliii",
+		"body" : [
+			"Proc(Int64,Int32,Int32,Int32)",
+		]
+	},
+	"type proc int int int int": {
+		"prefix": "piiii",
+		"body" : [
+			"Proc(Int32,Int32,Int32,Int32)",
+		]
+	},

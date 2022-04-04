@@ -247,4 +247,9 @@ struct Int
   def trinum_index
     (Math.sqrt(self * 8 + 1).to_i64 - 1) // 2
   end
+
+  # Ti = 1 + 2 + ... + self
+  def trinum
+    (self + 1) * self // 2
+  end
 end

@@ -1,5 +1,5 @@
 open "snippet.txt", "w" do |fh|
-  2.upto(4) do |i|
+  1.upto(4) do |i|
     (1 << i).times do |s|
       types = []
       tname = []
@@ -17,10 +17,10 @@ open "snippet.txt", "w" do |fh|
         end
       end
 
-      fh.puts "\t\"type tuple #{tname.join(" ")}\": {"
-      fh.puts "\t\t\"prefix\": \"t#{abb.join}\","
+      fh.puts "\t\"type proc #{tname.join(" ")}\": {"
+      fh.puts "\t\t\"prefix\": \"p#{abb.join}\","
       fh.puts "\t\t\"body\" : ["
-      fh.puts "\t\t\t\"Tuple(#{types.join(",")})\","
+      fh.puts "\t\t\t\"Proc(#{types.join(",")})\","
       fh.puts "\t\t]"
       fh.puts "\t},"
     end

@@ -2,6 +2,7 @@ require "crystal/priority_queue"
 require "crystal/weighted_pair_graph/graph"
 
 # 拡張ダイクストラ
+# 頂点がTuple(Int32,Int32)である重み付きグラフ上
 module WeightedPairGraph
   struct Dijkstra
     getter g : Graph

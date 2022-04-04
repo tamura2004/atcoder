@@ -22,25 +22,15 @@ describe Rational do
     x = Rational.new(10, 0)
     y = Rational.new(-200, 0)
     z = Rational.new(200, 0)
-    x.should_not eq y
+    x.should eq y
     x.should eq z
   end
 
   it "zero" do
     x = Rational.new(0, 0)
     y = Rational.new(0, 0)
-    z = Rational.new(0, 0)
+    z = Rational.zero
     x.should eq y
     x.should eq z
-  end
-
-  it "<=" do
-    a = R.new(-2, 0)
-    b = R.new(-2, 2)
-    c = R.new(0, 2)
-    d = R.new(2, 2)
-    e = R.new(2, 0)
-    [a, b, c, d, e].min.should eq a
-    [a, b, c, d, e].max.should eq e
   end
 end
