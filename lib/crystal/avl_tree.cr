@@ -116,7 +116,7 @@ class AVLTree(T)
 
     # 挿入
     def insert(v)
-      return self if v == val
+      # return self if v == val
       if v < val
         @left = left.try &.insert(v) || Node(T).new(v)
       else
@@ -172,7 +172,7 @@ class AVLTree(T)
         right.try &.upper(v, eq)
       end
     end
-    
+
     # v以上（超える）の最小のインデックス
     def upper_index(v, eq = true)
       pos = left_size
