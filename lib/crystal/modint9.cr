@@ -37,7 +37,8 @@ struct ModInt
   end
 
   def ==(b)
-    v == b.to_i64
+    # v == b.to_i64
+    b.try &.to_i64.==(v)
   end
 
   def to_m
