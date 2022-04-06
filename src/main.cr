@@ -1,4 +1,3 @@
-require "crystal/lazy_segment_tree"
-
-st = LazySegmentTree(Int64,Int64).range_add_range_max(10)
-pp st[0i64..10]
+n,a,b = gets.to_s.split.map(&.to_i64)
+ans = n - a + b
+pp ans

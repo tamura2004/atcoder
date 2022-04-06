@@ -15,6 +15,8 @@ class TreeMap(K, T)
       @height = 1
       @left = nil
       @right = nil
+      @lo = key
+      @hi = key
     end
 
     # 挿入
@@ -74,6 +76,7 @@ class TreeMap(K, T)
       @height = Math.max(left_height, right_height) + 1
       @balance = left_height - right_height
       @size = left_size + right_size + 1
+      @lo = left.try(&.lo)
       self
     end
 
