@@ -2,6 +2,8 @@
 class TreeMap(K, T)
   class Node(K, T)
     getter key : K
+    getter lo : K
+    getter hi : K
     getter val : T
     getter balance : Int32
     getter height : Int32
@@ -21,13 +23,26 @@ class TreeMap(K, T)
 
     # 挿入
     def insert(k, v)
-      # return self if v == val
-      if k < key
-        @left = left.try &.insert(k, v) || Node(K, T).new(k, v)
+      if k == key
+        @val = v
+      elsif k < key
+        @left = left.try &.insert(k, v) || new_node_left(k, v)
       else
-        @right = right.try &.insert(k, v) || Node(K, T).new(k, v)
+        @right = right.try &.insert(k, v) || new_node_right(k, v)
       end
       update.re_balance
+    end
+
+    def new_node_left(k, v)
+      @left = Node(K, T).new(k,v)
+      @right = Node(K, T).new(key, val)
+      update
+    end
+
+    def new_node_right(k, v)
+      @right = Node(K, T).new(k,v)
+      @right = Node(K, T).new(key, val)
+      update
     end
 
     def []=(k, v)
@@ -76,7 +91,8 @@ class TreeMap(K, T)
       @height = Math.max(left_height, right_height) + 1
       @balance = left_height - right_height
       @size = left_size + right_size + 1
-      @lo = left.try(&.lo)
+      # @lo = left.try &.lo || lo
+      # @hi = right.try &.hi || hi
       self
     end
 
