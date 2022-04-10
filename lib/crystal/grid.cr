@@ -5,6 +5,7 @@ class Grid
   getter h : Int32
   getter w : Int32
   getter g : Array(String)
+  delegate "[]", to: g
 
   def initialize(h, w, @g)
     @h = h.to_i
@@ -150,5 +151,9 @@ class Grid
     h.times do |y|
       puts g[y]
     end
+  end
+
+  def inspect
+    "h:#{h} w:#{w}\n\n" + g.join("\n")
   end
 end

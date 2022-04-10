@@ -111,7 +111,7 @@ struct UnionFind
     i = find(i)
     j = find(j)
 
-    if v_size[i] > v_size[j]
+    if v_size[i] < v_size[j]
       i, j = j, i
       wt = -wt
     end

@@ -1,54 +1,72 @@
-require "crystal/mod_int"
-require "crystal/fact_table"
+require "crystal/grid"
 
-n, m, l = gets.to_s.split.map(&.to_i64)
+alias V = Tuple(Int32, Int32)
 
-# dp[i頂点利用][j辺利用] := 種類数
-# 初期化：長さLのパスを含む、長さLのループを含む
-# 遷移：
-# 残りの頂点を１～利用
-# ループか、パスか
+h, w = gets.to_s.split.map(&.to_i)
+s = Array.new(h) { gets.to_s }
+g = Grid.new(h, w, s)
+warp = Array.new(26) { [] of V }
 
-quit(0) if m < l - 1 # パスも作れない
-
-ans = 0.to_m
-
-dp = make_array(0.to_m, n + 1, m + 1)
-if l == 1
-  dp[l][l - 1] = n.to_m
-else
-  dp[l][l - 1] = n.c(l) * l.f // 2
-end
-
-if l <= m && l != 1
-  dp[l][l] = n.c(l) * (l - 1).f // 2
-end
-
-n.times do |i|
-  m.times do |j|
-    (1..n - i).each do |use|
-      next if l < use
-      2.times do |k|
-        ii = i + use
-        jj = j + use - k
-
-        next if use == 1 && k == 0
-
-        next if n < ii
-        next if m < jj
-
-        if k == 1
-          if use == 1
-            dp[ii][jj] += dp[i][j] * (n - i)
-          else
-            dp[ii][jj] += dp[i][j] * (n - i).c(use) * use.f * 2.inv
-          end
-        else
-          dp[ii][jj] += dp[i][j] * (n - i).c(use) * (use - 1).f * 2.inv
-        end
-      end
+sy = sx = gy = gx = -1
+h.times do |y|
+  w.times do |x|
+    case g[y][x]
+    when 'S'
+      sy = y
+      sx = x
+    when 'G'
+      gy = y
+      gx = x
+    when 'a'..'z'
+      v = g[y][x].ord - 'a'.ord
+      warp[v] << {y, x}
     end
   end
 end
 
-pp dp[-1][-1]
+# 01-BFS
+root = {sy, sx}
+q = Deque(Tuple(Int32, Int32)).new([{sy, sx}])
+INF = Int32::MAX
+costs = make_array(INF, h, w)
+costs[sy][sx] = 0
+
+while q.size > 0
+  y, x = q.shift
+
+  if y == -1
+  else
+    g.each(y,x) do |ny,nx|
+      next if costs[ny][nx] != INF
+      costs[ny][nx] = costs[y][x] + 1
+      q << {ny,nx}
+    end
+  end
+
+  # pp! [y,x,cost]
+
+  next if costs[{y, x}] < cost
+  costs[{y, x}] = cost
+
+  if y == gy && x == gx
+    quit(cost)
+  end
+
+  if y == -1
+    warp[x].each do |ny, nx|
+      next if costs[{ny, nx}] < cost + 1
+      q << {ny, nx, cost + 1}
+    end
+  else
+    g.each(y, x) do |ny, nx|
+      next if costs[{ny, nx}] < cost + 1
+      q << {ny, nx, cost + 1}
+    end
+
+    if g[y][x].in?('a'..'z')
+      v = g[y][x].ord - 'a'.ord
+      next if costs[{-1, v}] < cost
+      q.unshift({-1, v, cost})
+    end
+  end
+end
