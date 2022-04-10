@@ -1,3 +1,202 @@
+{
+  "require crystal lib": {
+    "prefix": "require",
+    "body": ["require \"crystal/$0\""]
+  },
+  "get array of integer from stdin": {
+    "prefix": "in",
+    "body": ["gets.to_s.split.map(&.to_i64)"]
+  },
+  "get integer from stdin": {
+    "prefix": "ini",
+    "body": ["gets.to_s.to_i64"]
+  },
+  "get string from stdin": {
+    "prefix": "ins",
+    "body": ["gets.to_s"]
+  },
+  "make 1D array": {
+    "prefix": "vi",
+    "body": ["Array.new($1)"]
+  },
+  "make 2D array": {
+    "prefix": "vvi",
+    "body": ["Array.new($1){ Array.new($2) }"]
+  },
+  "make 3D array": {
+    "prefix": "vvvi",
+    "body": ["Array.new($1){ Array.new($2) { Array.new($3) { $0 } } }"]
+  },
+  "make 4D array": {
+    "prefix": "vvvvi",
+    "body": [
+      "Array.new($1){ Array.new($2) { Array.new($3) { Array.new($4) { $0 } } } }"
+    ]
+  },
+  "zero": {
+    "prefix": "z",
+    "body": ["0_i64"]
+  },
+  "one": {
+    "prefix": "o",
+    "body": ["1_i64"]
+  },
+  "type Int64": {
+    "prefix": "gl",
+    "body": ["getter $0 : Int64"]
+  },
+  "type Int32": {
+    "prefix": "gi",
+    "body": ["getter $0 : Int32"]
+  },
+  "type Graph": {
+    "prefix": "gg",
+    "body": ["getter $0 : Graph"]
+  },
+  "getter Int64Array": {
+    "prefix": "gvl",
+    "body": ["getter $0 : Array(Int64)"]
+  },
+  "getter Int32Array": {
+    "prefix": "gvi",
+    "body": ["getter $0 : Array(Int32)"]
+  },
+  "getter Int64Array2D": {
+    "prefix": "gvvl",
+    "body": ["getter $0 : Array(Array(Int64))"]
+  },
+  "getter Int32Array2D": {
+    "prefix": "gvvi",
+    "body": ["getter $0 : Array(Array(Int32))"]
+  },
+  "type Int64Array": {
+    "prefix": "al",
+    "body": ["Array(Int64)"]
+  },
+  "type Int32Array": {
+    "prefix": "ai",
+    "body": ["Array(Int32)"]
+  },
+  "type Int64Array2D": {
+    "prefix": "aal",
+    "body": ["Array(Array(Int64))"]
+  },
+  "type Int32Array2D": {
+    "prefix": "aai",
+    "body": ["Array(Array(Int32))"]
+  },
+  "type tuple long long": {
+    "prefix": "tll",
+    "body": ["Tuple(Int64,Int64)"]
+  },
+  "type tuple int long": {
+    "prefix": "til",
+    "body": ["Tuple(Int32,Int64)"]
+  },
+  "type tuple long int": {
+    "prefix": "tli",
+    "body": ["Tuple(Int64,Int32)"]
+  },
+  "type tuple int int": {
+    "prefix": "tii",
+    "body": ["Tuple(Int32,Int32)"]
+  },
+  "type tuple long long long": {
+    "prefix": "tlll",
+    "body": ["Tuple(Int64,Int64,Int64)"]
+  },
+  "type tuple int long long": {
+    "prefix": "till",
+    "body": ["Tuple(Int32,Int64,Int64)"]
+  },
+  "type tuple long int long": {
+    "prefix": "tlil",
+    "body": ["Tuple(Int64,Int32,Int64)"]
+  },
+  "type tuple int int long": {
+    "prefix": "tiil",
+    "body": ["Tuple(Int32,Int32,Int64)"]
+  },
+  "type tuple long long int": {
+    "prefix": "tlli",
+    "body": ["Tuple(Int64,Int64,Int32)"]
+  },
+  "type tuple int long int": {
+    "prefix": "tili",
+    "body": ["Tuple(Int32,Int64,Int32)"]
+  },
+  "type tuple long int int": {
+    "prefix": "tlii",
+    "body": ["Tuple(Int64,Int32,Int32)"]
+  },
+  "type tuple int int int": {
+    "prefix": "tiii",
+    "body": ["Tuple(Int32,Int32,Int32)"]
+  },
+  "type tuple long long long long": {
+    "prefix": "tllll",
+    "body": ["Tuple(Int64,Int64,Int64,Int64)"]
+  },
+  "type tuple int long long long": {
+    "prefix": "tilll",
+    "body": ["Tuple(Int32,Int64,Int64,Int64)"]
+  },
+  "type tuple long int long long": {
+    "prefix": "tlill",
+    "body": ["Tuple(Int64,Int32,Int64,Int64)"]
+  },
+  "type tuple int int long long": {
+    "prefix": "tiill",
+    "body": ["Tuple(Int32,Int32,Int64,Int64)"]
+  },
+  "type tuple long long int long": {
+    "prefix": "tllil",
+    "body": ["Tuple(Int64,Int64,Int32,Int64)"]
+  },
+  "type tuple int long int long": {
+    "prefix": "tilil",
+    "body": ["Tuple(Int32,Int64,Int32,Int64)"]
+  },
+  "type tuple long int int long": {
+    "prefix": "tliil",
+    "body": ["Tuple(Int64,Int32,Int32,Int64)"]
+  },
+  "type tuple int int int long": {
+    "prefix": "tiiil",
+    "body": ["Tuple(Int32,Int32,Int32,Int64)"]
+  },
+  "type tuple long long long int": {
+    "prefix": "tllli",
+    "body": ["Tuple(Int64,Int64,Int64,Int32)"]
+  },
+  "type tuple int long long int": {
+    "prefix": "tilli",
+    "body": ["Tuple(Int32,Int64,Int64,Int32)"]
+  },
+  "type tuple long int long int": {
+    "prefix": "tlili",
+    "body": ["Tuple(Int64,Int32,Int64,Int32)"]
+  },
+  "type tuple int int long int": {
+    "prefix": "tiili",
+    "body": ["Tuple(Int32,Int32,Int64,Int32)"]
+  },
+  "type tuple long long int int": {
+    "prefix": "tllii",
+    "body": ["Tuple(Int64,Int64,Int32,Int32)"]
+  },
+  "type tuple int long int int": {
+    "prefix": "tilii",
+    "body": ["Tuple(Int32,Int64,Int32,Int32)"]
+  },
+  "type tuple long int int int": {
+    "prefix": "tliii",
+    "body": ["Tuple(Int64,Int32,Int32,Int32)"]
+  },
+  "type tuple int int int int": {
+    "prefix": "tiiii",
+    "body": ["Tuple(Int32,Int32,Int32,Int32)"]
+  },
 	"type proc long": {
 		"prefix": "pl",
 		"body" : [
@@ -178,3 +377,20 @@
 			"Proc(Int32,Int32,Int32,Int32)",
 		]
 	},
+  "type hash int int": {
+    "prefix": "hii",
+    "body": ["Hash(Int32,Int32)"]
+  },
+  "type hash int long": {
+    "prefix": "hil",
+    "body": ["Hash(Int32,Int64)"]
+  },
+  "type hash long int": {
+    "prefix": "hli",
+    "body": ["Hash(Int64,Int32)"]
+  },
+  "type hash long long": {
+    "prefix": "hll",
+    "body": ["Hash(Int64,Int64)"]
+  }
+}
