@@ -22,8 +22,8 @@ describe "crt" do
   it "usage" do
     # x = 3 (mod 6)
     # x = 1 (mod 4) # => x = 9 (mod 12)
-    crt(3,6,1,4).should eq ({9, 12})
-    crt(3,6,2,4).should eq nil
+    crt(3, 6, 1, 4).should eq ({9, 12})
+    crt(3, 6, 2, 4).should eq nil
   end
 
   it "overflow" do
@@ -31,6 +31,6 @@ describe "crt" do
     m1 = 2_000_000_098_i64
     b2 = 1_000_000_037_i64
     m2 = 1_000_000_500_i64
-    crt(b1,m1,b2,m2)
+    crt(b1, m1, b2, m2)
   end
 end

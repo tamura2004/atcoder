@@ -4,7 +4,11 @@ require "big"
 # ax + by = gcd(a,b) = gを解く
 #
 # ```
-# 3x + 7y = 1 # => x = -2, y = 1, g = 1
+# # 2x + 11y = 1 => x = -5, y = 1, g = 1
+# ext_gcd(2, 11).should eq ({-5, 1, 1})
+
+# # 14x + 18y = 2 => x = 4, y = -3, g = 2
+# ext_gcd(14, 18).should eq ({4, -3, 2})
 # ```
 def ext_gcd(a, b)
   x, y, u, v = 1_i64, 0_i64, 0_i64, 1_i64
@@ -30,7 +34,7 @@ end
 # 解が無い場合nil
 # crt(3,6,2,4) # => nil
 # ```
-def crt(b1, m1, b2, m2) : Tuple(BigInt,BigInt)?
+def crt(b1, m1, b2, m2) : Tuple(BigInt, BigInt)?
   p, q, d = ext_gcd(m1, m2)
   return nil if (b2 - b1) % d != 0
 
@@ -44,7 +48,8 @@ end
 # ax + by = 1 => ax = 1 (mod b) => x = a'
 #
 # ```
-# 2x = 1 (mod 11) => x = 6
+# # 2x = 1 (mod 11) => x = 6
+# mod_inv(2, 11).should eq 6
 # ```
 def mod_inv(a, b)
   p = b
