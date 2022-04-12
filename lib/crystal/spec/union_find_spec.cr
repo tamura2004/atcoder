@@ -21,7 +21,7 @@ describe UnionFind do
     uf.unite(0, 1, 10)
     uf.unite(1, 2, 20)
 
-    uf.group_parents.should eq [2, 3]
+    uf.group_parents.should eq [0, 3]
     uf.group_children.should eq [[0, 1, 2], [3]]
     uf.group_vertex_size.should eq [3, 1]
     uf.group_edge_size.should eq [2, 0]

@@ -121,6 +121,10 @@ class SegmentTree(T)
     xs[i + n]
   end
 
+  def inspect
+    xs[n..].inspect
+  end
+
   def [](i : Int::Primitive) : T
     get(i)
   end

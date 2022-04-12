@@ -1,48 +1,77 @@
-@[Flags]
-enum DIR
-  Up
-  Down
-  Right
-  Left
+require "crystal/matrix"
+
+n = gets.to_s.to_i64
+vs = Array.new(n) do
+  x, y = gets.to_s.split.map(&.to_i64)
+  [x, y, 1_i64]
 end
 
-class CowGraph
-  getter h : Int32
-  getter w : Int32
-  getter g : Array(Array(DIR))
+mt = Matrix(Int64).eye(3)
 
-  def initialize(@h, @w)
-    @g = Array.new(h) { Array.new(w, DIR::All) }
-    off(1,1,DIR::Right)
-    off(1,2,DIR::Left)
+def r90
+  Matrix(Int64).new([
+    [0, 1, 0],
+    [-1, 0, 0],
+    [0, 0, 1],
+  ])
+end
+
+def l90
+  Matrix(Int64).new([
+    [0, 1, 0],
+    [-1, 0, 0],
+    [0, 0, 1],
+  ])
+end
+
+def flip_v(p)
+  Matrix(Int64).new([
+    [-1, 0, p*2],
+    [0, 1, 0],
+    [0, 0, 1],
+  ])
+end
+
+def flip_h(p)
+  Matrix(Int64).new([
+    [1, 0, 0],
+    [0, -1, p*2],
+    [0, 0, 1],
+  ])
+end
+
+m = gets.to_s.to_i64
+op = Array.new(m) { gets.to_s }
+
+q = gets.to_s.to_i64
+qu = Array.new(q) { Tuple(Int32, Int32).from gets.to_s.split.map(&.to_i.pred) }.zip(0..).sort.reverse
+ans = Array.new(q, "")
+
+while qu.size > 0 && qu[-1][0][0] == -1
+  v, i = qu.pop
+  a, b = v
+  ans[i] = vs[b][0..1].join(" ")
+end
+
+m.times do |i|
+  case op[i]
+  when /^1/
+    mt *= r90
+  when /^2/
+    mt *= l90
+  when /^3/
+    _, p = op[i].split.map(&.to_i64)
+    mt *= flip_v(p)
+  when /^4/
+    _, p = op[i].split.map(&.to_i64)
+    mt *= flip_h(p)
   end
 
-  def off(y, x, dir)
-    g[y][x] &= (DIR::All ^ dir)
-  end
-
-  def on(y, x, dir)
-    g[y][x] |= dir
-  end
-
-  def on?(y, x, dir)
-    g[y][x] & dir != DIR::None
-  end
-
-  def inspect
-    v = Array.new(h*3) { Array.new(w*3, ' ') }
-    h.times do |y|
-      w.times do |x|
-        v[y*3 + 1][x*3 + 1] = '*'
-        v[y*3][x*3 + 1] = '|' if on?(y, x, DIR::Up)
-        v[y*3 + 1][x*3] = '-' if on?(y, x, DIR::Left)
-        v[y*3 + 1][x*3 + 2] = '-' if on?(y, x, DIR::Right)
-        v[y*3 + 2][x*3 + 1] = '|' if on?(y, x, DIR::Down)
-      end
-    end
-    v.map(&.join).join("\n")
+  while qu.size > 0 && qu[-1][0][0] == i
+    v, j = qu.pop
+    a, b = v
+    ans[j] = (mt * vs[b])[0..1].join(" ")
   end
 end
 
-g = CowGraph.new(3, 3)
-pp g
+puts ans.join("\n")

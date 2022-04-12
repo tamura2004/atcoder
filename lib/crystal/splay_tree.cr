@@ -61,9 +61,11 @@ class SplayTree(K, V)
         @val = v
         update
       when .< key
-        @left = (left.try &.insert(k, v) && rotate_right) || Node(K, V).new(k, v)
+        @left = left.try &.insert(k, v) || Node(K, V).new(k, v)
+        rotate_right
       when .> key
-        @right = (right.try &.insert(k, v) && rotate_left) || Node(K, V).new(k, v)
+        @right = right.try &.insert(k, v) || Node(K, V).new(k, v)
+        rotate_left
       end
     end
 
@@ -96,6 +98,10 @@ class SplayTree(K, V)
   def inspect
     root.inspect
   end
+
+  def find(k)
+    @root = root.try &.find(k) || root
+  end
 end
 
 st = SplayTree(Int32, Int32).new
@@ -104,4 +110,5 @@ st.insert(2, 4)
 st.insert(3, 3)
 st.insert(4, 2)
 st.insert(5, 1)
+pp st.find(3)
 pp st
