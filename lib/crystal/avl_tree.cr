@@ -54,7 +54,7 @@ class AVLTree(T)
 
   # v以上（より大きい）要素数
   def upper_count(v, eq = true)
-    @root.try(&.upper_index(v, eq)).try{ |v| (@root.try(&.size) || 0) - v} || 0
+    @root.try(&.upper_index(v, eq)).try { |v| (@root.try(&.size) || 0) - v } || 0
   end
 
   # 最小の値を持つノード
@@ -302,35 +302,39 @@ class AVLTree(T)
       at(k)
     end
 
-    @[AlwaysInline]
-    private def left_size
-      left.try &.size || 0
-    end
+    {% for dir in %w(left right) %}
+      {% for op in %w(size height balance) %}
+        @[AlwaysInline]
+        private def {{dir.id}}_{{op.id}}
+          {{dir.id}}.try &.{{op.id}} || 0
+        end
+      {% end %}
+    {% end %}
 
-    @[AlwaysInline]
-    private def right_size
-      right.try &.size || 0
-    end
+    # @[AlwaysInline]
+    # private def right_size
+    #   right.try &.size || 0
+    # end
 
-    @[AlwaysInline]
-    private def left_height
-      left.try &.height || 0
-    end
+    # @[AlwaysInline]
+    # private def left_height
+    #   left.try &.height || 0
+    # end
 
-    @[AlwaysInline]
-    private def right_height
-      right.try &.height || 0
-    end
+    # @[AlwaysInline]
+    # private def right_height
+    #   right.try &.height || 0
+    # end
 
-    @[AlwaysInline]
-    private def left_balance
-      left.try &.balance || 0
-    end
+    # @[AlwaysInline]
+    # private def left_balance
+    #   left.try &.balance || 0
+    # end
 
-    @[AlwaysInline]
-    private def right_balance
-      right.try &.balance || 0
-    end
+    # @[AlwaysInline]
+    # private def right_balance
+    #   right.try &.balance || 0
+    # end
 
     @[AlwaysInline]
     private def left_to_a
@@ -344,8 +348,8 @@ class AVLTree(T)
 
     def inspect
       # "(#{val} #{left.inspect} #{right.inspect})".gsub(/nil/, ".")
-      "(#{left.inspect} #{val} #{right.inspect})".gsub(/nil/, ".")
-      # "(#{left.inspect} #{[val, size, height, balance]} #{right.inspect})".gsub(/nil/, ".")
+      # "(#{left.inspect} #{val} #{right.inspect})".gsub(/nil/, ".")
+      "(#{left.inspect} #{[val, size]} #{right.inspect})".gsub(/nil/, ".")
     end
 
     def to_a

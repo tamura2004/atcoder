@@ -1,452 +1,384 @@
-# frozen_string_literal: true
+class Splaytree
+  class Node
+    include Comparable
 
-class SplayTree
+    attr_reader :key
+    attr_accessor :value, :left, :right, :parent, :duplicates
+
+    def initialize(key, value = nil, parent = nil, left = nil, right = nil)
+      @key = key
+      @value = value
+      @parent = parent
+      @left = left
+      @right = right
+      @duplicates = []
+    end
+
+    def add_duplicate!(value)
+      @duplicates.push(@value)
+      @value = value
+    end
+
+    def remove_duplicate!
+      return if @duplicates.empty?
+      deleted = @value
+      @value = @duplicates.pop
+      deleted
+    end
+
+    def duplicates?
+      !@duplicates.empty?
+    end
+
+    def root?
+      parent.nil?
+    end
+
+    def parent_root?
+      parent && parent.root?
+    end
+
+    def gparent
+      parent && parent.parent
+    end
+
+    def set_left(node)
+      @left = node
+      return unless node
+      node.parent = self
+    end
+
+    def set_right(node)
+      @right = node
+      return unless node
+      node.parent = self
+    end
+
+    def rotate
+      parent = self.parent
+      gparent = self.gparent
+      if gparent
+        if parent.object_id == gparent.left.object_id
+          gparent.set_left(self)
+        else
+          gparent.set_right(self)
+        end
+      else
+        self.parent = nil
+      end
+
+      if object_id == parent.left.object_id
+        parent.set_left(right)
+        set_right(parent)
+      else
+        parent.set_right(left)
+        set_left(parent)
+      end
+    end
+
+    def zigzig?
+      (object_id == parent.left.object_id && parent.object_id == gparent.left.object_id) ||
+        (object_id == parent.right.object_id && parent.object_id == gparent.right.object_id)
+    end
+
+    def to_s
+      key.to_s
+    end
+
+    def to_h
+      { key => value }
+    end
+
+    alias_method :to_hash, :to_h
+
+    def to_a
+      [key, value]
+    end
+
+    def <=>(other)
+      return unless other
+      key <=> other.key
+    end
+  end
+end
+
+class Splaytree
   include Enumerable
 
-  UndefinedValue = Module.new
+  attr_reader :root, :size
+  alias_method :length, :size
 
-  # The default value for non existent key
-  #
-  # @api public
-  attr_accessor :default
-
-  # The default block for non existent key
-  #
-  # @api public
-  attr_accessor :default_proc
-
-  # Create a SplayTree
-  #
-  # @param [Object] default
-  #   the default value for missing key
-  #
-  # @api public
-  def initialize(default = UndefinedValue, &block)
-    if !UndefinedValue.equal?(default) && block
-      raise ArgumentError,
-            "You need to pass either argument or a block as a default value"
-    end
-    @root = Node::EMPTY
-    @subtree = Node.new(nil, nil)
-    @default = default
-    @default_proc = block
+  def initialize
+    @root = nil
+    @size = 0
   end
 
-  # @api public
   def empty?
-    @root == Node::EMPTY
+    @root.nil?
   end
 
-  # @api public
-  def size
-    @root.size
-  end
-
-  alias length size
-
-  # Iterate over each key & value pair in the tree
-  #
-  # @example
-  #   tree = SplayTree.new
-  #   tree.each { |key, val| ... }
-  #
-  # @yield [key, value]
-  #
-  # @yieldparam [Object] key
-  # @yieldparam [Object] value
-  #
-  # @return [self]
-  #
-  # @api public
-  def each(&block)
-    if block_given?
-      @root.each(&block)
-      self
-    else
-      @root.to_enum
-    end
-  end
-
-  # Iterate over each key in the tree
-  #
-  # @example
-  #   tree = SplayTree.new
-  #   tree.each_key { |key| ... }
-  #
-  # @yield [key]
-  #
-  # @yieldparam [Object] key
-  #
-  # @return [self]
-  #
-  # @api public
-  def each_key(&block)
-    if block_given?
-      @root.each_key(&block)
-      self
-    else
-      @root.to_enum(:each_key)
-    end
-  end
-
-  # Iterate over each value in the tree
-  #
-  # @example
-  #   tree = SplayTree.new
-  #   tree.each_value { |val| ... }
-  #
-  # @yield [value]
-  #
-  # @yieldparam [Object] value
-  #
-  # @return [self]
-  #
-  # @api public
-  def each_value(&block)
-    if block_given?
-      @root.each_value(&block)
-      self
-    else
-      @root.to_enum(:each_value)
-    end
-  end
-
-  # Return a new array of all the keys in the tree
-  #
-  # @return [Array[Object]]
-  #
-  # @api public
-  def keys
-    each_key.to_a
-  end
-
-  # Return a new array of all the values in the tree
-  #
-  # @return [Array[Object]]
-  #
-  # @api public
-  def values
-    each_value.to_a
-  end
-
-  # Insert a node into a tree with the given key and value
-  # provided that the tree does not already contain the key.
-  # The node becomes the root of the tree.
-  #
-  # @param [Object] key
-  #   the key under which the node is inserted
-  # @param [Object] value
-  #   the value of the node inserted into the tree
-  #
-  # @return [Boolean]
-  #   false if key already exists, true otherwise
-  # @api public
-  def []=(key, value)
-    if @root.empty?
-      @root = Node.new(key, value)
-      return true
-    end
-
-    @root = @root.insert(key, value)
-
-    splay(key)
-  end
-
-  alias insert []=
-
-  # Find object by the key
-  #
-  # @param [Object] key
-  #   the search key
-  #
-  # @api public
-  def [](key)
-    splay(key) unless @root.empty?
-
-    return default_value if @root.key != key
-
-    @root.value
-  end
-
-  alias fetch []
-
-  # Check if tree contains a node with a matching key.
-  #
-  # @return [Boolean]
-  #
-  # @api public
   def key?(key)
-    return false if @root.empty?
-
-    splay(key)
-    @root.key == key
+    !!get(key)
   end
 
-  # Delete a node specified by the key from the tree
-  # given the tree contains a node with this key.
-  # The deleted node value is returned. If the node
-  # is not found a nil is returned.
-  #
-  # @param [Object] key
-  #
-  # @return [Object]
-  #   the node's value under the key
-  #
-  # @api public
-  def delete(key)
+  def higher(key)
     return if empty?
+    get(key)
+    return @root.to_h if @root.key > key
+    get_one_higher_of_root
+  end
 
-    splay(key)
-    return if @root.key != key
+  def lower(key)
+    return if empty?
+    get(key)
+    return @root.to_h if @root.key < key
+    get_one_lower_of_root
+  end
 
-    deleted = @root
-    right = @root.right
-    @root = @root.left
-    if @root.empty?
-      @root = right
-    else
-      splay(key) # ensure empty right child
-      @root.right = right
+  def ceiling(key)
+    return if empty?
+    get(key)
+    return @root.to_h if @root.key >= key
+    get_one_higher_of_root
+  end
+
+  def floor(key)
+    return if empty?
+    get(key)
+    return @root.to_h if @root.key <= key
+    get_one_lower_of_root
+  end
+
+  def min
+    return if empty?
+    node = @root
+    node = node.left while node.left
+    splay(node)
+    node.to_h
+  end
+
+  def max
+    return if empty?
+    node = @root
+    node = node.right while node.right
+    splay(node)
+    node.to_h
+  end
+
+  def height
+    subtree_height = ->(node) do
+      return 0 unless node
+      left = 1 + subtree_height.call(node.left)
+      right = 1 + subtree_height.call(node.right)
+      left > right ? left : right
     end
-    deleted.value
+    subtree_height.call(@root)
   end
 
-  # Construct and return two trees t1 and t2, where
-  # t1 contains items in t less than or equal to key,
-  # and t2 contains all items in t greater than key.
-  #
-  # @param [Object] key
-  #
-  # @api public
-  def split(key)
+  def duplicates(key)
+    return if empty?
+    get(key)
+    return if @root.key != key
+    @root.duplicates + [@root.value]
   end
 
-  # Dump the tree structure in bracket format
-  # (root left right)
-  #
-  # @return [String]
-  #
-  # @api public
-  def dump
-    @root.dump || ""
+  def get(key)
+    return if empty?
+    node = @root
+    value = nil
+    loop do
+      case key <=> node.key
+      when 0
+        value = node.value
+        break
+      when -1
+        break if node.left.nil?
+        node = node.left
+      when 1
+        break if node.right.nil?
+        node = node.right
+      else
+        raise TypeError, "Keys should be comparable!"
+      end
+    end
+    splay(node)
+    value
   end
 
-  # Export tree as hash
-  #
-  # @return [Hash]
-  #
-  # @api public
-  def to_hash
-    each_with_object({}) { |(k, v), acc| acc[k] = v }
+  alias_method :[], :get
+
+  def insert(key, value)
+    node = Node.new(key, value)
+    if @root
+      current = @root
+      loop do
+        case key <=> current.key
+        when 0
+          node = current
+          node.add_duplicate!(value)
+          break
+        when -1
+          unless current.left
+            current.set_left(node)
+            break
+          end
+          current = current.left
+        when 1
+          unless current.right
+            current.set_right(node)
+            break
+          end
+          current = current.right
+        else
+          raise TypeError, "Keys should be comparable!"
+        end
+      end
+    end
+    splay(node)
+    @size += 1
+    true
+  end
+
+  alias_method :[]=, :insert
+
+  def update(key, value)
+    return false if empty?
+    get(key)
+    return false if @root.key != key
+    @root.value = value
+    true
+  end
+
+  def remove(key)
+    return if empty?
+    get(key)
+    return if @root.key != key
+    if @root.duplicates?
+      deleted = @root.remove_duplicate!
+    else
+      deleted = @root.value
+      if @root.left.nil?
+        @root = @root.right
+        @root.parent = nil
+      else
+        right = @root.right
+        @root = @root.left
+        @root.parent = nil
+        get(key)
+        @root.set_right(right)
+      end
+    end
+    @size -= 1
+    deleted
+  end
+
+  def clear
+    @root = nil
+    @size = 0
+  end
+
+  def each
+    return if empty?
+    stack = []
+    node = @root
+    loop do
+      if node
+        stack.push(node)
+        node.duplicates.each do |value|
+          stack.push(Node.new(node.key, value, node))
+        end
+        node = node.left
+      else
+        break if stack.empty?
+        node = stack.pop
+        yield(node)
+        node = node.right
+      end
+    end
+  end
+
+  def each_key
+    each { |node| yield node.key }
+  end
+
+  def each_value
+    each { |node| yield node.value }
+  end
+
+  def keys
+    to_enum(:each_key).to_a
+  end
+
+  def values
+    to_enum(:each_value).to_a
+  end
+
+  def display
+    print_tree = ->(node, depth) do
+      return unless node
+      print_tree.call(node.right, depth + 1)
+      puts node.key.to_s.rjust(5 * depth, " ")
+      print_tree.call(node.left, depth + 1)
+    end
+    print_tree.call(@root, 0)
+  end
+
+  def report
+    return if empty?
+    result = []
+    each do |node|
+      item = {
+        node: node.key,
+        parent: node.parent && node.parent.key,
+        left: node.left && node.left.key,
+        right: node.right && node.right.key,
+      }
+      result << item
+    end
+    result
   end
 
   private
 
-  # @api private
-  def default_value
-    if @default != UndefinedValue
-      @default
-    elsif @default_proc
-      @default_proc.call
-    end
+  def get_one_higher_of_root
+    return if @root.right.nil?
+    node = @root.right
+    node = node.left while node.left
+    splay(node)
+    node.to_h
   end
 
-  # Top-down splaying by breaking down the tree.
-  #
-  # @param [Object] key
-  #   the key at which to splay
-  #
-  # @api private
-  def splay(key)
-    current = @root
-    dummy = left = right = @subtree
-    @subtree.left = @subtree.right = Node::EMPTY
-    loop do
-      break if key == current.key
-
-      if key < current.key
-        break if current.left.empty?
-
-        if key < current.left.key
-          current = current.rotate_right
-          break if current.left.empty?
-        end
-        right.left = current
-        right = current
-        current = current.left
-      elsif key > current.key
-        break if current.right.empty?
-
-        if key > current.right.key
-          current = current.rotate_left
-          break if current.right.empty?
-        end
-        left.right = current
-        left = current
-        current = current.right
-      end
-    end
-    left.right = current.left
-    right.left = current.right
-    current.left = dummy.right
-    current.right = dummy.left
-    @root = current
+  def get_one_lower_of_root
+    return if @root.left.nil?
+    node = @root.left
+    node = node.right while node.right
+    splay(node)
+    node.to_h
   end
 
-  # A single tree node representation
-  class Node
-    include Comparable
-
-    UndefinedValue = Module.new
-
-    attr_reader :key
-
-    attr_reader :value
-
-    attr_accessor :left
-
-    attr_accessor :right
-
-    def initialize(key, value)
-      @key, @value = key, value
-      @left = @right = Node::EMPTY
-    end
-
-    # @api private
-    def empty?
-      false
-    end
-
-    # Number of nodes in this subtree
-    #
-    # @return [Integer]
-    #
-    # @api private
-    def size
-      left.size + 1 + right.size
-    end
-
-    # Compare node keys
-    #
-    # @return [Integer]
-    #
-    # @api private
-    def <=>(other)
-      @key <=> other.key
-    end
-
-    # Iterate over subtree nodes
-    #
-    # @api private
-    def each(&block)
-      @left.each(&block)
-      yield [@key, @value]
-      @right.each(&block)
-    end
-
-    # Iterate over subtree nodes
-    #
-    # @api private
-    def each_key
-      each { |k, _| yield k }
-    end
-
-    # Iterate over subtree nodes
-    #
-    # @api private
-    def each_value
-      each { |_, v| yield v }
-    end
-
-    # Dump the subtree structure starting from this node
-    #
-    # @return [String]
-    #
-    # @api private
-    def dump
-      left = @left.dump
-      right = @right.dump
-      if !@left.empty? || !@right.empty?
-        "(" + [@key, left || "-", right || "-"].compact.join(" ") + ")"
+  def splay(node)
+    until node.root?
+      parent = node.parent
+      if parent.root?
+        node.rotate
+      elsif node.zigzig?
+        parent.rotate
+        node.rotate
       else
-        @key || ""
+        node.rotate
+        node.rotate
       end
     end
+    @root = node
+  end
+end
 
-    # Rotate right
-    #
-    #     Y         X
-    #    / \       / \
-    #   X   C  => A   Y
-    #  / \           / \
-    # A   B         B   C
-    #
-    # @api private
-    def rotate_right
-      tmp = @left
-      @left = tmp.right
-      tmp.right = self
-      tmp
-    end
+tr = Splaytree.new
+10.times do |i|
+  tr.insert(i, i ** 2)
+end
+10.times do
+  tr[rand(10)]
+end
 
-    # Rotate left
-    #
-    #   Y            X
-    #  / \          / \
-    # A   X   =>   Y   C
-    #    / \      / \
-    #   B   C    A   B
-    #
-    # @api private
-    def rotate_left
-      tmp = @right
-      @right = tmp.left
-      tmp.left = self
-      tmp
-    end
-
-    # Insert new root
-    #
-    # @api private
-    def insert(key, value)
-      case key <=> @key
-      when -1
-        @left = @left.insert(key, value)
-        rotate_right
-      when 0
-        @value = value
-        self
-      when 1
-        @right = @right.insert(key, value)
-        rotate_left
-      else
-        raise TypeError, "Cannot compare: #{key} with #{@key}"
-      end
-    end
-
-    class EmptyNode < Node
-      def initialize(*)
-      end
-
-      def empty?
-        true
-      end
-
-      def size
-        0
-      end
-
-      def to_s; end
-
-      def dump; end
-
-      def each(&block); end
-
-      def insert(key, value)
-        Node.new(key, value)
-      end
-    end # EmptyNode
-
-    EMPTY = Node::EmptyNode.new.freeze
-  end # Node
-end # SplayTree
+tr.display

@@ -1,6 +1,14 @@
 require "crystal/graph"
 
-# 最短距離を求める
+# 一点から開始した各点への最短距離を求める
+#
+# ```
+# g = Graph.new(4)
+# g.add 1, 2
+# g.add 1, 4
+# g.add 4, 3
+# Depth.new(g).solve.should eq [0, 1, 2, 1]
+# ```
 class Depth
   getter g : Graph
   delegate n, to: g
@@ -11,6 +19,7 @@ class Depth
   end
 
   def solve(root = 0)
+    depth.fill(-1)
     depth[root] = 0
     q = Deque.new([root])
 
