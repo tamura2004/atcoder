@@ -32,4 +32,4 @@ ans = 0_i64
   ans += dp[-1][s]
 end
 
-pp ans
+pp n

@@ -1,107 +1,59 @@
-class SplayTree(K, V)
-  class Node(K, V)
-    property left : Node(K, V)?
-    property right : Node(K, V)?
-    getter size : Int64
-    getter key : K
-    getter val : V
-    getter f : Proc(V, V, V)
+require "big"
 
-    def initialize(
-      @key,
-      @val,
-      @f : Proc(V, V, V) = Proc(V, V, V).new { |a, b| a + b }
-    )
-      @left = nil
-      @right = nil
-      @size = 0_i64
-    end
+class Problem
+  N = 10000_i64
+  getter x : Int64
+  getter y : Int64
+  getter r : Int64
 
-    # 左回転
-    def rotate_left
-      right.try do |root|
-        root.tap do
-          @right, root.left = root.left, self
-          root.update
-          update
-        end
-      end || self
-    end
+  def self.read
+    x, y, r = gets.to_s.split.map(&.to_big_d.*(N).floor.to_i64)
+    new(x, y, r)
+  end
 
-    # 右回転
-    def rotate_right
-      left.try do |root|
-        root.tap do
-          @left, root.right = root.right, self
-          root.update
-          update
-        end
-      end || self
-    end
+  def initialize(@x, @y, @r)
+  end
 
-    def update
-      @size = left_size + right_size
-      @val = f.call(left_val, right_val)
-      self
-    end
-
-    {% for dir in %w(left right) %}
-      def {{dir.id}}_size
-        {{dir.id}}.try &.size || 0_i64
-      end
-
-      def {{dir.id}}_val
-        {{dir.id}}.try &.val || V.zero
-      end
-    {% end %}
-
-    def insert(k, v)
-      case k
-      when .== key
-        @val = v
-        update
-      when .< key
-        @left = (left.try &.insert(k, v) && rotate_right) || Node(K, V).new(k, v)
-      when .> key
-        @right = (right.try &.insert(k, v) && rotate_left) || Node(K, V).new(k, v)
-      end
-    end
-
-    def find(k)
-      case k
-      when .== key
-        self
-      when .< key
-        left.try &.find(k) && rotate_right
-      when .> key
-        right.try &.find(k) && rotate_left
-      end
-    end
-
-    def inspect
-      "(#{left.inspect} #{key}:#{val} #{right.inspect})"
+  def solve
+    bottom.upto(top).sum do |i|
+      ii = i * N
+      lo = left(ii).to_i64
+      hi = right(ii).to_i64
+      calc(lo, hi, N)
     end
   end
 
-  getter root : Node(K, V)?
-
-  def initialize
-    @root = nil
+  def left(i) # 中の点
+    ((x - r)..x).bsearch do |j|
+      (j - x) ** 2 + (i - y) ** 2 <= r ** 2
+    end.not_nil!
   end
 
-  def insert(k, v)
-    @root = root.try &.insert(k, v) || Node(K, V).new(k, v)
+  def right(i) # 外の点
+    (x..(x + r + 1)).bsearch do |j|
+      (j - x) ** 2 + (i - y) ** 2 > r ** 2
+    end.not_nil!
   end
 
-  def inspect
-    root.inspect
+  def calc(a, b, c)
+    (b - 1)//c - (a - 1)//c
+  end
+
+  def bottom
+    div_ceil(y - r, N)
+  end
+
+  def top
+    (y + r) // N
+  end
+
+  def div_ceil(a, b)
+    (a + b - 1) // b
+  end
+
+  def run
+    pp solve
   end
 end
 
-st = SplayTree(Int32, Int32).new
-st.insert(1, 5)
-st.insert(2, 4)
-st.insert(3, 3)
-st.insert(4, 2)
-st.insert(5, 1)
-pp st
+Problem.read.run
