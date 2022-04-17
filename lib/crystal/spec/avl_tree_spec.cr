@@ -112,4 +112,11 @@ describe AVLTree do
     tr.insert_at(7,7)
     pp tr
   end
+
+  it "count" do
+    tr = AVLTree{-1000000000_i64,10000_i64, 1000000000_i64}
+    tr.count(..20000_i64).should eq 2
+    tr.count(-10000_i64..20000_i64).should eq 1
+    tr.count(-10000_i64..).should eq 2
+  end
 end

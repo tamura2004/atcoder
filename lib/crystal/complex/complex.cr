@@ -12,7 +12,7 @@ struct Complex(T)
   end
 
   def self.zero
-    Complex(T).new(0,0)
+    Complex(T).new(0, 0)
   end
 
   # 平面幾何で利用する場合を想定した辞書順ソート
@@ -45,6 +45,12 @@ struct Complex(T)
   def +(b : self)
     Complex(T).new(real + b.real, imag + b.imag)
   end
+
+  {% for op in %w(+ -) %}
+    def {{op.id}}(b : Int)
+      Complex(T).new(real {{op.id}} b, imag)
+    end
+  {% end %}
 
   def -(b : self)
     Complex(T).new(real - b.real, imag - b.imag)
@@ -86,7 +92,11 @@ struct Complex(T)
   # 偏角ソート用、有理数角度
   def phase
     area = (real < 0).to_unsafe
-    { area, R.new(imag, real) }
+    {area, R.new(imag, real)}
+  end
+
+  def to_r
+    R.new(real,imag)
   end
 
   def deg
@@ -121,3 +131,9 @@ struct Complex(T)
 end
 
 alias C = Complex(Int64)
+
+struct Int
+  def i
+    C.new(0_i64, to_i64)
+  end
+end

@@ -57,6 +57,15 @@ class AVLTree(T)
     @root.try(&.upper_index(v, eq)).try { |v| (@root.try(&.size) || 0) - v } || 0
   end
 
+  # 区間の要素数
+  def count(r : Range(Int::Primitive?, Int::Primitive?))
+    lo = r.begin || min
+    hi = (r.end || max)
+    return 0 if lo.nil? || hi.nil?
+    eq = !r.excludes_end?
+    lower_count(hi, eq) - lower_count(lo, eq: false)
+  end
+
   # 最小の値を持つノード
   def min_node
     @root.try &.min_node

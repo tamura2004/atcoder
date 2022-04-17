@@ -1,37 +1,35 @@
-def read(s)
-  case s
-  when /\./
-    a,b = s.split(/\./)
-    b = (b + "0000")[0,4]
-    a.to_i64 * 10000 + b.to_i64
-  else
-    s.to_i64 * 10000
+h,w,a,b = gets.to_s.split.map(&.to_i64)
+
+tatami = [] of Int32
+
+h.times do |y|
+  (w-1).times do |x|
+    tatami << (3 << (y * w + x))
   end
 end
 
-def sqrt(x)
-  lo = 0_i64
-  hi = 2e9.to_i64
-  (lo..hi).bsearch do |mid|
-    x <= mid ** 2
-  end.not_nil!
+(h-1).times do |y|
+  w.times do |x|
+    tatami << ((1 + (1 << w)) << (y * w + x))
+  end
 end
 
-INF = 1e10.to_i64
+m = tatami.size
+dp = make_array(0_i64, m+1, 1<<(h*w))
+dp[0][0] = 1_i64
 
-x,y,r = gets.to_s.split.map{|s|read(s)}
-
-bottom = divceil(y - r, 10000) * 10000
-top = (y + r) // 10000 * 10000
+m.times do |i|
+  (1<<(h*w)).times do |s|
+    dp[i+1][s] += dp[i][s]
+    next if (tatami[i] & s) != 0
+    dp[i+1][tatami[i] | s] += dp[i][s]
+  end
+end
 
 ans = 0_i64
-bottom.step(by: 10000, to: top) do |ny|
-  nx = sqrt(r ** 2 - (ny - y) ** 2)
-  left = divceil(x - nx, 10000)
-  right = (x - nx) // 10000
-  if left <= right
-    ans += (left..right).size
-  end
+(1<<(h*w)).times do |s|
+  next unless s.popcount == a*2
+  ans += dp[-1][s]
 end
 
 pp ans
