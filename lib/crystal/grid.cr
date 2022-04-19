@@ -154,6 +154,12 @@ class Grid
   end
 
   def inspect
-    "h:#{h} w:#{w}\n\n" + g.join("\n")
+    "====\nh:#{h} w:#{w}\n\n" + g.join("\n")
+  end
+
+  # 右90度回転
+  def rot_r
+    @h,@w = @w,@h
+    @g = g.map(&.chars).transpose.map(&.reverse.join)
   end
 end

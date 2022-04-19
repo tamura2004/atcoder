@@ -1,39 +1,4 @@
-class SuccinctIndexableDictionary
-  getter length : UInt32
-  getter blocks : UInt32
-  getter bit : Array(UInt32)
-  getter sum : Array(UInt32)
-
-  def initialize(@length : UInt32)
-    @blocks = (length + 31) >> 5
-    @bit = Array.new(blocks, 0u32)
-    @sum = Array.new(blocks, 0u32)
-  end
-
-  def set(k : Int32)
-    bit[k >> 5] |= 1u32 << (k & 31)
-  end
-
-  def build
-    sum[0] = 0u32
-    (1...blocks).each do |i|
-      sum[i] = sum[i - 1] + bit[i - 1].popcount
-    end
-  end
-
-  def [](k : Int) : Bool
-    !((bit[k >> 5] >> (k & 31)) & 1).zero?
-  end
-
-  def rank(k : Int) : Int
-    x = bit[k >> 5] & ((1u32 << (k & 31)) - 1)
-    (sum[k >> 5] + x.popcount).to_i32
-  end
-
-  def rank(val : Bool, k : Int) : Int
-    val ? rank(k) : k - rank(k)
-  end
-end
+require "crystal/succinct_indexable_dictionary"
 
 class OriginalWaveletMatrix(T)
   getter maxlog : Int32
