@@ -1,17 +1,33 @@
-require "complex"
+macro divceil(a, b)
+  ((({{a}}) + ({{b}}) - 1) // ({{b}}))
+end
 
-n = gets.to_s.to_i
-x0,y0 = gets.to_s.split.map(&.to_i64)
-x2,y2 = gets.to_s.split.map(&.to_i64)
+require "big"
+D = 10000.to_big_d
+x,y,r = gets.to_s.split.map(&.to_big_d.*(D))
+r2 = r ** 2
 
-z0 = y0.i + x0
-z2 = y2.i + x2
+bottom = divceil(y - r, D)
+top = (y + r) // D
 
-zc = (z0 + z2) / 2
+ans = (bottom..top).sum do |i|
+  ny = i * D
 
-th = Math::PI * 2 / n
-r = Math.sin(th).i + Math.cos(th)
+  left = ((x - r)..x).bsearch do |nx|
+    (x - nx) ** 2 + (y - ny) ** 2 <= r2
+  end.not_nil!
 
-z1 = (z0 - zc) * r + zc
+  right = (x..(x + r + 1)).bsearch do |nx|
+    (x - nx) ** 2 + (y - ny) ** 2 > r2
+  end.not_nil!
 
-puts "#{z1.real} #{z1.imag}"
+  divceil(right, D) - divceil(left, D)
+end
+
+pp ans
+
+# divceilの理由
+# light |          left |
+#       V               V
+# x  x     o  o  o  o      x  x
+# x  x  o  o  o  o  o   x  x  x
