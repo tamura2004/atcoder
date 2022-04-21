@@ -1,35 +1,47 @@
 require "spec"
-require "../treap"
+require "crystal/treap"
 
 describe Treap do
   it "usage" do
-    t = Treap(Int32).new
-    t.min.should eq nil
-    t.max.should eq nil
-    t.cnt.should eq 0
-
-    t << 10
-    t.min.should eq 10
-    t.max.should eq 10
-    t.cnt.should eq 1
-
-    t << 20
-    t.min.should eq 10
-    t.max.should eq 20
-    t.cnt.should eq 2
-
-    t.delete(10)
-    t.cnt.should eq 1
-    t.min.should eq 20
-    t.max.should eq 20
+    node = Treap{40, 10, 30, 20}
+    node.inspect.should eq "(( 10 ( 20 )) 30 ( 40 ))"
   end
 
-  it "usage pair" do
-    t = Treap(Tuple(Int32,Int32)).new
-    t.insert({10,40})
-    t.insert({30,20})
-    t.min.should eq ({10,40})
-    t.delete({10,40})
-    t.min.should eq ({30,20})
+  it "split" do
+    node = Treap{40, 10, 30, 20}
+    fst, snd = node.split(30)
+    fst.inspect.should eq "( 10 ( 20 ))"
+    snd.inspect.should eq "(( 30 ) 40 )"
+  end
+
+  it "insert" do
+    node = Treap{40, 10, 30, 20}
+    node << 15
+    node.inspect.should eq "( 10 ((( 15 ) 20 ) 30 ( 40 )))"
+  end
+
+  it "merge" do
+    fst = Treap{10, 20, 30}
+    snd = Treap{40, 50}
+    node = fst.merge(snd)
+    node.inspect.should eq "(((( 10 ) 20 ) 30 ( 40 )) 50 )"
+  end
+
+  it "delete" do
+    node = Treap{40, 10, 30, 20}
+    node.delete(40)
+    node.delete(30)
+    node.inspect.should eq "(( 10 ) 20 )"
+  end
+
+  it "find" do
+    node = Treap{40, 10, 30, 20}
+    node.find(20).should eq true
+    node.find(25).should eq nil
+  end
+  
+  it "size" do
+    node = Treap{40, 10, 30, 20}
+    node.size.should eq 4
   end
 end

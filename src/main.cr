@@ -1,33 +1,25 @@
-macro divceil(a, b)
-  ((({{a}}) + ({{b}}) - 1) // ({{b}}))
+s1 = gets.to_s
+s2 = gets.to_s
+s3 = gets.to_s
+
+words = [s1,s2,s3].map(&.chars).flatten.uniq.sort.join
+n = words.size
+
+(0..9).to_a.each_permutation(n) do |a|
+  nums = a.join
+  n1 = s1.tr(words,nums)
+  n2 = s2.tr(words,nums)
+  n3 = s3.tr(words,nums)
+
+  next if n1[0] == '0'
+  next if n2[0] == '0'
+  next if n3[0] == '0'
+
+  next unless n1.to_i64 + n2.to_i64 == n3.to_i64
+  puts n1
+  puts n2
+  puts n3
+  exit
 end
 
-require "big"
-D = 10000.to_big_d
-x,y,r = gets.to_s.split.map(&.to_big_d.*(D))
-r2 = r ** 2
-
-bottom = divceil(y - r, D)
-top = (y + r) // D
-
-ans = (bottom..top).sum do |i|
-  ny = i * D
-
-  left = ((x - r)..x).bsearch do |nx|
-    (x - nx) ** 2 + (y - ny) ** 2 <= r2
-  end.not_nil!
-
-  right = (x..(x + r + 1)).bsearch do |nx|
-    (x - nx) ** 2 + (y - ny) ** 2 > r2
-  end.not_nil!
-
-  divceil(right, D) - divceil(left, D)
-end
-
-pp ans
-
-# divceilの理由
-# light |          left |
-#       V               V
-# x  x     o  o  o  o      x  x
-# x  x  o  o  o  o  o   x  x  x
+puts "UNSOLVABLE"

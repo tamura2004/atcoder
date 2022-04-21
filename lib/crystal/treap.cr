@@ -1,307 +1,174 @@
 class Treap(T)
   class Node(T)
-    getter v : T
-    getter pri : Int32
-    getter cnt : Int32
+    class_getter r = Xorshift.new
+
+    getter key : T
+    getter pri : Int64
+    getter size : Int32
     property left : self?
     property right : self?
 
-    def initialize(@v : T)
-      @pri = rand(Int32::MAX)
-      @left = @right = nil
-      @cnt = 1
+    def initialize(@key)
+      @pri = @@r.get
+      @size = 1
     end
 
-    def find(x : T)
-      return true if x == v
-
-      if x < v
-        case left = @left
-        when Nil
-          return false
-        when Node
-          left.find(x)
-        end
+    def find(k : T) : Bool?
+      if key == k
+        true
+      elsif key < k
+        right.try &.find(k)
       else
-        case right = @right
-        when Nil
-          return Nil
-        when Node
-          right.find(x)
-        end
+        left.try &.find(k)
       end
     end
 
-    def insert(x : T)
-      @cnt += 1
-      if x < v
-        case left = @left
-        when Nil
-          @left = Node.new(x)
-        when Node
-          @left = left.insert(x)
-        end
-
-        case left = @left
-        when Nil
-          self
-        when Node
-          if left.pri < pri
-            rotate_right
-          else
-            self
-          end
-        end
+    def split(k : T) : Tuple(self?, self?)
+      if key < k
+        fst, snd = right.try &.split(k) || nil_node_pair
+        @right = fst
+        {update, snd}
       else
-        case right = @right
-        when Nil
-          @right = Node.new(x)
-        when Node
-          @right = right.insert(x)
-        end
-
-        case right = @right
-        when Nil
-          self
-        when Node
-          if right.pri < pri
-            rotate_left
-          else
-            self
-          end
-        end
+        fst, snd = left.try &.split(k) || nil_node_pair
+        @left = snd
+        {fst, update}
       end
     end
 
-    def <<(x : T)
-      insert(x)
+    def insert(node : self) : self
+      if pri < node.pri
+        node.left, node.right = split(node.key)
+        node.update
+      elsif key < node.key
+        @right = right.try &.insert(node) || node
+        update
+      else
+        @left = left.try &.insert(node) || node
+        update
+      end
+    end
+
+    def merge(b : self?)
+      return self if b.nil?
+
+      if pri > b.pri
+        @right = right.try &.merge(b) || b
+        update
+      else
+        b.left = merge(b.left)
+        b.update
+      end
+    end
+
+    def delete(k : T)
+      if key == k
+        left.try &.merge(right) || right
+      elsif key < k
+        @right = right.try &.delete(k)
+        update
+      else
+        @left = left.try &.delete(k)
+        update
+      end
+    end
+
+    {% for dir in %w(left right) %}
+      {% for op in %w(size) %}
+        @[AlwaysInline]
+        private def {{dir.id}}_{{op.id}}
+          {{dir.id}}.try &.{{op.id}} || 0
+        end
+      {% end %}
+    {% end %}
+
+    def nil_node
+      nil.as(self?)
+    end
+
+    def nil_node_pair
+      {nil_node, nil_node}
     end
 
     def update
-      @cnt = (left.nil? ? 0 : left.as(Node(T)).cnt) + 1 + (right.nil? ? 0 : right.as(Node(T)).cnt)
+      @size = left_size + right_size + 1
       self
     end
 
-    def rotate_right : Node(T)
-      if left = @left
-        @left = left.right
-        left.right = self
-        update
-        left.update
-      else
-        self
-      end
-    end
-
-    def rotate_left
-      if right = @right
-        @right = right.left
-        right.left = self
-        update
-        right.update
-      else
-        self
-      end
-    end
-
-    def merge(left : self?, right : self?)
-      case {left, right}
-      when {Nil, Nil}
-        nil
-      when {Node, Nil}
-        left
-      when {Nil, Node}
-        right
-      when {Node, Node}
-        if left.pri < right.pri
-          left.right = merge(left.right, right)
-          left
-        else
-          right.left = merge(left, right.left)
-          right
-        end
-      end
-    end
-
-    def delete(x : T)
-      @cnt -= 1
-      case x
-      when .== v
-        merge(@left, @right)
-      when .< v
-        case left = @left
-        when Nil
-          self
-        when Node
-          @left = left.delete(x)
-          self
-        end
-      when .> v
-        case right = @right
-        when Nil
-          self
-        when Node
-          @right = right.delete(x)
-          self
-        end
-      end
-    end
-
-    def min_node
-      case left = @left
-      when Nil  then self
-      when Node then left.min_node
-      end
-    end
-
-    def max_node
-      case right = @right
-      when Nil  then self
-      when Node then right.max_node
-      end
-    end
-
-    def min
-      min_node.v
-    end
-
-    def max
-      max_node.v
-    end
-
-    def debug(indent)
-      case left = @left
-      when Nil
-        puts_with_indent(indent + 2, "left = nil")
-      when Node
-        left.debug(indent + 2)
-      end
-
-      puts_with_indent(indent, v)
-
-      case right = @right
-      when Nil
-        puts_with_indent(indent + 2, "right = nil")
-      when Node
-        right.debug(indent + 2)
-      end
-    end
-
-    private def puts_with_indent(indent, msg)
-      puts " " * indent + msg.to_s
-    end
-
-    def each(&block : self ->)
-      if left = @left
-        left.each(&block)
-      end
-      block.call(self)
-      if right = @right
-        right.each(&block)
-      end
-    end
-
-    def sum
-      ans = v
-      if left = @left
-        ans += left.sum
-      end
-      if right = @right
-        ans += right.sum
-      end
-      return ans
+    def inspect
+      "(#{left.inspect} #{key} #{right.inspect})".gsub(/nil/, "")
     end
   end
 
   getter root : Node(T)?
 
   def initialize
-    @root = nil
+    @root = nil_node
   end
 
-  def find(x : T)
-    case root = @root
-    when Nil
-      return false
-    when Node
-      root.find(x)
+  def initialize(k : T)
+    @root = Node(T).new(k)
+  end
+
+  def initialize(@root : Node(T)?)
+  end
+
+  def find(k : T)
+    root.try &.find(k)
+  end
+
+  def split(k : T) : Tuple(self?, self?)
+    fst, snd = root.try &.split(k) || nil_node_pair
+    {self.class.new(fst), self.class.new(snd)}
+  end
+
+  def insert(k : T)
+    node = Node(T).new(k)
+    @root = root.try &.insert(node) || node
+  end
+
+  def <<(k)
+    insert(T.new(k))
+  end
+
+  def merge(b : self)
+    return self if b.root.nil?
+    @root = root.try &.merge(b.root) || b.root
+  end
+
+  def delete(k : T)
+    @root = root.try &.delete(k)
+  end
+
+  def size
+    @root.try &.size || 0
+  end
+
+  def nil_node
+    nil.as(Node(T)?)
+  end
+
+  def nil_node_pair
+    {nil_node, nil_node}
+  end
+
+  def inspect
+    @root.inspect
+  end
+
+  def to_s
+    inspect
+  end
+
+  class Xorshift
+    getter x : Int64
+
+    def initialize
+      @x = 88172645463325252_i64
     end
-  end
 
-  def insert(x : T)
-    case root = @root
-    when Nil
-      @root = Node.new(x)
-    when Node
-      @root = root.insert(x)
-    end
-  end
-
-  def <<(x : T)
-    insert(x)
-  end
-
-  def delete(x : T)
-    case root = @root
-    when Nil
-    when Node
-      @root = root.delete(x)
-    end
-  end
-
-  def min_node
-    case root = @root
-    when Nil  then nil
-    when Node then root.min_node
-    end
-  end
-
-  def min
-    case node = min_node
-    when Nil  then nil
-    when Node then node.v
-    end
-  end
-
-  def max_node
-    case root = @root
-    when Nil  then nil
-    when Node then root.max_node
-    end
-  end
-
-  def max
-    case node = max_node
-    when Nil  then nil
-    when Node then node.v
-    end
-  end
-
-  def debug(indent = 0)
-    puts
-    case root = @root
-    when Nil  then puts "root = nil"
-    when Node then root.debug(indent)
-    end
-  end
-
-  def each(&block : Node(T) ->)
-    if root = @root
-      root.each(&block)
-    end
-  end
-
-  def sum
-    case root = @root
-    when Nil  then 0
-    when Node then root.sum
-    end
-  end
-
-  def cnt
-    case root = @root
-    when Nil  then 0
-    when Node then root.cnt
+    def get
+      @x = x ^ (x << 7)
+      @x = x ^ (x >> 9)
     end
   end
 end

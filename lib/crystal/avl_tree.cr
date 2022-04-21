@@ -320,31 +320,6 @@ class AVLTree(T)
       {% end %}
     {% end %}
 
-    # @[AlwaysInline]
-    # private def right_size
-    #   right.try &.size || 0
-    # end
-
-    # @[AlwaysInline]
-    # private def left_height
-    #   left.try &.height || 0
-    # end
-
-    # @[AlwaysInline]
-    # private def right_height
-    #   right.try &.height || 0
-    # end
-
-    # @[AlwaysInline]
-    # private def left_balance
-    #   left.try &.balance || 0
-    # end
-
-    # @[AlwaysInline]
-    # private def right_balance
-    #   right.try &.balance || 0
-    # end
-
     @[AlwaysInline]
     private def left_to_a
       left.try &.to_a || [] of T
