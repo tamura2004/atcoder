@@ -1,12 +1,6 @@
-require "matrix"
-
-m = Matrix[
-  [2, -1, 0, -1, 0, 0],
-  [-1, 3, -1, 0, -1, 0],
-  [0, -1, 2, 0, 0, -1],
-  [-1, 0, 0, 2, -1, 0],
-  [0, -1, -1, -1, 3, -1],
-  [0, 0, -1, 0, -1, 2]
-]
-
-pp m.det
+n, k = gets.split.map(&:to_i)
+a = gets.split.map(&:to_i)
+ans = a.bsearch_index do |x|
+  x >= k
+end || -1
+pp ans

@@ -1,25 +1,31 @@
-s1 = gets.to_s
-s2 = gets.to_s
-s3 = gets.to_s
+require "crystal/tree"
+require "crystal/treap"
 
-words = [s1,s2,s3].map(&.chars).flatten.uniq.sort.join
-n = words.size
+n = gets.to_s.to_i
+c = gets.to_s.split.map(&.to_i)
+st = Treap(Int32).new
 
-(0..9).to_a.each_permutation(n) do |a|
-  nums = a.join
-  n1 = s1.tr(words,nums)
-  n2 = s2.tr(words,nums)
-  n3 = s3.tr(words,nums)
-
-  next if n1[0] == '0'
-  next if n2[0] == '0'
-  next if n3[0] == '0'
-
-  next unless n1.to_i64 + n2.to_i64 == n3.to_i64
-  puts n1
-  puts n2
-  puts n3
-  exit
+g = Tree.new(n)
+(n-1).times do
+  v, nv = gets.to_s.split.map(&.to_i)
+  g.add v, nv
 end
 
-puts "UNSOLVABLE"
+ans = [] of Int32
+
+dfs = uninitialized Proc(Int32,Int32,Nil)
+dfs = ->(v : Int32, pv : Int32) do
+  ans << v unless st.includes?(c[v])
+  st << c[v]
+
+  g[v].each do |nv|
+    next if nv == pv
+    dfs.call(nv, v)
+  end
+
+  st.delete(c[v])
+end
+
+dfs.call(0, -1)
+
+puts ans.sort.map(&.succ).join("\n")

@@ -13,17 +13,17 @@ class Treap(T)
       @size = 1
     end
 
-    def find(k : T) : Bool?
+    def includes?(k : T) : Bool?
       if key == k
         true
       elsif key < k
-        right.try &.find(k)
+        right.try &.includes?(k)
       else
-        left.try &.find(k)
+        left.try &.includes?(k)
       end
     end
 
-    def split(k : T) : Tuple(self?, self?)
+    def split(k : T)
       if key < k
         fst, snd = right.try &.split(k) || nil_node_pair
         @right = fst
@@ -112,11 +112,11 @@ class Treap(T)
   def initialize(@root : Node(T)?)
   end
 
-  def find(k : T)
-    root.try &.find(k)
+  def includes?(k : T)
+    root.try &.includes?(k)
   end
 
-  def split(k : T) : Tuple(self?, self?)
+  def split(k : T)
     fst, snd = root.try &.split(k) || nil_node_pair
     {self.class.new(fst), self.class.new(snd)}
   end

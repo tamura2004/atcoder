@@ -34,12 +34,12 @@ describe Treap do
     node.inspect.should eq "(( 10 ) 20 )"
   end
 
-  it "find" do
+  it "includes?" do
     node = Treap{40, 10, 30, 20}
-    node.find(20).should eq true
-    node.find(25).should eq nil
+    node.includes?(20).should eq true
+    node.includes?(25).should eq nil
   end
-  
+
   it "size" do
     node = Treap{40, 10, 30, 20}
     node.size.should eq 4

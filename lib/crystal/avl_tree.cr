@@ -5,6 +5,10 @@ class AVLTree(T)
   def initialize(@root : Node(T)? = nil)
   end
 
+  def includes?(v : T)
+    root.try &.includes?(v)
+  end
+
   def insert(v : T)
     @root = root.try &.insert(v) || Node(T).new(v)
   end
@@ -135,6 +139,16 @@ class AVLTree(T)
       @height = 1
       @left = nil
       @right = nil
+    end
+
+    def includes?(v : T)
+      if v == val
+        true
+      elsif v < val
+        left.try &.includes?(v)
+      else
+        right.try &.includes?(v)
+      end
     end
 
     # 挿入
@@ -333,7 +347,7 @@ class AVLTree(T)
     def inspect
       # "(#{val} #{left.inspect} #{right.inspect})".gsub(/nil/, ".")
       # "(#{left.inspect} #{val} #{right.inspect})".gsub(/nil/, ".")
-      "(#{left.inspect} #{[val, size]} #{right.inspect})".gsub(/nil/, ".")
+      "(#{left.inspect} #{val} #{right.inspect})".gsub(/nil/, ".")
     end
 
     def to_a
