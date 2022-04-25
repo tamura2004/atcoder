@@ -1,15 +1,15 @@
 # modint
 struct ModInt
-  MOD = 10_i64 ** 9 + 7
+  class_property mod : Int64 = 10_i64 ** 9 + 7
   getter v : Int64
 
   def initialize(v)
-    @v = v.to_i64 % MOD
+    @v = v.to_i64 % @@mod
   end
 
   {% for op in %w(+ - *) %}
     def {{op.id}}(b)
-      ModInt.new(v {{op.id}} (b.to_i64 % MOD))
+      ModInt.new(v {{op.id}} (b.to_i64 % @@mod))
     end
   {% end %}
 
@@ -25,7 +25,7 @@ struct ModInt
   end
 
   def inv
-    self ** (MOD - 2)
+    self ** (@@mod - 2)
   end
 
   def //(b)

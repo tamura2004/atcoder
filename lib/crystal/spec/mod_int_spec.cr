@@ -4,12 +4,12 @@ require "../mod_int"
 describe ModInt do
   it "+" do
     (1.to_m + 1).should eq 2
-    (1.to_m + ModInt::MOD + 7).should eq 8
+    (1.to_m + ModInt.mod + 7).should eq 8
     (Int64::MAX.to_m + Int64::MAX).should eq 582344006
   end
   
   it "-" do
-    (14.to_m - ModInt::MOD - 7).should eq 7
+    (14.to_m - ModInt.mod - 7).should eq 7
     (Int64::MIN.to_m - Int64::MAX).should eq 417656000
   end
   

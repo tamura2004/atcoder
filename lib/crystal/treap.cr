@@ -5,12 +5,14 @@ class Treap(T)
     getter key : T
     getter pri : Int64
     getter size : Int32
+    getter sum : T
     property left : self?
     property right : self?
 
     def initialize(@key)
       @pri = @@r.get
       @size = 1
+      @sum = key
     end
 
     def includes?(k : T) : Bool?
@@ -30,6 +32,19 @@ class Treap(T)
         {update, snd}
       else
         fst, snd = left.try &.split(k) || nil_node_pair
+        @left = snd
+        {fst, update}
+      end
+    end
+
+    def split_at(i : Int)
+      ord = left_size
+      if ord < i
+        fst, snd = right.try &.split_at(i - ord - 1) || nil_node_pair
+        @right = fst
+        {update, snd}
+      else
+        fst,snd = left.try &.split_at(i) || nil_node_pair
         @left = snd
         {fst, update}
       end
@@ -72,14 +87,29 @@ class Treap(T)
       end
     end
 
-    {% for dir in %w(left right) %}
-      {% for op in %w(size) %}
-        @[AlwaysInline]
-        private def {{dir.id}}_{{op.id}}
-          {{dir.id}}.try &.{{op.id}} || 0
-        end
-      {% end %}
-    {% end %}
+    def left_size
+      left.try &.size || 0
+    end
+
+    def right_size
+      right.try &.size || 0
+    end
+
+    def left_sum
+      left.try &.sum || T.zero
+    end
+
+    def right_sum
+      right.try &.sum || T.zero
+    end
+
+    def left_to_a
+      left.try &.to_a || [] of T
+    end
+
+    def right_to_a
+      right.try &.to_a || [] of T
+    end
 
     def nil_node
       nil.as(self?)
@@ -91,11 +121,16 @@ class Treap(T)
 
     def update
       @size = left_size + right_size + 1
+      @sum = left_sum + right_sum + key
       self
     end
 
     def inspect
       "(#{left.inspect} #{key} #{right.inspect})".gsub(/nil/, "")
+    end
+
+    def to_a
+      left_to_a + [key] + right_to_a 
     end
   end
 
@@ -116,31 +151,46 @@ class Treap(T)
     root.try &.includes?(k)
   end
 
-  def split(k : T)
+  def split(k : T) : Tuple(self,self)
     fst, snd = root.try &.split(k) || nil_node_pair
     {self.class.new(fst), self.class.new(snd)}
   end
 
-  def insert(k : T)
-    node = Node(T).new(k)
-    @root = root.try &.insert(node) || node
+  def split_at(i : Int) : Tuple(self,self)
+    fst, snd = root.try &.split_at(i) || nil_node_pair
+    {self.class.new(fst), self.class.new(snd)}
   end
 
-  def <<(k)
+  def insert(k : T) : self
+    node = Node(T).new(k)
+    @root = root.try &.insert(node) || node
+    self
+  end
+
+  def <<(k) : self
     insert(T.new(k))
   end
 
-  def merge(b : self)
-    return self if b.root.nil?
+  def merge(b : self) : self
     @root = root.try &.merge(b.root) || b.root
+    self
   end
 
-  def delete(k : T)
+  def +(b : self) : self
+    merge(b)
+  end
+
+  def delete(k : T) : self
     @root = root.try &.delete(k)
+    self
   end
 
-  def size
+  def size : T?
     @root.try &.size || 0
+  end
+
+  def sum : T
+    @root.try &.sum || T.zero
   end
 
   def nil_node
@@ -157,6 +207,10 @@ class Treap(T)
 
   def to_s
     inspect
+  end
+
+  def to_a
+    root.try &.to_a || [] of T
   end
 
   class Xorshift

@@ -1,56 +1,20 @@
-import sys
-import numpy as np
+#dp[i][j] 圧縮後の長さがiで、圧縮前の長さがj
+N,P=map(int,input().split())
 
-read = sys.stdin.buffer.read
-readline = sys.stdin.buffer.readline
-readlines = sys.stdin.buffer.readlines
+dp=[[0]*(N+10) for i in range(N+10)]
+dp[0][0]=1
+dp[0][1]=-1
+# 配るDP
+for i in range(N+1):
+	for j in range(N+1):
+		dp[i][j]+=dp[i][j-1]
+	for j in range(N+1):
+		coef = 25 if j!=0 else 26
+		for digit in range(1,5):
+			# dp[i+1+digit][j+range]+=dp[i][j]
+			if j+10**(digit-1)<=N:
+				dp[i+1+digit][j+10**(digit-1)]=(dp[i+1+digit][j+10**(digit-1)]+dp[i][j]*coef)%P
+			if j+10** digit   <=N:
+				dp[i+1+digit][j+10** digit   ]=(dp[i+1+digit][j+10** digit   ]-dp[i][j]*coef)%P
 
-def main(A):
-    print(A)
-    A = A - 1
-    print(A)
-    N = len(A) // 3
-    A = np.append(A, (N, N))
-    print(A)
-    INF = 1 << 30
-    dp = np.full((N + 1, N + 1), -INF, np.int64)
-    a, b = A[:2]
-    print(a)
-    print(b)
-    dp[a, b] = dp[b, a] = 0
-    dp_max = np.full(N + 1, -INF, np.int64)
-    dp_max[a] = dp_max[b] = 0
-    add = 0
-    update = np.empty((100 * N, 3), np.int64)
-    for n in range(N):
-        a, b, c = A[3 * n + 2:3 * n + 5]
-        if a == b == c:
-            add += 1
-            continue
-        p = 0
-        # 色を持ちかえるだけの遷移
-        for _ in range(3):
-            a, b, c = b, c, a
-            update[p], p = (a, b, dp_max.max()), p + 1
-            for k in range(N):
-                update[p], p = (k, a, dp_max[k]), p + 1
-
-        for _ in range(3):
-            a, b, c = b, c, a
-            # 色 a をそろえる遷移
-            if a == b:
-                for k in range(N):
-                    # もともと a, k をもっている
-                    update[p], p = (c, k, dp[a, k] + 1), p + 1
-            # もともと a, a, をもっている
-            update[p], p = (b, c, dp[a, a] + 1), p + 1
-        for i in range(p):
-            a, b, x = update[i]
-            dp[a, b] = dp[b, a] = max(dp[a, b], x)
-            dp_max[a] = max(dp_max[a], x)
-            dp_max[b] = max(dp_max[b], x)
-    return dp_max.max() + add
-
-A = np.array(read().split(), np.int64)[1:]
-
-print(main(A))
+print(sum(dp[i][N] for i in range(N))%P)

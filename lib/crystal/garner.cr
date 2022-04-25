@@ -1,0 +1,219 @@
+struct NTT
+  getter mod : Int64
+
+  def initialize(mod = 998244353)
+    @mod = mod.to_i64
+  end
+
+  def ceil_pow2(n : Int) : Int32
+    (0..).find(-1) do |x|
+      n <= (1 << x)
+    end
+  end
+
+  def bsf(n : Int) : Int32
+    (0..).find(-1) do |x|
+      (n >> x) & 1 == 1
+    end
+  end
+
+  def pow_mod(x : Int, n : Int) : Int64
+    return 0_i64 if mod == 1
+    r = 1_i64
+    y = (x % mod).to_i64
+
+    while n != 0
+      r = (r * y) % mod if n.odd?
+      y = (y * y) % mod
+      n >>= 1
+    end
+    return r
+  end
+
+  def inv_gcd(a : Int, b : Int) : Int
+    a = a % b
+
+    if a < 0
+      a += b
+    end
+
+    s, t = b, a
+    m0, m1 = 0_i64, 1_i64
+
+    while t != 0
+      u = s // t
+      s -= t * u
+      m0 -= m1 * u
+      tmp = s
+      s = t
+      t = tmp
+      tmp = m0
+      m0 = m1
+      m1 = tmp
+    end
+
+    if m0 < 0
+      m0 += b // s
+    end
+
+    return m0
+  end
+
+  def butterfly_unit(g : Int) : Tuple(Int32, Array(Int64), Array(Int64))
+    es = Array.new(30, 0_i64)
+    ies = Array.new(30, 0_i64)
+    cnt = bsf(mod - 1)
+    e = pow_mod(g, (mod - 1) >> cnt)
+    ie = inv_gcd(e, mod)
+    cnt.downto(2) do |i|
+      es[i - 2] = e
+      ies[i - 2] = ie
+      e *= e
+      e %= mod
+      ie *= ie
+      ie %= mod
+    end
+    return ({cnt, es, ies})
+  end
+
+  def butterfly_init(g : Int) : Array(Int64)
+    cnt, es, ies = butterfly_unit(g)
+    se = Array.new(30, 0_i64)
+    now = 1_i64
+    (cnt - 1).times do |i|
+      se[i] = es[i] * now
+      se[i] %= mod
+      now *= ies[i]
+      now %= mod
+    end
+    return se
+  end
+
+  def butterfly(a : Array(Int64)) : Nil
+    g = 3
+    n = a.size
+    h = ceil_pow2(n)
+    se = butterfly_init(g)
+
+    1.upto(h) do |ph|
+      w = 1_i64 << (ph - 1)
+      p = 1_i64 << (h - ph)
+      now = 1_i64
+      w.times do |s|
+        j = s << (h - ph + 1)
+        p.times do |i|
+          l = a[i + j]
+          r = a[i + j + p] * now % mod
+          a[i + j] = l + r
+          a[i + j + p] = l - r
+          a[i + j] %= mod
+          a[i + j + p] %= mod
+          if a[i + j + p] < 0
+            a[i + j + p] += mod
+          end
+        end
+        now *= se[bsf(~s)]
+        now %= mod
+      end
+    end
+  end
+
+  def butterfly_inv_init(g : Int) : Array(Int64)
+    sie = Array.new(30, 0_i64)
+    cnt2, es, ies = butterfly_unit(g)
+
+    now = 1_i64
+    (cnt2 - 1).times do |i|
+      sie[i] = ies[i] * now
+      sie[i] %= mod
+      now *= es[i]
+      now %= mod
+    end
+    sie
+  end
+
+  def butterfly_inv(a : Array(Int64)) : Nil
+    g = 3
+    n = a.size
+    h = ceil_pow2(n)
+    first = true
+    sie = butterfly_inv_init(g)
+
+    h.downto(1) do |ph|
+      w = 1_i64 << (ph - 1)
+      p = 1_i64 << (h - ph)
+      inow = 1_i64
+      w.times do |s|
+        j = s << (h - ph + 1)
+        p.times do |i|
+          l = a[i + j]
+          r = a[i + j + p]
+          a[i + j] = l + r
+          a[i + j + p] = (l - r + mod) * inow
+          a[i + j] %= mod
+          a[i + j + p] %= mod
+        end
+        inow *= sie[bsf(~s)]
+        inow %= mod
+      end
+    end
+  end
+
+  def convolution(p, q)
+    p = p.map(&.to_i64)
+    q = q.map(&.to_i64)
+
+    n = p.size
+    m = q.size
+
+    return [] of Int64 if n == 0 || m == 0
+
+    z = 1_i64 << ceil_pow2(n + m - 1)
+    a = Array.new(z) { |i| i < n ? p[i] : 0_i64 }
+    b = Array.new(z) { |i| i < m ? q[i] : 0_i64 }
+
+    butterfly(a)
+    butterfly(b)
+
+    z.times do |i|
+      a[i] *= b[i]
+      a[i] %= mod
+    end
+
+    butterfly_inv(a)
+
+    a = a[0, n + m - 1]
+    iz = inv_gcd(z, mod)
+    (n + m - 1).times do |i|
+      a[i] *= iz
+      a[i] %= mod
+    end
+    return a
+  end
+
+  def conv(p, q)
+    convolution(p, q)
+  end
+end
+
+struct Garner
+  getter ntt1 : NTT
+  getter ntt2 : NTT
+  getter ntt3 : NTT
+
+  def initialize
+    @ntt1 = NTT.new(167772161)
+    @ntt2 = NTT.new(469762049)
+    @ntt3 = NTT.new(1224736769)
+  end
+
+  def conv(p,q)
+    p = p.map!(&.to_i64)
+    q = q.map!(&.to_i64)
+
+    x = ntt1.conv(p, q)
+    y = ntt2.conv(p, q)
+    z = ntt3.conv(p, q)
+    
+  end
+end

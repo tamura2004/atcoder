@@ -185,3 +185,7 @@ def convolution(p, q)
   end
   return a
 end
+
+def conv(p, q)
+  convolution(p, q)
+end
