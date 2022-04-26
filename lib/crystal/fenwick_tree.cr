@@ -26,7 +26,7 @@ class FenwickTree(T)
     end
   end
 
-  # 1-inexed
+  # 0-inexed
   def []=(i : Int32, x : T)
     add(i, x)
   end

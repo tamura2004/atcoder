@@ -46,11 +46,11 @@ describe Treap do
     tr.to_a.should eq [1, 2, 3, 4, 5, 6]
   end
 
-  it "+" do
+  it "+ as merge" do
     t1 = Treap{1, 2}
-    t2 = Treap{3, 4}
+    t2 = Treap{2, 4}
     t3 = Treap{5, 6}
-    (t1 + t2 + t3).to_a.should eq [1, 2, 3, 4, 5, 6]
+    (t1 + t2 + t3).to_a.should eq [1, 2, 2, 4, 5, 6]
   end
 
   it "merge nil node" do

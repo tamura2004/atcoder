@@ -1,3 +1,8 @@
+# TreapによるOrderedSet
+#
+# ```
+#
+# ```
 class Treap(T)
   class Node(T)
     class_getter r = Xorshift.new
@@ -130,7 +135,7 @@ class Treap(T)
     end
 
     def to_a
-      left_to_a + [key] + right_to_a 
+      left_to_a + [key] + right_to_a
     end
   end
 

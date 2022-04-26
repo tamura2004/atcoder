@@ -1,19 +1,11 @@
-class Outer
-  @@x : Int64 = 88172645463325252_i64
+require "crystal/xor_base"
 
-  def self.get_outer
-    @@x = @@x ^ (@@x << 7)
-    @@x = @@x ^ (@@x >> 9)
-  end
+a = [
+  0b101110,
+  0b001010,
+  0b010100,
+  0b100010
+]
 
-  class Inner
-    getter x : Int64
-
-    def initialize
-      @x = Outer.get_outer
-    end
-  end
-end
-
-i = Outer::Inner.new
-pp i
+xb = XorBase.new(a).sweep!
+pp xb.base.map(&.to_s(2))

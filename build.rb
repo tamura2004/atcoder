@@ -47,6 +47,7 @@ while flag
   flag = false
   tmp = []
   buf.each do |line|
+    # line.gsub!(/\b([0-9]+)\b/, '\1_i64')
     if line =~ /^require "crystal\/(.*)"/
       name = $1
 
