@@ -38,6 +38,7 @@ class FactTable
   # h(n,k) = c(n+k-1,n) = c(n+k-1,n+k-1-n) = c(n+k-1,k-1)
   # k種類から重複を許してn個取る
   # nを0個以上でk分割
+  # k個の区別する箱に、区別しない球n個を入れる
   def h(k, n)
     c(n + k - 1, k - 1)
   end

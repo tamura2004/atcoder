@@ -18,6 +18,23 @@ describe MaxFlow do
     g.add 6, 7, 1
     MaxFlow.new(g).solve(0, 7).should eq 2
   end
+  
+  it "usage 2" do
+    g = Graph.new(8)
+    g.add 0, 1, 1
+    g.add 0, 2, 1
+    g.add 0, 3, 1
+    g.add 1, 4, 1
+    g.add 1, 5, 1
+    g.add 1, 6, 1
+    g.add 2, 4, 1
+    g.add 3, 4, 1
+    g.add 4, 7, 1
+    g.add 5, 7, 1
+    g.add 6, 7, 1
+    MaxFlow.new(g).solve(0, 7).should eq 2
+  end
+
   it "usage weighted" do
     g = Graph.new(5)
     g.add 0, 1, 10_i64
