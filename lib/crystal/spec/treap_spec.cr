@@ -77,4 +77,13 @@ describe Treap do
     node = Treap{40, 10, 30, 20}
     node.size.should eq 4
   end
+
+  it "each" do
+    node = Treap{4, 3, 2, 1}
+    ans = [] of Int32
+    node.each do |v|
+      ans << v
+    end
+    ans.should eq [1, 2, 3, 4]
+  end
 end

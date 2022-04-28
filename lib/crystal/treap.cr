@@ -1,7 +1,6 @@
 # TreapによるOrderedSet
 #
 # ```
-#
 # ```
 class Treap(T)
   class Node(T)
@@ -49,7 +48,7 @@ class Treap(T)
         @right = fst
         {update, snd}
       else
-        fst,snd = left.try &.split_at(i) || nil_node_pair
+        fst, snd = left.try &.split_at(i) || nil_node_pair
         @left = snd
         {fst, update}
       end
@@ -137,6 +136,12 @@ class Treap(T)
     def to_a
       left_to_a + [key] + right_to_a
     end
+
+    def each(&block : T -> Nil)
+      left.try &.each(&block)
+      block.call(key)
+      right.try &.each(&block)
+    end
   end
 
   getter root : Node(T)?
@@ -156,12 +161,12 @@ class Treap(T)
     root.try &.includes?(k)
   end
 
-  def split(k : T) : Tuple(self,self)
+  def split(k : T) : Tuple(self, self)
     fst, snd = root.try &.split(k) || nil_node_pair
     {self.class.new(fst), self.class.new(snd)}
   end
 
-  def split_at(i : Int) : Tuple(self,self)
+  def split_at(i : Int) : Tuple(self, self)
     fst, snd = root.try &.split_at(i) || nil_node_pair
     {self.class.new(fst), self.class.new(snd)}
   end
@@ -206,6 +211,10 @@ class Treap(T)
     {nil_node, nil_node}
   end
 
+  def empty?
+    root.nil?
+  end
+
   def inspect
     @root.inspect
   end
@@ -216,6 +225,10 @@ class Treap(T)
 
   def to_a
     root.try &.to_a || [] of T
+  end
+
+  def each(&block : T -> Nil)
+    root.try &.each(&block)
   end
 
   class Xorshift

@@ -1,94 +1,115 @@
+import sys
+import numpy as np
+from functools import lru_cache
 from collections import deque
 
-class Dinic:
-    def __init__(self, n):
-        self.n = n
-        self.links = [[] for _ in range(n)]
-        self.depth = None
-        self.progress = None
- 
-    def add_link(self, _from, to, cap):
-        self.links[_from].append([cap, to, len(self.links[to])])
-        self.links[to].append([0, _from, len(self.links[_from]) - 1])
- 
-    def bfs(self, s):
-        depth = [-1] * self.n
-        depth[s] = 0
-        q = deque([s])
-        while q:
-            v = q.popleft()
-            for cap, to, rev in self.links[v]:
-                if cap > 0 and depth[to] < 0:
-                    depth[to] = depth[v] + 1
-                    q.append(to)
-        self.depth = depth
- 
-    def dfs(self, v, t, flow):
-        if v == t:
-            return flow
-        links_v = self.links[v]
-        for i in range(self.progress[v], len(links_v)):
-            self.progress[v] = i
-            cap, to, rev = link = links_v[i]
-            if cap == 0 or self.depth[v] >= self.depth[to]:
-                continue
-            d = self.dfs(to, t, min(flow, cap))
-            if d == 0:
-                continue
-            link[0] -= d
-            self.links[to][rev][0] += d
-            return d
-        return 0
- 
-    def max_flow(self, s, t):
-        flow = 0
-        while True:
-            self.bfs(s)
-            if self.depth[t] < 0:
-                return flow
-            self.progress = [0] * self.n
-            current_flow = self.dfs(s, t, float('inf'))
-            while current_flow > 0:
-                flow += current_flow
-                current_flow = self.dfs(s, t, float('inf'))
-        
-n = int(input())
-s = 16000
-g = 16001
-se = set()
-v = set()
-for i in range(n):
-    X, Y, Z = map(int, input().split())
-    for x in range(1, X):
-        x2 = X - x
-        t1 = x * Y * Z
-        t2 = x2 * Y * Z + 8000
-        se.add(f"{t1}-{t2}")
-        se.add(f"{s}-{t1}")
-        se.add(f"{t2}-{g}")
-        v.add(t1)
-        
-    for y in range(1, Y):
-        y2 = Y - y
-        t1 = X * y * Z
-        t2 = X * y2 * Z + 8000
-        se.add(f"{t1}-{t2}")
-        se.add(f"{s}-{t1}")
-        se.add(f"{t2}-{g}")
-        v.add(t1)
-        
-    for z in range(1, Z):
-        z2 = Z - z
-        t1 = X * Y * z
-        t2 = X * Y * z2 + 8000
-        se.add(f"{t1}-{t2}")
-        se.add(f"{s}-{t1}")
-        se.add(f"{t2}-{g}")
-        v.add(t1)
-        
-G = Dinic(16002)
-for x in se:
-    t1, t2 = map(int, x.split("-"))
-    G.add_link(t1, t2, 1)
-    
-print(len(v) * 2 - G.max_flow(s, g))
+read = sys.stdin.buffer.read
+readline = sys.stdin.buffer.readline
+readlines = sys.stdin.buffer.readlines
+
+def from_prufer(A):
+    """N頂点のラベル付き根付き木を prufer コードから生成。
+    [0,N) ^ {N-2} を入力として、親の列を返す。根は N - 1
+    """
+    N = len(A)
+    deg = np.ones(N + 2, np.int64)
+    par = np.zeros(N + 1, np.int64)
+    for i in A:
+        deg[i] += 1
+    for i in A:
+        for j in range(N + 2):
+            if deg[j] == 1:
+                par[j] = i
+                deg[i] -= 1
+                deg[j] -= 1
+                break
+    u, v = np.where(deg == 1)[0]
+    par[u] = v
+    return par
+
+
+@lru_cache(None)
+def all_spanning_tree(N):
+    K = N**(N - 2)
+    trees = np.zeros((K, N - 1), np.int64)
+    for k in range(K):
+        A = np.empty(N - 2, np.int64)
+        x = k
+        for i in range(N - 2):
+            x, A[i] = divmod(x, N)
+        trees[k] = from_prufer(A)
+    return trees
+
+def spanning_tree_costs(G, tree):
+    N = len(G)
+    T = len(tree)
+    res = np.zeros(T, np.int64)
+    for t in range(T):
+        cost = 0
+        for v in range(N - 1):
+            w = tree[t, v]
+            if G[v, w] == 0:
+                cost = 0
+                break
+            cost += G[v, w]
+        res[t] = cost
+    res = res[res > 0]
+    full = G.sum() // 2
+    return full - res
+
+if sys.argv[-1] == 'ONLINE_JUDGE':
+    import numba
+    from numba import njit, b1, i4, i8, f8
+    from numba.pycc import CC
+    cc = CC('my_module')
+
+    def cc_export(f, signature):
+        cc.export(f.__name__, signature)(f)
+        return numba.njit(f)
+
+    from_prufer = cc_export(from_prufer, (i8[:], ))
+    spanning_tree_costs = cc_export(spanning_tree_costs, (i8[:, :], i8[:, :]))
+    cc.compile()
+
+def main(A, T, K, nums):
+    city = []
+    for _ in range(A):
+        N = nums[0]
+        city.append(nums[1:1 + N] - 1)
+        nums = nums[1 + N:]
+    G_li = nums[1:].reshape(-1, 3)
+    G = np.zeros((T, T), np.int64)
+    for a, b, c in G_li:
+        a, b = a - 1, b - 1
+        G[a, b] = G[b, a] = c
+    cost_full = 0
+    polys = deque()
+    for C in city:
+        size = len(C)
+        GC = G[C, :][:, C]
+        tree = all_spanning_tree(size)
+        costs = spanning_tree_costs(GC, tree)
+        polys.append(np.bincount(costs))
+
+    def mul(P, Q):
+        R = np.convolve(P, Q)
+        R[R > K] = K
+        return R
+
+    while len(polys) > 1:
+        P = polys.popleft()
+        Q = polys.popleft()
+        polys.append(mul(P, Q))
+    P = polys[0]
+    cnt = P.cumsum()
+    if cnt[-1] < K:
+        return -1
+    else:
+        return np.searchsorted(cnt, K)
+
+from my_module import from_prufer, spanning_tree_costs
+
+A, T, K = map(int, readline().split())
+nums = np.array(read().split(), np.int64)
+
+print(main(A, T, K, nums))
