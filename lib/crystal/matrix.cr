@@ -10,13 +10,18 @@ class Matrix(T)
     new(n) { |i, j| i == j ? T.zero + 1 : T.zero }
   end
 
-  def initialize(n)
+  # ブロックで初期化
+  def initialize(@n : Int32)
+    @a = Array.new(n) { |i| Array.new(n) { |j| yield i, j } }
+  end
+  
+  def initialize(n : Int64)
     @n = n.to_i
     @a = Array.new(n) { |i| Array.new(n) { |j| yield i, j } }
   end
 
-  def initialize(a)
-    @a = a.map(&.map { |v| T.new(v) })
+  # 配列で初期化
+  def initialize(@a : Array(Array(T)))
     @n = a.size
   end
 
@@ -35,6 +40,17 @@ class Matrix(T)
       v.zip(b).sum { |x, y| x*y }
     end
   end
+
+  {% for op in %w(+ - * //) %}
+    def {{op.id}}(b : Int)
+      n.times do |y|
+        n.times do |x|
+          @a[y][x] {{op.id}}= b
+        end
+      end
+      self
+    end
+  {% end %}
 
   def **(k : Int) : self
     ans = Matrix(T).eye(n)
@@ -75,7 +91,7 @@ class Matrix(T)
   end
 
   def inspect
-    w = a.map(&.max).max.to_s.size
-    a.map(&.map{|v|"%#{w}d" % v}.join(" ")).join("\n")
+    w = a.flatten.map(&.to_s.size).max
+    a.map(&.map{|v|"%#{w}s" % v}.join(" ")).join("\n")
   end
 end
