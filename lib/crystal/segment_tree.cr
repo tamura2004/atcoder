@@ -186,3 +186,31 @@ class SegmentTree(T)
 end
 
 alias ST = SegmentTree
+
+struct Int
+  def to_st_sum
+    ST(Int64).sum(to_i)
+  end
+
+  def to_st_min
+    ST(Int64).min(to_i)
+  end
+
+  def to_st_max
+    ST(Int64).max(to_i)
+  end
+end
+
+module Indexable(T)
+  def to_st_sum
+    ST(T).sum(self)
+  end
+
+  def to_st_min
+    ST(T).min(self)
+  end
+
+  def to_st_max
+    ST(T).max(self)
+  end
+end

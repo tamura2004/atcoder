@@ -59,7 +59,7 @@ describe SegmentTree do
     st[2..].should eq 5
     st[3..].should eq 20
   end
-  
+
   it "range sum query" do
     st = SegmentTree(Int32).sum(10)
     st[1] = 10
@@ -69,7 +69,7 @@ describe SegmentTree do
     st[2..].should eq 25
     st[3..].should eq 20
   end
-  
+
   it "range max query" do
     st = SegmentTree(Int32).max(10)
     st[1] = 10
@@ -79,4 +79,41 @@ describe SegmentTree do
     st[2..].should eq 20
     st[3..].should eq 20
   end
+
+  it "initialize sum from int" do
+    st = 10.to_st_sum
+    st[1] = 10
+    st[2] = 20
+    st[0..].should eq 30
+  end
+
+  it "initialize min from int" do
+    st = 10.to_st_min
+    st[1] = 10
+    st[2] = 20
+    st[0..].should eq 10
+  end
+
+  it "initialize max from int" do
+    st = 10.to_st_max
+    st[1] = 10
+    st[2] = 20
+    st[0..].should eq 20
+  end
+
+  it "initialize sum from indexable" do
+    st = [10,20,30].to_st_sum
+    st[0..].should eq 60
+  end
+
+  it "initialize min from indexable" do
+    st = [10,20,30].to_st_min
+    st[0..].should eq 10
+  end
+
+  it "initialize max from indexable" do
+    st = [10,20,30].to_st_max
+    st[0..].should eq 30
+  end
+
 end
