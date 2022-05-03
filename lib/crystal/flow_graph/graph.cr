@@ -1,46 +1,57 @@
-# フロー用グラフ（逆辺、容量あり）
 module FlowGraph
-  alias V = Int32
-  alias RV = Int32
-  alias Cap = Int64
-  alias E = Tuple(V, RV, Cap)
+  enum Dir
+    Forward # 正辺
+    Reverse # 逆辺
+  end
 
-  class Graph
+  # 容量Tと逆辺の番号を持つ辺
+  class Edge(T)
+    getter v : Int32
+    getter re : Int32 # 逆辺の番号
+    property cap : T
+    getter dir : Dir
+
+    def initialize(@v, @re, @cap, @dir)
+    end
+  end
+
+  # フロー用グラフ（容量、逆辺あり）
+  class Graph(T)
     getter n : Int32
-    getter g : Array(Array(E))
+    getter g : Array(Array(Edge(T)))
+
     delegate "[]", to: g
 
     def initialize(n)
       @n = n.to_i
-      @g = Array.new(n) { [] of E }
+      @g = Array.new(n) { [] of Edge(T) }
     end
 
+    # 辺と逆辺を追加する
     def add(v, nv, cap, origin = 0)
-      v = V.new(v) - origin
-      nv = V.new(nv) - origin
-      cap = Cap.new(cap)
+      v = v.to_i - origin
+      nv = nv.to_i - origin
+      cap = T.new(cap)
 
-      rev_v = g[v].size
-      rev_nv = g[nv].size
+      i = g[v].size  # これから追加する辺はi番目
+      j = g[nv].size # これから追加する逆辺はj番目
 
-      g[v] << E.new nv, rev_nv, cap
-      g[nv] << E.new v, rev_v, Cap.zero
+      g[v] << Edge(T).new(nv, j, cap, Dir::Forward)
+      g[nv] << Edge(T).new(v, i, T.zero, Dir::Reverse)
+
+      return i
     end
 
-    @[AlwaysInline]
-    def add_cap(e : E, cost : Cap)
-      nv, rev, cap = e
-      E.new(nv, rev, cap + cost)
-    end
-
-    def debug
+    # デバッグ用（AA表示）
+    def debug(origin = 0)
       File.open("debug.dot", "w") do |fh|
-        fh.puts "graph tree {"
+        fh.puts "digraph tree {"
         n.times do |v|
-          g[v].each do |(nv,rv,cap)|
-            # next if v >= nv
-            next if cap == 0
-            fh.puts "  #{v} -> #{nv};"
+          g[v].each do |e|
+            nv, re, cap, dir = e.v, e.re, e.cap, e.dir
+            next if dir.reverse?
+            r_cap = g[nv][re].cap
+            fh.puts "  #{v + origin} -> #{nv + origin} [label=\"#{cap}[#{r_cap}]\"]"
           end
         end
         fh.puts "}"

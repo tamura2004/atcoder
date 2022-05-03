@@ -1,6 +1,6 @@
 require "crystal/flow_graph/graph"
 
-# 最大流/最小カット
+# Dinic法による最大流/最小カット
 #
 # ```
 # include FlowGraph
