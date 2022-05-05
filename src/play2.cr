@@ -1,11 +1,24 @@
-require "crystal/xor_base"
+class Hoge
+  getter a : Int32
+  getter b : Int64
 
-a = [
-  0b101110,
-  0b001010,
-  0b010100,
-  0b100010
-]
+  def initialize(@a,@b)
+  end
 
-xb = XorBase.new(a).sweep!
-pp xb.base.map(&.to_s(2))
+  def [](i)
+    case i
+    when 0 then a
+    when 1 then b
+    else raise IndexError.new
+    end
+  end
+end
+
+
+
+t = Hoge.new(1,2i64)
+a,b = t
+
+pp t.class
+pp a.class
+pp b.class

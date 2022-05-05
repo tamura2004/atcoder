@@ -45,8 +45,7 @@ module FlowGraph
         v = q.shift
   
         g[v].each do |e|
-          nv = e.v
-          cap = e.cap
+          nv, cap = e.v, e.cap
   
           next if depth[nv] != -1
           next if cap <= T.zero
