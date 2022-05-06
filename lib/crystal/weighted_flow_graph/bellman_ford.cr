@@ -20,9 +20,13 @@ module WeightedFlowGraph
       dist.fill(INF)
       dist[s] = 0_i64
       update = true
+      count = 0
 
       while update
         update = false
+        count += 1
+
+        raise Exception.new("infinit negative cost loop") if count >= n
 
         n.times do |v|
           next if dist[v] == INF

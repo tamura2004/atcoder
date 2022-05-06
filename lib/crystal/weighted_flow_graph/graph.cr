@@ -23,7 +23,7 @@ module WeightedFlowGraph
       @g = Array.new(n) { [] of Edge }
     end
 
-    def add(from, to, cap, cost, origin = 1)
+    def add(from, to, cap, cost, origin = 0)
       from = from.to_i - origin
       to = to.to_i - origin
       cap = cap.to_i64
