@@ -1,24 +1,11 @@
-class Hoge
-  getter a : Int32
-  getter b : Int64
+pv = [0, 1, 0, 2]
 
-  def initialize(@a,@b)
-  end
-
-  def [](i)
-    case i
-    when 0 then a
-    when 1 then b
-    else raise IndexError.new
-    end
-  end
+def to_path(pv, s, t, &block : Int32 -> _)
+  return if s == t
+  yield pv[t]
+  to_path(pv, s, pv[t], &block)
 end
 
-
-
-t = Hoge.new(1,2i64)
-a,b = t
-
-pp t.class
-pp a.class
-pp b.class
+to_path(pv, 0, 3) do |v|
+  pp v
+end
