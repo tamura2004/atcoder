@@ -1,7 +1,7 @@
 # プライオリティキュー
 class PriorityQueue(T)
   getter f : T, T -> Bool
-  getter a : Deque(T)
+  getter a : Array(T)
 
   delegate size, to: a
   delegate empty?, to: a
@@ -18,12 +18,12 @@ class PriorityQueue(T)
 
   def initialize(&block : T, T -> Bool)
     @f = block
-    @a = Deque(T).new
+    @a = Array(T).new
   end
 
   def initialize
     @f = ->(a : T, b : T) { a < b }
-    @a = Deque(T).new
+    @a = Array(T).new
   end
 
   def <<(v : T)
@@ -63,18 +63,22 @@ class PriorityQueue(T)
     end
   end
 
+  @[AlwaysInline]
   def comp(i, j)
     f.call a[i], a[j]
   end
-
+  
+  @[AlwaysInline]
   def lo(i)
     i * 2 + 1
   end
-
+  
+  @[AlwaysInline]
   def hi(i)
     i * 2 + 2
   end
-
+  
+  @[AlwaysInline]
   def up(i)
     (i - 1) >> 1
   end
