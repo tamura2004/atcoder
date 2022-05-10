@@ -1,44 +1,31 @@
-require "big"
+require "crystal/modint9"
 
-enum OP
-  P1X
-  PAY
-  PBZ
-end
+n, d = gets.to_s.split.map(&.to_i)
+a = gets.to_s.split.map(&.to_i.pred)
 
-def solve(n,a,b,x,y,z)
-  ba = a.to_big_i
-  bb = b.to_big_i
-  bx = x.to_big_i
-  by = y.to_big_i
-  bz = z.to_big_i
+dp = make_array(0.to_m, n + 1, 1 << d)
+dp[0][0] = 1.to_m
 
-  ops = [
-    {ba*bb*bx, OP::P1X},
-    {bb*by, OP::PAY},
-    {ba*bz, OP::PBZ}
-  ]
-
-  ans = 0_i64
-  ops.sort.each do |cost, op|
-    case op
-    when .p1_x?
-      ans += n * x
-      n = 0_i64
-    when .pay?
-      ans += (n//a)*y
-      n %= a
-    when .pbz?
-      ans += (n//b)*z
-      n %= b
+(1 << n).times do |s|
+  n.times do |i|
+    if a[i] == -2
+      if s.even?
+        dp[i+1][s >> 1] += dp[i][s]
+      else
+        (1..d*2).each do |j|
+          next if s.bit(j) == 1
+          dp[i + 1][(s | (1 << j))>>1] += dp[i][s]
+        end
+      end
+    else
+      if s.even?
+        next if a[i] - d
+      j = a[i]
+      if s.bit(j) == 0
+        dp[i + 1][s | (1 << j)] += dp[i][s]
+      end
     end
   end
-  ans
 end
 
-t = gets.to_s.to_i
-t.times do
-  n,a,b,x,y,z = gets.to_s.split.map(&.to_i64)
-  pp solve(n,a,b,x,y,z)
-end
-
+pp dp[-1][-1]
