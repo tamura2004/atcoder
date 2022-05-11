@@ -1,31 +1,15 @@
-require "crystal/modint9"
+require "crystal/union_find"
 
-n, d = gets.to_s.split.map(&.to_i)
-a = gets.to_s.split.map(&.to_i.pred)
+uf = 10.to_uf
 
-dp = make_array(0.to_m, n + 1, 1 << d)
-dp[0][0] = 1.to_m
+uf.unite 0,1
+uf.unite 0,1
+uf.unite 0,1
+uf.unite 0,1
+uf.unite 0,1
 
-(1 << n).times do |s|
-  n.times do |i|
-    if a[i] == -2
-      if s.even?
-        dp[i+1][s >> 1] += dp[i][s]
-      else
-        (1..d*2).each do |j|
-          next if s.bit(j) == 1
-          dp[i + 1][(s | (1 << j))>>1] += dp[i][s]
-        end
-      end
-    else
-      if s.even?
-        next if a[i] - d
-      j = a[i]
-      if s.bit(j) == 0
-        dp[i + 1][s | (1 << j)] += dp[i][s]
-      end
-    end
-  end
-end
-
-pp dp[-1][-1]
+pp! uf.e_size[uf.find(0)]
+pp! uf.e_size[uf.find(1)]
+pp! uf.v_size[uf.find(0)]
+pp! uf.v_size[uf.find(1)]
+pp! uf.e_size[uf.find(2)]
