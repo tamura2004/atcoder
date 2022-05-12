@@ -1,15 +1,25 @@
-require "crystal/union_find"
+n,k = gets.to_s.split.map(&.to_i)
+a = Array.new(n){gets.to_s.to_i64}
 
-uf = 10.to_uf
+quit n if a.any?(&.zero?)
 
-uf.unite 0,1
-uf.unite 0,1
-uf.unite 0,1
-uf.unite 0,1
-uf.unite 0,1
+hi = 0
+acc = 1_i64
+ans = 0
 
-pp! uf.e_size[uf.find(0)]
-pp! uf.e_size[uf.find(1)]
-pp! uf.v_size[uf.find(0)]
-pp! uf.v_size[uf.find(1)]
-pp! uf.e_size[uf.find(2)]
+n.times do |lo|
+  while hi < n && acc * a[hi] <= k
+    acc *= a[hi]
+    hi += 1
+  end
+
+  chmax ans, hi - lo
+
+  if lo < hi
+    acc //= a[lo]
+  else
+    hi += 1
+  end
+end
+
+pp ans
