@@ -5,7 +5,7 @@ module MatrixGraph
   class Graph
     getter n : Int32
     getter g : Array(Array(Int64))
-    delegate "[]", to: g
+    delegate "[]", "hash", to: g
 
     def initialize(n)
       @n = n.to_i
