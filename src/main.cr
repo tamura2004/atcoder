@@ -1,104 +1,37 @@
-require "crystal/geography"
+# 平面走査
+require "crystal/segment_tree"
 
-struct Polygon
-  getter n : Int32
-  getter points : Array(Point)
-  getter lines : Array(Segment)
-  
-  def initialize(@n, @points)
-    center = points.sum / n
-    @points.sort_by!(&.phase)
-    @lines = Array.new(n) do |i|
-      Segment.new points[i-1], points[i]
-    end
-  end
+n,m,q = gets.to_s.split.map(&.to_i)
 
-  def move(x,y)
-    po = @points.map do |z|
-      z + Point.new(x,y)
-    end
-    Polygon.new(n,po)
-  end
-
-  def cross(b : self)
-    pos = [] of Point
-    ix = [] of Int32
-    jx = [] of Int32
-
-    n.times do |i|
-      n.times do |j|
-        if lines[i].intersect?(b.lines[j])
-          pos << lines[i].crosspoint(b.lines[j])
-          ix << i
-          jx << j
-        end
-      end
-    end
-
-    return nil if pos.size <= 1
-
-    n.times do |i|
-      pos << points[i] if b.includes?(points[i])
-    end
-
-    n.times do |i|
-      pos << b.points[i] if includes?(b.points[i])
-    end
-
-    Polygon.new(pos.size, pos)
-  end
-
-  def includes?(p : Point)
-    ans = true
-    n.times do |i|
-      ans = false if (points[i-1] - p).cross(points[i] - p) < 0
-    end
-    ans
-  end
-  
-  def resset_line
-    @lines = Array.new(n) do |i|
-      Segment.new points[i-1], points[i]
-    end
-  end
+enum E
+  Rails
+  Towns
 end
 
-n = gets.to_s.to_i
-xy = Array.new(n) do
-  x,y = gets.to_s.split.map(&.to_i64)
-  Point.new(x,y)
-end
-
-po = Polygon.new(n,xy)
-
-m = gets.to_s.to_i
-ms = [] of Polygon
+alias Event = Tuple(Int32,E,Int32,Int32)
+events = [] of Event
 
 m.times do
-  u,v = gets.to_s.split.map(&.to_i64)
-  ms << po.move(u,v)
+  l,r = gets.to_s.split.map(&.to_i.pred)
+  events << {r,E::Rails,l,-1}
 end
 
-q = gets.to_s.to_i64
+q.times do |i|
+  l,r = gets.to_s.split.map(&.to_i.pred)
+  events << {r,E::Towns,l,i}
+end
 
-mm = ms[0]
-(1...m).each do |i|
-  if mmm = mm.cross(ms[i])
-    mm = mmm
-  else
-    q.times do
-      puts "No"
-    end
-    exit
+events.sort!
+ans = Array.new(q, 0_i64)
+st = ST(Int64).sum(n)
+
+events.each do |hi,type,lo,i|
+  case type
+  when .rails?
+    st[lo] += 1
+  when .towns?
+    ans[i] = st[lo..hi]
   end
 end
 
-q.times do
-  x,y = gets.to_s.split.map(&.to_i64)
-  if mm.includes?(Point.new(x,y))
-    puts "Yes"
-  else
-    puts "No"
-  end
-end
-
+puts ans.join("\n")
