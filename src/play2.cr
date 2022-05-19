@@ -1,11 +1,10 @@
-pv = [0, 1, 0, 2]
-
-def to_path(pv, s, t, &block : Int32 -> _)
-  return if s == t
-  yield pv[t]
-  to_path(pv, s, pv[t], &block)
+fib = uninitialized Proc(Int32,Int32)
+fib = -> (n : Int32) do
+  case n
+  when 1 then 1
+  when 2 then 1
+  else fib.call(n - 1) + fib.call(n - 2)
+  end
 end
 
-to_path(pv, 0, 3) do |v|
-  pp v
-end
+pp fib.call(10) # Error: can't use variable name 'fib' inside assignment to variable 'fib'
