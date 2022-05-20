@@ -1,112 +1,64 @@
+# require "crystal/avl_tree"
+
 # 領域木
 #
-# 平面上の重み付き点の集合に対し矩形領域のクエリに答える
+# 平面上の点の集合に対し矩形領域の個数に答える
 class RangeTree
-  alias Point = Tuple(Int32, Int32, Int64)
-  getter seg : Array(Array(Int32))
-  getter sum : Array(Array(Int64))
-  getter a : Array(Int32)
-  getter size : Int32
+  getter a : Array(Array(Int64))
+  getter n : Int32
 
-  def initialize(v : Array(Point))
-    v.sort!
-    @a = v.map(&.[0]).uniq
-    @size = 1
-
-    while size < a.size
-      @size <<= 1
-    end
-
-    while a.size < size
-      @a << Int32::MAX // 2
-    end
-
-    @seg = Array.new(size * 2) { [] of Int32 }
-    @sum = Array.new(size * 2) { [] of Int64 }
-
-    i = 0
-    v.each do |x, y, v|
-      if a[i] != x
-        i += 1
-      end
-
-      seg[i + size] << y
-      sum[i + size] << v
-    end
-
-    (1...size).reverse_each do |i|
-      l = r = 0
-      while l < seg[i*2].size || r < seg[i*2 + 1].size
-        f = case
-            when r >= seg[i*2 + 1].size        then true
-            when l >= seg[i*2].size            then false
-            when seg[i*2][l] < seg[i*2 + 1][r] then true
-            else                                    false
-            end
-
-        if f
-          seg[i] << seg[i*2][l]
-          sum[i] << sum[i*2][l]
-          l += 1
-        else
-          seg[i] << seg[i*2 + 1][r]
-          sum[i] << sum[i*2 + 1][r]
-          r += 1
-        end
-      end
-
-      (1...size*2).each do |i|
-        replace = Array.new(1, 0_i64)
-        sum[i].each do |val|
-          replace << replace[-1] + val
-        end
-        sum[i], replace = replace, sum[i]
-      end
-    end
+  def initialize(n)
+    @n = Math.pw2ceil(n)
+    @a = Array.new(@n*2) { [] of Int64 }
   end
 
-  def query(x1, y1, x2, y2)
-    l = a.bsearch_index(&.>= x1) || a.size
-    r = a.bsearch_index(&.>= x2) || a.size
-    l += size
-    r += size
-    ret = 0_i64
+  def query(y1, y2, x1, x2)
+    lo = y1 + n
+    hi = y2 + n
+    ans = 0_i64
 
-    while l < r
-      if l.odd?
-        hi = seg[l].bsearch_index(&.>= y2) || seg[l].size
-        lo = seg[l].bsearch_index(&.>= y1) || seg[l].size
-        begin
-          ret += sum[l][hi] - sum[l][lo]
-        rescue
-          pp! [x1, y1, x2, y2]
-          pp! [l, r, lo, hi]
-          pp! sum[l]
-          pp! self
-          exit
-        end
-        l += 1
-      end
-
-      if r.odd?
-        r -= 1
-        hi = seg[r].bsearch_index(&.>= y2) || seg[r].size
-        lo = seg[r].bsearch_index(&.>= y1) || seg[r].size
-        ret += sum[r][hi] - sum[r][lo]
-      end
-      l >>= 1
-      r >>= 1
+    while lo < hi
+      ans += count(a[lo], x1, x2) if lo.odd?
+      ans += count(a[hi - 1], x1, x2) if hi.odd?
+      lo = (lo + 1) // 2
+      hi //= 2
     end
-    ret
+
+    ans
+  end
+
+  def count(a : Array(Int64), lo, hi)
+    i = a.bsearch_index(&.>= lo) || a.size
+    j = a.bsearch_index(&.>= hi) || a.size
+    j - i
   end
 
   alias R = Range(Int::Primitive?, Int::Primitive?)
 
-  def [](xr : R, yr : R)
-    x1 = xr.begin || 0
-    x2 = (xr.end || a.size - 1) + (xr.excludes_end? ? 0 : 1)
-    y1 = yr.begin || 0
-    y2 = (yr.end || seg.size - 1) + (yr.excludes_end? ? 0 : 1)
-    query(x1, y1, x2, y2)
+  def [](yr : R, xr : R)
+    y1, y2 = range_to_tuple(yr, n)
+    x1, x2 = range_to_tuple(xr, Int64::MAX)
+    query(y1, y2, x1, x2)
+  end
+
+  def range_to_tuple(r : R, maxi)
+    lo = r.begin || 0
+    hi = r.end.try &.+(r.excludes_end? ? 0 : 1) || maxi
+    {lo, hi}
+  end
+
+  def add(y, x)
+    i = y + n
+    insert a[i], x.to_i64
+
+    while 1 < i
+      i //= 2
+      insert a[i], x.to_i64
+    end
+  end
+
+  def insert(a : Array(Int64), v)
+    i = a.bsearch_index(&.>= v) || a.size
+    a[i,0] = v
   end
 end
