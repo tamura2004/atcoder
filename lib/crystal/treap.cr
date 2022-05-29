@@ -29,6 +29,7 @@ class Treap(T)
       end
     end
 
+    # k未満と、k以上で分割
     def split(k : T)
       if key < k
         fst, snd = right.try &.split(k) || nil_node_pair
@@ -41,6 +42,7 @@ class Treap(T)
       end
     end
 
+    # 添え字i未満と、以上で分割（0-origin）
     def split_at(i : Int)
       ord = left_size
       if ord < i

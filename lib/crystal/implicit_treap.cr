@@ -246,6 +246,10 @@ class ImplicitTreap(T)
     at(i)
   end
 
+  def replace(i : Int, v : T)
+    @root = root.try(&.replace(i,v))
+  end
+
   private def range_to_tuple(r : Rng)
     lo = r.begin || 0
     hi = (r.end || size - 1) + (r.excludes_end? ? 0 : 1)

@@ -1,46 +1,37 @@
-# ABC106_D
+# q = gets.to_s.to_i
 
-# イベントソート用に種別をenumで定義
-enum EventType
-  Train
-  Towns
-end
+# cnt = {} of Int64 => Int64
+# xs = [] of Int64
 
-# イベントのリストを定義
-events = [] of Tuple(Int32, EventType, Int32, Int32)
+# q.times do
+#   query = gets.to_s
 
-# 問題の入力を読み込み
-n, m, q = gets.to_s.split.map(&.to_i)
+#   case query
+#   when /^1/
+#     _, x = query.split.map(&.to_i64)
 
-# 列車の情報をイベントに追加
-m.times do
-  left, right = gets.to_s.split.map(&.to_i.pred)
-  events << {right, EventType::Train, left, -1}
-end
+#     if cnt.has_key?(x) && cnt[x] > 0
+#       cnt[x] += 1
+#     else
+#       i = xs.bsearch_index(&.> x) || xs.size
+#       xs.insert(i, x)
+#       cnt[x] = 1_i64
+#     end
+#   when /^2/
+#     _, x, c = query.split.map(&.to_i64)
+    
+#     next if !cnt.has_key?(x)
+#     cnt[x] -= Math.min(c, cnt[x])
+    
+#     next if 0 < cnt[x]
+#     xs.bsearch_index(&.>= x).try do |i|
+#       xs.delete_at(i)
+#     end
+#   when /^3/
+#     puts xs[-1] - xs[0]
+#   end
+# end
 
-# クエリ（左右の都市）をイベントに追加
-q.times do |index|
-  left, right = gets.to_s.split.map(&.to_i.pred)
-  events << {right, EventType::Towns, left, index}
-end
-
-# 右端の昇順、イベント種類順（列車＞都市）順にソート
-events.sort!
-
-# 始発駅の数
-stations = Array.new(500, 0_i64)
-
-# 回答
-answers = Array.new(q, -1i64)
-
-# イベントを順次処理
-events.each do |right, event, left, index|
-  case event
-  when .train? # enum定義時に小文字の問い合わせメソッドが定義される
-    stations[left] += 1
-  when .towns?
-    answers[index] = stations[left..right].sum
-  end
-end
-
-puts answers.join("\n")
+pp! 2 | 1 << 4 - 3
+pp! 1 < 2 < 3
+pp! 1 > 2 > 3

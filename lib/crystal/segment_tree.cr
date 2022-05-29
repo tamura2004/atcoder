@@ -102,6 +102,13 @@ class SegmentTree(T)
     end
   end
 
+  def initialize(@unit,@fx,@n,@xs)
+  end
+
+  def dup
+    SegmentTree(T).new(unit,fx,n,xs.dup)
+  end
+
   def set(i : Int::Primitive, v : T)
     raise "Bad index i=#{i}" unless (0...n).includes?(i)
 
