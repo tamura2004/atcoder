@@ -1,10 +1,10 @@
 class ImplicitTreap(T)
   alias Rng = Range(Int::Primitive?, Int::Primitive?)
-  
+
   class Node(T)
     class_getter r = Xorshift.new
 
-    getter val : T
+    property val : T
     getter min : T
     getter lazy : T
     getter pri : Int64
@@ -99,6 +99,12 @@ class ImplicitTreap(T)
       left.try &.first || val
     end
 
+    # 部分木の先頭要素
+    def first_node
+      push_down
+      left.try &.first_node || self
+    end
+
     {% for dir in %w(left right) %}
       {% for op, fb in {size: 0, min: "T::MAX", to_a: "[] of T"} %}
         @[AlwaysInline]
@@ -188,7 +194,7 @@ class ImplicitTreap(T)
     lo, hi = range_to_tuple(r)
     add(lo, hi, v)
   end
-  
+
   # 区間最小
   def min(lo : Int32, hi : Int32)
     t2, t3 = root.try &.split(hi) || nil_node_pair
@@ -198,7 +204,7 @@ class ImplicitTreap(T)
     @root = root.try &.merge(t3) || t3
     ans
   end
-  
+
   # 区間最小
   def [](r : Rng)
     lo, hi = range_to_tuple(r)
@@ -218,7 +224,7 @@ class ImplicitTreap(T)
   def reverse(lo : Int, hi : Int)
     reverse(lo...hi)
   end
-  
+
   # 区間ローテート、先頭がmidになる
   def rotate(r : Rng, mid : Int)
     lo, hi = range_to_tuple(r)
@@ -234,11 +240,11 @@ class ImplicitTreap(T)
 
   # i番目の要素
   def at(i : Int)
-    i += size if i < 0 
+    i += size if i < 0
     t1, t2 = root.try &.split(i) || nil_node_pair
     ans = t2.try &.first
     @root = t1.try &.merge(t2) || t2
-    ans
+    ans.not_nil!
   end
 
   # i番目の要素
@@ -246,8 +252,12 @@ class ImplicitTreap(T)
     at(i)
   end
 
-  def replace(i : Int, v : T)
-    @root = root.try(&.replace(i,v))
+  # i番目の値を更新
+  def []=(i : Int, v : T)
+    i += size if i < 0
+    t1, t2 = root.try &.split(i) || nil_node_pair
+    t2.try &.first_node.try &.val=(v)
+    @root = t1.try &.merge(t2) || t2
   end
 
   private def range_to_tuple(r : Rng)

@@ -92,4 +92,10 @@ describe ImplicitTreap do
     7.times { |i| node[i] }
     node.to_a.should eq [0, 3, 4, 5, 1, 2, 6]
   end
+
+  it "update" do
+    node = Tree{1,2,3}
+    node[0],node[2] = node[2], node[0]
+    node.to_a.should eq [3,2,1]
+  end
 end

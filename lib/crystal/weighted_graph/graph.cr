@@ -51,3 +51,5 @@ module WeightedGraph
     end
   end
 end
+
+include WeightedGraph

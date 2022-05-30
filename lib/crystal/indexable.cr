@@ -255,9 +255,9 @@ module Indexable(T)
     end
     dp
   end
-  
+
   # kmp最小反復
-  # 
+  #
   # ```
   # 3文字繰り返しなど検出
   # "abcabc".chars.kmp_report # => [1, 1, 2, 3, 3, 3, 3]
@@ -265,8 +265,14 @@ module Indexable(T)
   def kmp_repeat
     kmp.zip(0..).map{|i,j|j-i}
   end
+
+  # 範囲外エラー時にインデックスを出力
+  @[AlwaysInline]
+  def [](index : Int)
+    fetch(index) { raise IndexError.new("#{index} not in 0...#{size}") }
+  end
 end
-  
+
 # インデックスから値へ
 struct Int
   def of(a)
