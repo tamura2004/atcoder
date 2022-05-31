@@ -8,14 +8,14 @@ module BalancedTree
       getter key : T
       getter pri : Int64
       getter size : Int32
-      getter sum : T
       property left : self?
       property right : self?
+
+      delegate "==", to: key
   
       def initialize(@key)
         @pri = @@r.get
         @size = 1
-        @sum = key
       end
   
       def includes?(k : T) : Bool?
@@ -66,19 +66,7 @@ module BalancedTree
           b.update
         end
       end
-  
-      def delete(k : T)
-        if key == k
-          left.try &.merge(right) || right
-        elsif key < k
-          @right = right.try &.delete(k)
-          update
-        else
-          @left = left.try &.delete(k)
-          update
-        end
-      end
-  
+
       def left_size
         left.try &.size || 0
       end
@@ -113,7 +101,6 @@ module BalancedTree
   
       def update
         @size = left_size + right_size + 1
-        @sum = left_sum + right_sum + key
         self
       end
   
