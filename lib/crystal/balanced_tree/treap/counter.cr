@@ -3,12 +3,11 @@ require "crystal/balanced_tree/treap/node"
 module BalancedTree
   module Treap
     class Counter(T) < Node(T)
-      class_getter r = Xorshift.new
-      getter cnt : Int64
+      property val : Int64
 
-      def initialize(key,cnt)
+      def initialize(key,val)
         super(key)
-        @cnt = cnt.to_i64
+        @val = val.to_i64
       end
     end
   end

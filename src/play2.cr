@@ -1,3 +1,18 @@
-require "crystal/weighted_graph/graph"
+class Hoge
+  def nilhoge
+    nil.as(Hoge?)
+  end
+end
 
-g = Graph.new(10)
+class Fuga < Hoge
+end
+
+class Moga
+  getter fuga : Fuga?
+
+  def initialize
+    @fuga = nilhoge
+  end
+end
+
+m = Moga.new
