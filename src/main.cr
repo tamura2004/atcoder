@@ -1,15 +1,14 @@
-require "crystal/balanced_tree/treap/multiset"
-l, q = gets.to_s.split.map(&.to_i64)
-t = Multiset{0_i64, l}
+require "crystal/balanced_tree/treap/tree_counter"
+include BalancedTree::Treap
 
+t = TreeCounter(Int64,Int64).new
+
+q = gets.to_s.to_i64
 q.times do
-  c, x = gets.to_s.split.map(&.to_i64)
-  case c
-  when 1
-    t << x
-  when 2
-    lo, hi = t.lower_upper(x).map(&.not_nil!)
-    ans = hi - lo
-    pp ans
+  que, x, c = gets.to_s.split.map(&.to_i64) + [0_i64] * 2
+  case que
+  when 1 then t[x] += 1
+  when 2 then t[x] -= c
+  when 3 then pp (t.max - t.min)
   end
 end

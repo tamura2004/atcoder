@@ -1,9 +1,9 @@
 require "crystal/balanced_tree/treap/tree"
 
-# TreapによるMultiset実装
+# TreapによるOrderedSet実装
 module BalancedTree
   module Treap
-    class Multiset(T)
+    class OrderedSet(T)
       include Tree
 
       getter root : Node(T)?
@@ -27,6 +27,8 @@ module BalancedTree
 
       # 順序を保って`k`をキーに持つノードを追加する
       def insert(k) : self
+        return self if includes?(k)
+
         tail = self | k
         node = self.class.new(k)
         self + node + tail
@@ -37,16 +39,8 @@ module BalancedTree
         insert(k)
       end
 
-      # `k`をキーに持つノードを一つ削除する
+      # `k`をキーに持つノードを削除する
       def delete(k)
-        return unless includes?(k)
-        t1 = self | k
-        t2 = t1 ^ 1
-        self + t2
-      end
-
-      # `k`をキーに持つノードをすべて削除する
-      def delete_all(k)
         t1 = self | k
         t2 = t1 | k + 1
         self + t2
@@ -137,5 +131,3 @@ module BalancedTree
     end
   end
 end
-
-include BalancedTree::Treap

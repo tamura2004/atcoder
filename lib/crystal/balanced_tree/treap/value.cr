@@ -1,18 +1,30 @@
-require "crystal/balanced_tree/treap/node"
+require "crystal/balanced_tree/treap/xorshift"
 
 module BalancedTree
   module Treap
-    class Entry(K, V)
-      getter key : K
+    class Value(V)
       getter pri : Int64
       getter size : Int32
       property val : V
-      property left : Entry(K, V)?
-      property right : Entry(K, V)?
+      property left : Value(V)?
+      property right : Value(V)?
 
-      def initialize(@key, @val)
+      # 値`val`で初期化
+      def initialize(@val)
         @pri = Xorshift.get
         @size = 1
+      end
+
+      # 添え字`i`の値を返す
+      def fetch(i : Int)
+        ord = left_size
+        if ord == i
+          val
+        elsif ord < i
+          right.try &.fetch(i - ord - 1)
+        else
+          left.try &.fetch(i)
+        end
       end
 
       # 添え字i未満と、以上で分割（0-origin）
@@ -49,11 +61,11 @@ module BalancedTree
       end
 
       def left_to_a
-        left.try &.to_a || [] of T
+        left.try &.to_a || [] of V
       end
 
       def right_to_a
-        right.try &.to_a || [] of T
+        right.try &.to_a || [] of V
       end
 
       def nil_node
@@ -70,16 +82,16 @@ module BalancedTree
       end
 
       def inspect
-        "(#{left.inspect} #{key} => #{val} #{right.inspect})".gsub(/nil/, "")
+        "(#{left.inspect} #{val} => #{val} #{right.inspect})".gsub(/nil/, "")
       end
 
       def to_a
-        left_to_a + [key] + right_to_a
+        left_to_a + [val] + right_to_a
       end
 
-      def each(&block : K -> Nil)
+      def each(&block : V -> Nil)
         left.try &.each(&block)
-        block.call(key)
+        block.call(val)
         right.try &.each(&block)
       end
     end

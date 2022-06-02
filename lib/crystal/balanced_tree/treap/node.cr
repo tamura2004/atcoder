@@ -9,13 +9,12 @@ module BalancedTree
       property left : Node(T)?
       property right : Node(T)?
 
-      delegate "==", to: key
-
       def initialize(@key)
         @pri = Xorshift.get
         @size = 1
       end
 
+      # キーが`k`のノードを含むなら真
       def includes?(k : T) : Bool
         if key == k
           true
@@ -27,32 +26,29 @@ module BalancedTree
       end
 
       # k未満と、k以上で分割
-      def split(k : T) : Tuple(Node(T)?, Node(T)?)
+      def split(k : T) : {Node(T)?, Node(T)?}
         if key < k
-          fst, snd = right.try &.split(k) || nil_node_pair
-          @right = fst
+          @right, snd = right.try &.split(k) || nil_node_pair
           {update, snd}
         else
-          fst, snd = left.try &.split(k) || nil_node_pair
-          @left = snd
+          fst, @left = left.try &.split(k) || nil_node_pair
           {fst, update}
         end
       end
 
       # 添え字i未満と、以上で分割（0-origin）
-      def split_at(i : Int) : Tuple(Node(T)?, Node(T)?)
+      def split_at(i : Int) : {Node(T)?, Node(T)?}
         ord = left_size
         if ord < i
-          fst, snd = right.try &.split_at(i - ord - 1) || nil_node_pair
-          @right = fst
+          @right, snd = right.try &.split_at(i - ord - 1) || nil_node_pair
           {update, snd}
         else
-          fst, snd = left.try &.split_at(i) || nil_node_pair
-          @left = snd
+          fst, @left = left.try &.split_at(i) || nil_node_pair
           {fst, update}
         end
       end
 
+      # 木の結合
       def merge(b : self?)
         return self if b.nil?
 
@@ -73,14 +69,6 @@ module BalancedTree
         right.try &.size || 0
       end
 
-      def left_sum
-        left.try &.sum || T.zero
-      end
-
-      def right_sum
-        right.try &.sum || T.zero
-      end
-
       def left_to_a
         left.try &.to_a || [] of T
       end
@@ -90,7 +78,7 @@ module BalancedTree
       end
 
       def nil_node
-        nil.as(Node(T)?)
+        nil.as(self?)
       end
 
       def nil_node_pair

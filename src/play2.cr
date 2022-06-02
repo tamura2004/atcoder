@@ -1,18 +1,16 @@
+module Incrementable
+  def inc
+    @val += 1
+  end
+end
+
 class Hoge
-  def nilhoge
-    nil.as(Hoge?)
+  include Incrementable
+  getter val : Int32
+  def initialize(@val)
   end
 end
 
-class Fuga < Hoge
-end
-
-class Moga
-  getter fuga : Fuga?
-
-  def initialize
-    @fuga = nilhoge
-  end
-end
-
-m = Moga.new
+h = Hoge.new(10)
+h.inc
+pp h
