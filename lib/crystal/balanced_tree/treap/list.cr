@@ -55,10 +55,10 @@ module BalancedTree
         size.zero?
       end
 
-      # 順序を保って`Array`を返す
-      def to_a
-        root.try &.to_a
-      end
+      # # 順序を保って`Array`を返す
+      # def to_a
+      #   root.try &.to_a
+      # end
     end
   end
 end

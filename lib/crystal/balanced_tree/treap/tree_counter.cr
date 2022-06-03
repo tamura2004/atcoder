@@ -85,3 +85,7 @@ module BalancedTree
     end
   end
 end
+
+alias TreeCounter = BalancedTree::Treap::TreeCounter
+alias TreeCount = BalancedTree::Treap::TreeCounter
+alias HashCount = BalancedTree::Treap::TreeCounter

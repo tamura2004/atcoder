@@ -1,8 +1,13 @@
 require "crystal/balanced_tree/treap/xorshift"
+require "crystal/balanced_tree/treap/index_splitable"
+require "crystal/balanced_tree/treap/mergeable"
 
 module BalancedTree
   module Treap
     class Value(V)
+      include Mergeable
+      include IndexSplitable
+
       getter pri : Int64
       getter size : Int32
       property val : V
@@ -15,7 +20,7 @@ module BalancedTree
         @size = 1
       end
 
-      # 添え字`i`の値を返す
+      # `i`番目の値を返す
       def fetch(i : Int)
         ord = left_size
         if ord == i
@@ -27,31 +32,19 @@ module BalancedTree
         end
       end
 
-      # 添え字i未満と、以上で分割（0-origin）
-      def split_at(i : Int)
+      # `i`番目の値を`v`に更新
+      def put(i : Int, v : V)
         ord = left_size
-        if ord < i
-          @right, snd = right.try &.split_at(i - ord - 1) || nil_node_pair
-          {update, snd}
+        if ord == i
+          @val = v
+        elsif ord < i
+          right.try &.put(i - ord - 1, v)
         else
-          fst, @left = left.try &.split_at(i) || nil_node_pair
-          {fst, update}
+          left.try &.put(i, v)
         end
       end
 
-      # 木の結合
-      def merge(b : self?)
-        return self if b.nil?
-
-        if pri > b.pri
-          @right = right.try &.merge(b) || b
-          update
-        else
-          b.left = merge(b.left)
-          b.update
-        end
-      end
-
+      # 左部分木のサイズ = 自身のindex
       def left_size
         left.try &.size || 0
       end
@@ -68,21 +61,13 @@ module BalancedTree
         right.try &.to_a || [] of V
       end
 
-      def nil_node
-        nil.as(self?)
-      end
-
-      def nil_node_pair
-        {nil_node, nil_node}
-      end
-
       def update
         @size = left_size + right_size + 1
         self
       end
 
       def inspect
-        "(#{left.inspect} #{val} => #{val} #{right.inspect})".gsub(/nil/, "")
+        "(#{left.inspect} #{val} #{right.inspect})".gsub(/nil/, "")
       end
 
       def to_a

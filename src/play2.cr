@@ -1,16 +1,4 @@
-module Incrementable
-  def inc
-    @val += 1
-  end
-end
+require "crystal/balanced_tree/treap/tree_list"
 
-class Hoge
-  include Incrementable
-  getter val : Int32
-  def initialize(@val)
-  end
-end
-
-h = Hoge.new(10)
-h.inc
-pp h
+t = TreeList{1,2,3}
+pp t

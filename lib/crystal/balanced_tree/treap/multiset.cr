@@ -1,4 +1,5 @@
 require "crystal/balanced_tree/treap/tree"
+require "crystal/balanced_tree/treap/node"
 
 # TreapによるMultiset実装
 module BalancedTree
@@ -138,4 +139,4 @@ module BalancedTree
   end
 end
 
-include BalancedTree::Treap
+alias Multiset = BalancedTree::Treap::Multiset

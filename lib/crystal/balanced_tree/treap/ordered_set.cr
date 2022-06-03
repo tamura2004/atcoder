@@ -1,4 +1,5 @@
 require "crystal/balanced_tree/treap/tree"
+require "crystal/balanced_tree/treap/node"
 
 # TreapによるOrderedSet実装
 module BalancedTree

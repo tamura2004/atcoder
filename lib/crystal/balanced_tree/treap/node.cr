@@ -1,8 +1,11 @@
 require "crystal/balanced_tree/treap/xorshift"
+require "crystal/balanced_tree/treap/index_splitable"
 
 module BalancedTree
   module Treap
     class Node(T)
+      include IndexSplitable
+
       getter key : T
       getter pri : Int64
       getter size : Int32
@@ -37,16 +40,16 @@ module BalancedTree
       end
 
       # 添え字i未満と、以上で分割（0-origin）
-      def split_at(i : Int) : {Node(T)?, Node(T)?}
-        ord = left_size
-        if ord < i
-          @right, snd = right.try &.split_at(i - ord - 1) || nil_node_pair
-          {update, snd}
-        else
-          fst, @left = left.try &.split_at(i) || nil_node_pair
-          {fst, update}
-        end
-      end
+      # def split_at(i : Int) : {Node(T)?, Node(T)?}
+      #   ord = left_size
+      #   if ord < i
+      #     @right, snd = right.try &.split_at(i - ord - 1) || nil_node_pair
+      #     {update, snd}
+      #   else
+      #     fst, @left = left.try &.split_at(i) || nil_node_pair
+      #     {fst, update}
+      #   end
+      # end
 
       # 木の結合
       def merge(b : self?)
