@@ -2,7 +2,11 @@
 #
 # ```
 # a = [0b101,0b110,0b011]
-# XorBase.new(a).base.should eq [0b101,0b011]
+# x = XorBase.new
+# x << 0b101
+# x << 0b110
+# x << 0b011
+# x.base.should eq [0b101,0b110]
 # ```
 class XorBase
   getter base : Array(Int64)
@@ -32,6 +36,10 @@ class XorBase
     if v = includes?(v)
       base << v
     end
+  end
+
+  def <<(v)
+    add(v)
   end
 
   # 基底を掃き出し法により標準形へ

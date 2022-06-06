@@ -71,8 +71,8 @@ struct SparseTable(T)
   end
 
   # min,gcd等、単調減少する場合の次の変化点
-  def next_change(s,t) : T
+  def next_change(s, t) : T
     v = self[s..t]
-    (t...n).bsearch{|k| self[s..k] < v} || T.new(n)
+    (t...n).bsearch { |k| self[s..k] < v } || T.new(n)
   end
 end
