@@ -1,18 +1,25 @@
-require "big"
+s = gets.to_s
+x = gets.to_s.to_i64
 
-n = gets.to_s.to_i64
-a = 1.to_big_i
+y = 0_i64
+i = 0
 
-n.times do
-  puts to_a(a).join(" ")
-  a = a + (a << 64)
-end
-
-def to_a(a)
-  ans = [] of BigInt
-  while a > 0
-    ans << a % (1.to_big_i << 64)
-    a >>= 64
+while i < s.size
+  case s[i]
+  when 'a'..'z'
+    quit s[i] if x == y + 1
+    y += 1
+  when '0'..'9'
+    d = s[i].to_i64
+    if x <= (d + 1) * y
+      x %= y
+      x = y if x.zero?
+      y = 0_i64
+      i = 0
+      next
+    else
+      y += d * y
+    end
   end
-  ans
+  i += 1
 end
