@@ -1,2 +1,10 @@
-a999999999999999
-1000000000000000
+a2b3c4
+1
+
+aaabaaabaaabaaabcaaabaaabaaabaaabcaaabaaabaaabaaabcaaabaaabaaabaaabcaaabaaabaaabaaabc
+
+
+1 2 3 9
+a b c 2
+
+x = (x-1)%3+1
