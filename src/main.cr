@@ -1,57 +1,29 @@
-# さて、レベルNバーガーは何層だろうか？
-# f(N) = 層数とする
-# f(0) = 1
-# f(N+1) = f(N) * 2 + 3
-# ではパティは何枚含むだろうか
-# ps(N) = パティ数とする
-# ps(0) = 1
-# ps(N+1) = ps(N) * 2 + 1
-# N <= 50なので、予め求めておくことができる
-# ちなみに、レベルNバーガーの丁度真ん中のパティを食べるときの枚数
-# pi(0)=1
-# pi(n+1) = f(n) + 2
+require "crystal/union_find"
+require "crystal/complex"
 
-n, x = gets.to_s.split.map(&.to_i64)
-f = [1_i64]
-ps = [1_i64]
-pi = [1_i64]
-n.times do
-  pi << f[-1] + 2
-  f << f[-1] * 2 + 3
-  ps << ps[-1] * 2 + 1
+n, k = gets.to_s.split.map(&.to_i64)
+a = gets.to_s.split.map(&.to_i.pred)
+
+xy = Array.new(n) do
+  C.read
 end
 
-# pp! f
-# pp! ps
-# pp! pi
+lo = 0.0
+hi = 1e6
 
-# 今、レベルnバーガーのx枚目を気にしている
-# 中央のパティより右であれば、左はレベルn-1バーガーの
-# パティ数をpより取れば良い。
-# 右は、レベルn-1バーガーからのx'=x-pi(n)枚食べたとき
-# であり、小問題に分割された。
-# 丁度中央のパティを食べる場合に注意
+300.times do
+  mid = (lo+hi)/2
+  cnt = n.times.all? do |v|
+    k.times.any? do |nv|
+      (xy[a[nv]]-xy[v]).abs2 <= mid ** 2
+    end
+  end
 
-solve = uninitialized Proc(Int64, Int64, Int64)
-solve = ->(n : Int64, x : Int64) do
-  # pp! [n,x]
-  return ps[n] if f[n] <= x
-
-  raise "bad negative number #{x}" if x < 0
-  raise "bad negative level #{n}" if n < 0
-
-  return 0_i64 if x == 0
-  raise "bad n = #{n}, x = #{x}" if n == 0 && x > 1
-  return 1_i64 if n == 0
-
-  if x < pi[n]
-    solve.call(n - 1, x - 1)
-  elsif x == pi[n]
-    ps[n - 1] + 1
+  if cnt
+    hi = mid
   else
-    ps[n - 1] + 1 + solve.call(n - 1, x - pi[n])
+    lo = mid
   end
 end
 
-ans = solve.call(n, x)
-pp ans
+pp hi

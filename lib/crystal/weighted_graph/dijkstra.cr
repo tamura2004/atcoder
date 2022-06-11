@@ -14,13 +14,13 @@ module WeightedGraph
   #  V      v V
   # [4] <-2- [3]
   # ```
-  # g = Dijkstra.new(4)
-  # g.add "1 2 2"
-  # g.add "2 3 2"
-  # g.add "1 3 3"
-  # g.add "3 4 2"
-  # g.add "1 4 7"
-  # g.solve(0) # => [0,2,3,5]
+  # g = Graph.new(4)
+  # g.add 1, 2, 2
+  # g.add 2, 3, 2
+  # g.add 1, 3, 3
+  # g.add 3, 4, 2
+  # g.add 1, 4, 7
+  # Dijkstra.new(g).solve.should eq [0, 2, 3, 5]
   # ```
   struct Dijkstra
     INF = Cost::MAX//4
@@ -63,3 +63,6 @@ module WeightedGraph
     end
   end
 end
+
+alias Dijkstra = WeightedGraph::Dijkstra
+INF = WeightedGraph::Dijkstra::INF

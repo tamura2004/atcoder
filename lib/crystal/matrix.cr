@@ -63,8 +63,17 @@ class Matrix(T)
     ans
   end
 
+  # 2行2列の固有値1の場合の逆行列
   def inv
-    b = a.zip(Matrix(T).eye(n).a).map { |u, v| u + v }
+    self.class.new(n) do |i, j|
+      case {i, j}
+      when {0, 0} then self[1, 1]
+      when {1, 1} then self[0, 0]
+      when {1, 0} then -self[1, 0]
+      when {0, 1} then -self[0, 1]
+      else             raise "2行2列で固有値1の行列のみ"
+      end
+    end
   end
 
   @[AlwaysInline]

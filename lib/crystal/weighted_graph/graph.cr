@@ -52,4 +52,4 @@ module WeightedGraph
   end
 end
 
-include WeightedGraph
+alias Graph = WeightedGraph::Graph
