@@ -1,19 +1,26 @@
-n, m = gets.to_s.split.map(&.to_i64)
-s = gets.to_s.split.map(&.to_i64)
-x = gets.to_s.split.map(&.to_i64)
+require "complex"
 
-a = [0_i64]
-s.each { |si| a << si - a.last }
+struct Int
+  def of(indexable)
+    indexable[self]
+  end
+end
 
-even, odd = a.in_groups_of(2).transpose.map(&.tally)
+n, k = gets.to_s.split.map(&.to_i64)
+a = gets.to_s.split.map(&.to_i.pred)
 
-ans = a.each.with_index.max_of do |ai, i|
-  x.max_of do |xi|
-    d = ai - xi
-    d = -d if i.odd?
+xy = Array.new(n) do
+  x, y = gets.to_s.split.map(&.to_i64)
+  y.i + x
+end
 
-    x.sum do |xi|
-      even.fetch(xi + d, 0) + odd.fetch(xi - d, 0)
+# lit = a.map { |i| xy[i] }
+lit = a.map &.of xy
+
+ans = (0..1e6).bsearch do |r|
+  xy.all? do |z|
+    lit.any? do |w|
+      (z - w).abs <= r
     end
   end
 end

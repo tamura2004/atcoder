@@ -1,12 +1,13 @@
-require "crystal/balanced_tree/treap/mergeable"
-require "crystal/balanced_tree/treap/key_splitable"
-require "crystal/balanced_tree/treap/index_splitable"
+require "crystal/balanced_tree/common/xorshift"
+require "crystal/balanced_tree/treap/common/mergeable"
+require "crystal/balanced_tree/treap/common/key_splitable"
+require "crystal/balanced_tree/treap/common/index_splitable"
 
 module BalancedTree
   module Treap
     class Counter(K, V)
       include Mergeable
-      include KeySplitable(K)
+      include KeySplitable
       include IndexSplitable
 
       getter key : K

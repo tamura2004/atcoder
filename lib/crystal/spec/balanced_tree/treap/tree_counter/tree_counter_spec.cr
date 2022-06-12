@@ -22,4 +22,12 @@ describe BalancedTree::Treap::TreeCounter do
 
     t.size.should eq 2
   end
+
+  it "負の数はカウントしない" do
+    t = TreeCounter{1 => -10}
+    t[1].should eq 0
+    t.has_key?(1).should eq false
+    expect_raises(NilAssertionError) { t.min }
+    expect_raises(NilAssertionError) { t.max }
+  end
 end

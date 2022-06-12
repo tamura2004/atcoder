@@ -13,7 +13,7 @@ struct Int
   end
 
   def step_pow(by, to)
-    PowIterator.new(self,by,to)
+    PowIterator.new(self, by, to)
   end
 
   private class PowIterator
@@ -34,4 +34,7 @@ struct Int
     end
   end
 
+  def of(indexable)
+    indexable[self]
+  end
 end

@@ -1,8 +1,14 @@
-require "crystal/balanced_tree/treap/value"
-require "crystal/balanced_tree/treap/list"
+require "crystal/balanced_tree/treap/common/value"
+require "crystal/balanced_tree/treap/common/list"
 
+# 平衡二分探索木
 module BalancedTree
+  # `Treap`による実装
   module Treap
+    # リスト型の実装
+    #
+    # 区間ローテートがO(log N)で可能
+    # swapがO(log N)で可能
     class TreeList(V)
       include List
 

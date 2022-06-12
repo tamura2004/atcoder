@@ -1,6 +1,6 @@
-require "crystal/balanced_tree/treap/xorshift"
-require "crystal/balanced_tree/treap/index_splitable"
-require "crystal/balanced_tree/treap/mergeable"
+require "crystal/balanced_tree/common/xorshift"
+require "crystal/balanced_tree/treap/common/index_splitable"
+require "crystal/balanced_tree/treap/common/mergeable"
 
 module BalancedTree
   module Treap

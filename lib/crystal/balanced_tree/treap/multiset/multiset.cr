@@ -1,5 +1,5 @@
-require "crystal/balanced_tree/treap/tree"
-require "crystal/balanced_tree/treap/node"
+require "crystal/balanced_tree/treap/common/tree"
+require "crystal/balanced_tree/treap/common/node"
 
 # TreapによるMultiset実装
 module BalancedTree
