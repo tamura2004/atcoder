@@ -12,9 +12,12 @@ module BalancedTree
       property left : Node(T)?
       property right : Node(T)?
 
+      getter acc : T
+
       def initialize(@key)
         @pri = Xorshift.get
         @size = 1
+        @acc = @key
       end
 
       # キーが`k`のノードを含むなら真
@@ -72,6 +75,14 @@ module BalancedTree
         right.try &.size || 0
       end
 
+      def left_acc
+        left.try &.acc || T.zero
+      end
+
+      def right_acc
+        right.try &.acc || T.zero
+      end
+
       def left_to_a
         left.try &.to_a || [] of T
       end
@@ -90,6 +101,7 @@ module BalancedTree
 
       def update
         @size = left_size + right_size + 1
+        @acc = left_acc + right_acc + key
         self
       end
 

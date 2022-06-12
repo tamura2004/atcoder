@@ -124,9 +124,25 @@ module BalancedTree
         {lower(k, eq), upper(k, eq)}
       end
 
+      # 範囲の値の合計を返す
+      def get_acc(r : Range(Int::Primitive?, Int::Primitive?))
+        lo, hi = range_to_tuple(r)
+        t3 = self | hi
+        t2 = self | lo
+        t2.root.try(&.acc).tap { self + t2 + t3 }
+      end
+
       # 根のキーを返す
       def key : T?
         root.try &.key
+      end
+
+      # レンジを半開区間の[lo,hi)にして返す
+      def range_to_tuple(r : Range(Int::Primitive?, Int::Primitive?))
+        lo = r.begin || T::MIN
+        hi = r.end || T::MAX
+        hi += 1 if hi != T::MAX && !r.excludes_end?
+        {lo, hi}
       end
 
       # i番目のノードのキーを返す

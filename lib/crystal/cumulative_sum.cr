@@ -1,35 +1,86 @@
-# 左右からの累積和を求める
+# 累積和
 #
-
+# ```
+# a = [1,2,3,2]
+# cs = CumulativeSum(Int32).new(a)
+# cs.n.should eq 4
+# cs.a.should eq [1,2,2,3]
+# cs.cs.should eq [0,1,3,5,8]
+# ```
 class CumulativeSum(T)
-  getter left : Array(T)
-  getter right : Array(T)
-  getter src : Array(T)
+  getter a : Array(T)
+  getter cs : Array(T)
   getter n : Int32
-  getter f : T, T -> T
 
-  def initialize(src)
-    initialize(src) { |a, b| a + b }
+  def initialize(@a)
+    a.sort!
+    @n = a.size
+    @cs = [T.zero]
+    a.each { |ai| cs << ai + cs.last }
   end
 
-  def initialize(@src, &@f : T, T -> T)
-    @n = src.size
-    @left = Array.new(n + 1) { T.zero }
-    @right = Array.new(n + 1) { T.zero }
-    n.times do |i|
-      left[i + 1] = f.call left[i], src[i]
-    end
-    n.downto(1) do |i|
-      right[i - 1] = f.call right[i], src[i - 1]
-    end
+  # `x`以上の要素の数
+  #
+  # ```
+  # a = [1,2,3,2]
+  # cs = CumulativeSum(Int32).new(a)
+  # cs.count_upper(0).should eq 4
+  # cs.count_upper(1).should eq 4
+  # cs.count_upper(2).should eq 3
+  # cs.count_upper(3).should eq 1
+  # cs.count_upper(4).should eq 0
+  # ```
+  def count_upper(x : T)
+    n - (a.bsearch_index(&.>= x) || n)
   end
 
-  # i番目の要素を除く
-  def without(i)
+  # `x`以下の要素の数
+  #
+  # ```
+  # a = [1,2,3,2]
+  # cs = CumulativeSum(Int32).new(a)
+  # cs.count_lower(0).should eq 0
+  # cs.count_lower(1).should eq 1
+  # cs.count_lower(2).should eq 3
+  # cs.count_lower(3).should eq 4
+  # cs.count_lower(4).should eq 4
+  # ```
+  def count_lower(x : T)
+    a.bsearch_index(&.> x) || n
   end
 
-  delegate "[]", to: left
-  delegate "[]=", to: left
+  # `x`以上の要素の合計
+  #
+  # ```
+  # a = [1,2,3,2]
+  # cs = CumulativeSum(Int32).new(a)
+  # cs.sum_upper(0).should eq 8
+  # cs.sum_upper(1).should eq 8
+  # cs.sum_upper(2).should eq 7
+  # cs.sum_upper(3).should eq 3
+  # cs.sum_upper(4).should eq 0
+  # ```
+  def sum_upper(x : T)
+    i = a.bsearch_index(&.>= x) || n
+    cs[-1] - cs[i]
+  end
+
+
+  # `x`以下の要素の合計
+  #
+  # ```
+  # a = [1,2,3,2]
+  # cs = CumulativeSum(Int32).new(a)
+  # cs.sum_lower(0).should eq 0
+  # cs.sum_lower(1).should eq 1
+  # cs.sum_lower(2).should eq 5
+  # cs.sum_lower(3).should eq 8
+  # cs.sum_lower(4).should eq 8
+  # ```
+  def sum_lower(x : T)
+    i = a.bsearch_index(&.> x) || n
+    cs[i]
+  end
 end
 
-alias CS = CumulativeSum(Int64)
+alias CS = CumulativeSum

@@ -113,4 +113,19 @@ describe BalancedTree::Treap::Multiset do
     lo.should eq 10
     hi.should eq 1000
   end
+
+  it "range to tuple" do
+    t = Multiset{1, 10, 100, 1000}
+    t.range_to_tuple(-10..).should eq ({-10,Int32::MAX})
+    t.range_to_tuple(-10...).should eq ({-10,Int32::MAX})
+    t.range_to_tuple(-10..20).should eq ({-10,21})
+    t.range_to_tuple(-10...20).should eq ({-10,20})
+  end
+
+  it "get acc" do
+    t = Multiset{1, 10, 100, 1000}
+    t.get_acc(90..).should eq 1100
+    t.get_acc(...90).should eq 11
+    t.get_acc(10...101).should eq 110
+  end
 end
