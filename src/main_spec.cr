@@ -1,5 +1,5 @@
 require "spec"
-require "../lib/crystal/ntt_convolution"
+require "crystal/ntt_convolution"
 
 include Random::Secure
 

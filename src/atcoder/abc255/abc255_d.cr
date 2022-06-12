@@ -1,35 +1,4 @@
-class CumulativeSum(T)
-  getter a : Array(T)
-  getter cs : Array(T)
-  getter n : Int32
-
-  def initialize(@a)
-    a.sort!
-    @n = a.size
-    @cs = [T.zero]
-    a.each { |ai| cs << cs.last + ai }
-  end
-
-  def count_upper(x : T)
-    n - (a.bsearch_index(&.>= x) || n)
-  end
-
-  def count_lower(x : T)
-    a.bsearch_index(&.> x) || n
-  end
-
-  def sum_upper(x : T)
-    i = a.bsearch_index(&.>= x) || n
-    cs[-1] - cs[i]
-  end
-
-  def sum_lower(x : T)
-    i = a.bsearch_index(&.> x) || n
-    cs[i]
-  end
-end
-
-alias CS = CumulativeSum
+require "crystal/cumulative_sum"
 
 n,q = gets.to_s.split.map(&.to_i64)
 a = gets.to_s.split.map(&.to_i64)

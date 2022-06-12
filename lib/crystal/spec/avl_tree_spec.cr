@@ -23,12 +23,12 @@ describe AVLTree do
     [nil,1,1,3,3,5,5].each_with_index do |want, i|
       tr.lower(i).should eq want
     end
-    
+
     # 未満
     [nil,nil,1,1,3,3,5].each_with_index do |want, i|
       tr.lower(i, eq: false).should eq want
     end
-    
+
     # 以下のインデックス
     [nil,0,0,1,1,2,2].each_with_index do |want, i|
       tr.lower_index(i).should eq want
@@ -57,12 +57,12 @@ describe AVLTree do
     [1,1,3,3,5,5,nil].each_with_index do |want, i|
       tr.upper(i).should eq want
     end
-    
+
     # 越える
     [1,3,3,5,5,nil,nil].each_with_index do |want, i|
       tr.upper(i, eq: false).should eq want
     end
-    
+
     # 以上のインデックス
     [0,0,1,1,2,2,nil].each_with_index do |want, i|
       tr.upper_index(i).should eq want
@@ -91,7 +91,7 @@ describe AVLTree do
       tr.at(k).should eq want
     end
   end
-  
+
   # 大きいほうからk番目
   it "at" do
     tr = AVLTree{1,3,5}
@@ -99,7 +99,7 @@ describe AVLTree do
       tr.at(-k).should eq want
     end
   end
-  
+
   it "min max" do
     tr = AVLTree{1,3,5}
     tr.min.should eq 1
