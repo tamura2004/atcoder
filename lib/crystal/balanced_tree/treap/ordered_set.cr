@@ -1,13 +1,10 @@
-# require "crystal/balanced_tree/treap/common/tree"
-require "crystal/balanced_tree/treap/common/node"
+require "crystal/balanced_tree/treap/node"
 
 # TreapによるOrderedSet実装
 module BalancedTree
   module Treap
     class OrderedSet(T)
-      # include Tree
-
-      getter root : Node(T,T)?
+      getter root : Node(T, T)?
       delegate inspect, to_s, to: root
 
       def initialize
@@ -15,13 +12,13 @@ module BalancedTree
       end
 
       def initialize(k)
-        @root = Node(T,T).new(k,k)
+        @root = Node(T, T).new(k, k)
       end
 
-      def initialize(@root : Node(T,T)?)
+      def initialize(@root : Node(T, T)?)
       end
 
-            # キーが`k`以上のノードを別の木として分割する
+      # キーが`k`以上のノードを別の木として分割する
       #
       # keyの昇順に並んでいることを前提とする。
       # 自身を破壊的にk未満とし、k以上の木を返す

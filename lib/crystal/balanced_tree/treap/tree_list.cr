@@ -1,5 +1,4 @@
-require "crystal/balanced_tree/treap/common/node"
-# require "crystal/balanced_tree/treap/common/list"
+require "crystal/balanced_tree/treap/node"
 
 # 平衡二分探索木
 module BalancedTree

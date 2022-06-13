@@ -1,12 +1,9 @@
-# require "crystal/balanced_tree/treap/common/tree"
-require "crystal/balanced_tree/treap/common/node"
+require "crystal/balanced_tree/treap/node"
 
 # TreapによるMultiset実装
 module BalancedTree
   module Treap
     class Multiset(T)
-      # include Tree
-
       getter root : Node(T, T)?
       delegate inspect, to_s, to: root
 

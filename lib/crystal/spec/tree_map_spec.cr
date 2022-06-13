@@ -1,5 +1,5 @@
 require "spec"
-require "crystal//tree_map"
+require "crystal/tree_map"
 
 describe TreeMap do
   it "usage" do

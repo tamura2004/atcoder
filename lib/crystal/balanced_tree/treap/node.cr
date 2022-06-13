@@ -1,4 +1,4 @@
-require "crystal/balanced_tree/common/xorshift"
+require "crystal/balanced_tree/treap/xorshift"
 
 # 平衡二分探索木
 module BalancedTree
@@ -160,7 +160,7 @@ module BalancedTree
       end
 
       def keys
-        left_to_a + [key] + right_to_a
+        left_keys + [key] + right_keys
       end
 
       def values
