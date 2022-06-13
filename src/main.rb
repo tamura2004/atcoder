@@ -1,16 +1,5 @@
-n = gets.to_i
-a = 1
+require "pathname"
 
-def to_a(a)
-  ans = []
-  while a > 0
-    ans << a % (1 << 64)
-    a >>= 64
-  end
-  ans
-end
+path = "hoge/fuga/moga"
 
-n.times do
-  puts to_a(a).join(" ")
-  a = a + (a << 64)
-end
+pp Pathname.new(path).dirname + Pathname.new(path).basename
