@@ -1,5 +1,5 @@
-require "crystal/balanced_tree/treap/common/value"
-require "crystal/balanced_tree/treap/common/list"
+require "crystal/balanced_tree/treap/common/node"
+# require "crystal/balanced_tree/treap/common/list"
 
 # 平衡二分探索木
 module BalancedTree
@@ -10,9 +10,9 @@ module BalancedTree
     # 区間ローテートがO(log N)で可能
     # swapがO(log N)で可能
     class TreeList(V)
-      include List
+      # include List
 
-      getter root : Value(V)?
+      getter root : Node(V,V)?
 
       # 空の木で初期化
       def initialize
@@ -21,11 +21,65 @@ module BalancedTree
 
       # 値`v`を一つ持つ木を初期化
       def initialize(v : V)
-        @root = Value(V).new(v)
+        @root = Node(V,V).new(v,v)
       end
 
       # `root`を指定して初期化
-      def initialize(@root : Value(V)?)
+      def initialize(@root : Node(V,V)?)
+      end
+
+            # `index`番目以降のノードを別の木として分割する
+      #
+      # 負の引数は後ろからのindexに読み替える
+      # 自身を破壊的にi未満とし、i以上の木を返す
+      #
+      # ```
+      # t1 # => Tree{1,2,3}
+      # t2 = t1.split_at(1)
+      # t1 # => Tree{1}
+      # t2 # => Tree{2,3}
+      # ```
+      def split_at(i : Int) : self
+        i += size if i < 0
+        @root, node = root.try &.split_at(i) || {nil, nil}
+        self.class.new(node)
+      end
+
+      # `split_at`の別名
+      def ^(i : Int) : self
+        split_at(i)
+      end
+
+      # 木を結合する
+      #
+      # 自身を破壊的に変更し、`b`を後ろに追加する
+      #
+      # ```
+      # t1 # => Tree{1}
+      # t2 # => Tree{2,3}
+      # t1.merge(t2)
+      # t1 # => Tree{1,2,3}
+      # ```
+      def merge(b : self) : self
+        @root = root.try &.merge(b.root) || b.root
+        self
+      end
+
+      # `merge`の別名
+      def +(b : self) : self
+        merge(b)
+      end
+
+      # 木のノード数を返す
+      #
+      # ノードを持たない木のサイズは0
+      def size : Int32
+        root.try &.size || 0
+      end
+
+      # ノードを持たないなら真を返す
+      def empty? : Bool
+        size.zero?
       end
 
       # 末尾に値を追加
@@ -39,23 +93,23 @@ module BalancedTree
       end
 
       # `i`番目の値を取得
-      def fetch(i : Int) : V?
+      def at(i : Int) : V?
         i += size if i < 0
-        root.try(&.fetch(i))
+        root.try(&.at(i))
       end
 
       # `i`番目の値がnilなら例外
       def [](i : Int) : V
-        if v = fetch(i)
+        if v = at(i)
           v
         else
           raise IndexError.new
         end
       end
 
-      # `fetch`の別名
+      # `at`の別名
       def []?(i : Int) : V?
-        fetch(i)
+        at(i)
       end
 
       # `i`番目の値を更新
@@ -93,6 +147,10 @@ module BalancedTree
 
       def to_a
         root.try &.to_a || [] of V
+      end
+
+      def values
+        root.try &.values || [] of V
       end
     end
   end

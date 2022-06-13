@@ -116,10 +116,20 @@ describe BalancedTree::Treap::Multiset do
 
   it "range to tuple" do
     t = Multiset{1, 10, 100, 1000}
-    t.range_to_tuple(-10..).should eq ({-10,Int32::MAX})
-    t.range_to_tuple(-10...).should eq ({-10,Int32::MAX})
-    t.range_to_tuple(-10..20).should eq ({-10,21})
-    t.range_to_tuple(-10...20).should eq ({-10,20})
+    t.range_to_tuple(-10..).should eq ({-10, Int32::MAX})
+    t.range_to_tuple(-10...).should eq ({-10, Int32::MAX})
+    t.range_to_tuple(-10..20).should eq ({-10, 21})
+    t.range_to_tuple(-10...20).should eq ({-10, 20})
+  end
+
+  it "range to tuple" do
+    t = Multiset{1, 10, 100, 1000}
+    t.range_to_tuple(..10).should eq ({Int32::MIN, 11})
+    t.range_to_tuple(...10).should eq ({Int32::MIN, 10})
+    t.range_to_tuple(10..).should eq ({10, Int32::MAX})
+    t.range_to_tuple(10...).should eq ({10, Int32::MAX})
+    t.range_to_tuple(10..20).should eq ({10, 21})
+    t.range_to_tuple(10...20).should eq ({10, 20})
   end
 
   it "get acc" do

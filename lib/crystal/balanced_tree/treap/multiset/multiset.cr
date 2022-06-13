@@ -1,13 +1,13 @@
-require "crystal/balanced_tree/treap/common/tree"
+# require "crystal/balanced_tree/treap/common/tree"
 require "crystal/balanced_tree/treap/common/node"
 
 # TreapによるMultiset実装
 module BalancedTree
   module Treap
     class Multiset(T)
-      include Tree
+      # include Tree
 
-      getter root : Node(T)?
+      getter root : Node(T, T)?
       delegate inspect, to_s, to: root
 
       def initialize
@@ -15,10 +15,90 @@ module BalancedTree
       end
 
       def initialize(k)
-        @root = Node(T).new(k)
+        @root = Node(T, T).new(k, k)
       end
 
-      def initialize(@root : Node(T)?)
+      def initialize(@root : Node(T, T)?)
+      end
+
+      # キーが`k`以上のノードを別の木として分割する
+      #
+      # keyの昇順に並んでいることを前提とする。
+      # 自身を破壊的にk未満とし、k以上の木を返す
+      #
+      # ```
+      # t1 # => Tree{1,2,3}
+      # t2 = t1.split(2)
+      # t1 # => Tree{1}
+      # t2 # => Tree{2,3}
+      # ```
+      def split(k) : self
+        @root, node = root.try &.split(k) || {nil, nil}
+        self.class.new(node)
+      end
+
+      # `split`の別名
+      def |(k) : self
+        split(k)
+      end
+
+      # `index`番目以降のノードを別の木として分割する
+      #
+      # 負の引数は後ろからのindexに読み替える
+      # 自身を破壊的にi未満とし、i以上の木を返す
+      #
+      # ```
+      # t1 # => Tree{1,2,3}
+      # t2 = t1.split_at(1)
+      # t1 # => Tree{1}
+      # t2 # => Tree{2,3}
+      # ```
+      def split_at(i : Int) : self
+        i += size if i < 0
+        @root, node = root.try &.split_at(i) || {nil, nil}
+        self.class.new(node)
+      end
+
+      # `split_at`の別名
+      def ^(i : Int) : self
+        split_at(i)
+      end
+
+      # 木を結合する
+      #
+      # 自身を破壊的に変更し、`b`を後ろに追加する
+      #
+      # ```
+      # t1 # => Tree{1}
+      # t2 # => Tree{2,3}
+      # t1.merge(t2)
+      # t1 # => Tree{1,2,3}
+      # ```
+      def merge(b : self) : self
+        @root = root.try &.merge(b.root) || b.root
+        self
+      end
+
+      # `merge`の別名
+      def +(b : self) : self
+        merge(b)
+      end
+
+      # 木のノード数を返す
+      #
+      # ノードを持たない木のサイズは0
+      def size : Int32
+        root.try &.size || 0
+      end
+
+      # ノードを持たないなら真を返す
+      def empty? : Bool
+        size.zero?
+      end
+
+      # 順序を保って`Array`を返す
+      def to_a
+        root.try &.to_a
       end
 
       # キーが`k`のノードを持つなら真
@@ -127,9 +207,9 @@ module BalancedTree
       # 範囲の値の合計を返す
       def get_acc(r : Range(Int::Primitive?, Int::Primitive?))
         lo, hi = range_to_tuple(r)
-        t3 = self | hi
-        t2 = self | lo
-        t2.root.try(&.acc).tap { self + t2 + t3 }
+        t1 = self | lo
+        t2 = t1 | hi
+        t1.root.try(&.acc).tap { self + t1 + t2 }
       end
 
       # 根のキーを返す
@@ -138,10 +218,14 @@ module BalancedTree
       end
 
       # レンジを半開区間の[lo,hi)にして返す
-      def range_to_tuple(r : Range(Int::Primitive?, Int::Primitive?))
-        lo = r.begin || T::MIN
-        hi = r.end || T::MAX
-        hi += 1 if hi != T::MAX && !r.excludes_end?
+      def range_to_tuple(
+        r : Range(Int::Primitive?, Int::Primitive?),
+        min = T::MIN,
+        max = T::MAX
+      )
+        lo = r.begin || min
+        hi = r.end || max
+        hi += 1 if hi != max && !r.excludes_end?
         {lo, hi}
       end
 
@@ -150,6 +234,10 @@ module BalancedTree
         t2 = self ^ i + 1
         t1 = self ^ i
         t1.root.try(&.key).tap { self + t1 + t2 }
+      end
+
+      def each(&block : T -> Nil)
+        root.try &.each(&block)
       end
     end
   end
