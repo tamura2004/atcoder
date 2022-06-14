@@ -1,4 +1,11 @@
-# スパーステーブルによるRMQ
+require "crystal/range_to_tuple"
+
+# スパーステーブル
+#
+# 区間最大、区間最小、区間GCDを、前処理O(N log N)、クエリO(1)で処理。
+# 演算は`Proc`で与えるが、単位元を`nil`としている。
+#
+# クエリが高速なので、`#next_change`等二分探索と併用できる。
 #
 # ```
 # a = [5, 3, 7, 9, 6, 4, 1, 2, 100]
@@ -23,7 +30,7 @@ struct SparseTable(T)
   getter m : Int32
   getter a : Array(T)
   getter dp : Array(Array(T?))
-  getter f : Proc(T?, T?, T?)
+  getter f : Proc(T?, T?, T?) # mi
 
   # 区間最小
   def self.min(a)
@@ -59,9 +66,8 @@ struct SparseTable(T)
     end
   end
 
-  def solve(r : Range(Int::Primitive?, Int::Primitive?))
-    lo = Math.max 0, r.begin || 0
-    hi = Math.min n, (r.end || n - 1) + (r.excludes_end? ? 0 : 1)
+  def solve(r)
+    lo, hi = RangeToTuple.from(r, min: 0, max: n)
     i = Math.ilogb(hi - lo)
     f.call(dp[i][lo], dp[i][hi - 2**i])
   end

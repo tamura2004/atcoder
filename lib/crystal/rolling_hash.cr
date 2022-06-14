@@ -1,5 +1,7 @@
 # ローリングハッシュによる部分列の検索
 #
+# ハッシュの衝突回避のため、MOD = 2 ^ 61 - 1を利用
+#
 # ```
 # # 文字列の場合
 # s = RollingHash.new("0101")
@@ -49,7 +51,7 @@ class RollingHash
     hash[hi] - hash[lo] * pow[hi - lo]
   end
 
-  def [](i : Int32, len : Int32)
+  def [](i, len)
     get(i, i+len)
   end
 

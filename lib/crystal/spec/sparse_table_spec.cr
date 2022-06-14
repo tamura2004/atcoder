@@ -25,6 +25,8 @@ describe SparseTable do
     sp[..2].should eq 7
     sp[..0].should eq 5
     sp[0..0].should eq 5
+    sp[...8].should eq 9
+    sp[..8].should eq 100
   end
 
   it "gcd" do

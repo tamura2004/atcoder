@@ -1,3 +1,4 @@
+require "crystal/range_to_tuple"
 require "crystal/balanced_tree/treap/node"
 
 # 平衡二分探索木
@@ -131,9 +132,9 @@ module BalancedTree
       end
 
       # 区間`r`をその中のi番目が先頭になるようにローテート
-      def rotate(r : Range(Int::Primitive?, Int::Primitive?), i : Int)
-        lo = r.begin || 0
-        hi = r.end.try(&.+(1 - r.excludes_end?.to_unsafe)) || size
+      # i < 0の場合、後ろからの順番になる
+      def rotate(r, i)
+        lo, hi = RangeToTuple(Int32).from(r, min: 0, max: size)
         i += (lo...hi).size if i < 0
         mid = lo + i
         rotate(lo, mid, hi)

@@ -1,3 +1,4 @@
+require "crystal/range_to_tuple"
 require "crystal/balanced_tree/treap/node"
 
 # TreapによるMultiset実装
@@ -202,8 +203,8 @@ module BalancedTree
       end
 
       # 範囲の値の合計を返す
-      def get_acc(r : Range(Int::Primitive?, Int::Primitive?))
-        lo, hi = range_to_tuple(r)
+      def get_acc(r)
+        lo, hi = RangeToTuple(T).from(r)
         t1 = self | lo
         t2 = t1 | hi
         t1.root.try(&.acc).tap { self + t1 + t2 }
@@ -212,18 +213,6 @@ module BalancedTree
       # 根のキーを返す
       def key : T?
         root.try &.key
-      end
-
-      # レンジを半開区間の[lo,hi)にして返す
-      def range_to_tuple(
-        r : Range(Int::Primitive?, Int::Primitive?),
-        min = T::MIN,
-        max = T::MAX
-      )
-        lo = r.begin || min
-        hi = r.end || max
-        hi += 1 if hi != max && !r.excludes_end?
-        {lo, hi}
       end
 
       # i番目のノードのキーを返す
