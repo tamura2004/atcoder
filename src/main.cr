@@ -1,3 +1,1 @@
-require "crystal/prime"
-
-pp Prime.first(100)
+pp Math.ilogb(1i64 << 61)

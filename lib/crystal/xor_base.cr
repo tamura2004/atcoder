@@ -1,15 +1,16 @@
 # 数列aからXORの基底を取り出す
 #
 # ```
-# a = [0b101,0b110,0b011]
+# a = [0b101, 0b110, 0b011]
 # x = XorBase.new
 # x << 0b101
 # x << 0b110
 # x << 0b011
-# x.base.should eq [0b101,0b110]
+# x.base.should eq [0b101, 0b110]
 # ```
 class XorBase
   getter base : Array(Int64)
+  delegate each, to: base
 
   def initialize
     @base = [] of Int64
@@ -44,11 +45,12 @@ class XorBase
 
   # 基底を掃き出し法により標準形へ
   def sweep!
+    base.sort!.reverse!
     w = 64
     h = base.size
     row = 0
     (0...w).reverse_each do |i|
-      row.upto(h-1) do |j|
+      row.upto(h - 1) do |j|
         next if base[j].bit(i) == 0
         base.swap(row, j)
         h.times do |j|
@@ -60,5 +62,11 @@ class XorBase
       end
     end
     self
+  end
+
+  def debug(w = 64)
+    base.each do |x|
+      printf("%0#{w}b\n", x)
+    end
   end
 end
