@@ -12,7 +12,7 @@ module BalancedTree
     class TreeList(V)
       # include List
 
-      getter root : Node(V,V)?
+      getter root : Node(V, V)?
 
       # 空の木で初期化
       def initialize
@@ -21,14 +21,22 @@ module BalancedTree
 
       # 値`v`を一つ持つ木を初期化
       def initialize(v : V)
-        @root = Node(V,V).new(v,v)
+        @root = Node(V, V).new(v, v)
       end
 
       # `root`を指定して初期化
-      def initialize(@root : Node(V,V)?)
+      def initialize(@root : Node(V, V)?)
       end
 
-            # `index`番目以降のノードを別の木として分割する
+      def nil_node
+        nil.as(Node(V, V)?)
+      end
+
+      def nil_node_pair
+        {nil_node, nil_node}
+      end
+
+      # `index`番目以降のノードを別の木として分割する
       #
       # 負の引数は後ろからのindexに読み替える
       # 自身を破壊的にi未満とし、i以上の木を返す
@@ -41,7 +49,7 @@ module BalancedTree
       # ```
       def split_at(i : Int) : self
         i += size if i < 0
-        @root, node = root.try &.split_at(i) || {nil, nil}
+        @root, node = root.try &.split_at(i) || nil_node_pair
         self.class.new(node)
       end
 

@@ -3,7 +3,7 @@ require "crystal/xor_base"
 n = gets.to_s.to_i64
 a = gets.to_s.split.map(&.to_i64)
 all = a.reduce { |acc, b| acc ^ b }
-b = a.map{|v| v & (all ^ ((1_i64 << 60) - 1))}
+b = a.map(&.& ~all)
 
 xb = XorBase.new(b).sweep!
 ans = 0_i64

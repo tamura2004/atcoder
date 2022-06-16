@@ -49,7 +49,15 @@ module BalancedTree
       def initialize(@root : Node(K, V)?)
       end
 
-            # キーが`k`以上のノードを別の木として分割する
+      def nil_node
+        nil.as(Node(K,V)?)
+      end
+
+      def nil_node_pair
+        {nil_node, nil_node}
+      end
+
+      # キーが`k`以上のノードを別の木として分割する
       #
       # keyの昇順に並んでいることを前提とする。
       # 自身を破壊的にk未満とし、k以上の木を返す
@@ -61,7 +69,7 @@ module BalancedTree
       # t2 # => Tree{2,3}
       # ```
       def split(k) : self
-        @root, node = root.try &.split(k) || {nil, nil}
+        @root, node = root.try &.split(k) || nil_node_pair
         self.class.new(node)
       end
 
@@ -83,7 +91,7 @@ module BalancedTree
       # ```
       def split_at(i : Int) : self
         i += size if i < 0
-        @root, node = root.try &.split_at(i) || {nil, nil}
+        @root, node = root.try &.split_at(i) || nil_node_pair
         self.class.new(node)
       end
 

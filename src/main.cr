@@ -1,1 +1,3 @@
-pp Math.ilogb(1i64 << 61)
+x = [1,2,3,4,5]
+x.rotate!(2)
+pp x

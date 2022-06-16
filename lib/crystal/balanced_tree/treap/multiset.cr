@@ -13,7 +13,7 @@ module BalancedTree
       end
 
       def initialize(k)
-        @root = Node(T, T).new(k, k)
+        @root = Node(T, T).new(k, k, ->(a : T, b : T) { T.zero })
       end
 
       def initialize(@root : Node(T, T)?)
@@ -31,7 +31,7 @@ module BalancedTree
       # t2 # => Tree{2,3}
       # ```
       def split(k) : self
-        @root, node = root.try &.split(k) || {nil, nil}
+        @root, node = root.try &.split(k) || nil_node_pair
         self.class.new(node)
       end
 
@@ -53,7 +53,7 @@ module BalancedTree
       # ```
       def split_at(i : Int) : self
         i += size if i < 0
-        @root, node = root.try &.split_at(i) || {nil, nil}
+        @root, node = root.try &.split_at(i) || nil_node_pair
         self.class.new(node)
       end
 
@@ -224,6 +224,14 @@ module BalancedTree
 
       def each(&block : T -> Nil)
         root.try &.each(&block)
+      end
+
+      def nil_node
+        nil.as(Node(T, T)?)
+      end
+
+      def nil_node_pair
+        {nil_node, nil_node}
       end
     end
   end

@@ -72,10 +72,10 @@ module BalancedTree
       # k未満と、k以上で分割
       def split(k : K) : {Node(K, V)?, Node(K, V)?}
         if key < k
-          @right, snd = right.try &.split(k) || {nil, nil}
+          @right, snd = right.try &.split(k) || nil_node_pair
           {update, snd}
         else
-          fst, @left = left.try &.split(k) || {nil, nil}
+          fst, @left = left.try &.split(k) || nil_node_pair
           {fst, update}
         end
       end
@@ -84,10 +84,10 @@ module BalancedTree
       def split_at(i : Int)
         ord = left_size
         if ord < i
-          @right, snd = right.try &.split_at(i - ord - 1) || {nil, nil}
+          @right, snd = right.try &.split_at(i - ord - 1) || nil_node_pair
           {update, snd}
         else
-          fst, @left = left.try &.split_at(i) || {nil, nil}
+          fst, @left = left.try &.split_at(i) || nil_node_pair
           {fst, update}
         end
       end
@@ -149,6 +149,14 @@ module BalancedTree
         @size = left_size + right_size + 1
         @acc = fx.call(left_acc, fx.call(val, right_acc))
         self
+      end
+
+      def nil_node
+        nil.as(Node(K, V)?)
+      end
+
+      def nil_node_pair
+        {nil_node, nil_node}
       end
 
       def inspect
