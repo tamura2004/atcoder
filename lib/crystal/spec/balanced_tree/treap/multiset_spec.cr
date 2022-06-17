@@ -115,6 +115,7 @@ describe BalancedTree::Treap::Multiset do
   end
 
   it "get acc" do
+    Multiset.acc = true
     t = Multiset{1, 10, 100, 1000}
     t.get_acc(90..).should eq 1100
     t.get_acc(...90).should eq 11

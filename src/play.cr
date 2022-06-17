@@ -1,17 +1,8 @@
-class Hoge
-  getter a : Int32
+(1i64..1000000i64).each do |i|
+  tr = i * (i - 1) // 2
+  j = (Math.sqrt(tr * 8 + 1) + 1) // 2
 
-  def initialize(@a)
-  end
+  raise "bad" unless i == j
 end
 
-class Fuga < Hoge
-  getter b : Int32
-
-  def initialize(@b)
-    super(20)
-  end
-end
-
-f = Fuga.new(10)
-pp f
+puts "OK"

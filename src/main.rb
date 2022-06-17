@@ -1,5 +1,10 @@
-require "pathname"
-
-path = "hoge/fuga/moga"
-
-pp Pathname.new(path).dirname + Pathname.new(path).basename
+loop do
+  print "> "
+  line = gets
+  case line
+  when /^GET/
+  when /^POST/
+  else
+    puts "HTTP/1.1 500 Internal Server Error"
+  end
+end

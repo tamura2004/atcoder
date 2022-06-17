@@ -7,13 +7,15 @@ module BalancedTree
     class Multiset(T)
       getter root : Node(T, T)?
       delegate inspect, to_s, to: root
+      class_property acc = false # `true`で区間合計`#get_acc`有効
 
       def initialize
         @root = nil
       end
 
       def initialize(k)
-        @root = Node(T, T).new(k, k, ->(a : T, b : T) { T.zero })
+        fx = Proc(T, T, T).new { |a, b| @@acc ? a + b : a }
+        @root = Node(T, T).new(k, k, fx)
       end
 
       def initialize(@root : Node(T, T)?)
