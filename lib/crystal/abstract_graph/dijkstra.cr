@@ -1,7 +1,7 @@
 require "crystal/priority_queue"
-require "crystal/abstruct_graph/graph"
+require "crystal/abstract_graph/graph"
 
-module AbstructGraph
+module AbstractGraph
   class Dijkstra(V, E, S)
     getter g : Graph(V, E)
     getter nex : Proc(S,E,S)

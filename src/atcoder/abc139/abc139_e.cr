@@ -1,60 +1,36 @@
-alias V = Tuple(Int32,Int32)
+# 試合＝タプルを頂点としたグラフにおいて
+# 閉路が無いことが成立条件
+# トポロジカルソートしてＤＰすると最長パスが求められるが
+# それが試合日数になる
 
-def f(t)
-  return t if t[0] < t[1]
-  {t[1],t[0]}
+require "crystal/abstract_graph/tsort"
+
+struct V
+  getter i : Int32
+  getter j : Int32
+
+  def initialize(@i, @j)
+    @i, @j = j, i if i > j
+  end
 end
 
-n = gets.to_s.to_i
-g = Hash(V, Array(V)).new
+n = gets.to_s.to_i64
+g = Graph(V).new
 
 (1..n).each do |i|
-  (1..n).each do |j|
-    next unless i < j
-    g[f({i,j})] = [] of V
+  a = gets.to_s.split.map(&.to_i)
+
+  a.each do |j|
+    g.add_vertex V.new(i, j)
+  end
+
+  a.each_cons_pair do |j, k|
+    g.add V.new(i, j), V.new(i, k)
   end
 end
 
-(1..n).each do |i|
-  gets.to_s.split.map(&.to_i).each_cons_pair do |j,k|
-    v = f({i,j})
-    nv = f({i,k})
-    g[v] << nv
-  end
-end
-
-ind = Hash(V,Int32).new
-day = Hash(V,Int32).new
-g.keys.each do |v|
-  ind[v] = 0
-  day[v] = -1
-end
-
-g.keys.each do |v|
-  g[v].each do |nv|
-    ind[nv] += 1
-  end
-end
-
-q = Deque(V).new
-ind.each do |k,v|
-  q << k if v.zero?
-  day[k] = 1 if v.zero?
-end
-
-while q.size > 0
-  v = q.shift
-  g[v].each do |nv|
-    ind[nv] -= 1
-    if ind[nv].zero?
-      day[nv] = day[v] + 1
-      q << nv
-    end
-  end
-end
-
-if ind.values.all?(&.zero?)
-  pp day.values.max
+if ans = Tsort(V).new(g).longest_path
+  pp ans.values.max + 1
 else
   pp -1
 end

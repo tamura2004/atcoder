@@ -5,8 +5,8 @@ class RangeToTuple(T)
     min = T::MIN,
     max = T::MAX
   )
-    lo = r.begin || min
-    hi = r.end || max
+    lo = r.begin.try { |v| T.new(v) } || min
+    hi = r.end.try { |v| T.new(v) } || max
     hi += 1 if hi != max && !r.excludes_end?
     {lo, hi}
   end

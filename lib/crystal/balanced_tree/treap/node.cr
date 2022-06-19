@@ -6,19 +6,20 @@ module BalancedTree
   module Treap
     # ノード
     class Node(K, V)
+      # class_property acc = false
+
       getter key : K
       property val : V
-      getter acc : V
-      getter fx : Proc(V, V, V)
+      # getter acc : V
       getter pri : Int64
       getter size : Int32
       property left : Node(K, V)?
       property right : Node(K, V)?
 
-      def initialize(@key, @val, @fx = Proc(V, V, V).new { |x, y| x + y })
+      def initialize(@key, @val)
         @pri = Xorshift.get
         @size = 1
-        @acc = @val
+        # @acc = @val
       end
 
       # キーが`k`のノードを含むなら真
@@ -113,14 +114,6 @@ module BalancedTree
         right.try &.size || 0
       end
 
-      def left_acc
-        left.try &.acc || V.zero
-      end
-
-      def right_acc
-        right.try &.acc || V.zero
-      end
-
       def left_to_a
         left.try &.to_a || [] of K
       end
@@ -147,7 +140,6 @@ module BalancedTree
 
       def update
         @size = left_size + right_size + 1
-        @acc = fx.call(left_acc, fx.call(val, right_acc))
         self
       end
 
@@ -173,6 +165,12 @@ module BalancedTree
 
       def values
         left_values + [val] + right_values
+      end
+
+      def each(&block : V -> Nil)
+        left.try(&.each(&block))
+        block.call(val)
+        right.try(&.each(&block))
       end
     end
   end

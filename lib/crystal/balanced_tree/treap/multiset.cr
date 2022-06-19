@@ -7,18 +7,20 @@ module BalancedTree
     class Multiset(T)
       getter root : Node(T, T)?
       delegate inspect, to_s, to: root
-      class_property acc = false # `true`で区間合計`#get_acc`有効
 
       def initialize
         @root = nil
       end
 
       def initialize(k)
-        fx = Proc(T, T, T).new { |a, b| @@acc ? a + b : a }
-        @root = Node(T, T).new(k, k, fx)
+        @root = Node(T, T).new(k, k)
       end
 
       def initialize(@root : Node(T, T)?)
+      end
+
+      def empty?
+        root.nil?
       end
 
       # キーが`k`以上のノードを別の木として分割する
@@ -202,14 +204,6 @@ module BalancedTree
       # キーの両側の値を返す
       def lower_upper(k, eq = true) : {T?, T?}
         {lower(k, eq), upper(k, eq)}
-      end
-
-      # 範囲の値の合計を返す
-      def get_acc(r)
-        lo, hi = RangeToTuple(T).from(r)
-        t1 = self | lo
-        t2 = t1 | hi
-        t1.root.try(&.acc).tap { self + t1 + t2 }
       end
 
       # 根のキーを返す

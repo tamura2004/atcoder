@@ -1,14 +1,15 @@
 require "spec"
-require "../range_set"
+require "crystal/range_set"
 
 describe RangeSet do
   it "usage" do
-    s = RangeSet(Int32).new
-    s << (1..3)
-    s.size.should eq 3
-    s << (5..7)
-    s.size.should eq 6
-    s << (3..5)
-    s.size.should eq 7
+    s = RangeSet.new
+    s << (1...2)
+    s.size.should eq 1
+    s << (3...4)
+    s.size.should eq 2
+    s << (2...3)
+    s.size.should eq 1
+    pp s
   end
 end

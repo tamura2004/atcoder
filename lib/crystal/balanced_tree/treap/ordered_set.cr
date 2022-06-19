@@ -12,10 +12,14 @@ module BalancedTree
       end
 
       def initialize(k)
-        @root = Node(T, T).new(k, k, ->(a : T, b : T) { T.zero })
+        @root = Node(T, T).new(k, k)
       end
 
       def initialize(@root : Node(T, T)?)
+      end
+
+      def empty?
+        root.nil?
       end
 
       # キーが`k`以上のノードを別の木として分割する
@@ -205,6 +209,10 @@ module BalancedTree
         t2 = self ^ i + 1
         t1 = self ^ i
         t1.root.try(&.key).tap { self + t1 + t2 }
+      end
+
+      def each(&block : T -> Nil)
+        root.try &.each(&block)
       end
 
       def nil_node

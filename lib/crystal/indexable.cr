@@ -37,10 +37,11 @@ module Indexable(T)
   end
 
   # 累積和を返す
-  def cs : self
-    each_with_object([T.zero]) do |v, h|
+  def cs(head = true)
+    ans = each_with_object([T.zero]) do |v, h|
       h << h[-1] + v
     end
+    head ? ans : ans[1..]
   end
 
   # 累積xor
