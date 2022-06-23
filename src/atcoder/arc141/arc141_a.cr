@@ -24,22 +24,18 @@ def solve(n)
 
   ln.factors.each do |lm|
     next if lm == ln
+
     scale = ln // lm
     head = sn[0, lm]
 
-    candi = head * scale
-    if candi.to_i64 <= n
-      chmax ans, candi.to_i64
-    else
-      snd = (head.to_i64 - 1).to_s
-      if snd.size == head.size && snd.to_i64 > 0
-        candi2 = snd * scale
-        chmax ans, candi2.to_i64
-      else
-        candi3 = "9" * (ln - 1)
-        chmax ans, candi3.to_i64
-      end
-    end
+    candi1 = head * scale
+    candi2 = (head.to_i64 - 1).to_s * scale
+    candi3 = "9" * (ln - 1)
+
+    chmax ans, candi1.to_i64 if candi1.to_i64 <= n
+    chmax ans, candi2.to_i64
+    chmax ans, candi3.to_i64
+
   end
   ans
 end
