@@ -3,18 +3,18 @@ class Matrix(T)
   getter a : Array(Array(T))
 
   def self.zero(n)
-    new(n) { T.zero }
+    Matrix(T).new(n) { T.zero }
   end
 
   def self.eye(n)
-    new(n) { |i, j| i == j ? T.zero + 1 : T.zero }
+    Matrix(T).new(n) { |i, j| i == j ? T.zero + 1 : T.zero }
   end
 
   # ブロックで初期化
   def initialize(@n : Int32)
     @a = Array.new(n) { |i| Array.new(n) { |j| yield i, j } }
   end
-  
+
   def initialize(n : Int64)
     @n = n.to_i
     @a = Array.new(n) { |i| Array.new(n) { |j| yield i, j } }
@@ -23,6 +23,11 @@ class Matrix(T)
   # 配列で初期化
   def initialize(@a : Array(Array(T)))
     @n = a.size
+  end
+
+  def initialize(b : Array(U)) forall U
+    @n = b.size
+    @a = Array.new(n) { |i| Array.new(n) { |j| T.new(b[i][j]) } }
   end
 
   def *(b : self) : self
@@ -101,6 +106,6 @@ class Matrix(T)
 
   def inspect
     w = a.flatten.map(&.to_s.size).max
-    a.map(&.map{|v|"%#{w}s" % v}.join(" ")).join("\n")
+    a.map(&.map { |v| "%#{w}s" % v }.join(" ")).join("\n")
   end
 end

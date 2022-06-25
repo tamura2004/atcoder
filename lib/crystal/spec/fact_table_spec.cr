@@ -19,8 +19,11 @@ describe FactTable do
     2.c(3).should eq 0
     0.c(0).should eq 1
     0.c(1).should eq 0
+    0.c(-1).should eq 0
     1.c(0).should eq 1
     -1.c(1).should eq 0
+    1.c(-1).should eq 0
+    -1.c(-1).should eq 0
   end
 
   it "repeated combination" do

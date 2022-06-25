@@ -27,7 +27,7 @@ class FactTable
   end
 
   def c(n, k)
-    raise "overflow #{m} < #{k}" if m < k
+    return ModInt.zero if m < k
     return ModInt.zero if n < k
     return ModInt.zero if k < 0
 
