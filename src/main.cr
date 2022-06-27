@@ -1,3 +1,7 @@
+macro chmin(target, other)
+  {{target}} = ({{other}}) if ({{target}}) > ({{other}})
+end
+
 n = gets.to_s.to_i64
 c = gets.to_s.split.map(&.to_i64)
 
@@ -15,14 +19,9 @@ ans = Array.new(9, 0_i64)
 ans[base_num] = n // min_cost
 n = n % min_cost
 
-# pp! ix
-# pp! min_cost
-# pp! base_num
-# pp! ans
-# pp! n
 
 ix.values.sort.reverse_each do |i|
-  next if base_num == i
+  next if base_num >= i
   cost = c[i]
 
   num = n // (cost - min_cost)
@@ -40,4 +39,5 @@ ans.each_with_index do |num, i|
   end
 end
 
+quit 0 if cnt.empty?
 puts cnt.sort.reverse.join

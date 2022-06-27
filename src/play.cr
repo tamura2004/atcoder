@@ -27,7 +27,7 @@ end
 
 ans = 0_i64
 (1<<12).times do |b|
-  if up(b) == right(b) == down(b) == left(b)
+  if up(b) == right(b) == down(b) == left(b) == 0
     show(b)
     ans += 1
   end
