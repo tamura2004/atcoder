@@ -1,36 +1,34 @@
-def f(b,i)
-  b.bit(i).zero? ? "x" : "o"
-end
+struct MinusOneAsInf
+  include Comparable(self)
+  include Comparable(Int)
 
-def show(b)
-  puts "#{f(b,0)} #{f(b,1)} #{f(b,2)} #{f(b,3)}"
-  puts "#{f(b,11)}     #{f(b,4)}"
-  puts "#{f(b,10)}     #{f(b,5)}"
-  puts "#{f(b,9)} #{f(b,8)} #{f(b,7)} #{f(b,6)}"
-end
+  getter v : Int64
 
-def up(b)
-  (b & 0b1111).popcount
-end
+  def initialize(v)
+    @v = v.to_i64
+  end
 
-def down(b)
-  (b & 0b1111000000).popcount
-end
+  def <=>(b : self)
+    v == -1 ? 1 : b.v == -1 ? -1 : v <=> b.v
+  end
 
-def right(b)
-  (b & 0b1111000).popcount
-end
-
-def left(b)
-  (b & 0b111000000001).popcount
-end
-
-ans = 0_i64
-(1<<12).times do |b|
-  if up(b) == right(b) == down(b) == left(b) == 0
-    show(b)
-    ans += 1
+  def <=>(b : Int)
+    v == -1 ? 1 : v <=> b
   end
 end
 
-pp ans
+struct Int
+  include Comparable(MinusOneAsInf)
+
+  def <=>(b : MinusOneAsInf)
+    b.v == -1 ? -1 : self <=> b.v
+  end
+end
+
+x = MinusOneAsInf.new(100)
+y = MinusOneAsInf.new(-1)
+z = 100
+w = -1
+
+a = [z,x,y,z,w]
+pp a.sort
