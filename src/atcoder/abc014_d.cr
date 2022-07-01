@@ -55,7 +55,6 @@ class InOrderTree
   end
 
   def solve(root = 0)
-    @g = DFSTree.new(g).solve(root)
     dfs(root, -1)
     vid = ord.zip(0..).sort.map(&.last)
     gg = Graph.new(n)
@@ -132,8 +131,9 @@ class HLDecomposition
   end
 
   def solve(root = 0)
+    @g = DFSTree.new(g).solve(root)
+    HLSort.new(g).solve(root)
     @g, ord, vid, pa = InOrderTree.new(g).solve(root)
-    HLSort.new(g).solve(vid[root])
     dfs(vid[root])
     {g, ord, vid, head, pa}
   end
