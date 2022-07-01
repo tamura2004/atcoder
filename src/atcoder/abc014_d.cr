@@ -18,20 +18,45 @@ end
 
 class DFSTree
   getter g : Graph
+  getter gg : Graph
   getter seen : Set(Int32)
-  getter ord : Array(Int32)
-  getter pa : Array(Int32)
   delegate n, to: g
 
   def initialize(@g)
     @seen = Set(Int32).new
-    @ord = [] of Int32
-    @pa = Array.new(n, -1)
+    @gg = Graph.new(n)
   end
 
   def solve(root = 0)
     seen << root
     dfs(root)
+    gg
+  end
+
+  def dfs(v)
+    g[v].each do |nv|
+      next if nv.in?(seen)
+      seen << nv
+      gg[v] << nv
+      dfs(nv)
+    end
+  end
+end
+
+class InOrderTree
+  getter g : Graph
+  getter ord : Array(Int32)
+  getter pa : Array(Int32)
+  delegate n, to: g
+
+  def initialize(@g)
+    @ord = [] of Int32
+    @pa = Array.new(n, -1)
+  end
+
+  def solve(root = 0)
+    @g = DFSTree.new(g).solve(root)
+    dfs(root, -1)
     vid = ord.zip(0..).sort.map(&.last)
     gg = Graph.new(n)
 
@@ -46,12 +71,11 @@ class DFSTree
     {gg, ord, vid, pa}
   end
 
-  def dfs(v)
+  def dfs(v, pv)
     ord << v
     g[v].each do |nv|
-      next if nv.in?(seen)
-      seen << nv
-      dfs(nv)
+      next if nv == pv
+      dfs(nv, v)
     end
   end
 end
@@ -108,7 +132,7 @@ class HLDecomposition
   end
 
   def solve(root = 0)
-    @g, ord, vid, pa = DFSTree.new(g).solve(root)
+    @g, ord, vid, pa = InOrderTree.new(g).solve(root)
     HLSort.new(g).solve(vid[root])
     dfs(vid[root])
     {g, ord, vid, head, pa}
