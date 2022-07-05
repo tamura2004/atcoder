@@ -128,6 +128,10 @@ struct Complex(T)
   def inspect
     "#{real}+#{imag}i"
   end
+
+  def to_s
+    "#{real}+#{imag}i"
+  end
 end
 
 alias C = Complex(Int64)
