@@ -1,6 +1,5 @@
-require "crystal/avl_tree"
+x = [1,2,3,4]
 
-st = [1,2,3,4].to_ordered_set
-pp st
-st << 5
-pp st
+pp x.each_with_object([0]) { |v, cs|
+  cs << cs.last + v
+}
