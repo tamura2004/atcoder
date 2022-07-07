@@ -7,7 +7,7 @@ wsum = w.sum
 ww = w + w
 
 cnt = Array.new(n, 0_i64)
-nex = Array.new(60) { Array.new(n, &.itself.to_i64) }
+nex = Array.new(60) { Array.new(n, -1_i64) }
 
 # しゃくとり法
 m, r = x.divmod(wsum)
@@ -36,6 +36,7 @@ q.times do
   k = gets.to_s.to_i64.pred
   j = 0_i64
 
+  # ダブリング
   60.times do |i|
     next if k.bit(i) == 0
     j = nex[i][j]
