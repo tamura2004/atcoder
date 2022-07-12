@@ -1,34 +1,23 @@
-struct MinusOneAsInf
-  include Comparable(self)
-  include Comparable(Int)
+require "crystal/flow_graph/dinic"
+include FlowGraph
 
-  getter v : Int64
+INF = 1e15.to_i64
 
-  def initialize(v)
-    @v = v.to_i64
-  end
+n = 5
+edges = [
+  {0,1,100},
+  {0,4,99},
+  {2,5,90},
+  {3,5,101},
+  {1,3,INF},
+  {1,4,100},
+  {2,3,99},
+  {2,4,INF}  
+]
 
-  def <=>(b : self)
-    v == -1 ? 1 : b.v == -1 ? -1 : v <=> b.v
-  end
-
-  def <=>(b : Int)
-    v == -1 ? 1 : v <=> b
-  end
+g = Graph(Int64).new(n+1)
+edges.each do |v, nv, cost|
+  g.add v, nv, cost
 end
 
-struct Int
-  include Comparable(MinusOneAsInf)
-
-  def <=>(b : MinusOneAsInf)
-    b.v == -1 ? -1 : self <=> b.v
-  end
-end
-
-x = MinusOneAsInf.new(100)
-y = MinusOneAsInf.new(-1)
-z = 100
-w = -1
-
-a = [z,x,y,z,w]
-pp a.sort
+pp Dinic(Int64).new(g).solve
