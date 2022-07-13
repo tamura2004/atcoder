@@ -17,6 +17,8 @@ describe FlowGraph::Dinic do
     g = Graph(Int64).new(2)
     g.add 0,1,Int64::MAX - 1
     g.add 0,1,Int64::MAX - 1
+    g.add 0,1,Int64::MAX
+    g.add 0,1,Int64::MAX
     Dinic(Int64).new(g).solve.should eq Int64::MAX
   end
 end

@@ -51,12 +51,16 @@ module FlowGraph
             nv, re, cap, dir = e.v, e.re, e.cap, e.dir
             next if dir.reverse?
             r_cap = g[nv][re].cap
-            fh.puts "  #{v + origin} -> #{nv + origin} [label=\"#{cap}[#{r_cap}]\"]"
+            fh.puts "  #{v + origin} -> #{nv + origin} [label=\"#{f cap}[#{f r_cap}]\"]"
           end
         end
         fh.puts "}"
       end
       puts `cat debug.dot | graph-easy --from=dot --as_ascii`
+    end
+
+    def f(v)
+      v == T::MAX ? "INF" : v.to_s
     end
   end
 end

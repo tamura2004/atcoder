@@ -6,6 +6,14 @@ struct Complex(T)
   getter real : T
   getter imag : T
 
+  def y
+    imag
+  end
+
+  def x
+    real
+  end
+
   def self.read
     real, imag = gets.to_s.split.map(&.to_i64)
     new(real, imag)
@@ -139,6 +147,14 @@ alias C = Complex(Int64)
 struct Int
   def i
     C.new(0_i64, to_i64)
+  end
+
+  def y
+    C.new(0_i64, to_i64)
+  end
+
+  def x
+    C.new(to_i64, 0_i64)
   end
 
   def +(b : C)

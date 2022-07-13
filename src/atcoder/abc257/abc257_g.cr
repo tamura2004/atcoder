@@ -19,7 +19,7 @@ class Problem
   getter m : Int32
   getter sh : RollingHash
   getter th : RollingHash
-  getter ix : Array(Int32)
+  # getter ix : Array(Int32)
   # getter dp : SegmentTree(Int64)
 
   def initialize(@s, @t)
@@ -28,7 +28,7 @@ class Problem
     @sh = RollingHash.new(s)
     @th = RollingHash.new(t)
 
-    @ix = make_ix
+    # @ix = make_ix
   end
 
   def make_ix
@@ -62,4 +62,3 @@ s = gets.to_s
 t = gets.to_s
 pr = Problem.new(s, t)
 pp pr.solve
-

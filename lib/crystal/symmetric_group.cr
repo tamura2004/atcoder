@@ -3,7 +3,7 @@ struct SymmetricGroup
   getter a : Array(Int32)
   getter n : Int32
   delegate "[]", "to_s", to: a
-  
+
   def initialize(@a)
     @n = a.size
   end
@@ -16,7 +16,7 @@ struct SymmetricGroup
     end
     S.new ans
   end
-  
+
   # 逆元
   def - : self
     ans = Array.new(n, -1)
@@ -25,6 +25,8 @@ struct SymmetricGroup
     end
     S.new ans
   end
+
+  #
 end
 
 alias S = SymmetricGroup
