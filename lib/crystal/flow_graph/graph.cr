@@ -5,10 +5,10 @@ module FlowGraph
   end
 
   # 容量Tと逆辺の番号を持つ辺
-  class Edge(T)
+  class Edge
     getter v : Int32
     getter re : Int32 # 逆辺の番号
-    property cap : T
+    property cap : Int64
     getter dir : Dir
 
     def initialize(@v, @re, @cap, @dir)
@@ -16,28 +16,28 @@ module FlowGraph
   end
 
   # フロー用グラフ（容量、逆辺あり）
-  class Graph(T)
+  class Graph
     getter n : Int32
-    getter g : Array(Array(Edge(T)))
+    getter g : Array(Array(Edge))
 
     delegate "[]", to: g
 
     def initialize(n)
       @n = n.to_i
-      @g = Array.new(n) { [] of Edge(T) }
+      @g = Array.new(n) { [] of Edge }
     end
 
     # 辺と逆辺を追加する
     def add(v, nv, cap, origin = 0)
       v = v.to_i - origin
       nv = nv.to_i - origin
-      cap = T.new(cap)
+      cap = cap.to_i64
 
       i = g[v].size  # これから追加する辺はi番目
       j = g[nv].size # これから追加する逆辺はj番目
 
-      g[v] << Edge(T).new(nv, j, cap, Dir::Forward)
-      g[nv] << Edge(T).new(v, i, T.zero, Dir::Reverse)
+      g[v] << Edge.new(nv, j, cap, Dir::Forward)
+      g[nv] << Edge.new(v, i, 0_i64, Dir::Reverse)
 
       return i
     end
@@ -60,7 +60,9 @@ module FlowGraph
     end
 
     def f(v)
-      v == T::MAX ? "INF" : v.to_s
+      v == Int64::MAX ? "INF" : v.to_s
     end
   end
 end
+
+alias Graph = FlowGraph::Graph

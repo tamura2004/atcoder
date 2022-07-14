@@ -1,10 +1,11 @@
+require "crystal/modint9"
+
 # 事前計算によりO(1)で二項係数を求める
 #
 class FactTable
   getter m : Int32
   getter f : Array(ModInt)
   getter finv : Array(ModInt)
-  getter inv : Array(ModInt)
 
   def initialize(m)
     @m = m.to_i
@@ -14,9 +15,6 @@ class FactTable
     @finv = [f[m].inv]
     (1..m).each { |i| finv << finv.last * (m + 1 - i)}
     finv.reverse!
-
-    @inv = [ModInt.new(1)]
-    (1..m).each { |i| inv << finv[i] * f[i - 1]}
   end
 
   def p(n, k)
@@ -44,30 +42,12 @@ class FactTable
   end
 end
 
-class Pw2Table
-  getter m : Int32
-  getter pw2 : Array(ModInt)
-
-  def initialize(m)
-    @m = m.to_i
-    @pw2 = [ModInt.zero + 1]
-    m.times do
-      pw2 << pw2[-1] * 2
-    end
-  end
-end
-
 struct Int
-  MAX = 10_000_001
+  MAX = 10_000_000
   class_getter ft : FactTable = FactTable.new(MAX)
-  class_getter pw2 : Pw2Table = Pw2Table.new(MAX)
 
   def f
     @@ft.f[self]
-  end
-
-  def inv
-    @@ft.inv[self]
   end
 
   def finv
@@ -85,23 +65,36 @@ struct Int
   def h(k)
     @@ft.h(self,k)
   end
-
-  def pow(k)
-    # 2べきは頻度が多いので高速化
-    if self == 2
-      if k >= MAX
-        to_m ** k
-      elsif k >= 0
-        @@pw2.pw2[k]
-      else
-        @@pw2.pw2[-k].inv
-      end
-    else
-      if k >= 0
-        to_m ** k
-      else
-        (to_m ** (-k)).inv
-      end
-    end
-  end
 end
+# F = (x + x^-1)^T = x^-T (x^2 + 1)^T = x^-T Σi,C(T i)x^2i = Σi,C(T i)x^2i-T
+# 2i-T = a -> i = (a + T) // 2
+def solve_1d(a, t)
+  return 0.to_m if t < a
+  cnt = a + t
+  return 0.to_m if cnt.odd?
+  t.c(cnt//2)
+end
+
+# F = (x + x^-1 + y + y^-1) = (xy)^-1 (x^2y + y + xy^2 + x) = (xy)^-1 (xy + 1)(x + y)
+# F^T = (xy)^-T (xy + 1)^T (x + y)^T = (xy)^-T Σi Σj C(T i) C(T j) x^i+j-T y^i-j
+# i + j - T = a && i - j = b
+# 2i - T = a + b
+#
+# i = (a + b + T) // 2
+# j = i - b
+def solve_2d(a, b, t)
+  return 0.to_m if t < a + b
+  cnt = a + b + t
+  return 0.to_m if cnt.odd?
+  t.c(cnt//2) * t.c(cnt//2 - b)
+end
+
+n,x,y,z = gets.to_s.split.map(&.to_i64)
+ans = 0.to_m
+x,y,z = {x,y,z}.map(&.abs)
+
+(0..n).each do |t|
+  ans += solve_1d(z, t) * solve_2d(x, y, n - t) * n.c(t)
+end
+
+pp ans
