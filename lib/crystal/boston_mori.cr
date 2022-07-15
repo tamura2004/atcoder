@@ -1,4 +1,5 @@
 require "crystal/ntt_convolution"
+require "crystal/fps"
 
 # n = gets.to_s.to_i64
 # a = [1, 0, 0, 0, 1, 1, 3]
@@ -10,9 +11,14 @@ class BostonMori
   getter p : Array(Int64)
   getter q : Array(Int64)
 
-  def initialize(p, q)
+  def initialize(p : Array(U), q : Array(U)) forall U
     @p = p.map(&.to_i64)
     @q = q.map(&.to_i64)
+  end
+
+  def initialize(s : String, t : String)
+    @p = FPS::Parser.new(s).parse.to_a.map(&.to_i64)
+    @q = FPS::Parser.new(t).parse.to_a.map(&.to_i64)
   end
 
   def solve(n)

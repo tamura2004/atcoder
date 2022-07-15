@@ -36,7 +36,7 @@ module FPS
   # <expr> ::= <term>[<term>]*
   # <term> ::= <sign><coeff><index>
   # <sign> ::= [('+'|'-')]
-  # <coeff> ::= [<number>]
+  # <coeff> ::= [<number>'*']
   # <index> ::= ['x']['^'][<number>]
   struct Parser
     getter s : StringScanner
@@ -70,9 +70,9 @@ module FPS
       end
     end
 
-    # <coeff> ::= [<number>]
+    # <coeff> ::= [<number>'*']
     def coeff
-      number || 1
+      number.tap { scan(/\*/) } || 1
     end
 
     # <index> ::= ['x']['^'][<number>]
@@ -90,5 +90,3 @@ module FPS
     end
   end
 end
-
-pp FPS::Parser.new("1 - x - 2 x^2 + 2 x^4 + 4 x^5 - x^6 - 3 x^7 - 3 x^8 - x^9 + 4 x^10 + 2 x^11 - 2 x^13 - x^14 + x^15").parse.to_a

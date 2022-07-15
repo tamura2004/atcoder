@@ -21,6 +21,7 @@ LANG_EXT = {
   ".scm" => "gauche",
   ".go" => "go",
   ".rs" => "rust",
+  ".maxima" => "maxima",
 }
 
 COMPILE = {
@@ -56,6 +57,7 @@ EXECUTE = {
   "gauche" => "gosh src/main.scm",
   "go" => "./dist/go.out",
   "rust" => "target/debug/main",
+  "maxima" => "maxima -b src/main.maxima",
 }
 
 class Task
