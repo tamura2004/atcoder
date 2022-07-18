@@ -1,49 +1,41 @@
 require "crystal/graph"
 
-s, t, m = gets.to_s.split.map(&.to_i)
-g = Graph.new(s + t)
-m.times do
-  v, nv = gets.to_s.split.map(&.to_i64)
-  g.add v, nv
-end
-
-Problem.new(s, t, g).solve
-
 class Problem
   getter s : Int32
   getter t : Int32
+  getter m : Int32
   getter g : Graph
-  getter pv : Hash(Int32, Int32)  # pv
-  getter depth : Hash(Int32, Int32) # pv
   delegate n, to: g
 
-  def initialize(@s, @t, @g)
-    @pv = Hash(Int32, Int32).new
-    @depth = Hash(Int32, Int32).new(0)
+  def self.read
+    s, t, m = gets.to_s.split.map(&.to_i)
+    g = Graph.new(s + t)
+    m.times do
+      v, nv = gets.to_s.split.map(&.to_i64)
+      g.add v, nv
+    end
+    new(s, t, m, g)
   end
-  
+
+  def initialize(@s, @t, @m, @g)
+  end
+
   def solve
-    t.times do |i|
-      @pv = Hash(Int32, Int32).new
-      @depth = Hash(Int32, Int32).new(0)
-      v = i + s
-      if dfs(v, v)
-        quit i
+    cnt = Hash(Tuple(Int32, Int32), Int32).new
+    s.times do |v|
+      g[v].each_combination(2) do |(a, b)|
+        a, b = b, a unless a < b
+        pair = {a, b}
+
+        if cnt.has_key?(pair)
+          quit [v, a, b, cnt[pair]].map(&.succ).join(" ")
+        else
+          cnt[pair] = v
+        end
       end
     end
     pp -1
   end
-
-  def dfs(v, root)
-    pp! [v,root,depth[v]]
-    g[v].each do |nv|
-      next if pv.has_key?(nv)
-      next if nv == root && depth[v] != 3
-      pv[nv] = v
-      depth[nv] = depth[v] + 1
-      return true if nv == root && depth[nv] == 4
-      dfs(nv, root)
-    end
-    return false
-  end
 end
+
+Problem.read.solve
