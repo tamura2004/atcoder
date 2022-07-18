@@ -23,16 +23,30 @@ module FPS
 
     def to_a
       max_index = terms.map(&.index).max
-      Array.new(max_index+1, 0).tap do |ans|
+      Array.new(max_index + 1, 0_i64).tap do |ans|
         terms.each do |term|
           ans[term.index] += term.coeff
         end
       end
-   end
+    end
+  end
+
+  # 有理式
+  struct RatExpr
+    getter numerator : Expr
+    getter denominator : Expr
+
+    def initialize(@numerator, @denominator)
+    end
+
+    def to_pair
+      {numerator.to_a, denominator.to_a}
+    end
   end
 
   # 多項式のパーサ
   #
+  # <rat_expr> ::= <expr>/<expr>
   # <expr> ::= <term>[<term>]*
   # <term> ::= <sign><coeff><index>
   # <sign> ::= [('+'|'-')]
@@ -41,19 +55,23 @@ module FPS
   struct Parser
     getter s : StringScanner
     delegate scan, eos?, to: s
-    getter expr : Expr
 
     def initialize(s)
-      @s = StringScanner.new(s.gsub(" ", ""))
-      @expr = Expr.new
+      @s = StringScanner.new(s.gsub(/[\s\(\)]/, ""))
+    end
+
+    # <rat_expr> ::= <expr>/<expr>
+    def rat_expr
+      RatExpr.new expr, expr
     end
 
     # <expr> ::= <term>[<term>]*
-    def parse
-      while !eos?
-        expr << term
+    def expr
+      ans = Expr.new
+      while !eos? && !scan(/\//)
+        ans << term
       end
-      expr
+      ans
     end
 
     # <term> ::= <sign><coeff><index>

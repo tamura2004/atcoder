@@ -17,10 +17,16 @@ class BostonMori
   end
 
   def initialize(s : String, t : String)
-    @p = FPS::Parser.new(s).parse.to_a.map(&.to_i64)
-    @q = FPS::Parser.new(t).parse.to_a.map(&.to_i64)
+    p = FPS::Parser.new(s).expr.to_a
+    q = FPS::Parser.new(t).expr.to_a
+    initialize(p, q)
   end
-
+  
+  def initialize(r : String)
+    p, q = FPS::Parser.new(r).rat_expr.to_pair
+    initialize(p, q)
+  end
+    
   def solve(n)
     q_rev = rev(q)
     while n > 0

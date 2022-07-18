@@ -18,4 +18,11 @@ describe BostonMori do
     ans = BostonMori.new(s, t).solve(n - 6)
     ans.should eq 80132
   end
+
+  it "parse from rat expr string" do
+    n = 50
+    r = "(3*x^6+x^5+x^4+1)/(x^15-x^14-2*x^13+2*x^11+4*x^10-x^9-3*x^8-3*x^7-x^6+4*x^5+2*x^4-2*x^2-x+1)"
+    ans = BostonMori.new(r).solve(n - 6)
+    ans.should eq 80132
+  end
 end

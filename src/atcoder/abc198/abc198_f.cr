@@ -12,7 +12,6 @@
 require "crystal/boston_mori"
 
 n = gets.to_s.to_i64
-bunshi = "3*x^6+x^5+x^4+1"
-bunbo = "x^15-x^14-2*x^13+2*x^11+4*x^10-x^9-3*x^8-3*x^7-x^6+4*x^5+2*x^4-2*x^2-x+1"
-ans = BostonMori.new(bunshi,bunbo).solve(n - 6)
+expr = "(3*x^6+x^5+x^4+1)/(x^15-x^14-2*x^13+2*x^11+4*x^10-x^9-3*x^8-3*x^7-x^6+4*x^5+2*x^4-2*x^2-x+1)"
+ans = BostonMori.new(expr).solve(n - 6)
 pp ans
