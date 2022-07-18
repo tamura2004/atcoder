@@ -13,51 +13,37 @@ class Problem
   getter s : Int32
   getter t : Int32
   getter g : Graph
-  getter seen : Hash(Int32, Int32)  # pv
+  getter pv : Hash(Int32, Int32)  # pv
   getter depth : Hash(Int32, Int32) # pv
   delegate n, to: g
 
   def initialize(@s, @t, @g)
-    @seen = Hash(Int32, Int32).new
+    @pv = Hash(Int32, Int32).new
     @depth = Hash(Int32, Int32).new(0)
   end
   
   def solve
     t.times do |i|
-      @seen = Hash(Int32, Int32).new
+      @pv = Hash(Int32, Int32).new
       @depth = Hash(Int32, Int32).new(0)
       v = i + s
-      seen[v] = -1
-      if ans = dfs(v, v)
-        quit ans.map(&.succ).join(" ")
+      if dfs(v, v)
+        quit i
       end
     end
     pp -1
   end
 
   def dfs(v, root)
+    pp! [v,root,depth[v]]
     g[v].each do |nv|
-      pp! [v, nv, depth[nv]] if root == 3
-      if depth[nv] == 3
-        if nv == root
-
-          ans = [] of Int32
-          ans << nv
-          ans << v
-          ans << seen[v]
-          ans << seen[seen[v]]
-          ans << root
-          return ans
-        else
-          next
-        end
-      end
-      
-      next if seen.has_key?(nv)
-      seen[nv] = v
+      next if pv.has_key?(nv)
+      next if nv == root && depth[v] != 3
+      pv[nv] = v
       depth[nv] = depth[v] + 1
+      return true if nv == root && depth[nv] == 4
       dfs(nv, root)
     end
-    return nil
+    return false
   end
 end
