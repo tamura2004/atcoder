@@ -22,8 +22,10 @@ LANG_EXT = {
   ".go" => "go",
   ".rs" => "rust",
   ".maxima" => "maxima",
+  ".lisp" => "common_lisp",
 }
 
+# %s はソースコードの絶対パスに置き換え
 COMPILE = {
   "cpp" => "g++ src/main.cpp -std=c++14 -I /home/tamura/src/acl",
   # "ruby" => "cat %s | clip.exe && touch flag.txt",
@@ -32,10 +34,12 @@ COMPILE = {
   "java" => "javac -d dist src/Main.java",
   "kotlin" => "kotlinc src/main.kt -include-runtime -d dist/kotlin.jar",
   "csharp" => "mcs src/main.cs -out:dist/csharp.exe",
-  "go" => "go build -buildmode=exe -o ./dist/go.out ./src/main.go",
+  "go" => "go build -buildmode=exe -o ./dist/go.out %s",
   "rust" => "cargo build",
+# "common_lisp" => 'sbcl --noinform -eval "(compile-file \"src/main.cl\")" --quit',
 }
 
+# %s はソースコードの絶対パスに置き換え
 EXECUTE = {
   "dart" => "dart %s",
   "dot" => "cat %s | graph-easy --from=dot --as_ascii",
@@ -58,6 +62,7 @@ EXECUTE = {
   "go" => "./dist/go.out",
   "rust" => "target/debug/main",
   "maxima" => "maxima -b src/main.maxima",
+  "common_lisp" => "sbcl --script %s",
 }
 
 class Task
