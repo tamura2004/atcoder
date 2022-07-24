@@ -67,7 +67,7 @@ fn main() {
     let mut uf = UnionFind::new(n);
 
     for _ in 0..m {
-        let t: usize = read();
+        let mut t: usize = read();
         let mut v: usize = read();
         let mut nv: usize = read();
 
