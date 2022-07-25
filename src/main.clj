@@ -1,15 +1,13 @@
-(def w (read))
-(def h (read))
 (def n (read))
-(def xya (for [i (range n)] (list (read) (read) (read))))
-(defn q [xya minx maxx miny maxy]
-  (if (empty? xya) [minx maxx miny maxy]
-    (let [[x y a] (first xya)]
-      (case a
-        1 (q (rest xya) (max x minx) maxx miny maxy)
-        2 (q (rest xya) minx (min x maxx) miny maxy)
-        3 (q (rest xya) minx maxx (max y miny) maxy)
-        4 (q (rest xya) minx maxx miny (min y maxy))))))
-(def ans (let [[minx maxx miny maxy] (q xya 0 w 0 h)]
-  (if (or (> minx maxx) (> miny maxy)) 0 (* (- maxx minx) (- maxy miny)))))
-(println ans)
+(def q (read))
+(def uf (to-array (for [i (range 0 n)] i)))
+(defn uf-root [uf v] (aset uf v (if (= (aget uf v) v) v (uf-root uf (aget uf v)))))
+(defn uf-same [uf v nv] (= (uf-root uf v) (uf-root uf nv)))
+(defn uf-unite [uf v nv]
+  (let [v (uf-root uf v) nv (uf-root uf nv)]
+    (when-not (= v nv) (aset uf v nv))))
+(dotimes [i q]
+  (let [ty (read) v (read) nv (read)]
+    (if (= ty 0)
+      (uf-unite uf v nv)
+      (println (if (uf-same uf v nv) "Yes" "No")))))

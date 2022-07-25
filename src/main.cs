@@ -1,52 +1,54 @@
 using System;
-using System.Collections.Generic;
-using System.Text.RegularExpressions;
-using static System.IO.File;
-using static System.IO.Directory;
-using static System.IO.SearchOption;
 
-class Program {
-  static void Main (string[] args) {
-    var opt = parse (args);
+public class UnionFind {
+  public int[] par;
 
-    var dir = opt.ContainsKey ("d") ? opt["d"] : GetCurrentDirectory ();
-
-    var files = GetFiles (dir, "*", AllDirectories);
-    var count = 0;
-    foreach (var file in files) {
-      var line_number = 0;
-      foreach (var line in ReadLines (file)) {
-        line_number++;
-        count++;
-        if (count % 10000 == 0) {
-          int par = (int) ((count / 10000) % 50);
-          Console.Error.Write (string.Format ("[{0}{1}]{2}\r",
-            new string ('#', par),
-            new string ('-', 50 - par),
-            file
-          ));
-        }
-        if (Regex.IsMatch (line, @"[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}")) {
-          Console.WriteLine ($"{file},{line_number},{line}");
-          break;
-        }
-      }
+  public UnionFind(int n) {
+    par = new int[n];
+    for (int i = 0; i < n; i++) {
+      par[i] = i;
     }
   }
 
-  static Dictionary<String, String> parse (string[] args) {
-    var ans = new Dictionary<string, string> ();
-    var isValue = false;
-    var key = "";
-    foreach (var arg in args) {
-      if (isValue) {
-        isValue = false;
-        ans[key] = arg;
+  public int root(int v) {
+    if (v == par[v]) return v;
+    par[v] = root(par[v]);
+    return par[v];
+  }
+
+  public bool same(int v, int nv) {
+    return root(v) == root(nv);
+  }
+
+  public void unite(int v, int nv) {
+    v = root(v);
+    nv = root(nv);
+    if (v != nv) par[v] = nv;
+  } 
+}
+
+class Program {
+  static void Main (string[] args) {
+    var input = Console.ReadLine().Split(' ');
+    var n = int.Parse(input[0]);
+    var q = int.Parse(input[1]);
+    var uf = new UnionFind(n);
+
+    for (var i = 0; i < q; i++) {
+      input = Console.ReadLine().Split(' ');
+      var ty = int.Parse(input[0]);
+      var v = int.Parse(input[1]);
+      var nv = int.Parse(input[2]);
+
+      if (ty == 0) {
+        uf.unite(v, nv);
       } else {
-        isValue = true;
-        key = arg.Substring (1);
+        if (uf.same(v, nv)) {
+          Console.WriteLine("Yes");
+        } else {
+          Console.WriteLine("No");
+        }
       }
     }
-    return ans;
   }
 }
