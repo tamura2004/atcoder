@@ -54,34 +54,23 @@ impl UnionFind {
         self.rank[v] += self.rank[nv];
         true
     }
-
-    fn size(&mut self, v: usize) -> usize {
-        let root = self.root(v);
-        self.rank[root]
-    }
 }
 
 fn main() {
     let n: usize = read();
     let m: usize = read();
     let mut uf = UnionFind::new(n);
+    let yesno: Vec<&str> = vec!["No", "Yes"];
 
     for _ in 0..m {
         let t: usize = read();
-        let mut v: usize = read();
-        let mut nv: usize = read();
-
-        v -= 1;
-        nv -= 1;
+        let v: usize = read();
+        let nv: usize = read();
 
         if t == 0 {
             uf.unite(v, nv);
-        }else{
-            if uf.same(v, nv) {
-                println!("{}", 1)
-            }else{
-                println!("{}", 0)
-            }
+        } else {
+            println!("{}", yesno[uf.same(v, nv) as usize]);
         }
     }
 }

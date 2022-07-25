@@ -1,50 +1,33 @@
-import sys
-import io, os
-input = sys.stdin.readline
+class UnionFind:
+    def __init__(self, n):
+        self.par = [i for i in range(n)]
 
-from decimal import Decimal, ROUND_HALF_UP
+    def root(self, v):
+        if self.par[v] == v:
+            return v
+        else:
+            ret = self.root(self.par[v])
+            self.par[v] = ret
+            return ret
 
-def main():
-    n = int(input())
-    W = set()
-    LSM = []
-    for i in range(n):
-        l, m, s = map(str, input().split())
-        m = int(m)
-        W.add(l)
-        W.add(s)
-        LSM.append((l, s, m))
+    def same(self, v, nv):
+        return self.root(v) == self.root(nv)
 
-    W = list(W)
-    toid = {}
-    for i, w in enumerate(W):
-        toid[w] = i
+    def unite(self, v, nv):
+        v = self.root(v)
+        nv = self.root(nv)
+        if v != nv:
+            self.par[v] = nv
 
-    N = len(W)
-    g = [[] for i in range(N)]
-    for l, s, m in LSM:
-        l = toid[l]
-        s = toid[s]
-        g[l].append((Decimal(1/m), s))
-        g[s].append((Decimal(m), l))
-    M = Decimal(1)
-    a,b = -1, -1
-    for i in range(N):
-        stack = []
-        stack.append(i)
-        dist = [-1]*N
-        dist[i] = Decimal(1)
-        while stack:
-            v = stack.pop()
-            for w, u in g[v]:
-                if dist[u] != -1:
-                    continue
-                dist[u] = w*dist[v]
-                stack.append(u)
-                if dist[u] > M:
-                    M = dist[u]
-                    a, b = u, i
-    print('1'+W[a]+'='+str(M.quantize(Decimal('0'), rounding=ROUND_HALF_UP))+W[b])
+n, q = map(int, input().split())
+uf = UnionFind(n)
 
-if __name__ == '__main__':
-    main()
+for _ in range(q):
+    t, v, nv = map(int, input().split())
+    if t == 0:
+        uf.unite(v, nv)
+    else:
+        if uf.same(v, nv):
+            print("Yes")
+        else:
+            print("No")

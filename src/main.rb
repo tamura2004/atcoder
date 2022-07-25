@@ -1,27 +1,19 @@
 class UnionFind
-  attr_accessor :n, :par, :rank
+  attr_accessor :n, :par
 
   def initialize(n)
     @n = n
     @par = Array.new(n) { _1 }
-    @rank = Array.new(n, 0)
   end
 
   def root(v)
-    if par[v] == v
-      v
-    else
-      par[v] = root(par[v])
-    end
+    par[v] = par[v] == v ? v : root(par[v])
   end
 
   def unite(v, nv)
     v = root(v)
     nv = root(nv)
-    v, nv = nv, v unless rank[v] <= rank[nv]
-
-    par[v] = nv
-    rank[nv] = rank[v] + 1
+    par[v] = nv if v != nv
   end
 
   def same?(v, nv)
@@ -39,6 +31,6 @@ q.times do
   when 0
     uf.unite v, nv
   when 1
-    pp uf.same?(v, nv) ? 1 : 0
+    puts uf.same?(v, nv) ? "Yes" : "No"
   end
 end

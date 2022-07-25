@@ -1,25 +1,24 @@
 package main
 
 import (
+	"bufio"
 	"fmt"
+	"os"
 )
 
 type UnionFind struct {
-	n    int
-	par  []int
-	rank []int
+	n   int
+	par []int
 }
 
 func NewUnionFind(n int) UnionFind {
 	par := make([]int, n)
-	rank := make([]int, n)
 
 	for i := 0; i < n; i++ {
 		par[i] = i
-		rank[i] = 1
 	}
 
-	return UnionFind{n, par, rank}
+	return UnionFind{n, par}
 }
 
 func (uf UnionFind) Root(v int) int {
@@ -40,35 +39,38 @@ func (uf UnionFind) Unite(v, nv int) {
 		return
 	}
 
-	if uf.rank[nv] < uf.rank[v] {
-		v, nv = nv, v
-	}
-
 	uf.par[v] = uf.par[nv]
-	uf.rank[nv] += uf.rank[v]
 }
 
 func (uf UnionFind) Same(v, nv int) bool {
 	return uf.Root(v) == uf.Root(nv)
 }
 
+func YesNo(b bool) string {
+	if b {
+		return "Yes"
+	} else {
+		return "No"
+	}
+}
+
 func main() {
+	in := bufio.NewReader(os.Stdin)
+	out := bufio.NewWriter((os.Stdout))
+	defer out.Flush()
+
 	var n, q int
-	fmt.Scan(&n, &q)
+	fmt.Fscan(in, &n, &q)
 	uf := NewUnionFind(n)
 
 	var t, v, nv int
 
 	for i := 0; i < q; i++ {
-		fmt.Scan(&t, &v, &nv)
+		fmt.Fscan(in, &t, &v, &nv)
 		if t == 0 {
 			uf.Unite(v, nv)
 		} else {
-			ans := 0
-			if uf.Same(v, nv) {
-				ans = 1
-			}
-			fmt.Println(ans)
+			fmt.Fprintln(out, YesNo(uf.Same(v, nv)))
 		}
 	}
 }
