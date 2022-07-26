@@ -1,15 +1,42 @@
 import "dart:io";
-import "dart:math";
+
+class UnionFind {
+  List<int> par;
+
+  UnionFind(int n) {
+    par = new List.generate(n, (i) => i);
+  }
+  
+  int root(int v) {
+    return par[v] = par[v] == v ? v : this.root(par[v]);
+  }
+
+  bool same(int v, int nv) {
+    return this.root(v) == this.root(nv);
+  }
+
+  void unite(int v, int nv) {
+    par[this.root(v)] = this.root(nv);
+  }
+
+}
 
 void main() {
-  var ab = stdin.readLineSync().split(" ").map((x)=>int.parse(x)).toList();
-  // var x = int.parse(stdin.readLineSync());
-  // var s = stdin.readLineSync();
+  var args = stdin.readLineSync().split(" ").map(int.parse).toList();
+  var n = args[0];
+  var q = args[1];
+  var uf = new UnionFind(n);
 
-  var n = ab[0];
-  var a = ab[1];
-  var b = ab[2];
+  for(int i = 0; i < q; i++) {
+    var args = stdin.readLineSync().split(" ").map(int.parse).toList();
+    var t = args[0];
+    var v = args[1];
+    var nv = args[2];
 
-  var ans = n - a + b;
-  print(ans);
+    if (t == 0) {
+      uf.unite(v, nv);
+    } else {
+      print(uf.same(v, nv) ? "Yes" : "No");
+    }
+  }
 }

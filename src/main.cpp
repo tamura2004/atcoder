@@ -29,8 +29,8 @@ using vvi = vector<vi>;
 using vvl = vector<vl>;
 using vvll = vector<vll>;
 using vs = vector<string>;
+using vb = vector<bool>;
 using pii = pair<int, int>;
-using pill = pair<int, long long>;
 
 /* define short */
 #define pb push_back
@@ -71,58 +71,73 @@ template <typename T, typename S> inline void print(const vector<pair<T, S>>& v)
 // 第一引数と第二引数を比較し、第一引数(a)をより大きい/小さい値に上書き
 template <typename T> inline bool chmin(T& a, const T& b) {bool compare = a > b; if (a > b) a = b; return compare;}
 template <typename T> inline bool chmax(T& a, const T& b) {bool compare = a < b; if (a < b) a = b; return compare;}
-template <typename T> inline T invNum(T a, T b) {return b - a;}
 // gcd lcm
 // C++17からは標準実装
 // template <typename T> T gcd(T a, T b) {if (b == 0)return a; else return gcd(b, a % b);}
 // template <typename T> inline T lcm(T a, T b) {return (a * b) / gcd(a, b);}
 // clang-format on
 
+inline string iplus(string s,int i){
+    string result;
+
+    if(i == 0) return s;
+
+    result = s + "(" + to_string(i) + ")";
+
+    return result;
+}
+
+inline vs getduplicate(vs ss){
+    vs result;
+    string temp_s = "";
+    bool isfinddup;
+
+    isfinddup = false;
+    sort(ss.begin(),ss.end());
+    rep(i,ss.size()-1){
+        if(isfinddup){
+            if(temp_s != ss.at(i + 1)){
+                isfinddup = false;
+            }
+        } else {
+            if(ss.at(i) == ss.at(i + 1)){
+                isfinddup = true;
+                temp_s = ss.at(i);
+                result.pb(ss.at(i));
+            }
+        }
+    }  
+    
+    return result;
+}
+
 int main() {
     // code
     int n = in_int();
-    int k = in_int();
-    int point = n*n;
-    int start = point;
-    int goal = point + 1;
-    int row,column,connectionPoint;
-    vs grid(n);
-    pill answer;
-
-    mcf_graph<int,ll> graph(point + 2);
+    int temp_i;
+    string temp_s;
+    vi checklist;
+    vs ss,duplist;
 
     rep(i,n){
-        grid.at(i) = "...";
+        ss.pb(in_str());
     }
+
+    duplist = getduplicate(ss);
+    vi dupcount(duplist.size(),0);
 
     rep(i,n){
-        graph.add_edge(start,i,k,0);
-    }
-
-    rep(i,n){
-        graph.add_edge(i + n,goal,k,0);
-    }
-
-    rep(i,point){
-        row = i/n;
-        column = i%n + n;
-        graph.add_edge(row,column,1,invNum(in_ll(),(ll)1000000000));
-    }
-
-    answer = graph.flow(start,goal);
-    print(invNum(answer.second,(ll)1000000000*n*k));
-
-    vector<mcf_graph<int,ll>::edge> edges = graph.edges();
-    for(mcf_graph<int,ll>::edge edge : edges){
-        if(edge.from != start && edge.to != goal && edge.flow == 1){
-            row = edge.from;
-            column = edge.to - n;
-            grid.at(row).at(column) = 'X';
-
+        rep(j,duplist.size()){
+            if(ss.at(i) == duplist.at(j)){
+                ss.at(i) = iplus(ss.at(i),dupcount.at(j));
+                dupcount.at(j)++;
+                j = duplist.size();
+            }
         }
     }
 
-    rep(i,n) print(grid.at(i));
+    //cout << endl;
+    rep(i,n) cout << ss.at(i) << endl;
 
     return 0;
 }

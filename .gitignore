@@ -8,3 +8,6 @@ src/sfpc/users.json
 target.cr
 octave-workspace
 src/nimcache
+.metals/
+.scalafmt.conf
+a.out
