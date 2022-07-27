@@ -1,36 +1,37 @@
-class UnionFind
-  attr_accessor :n, :par
+class Node
+  attr_reader :value, :nex
 
-  def initialize(n)
-    @n = n
-    @par = Array.new(n) { _1 }
-  end
-
-  def root(v)
-    par[v] = par[v] == v ? v : root(par[v])
-  end
-
-  def unite(v, nv)
-    v = root(v)
-    nv = root(nv)
-    par[v] = nv if v != nv
-  end
-
-  def same?(v, nv)
-    root(v) == root(nv)
+  def initialize(value, nex)
+    @value = value
+    @nex = nex
   end
 end
 
-n, q = gets.split.map(&:to_i)
-uf = UnionFind.new(n)
+class Stack
+  attr_reader :head
 
-q.times do
-  t, v, nv = gets.split.map(&:to_i)
+  def initialize(head = nil)
+    @head = head
+  end
 
-  case t
-  when 0
-    uf.unite v, nv
-  when 1
-    puts uf.same?(v, nv) ? "Yes" : "No"
+  def top
+    head.value
+  end
+
+  def push(x)
+    Stack.new(Node.new(x, head))
+  end
+
+  def pop
+    Stack.new(head.nex)
   end
 end
+
+st = Stack.new
+st1 = st.push 1
+st2 = st1.push 2
+st3 = st2.pop
+
+pp st1.top
+pp st2.top
+pp st3.top

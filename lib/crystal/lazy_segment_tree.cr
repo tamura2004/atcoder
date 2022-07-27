@@ -16,13 +16,13 @@ class LazySegmentTree(X, A)
     values = Array(X).new(n){ X::MAX }
     range_update_range_min(values)
   end
-  
+
   # 区間更新、区間最小
   def self.range_update_range_min(n : I, init : X)
     values = Array(X).new(n){ init }
     range_update_range_min(values)
   end
-  
+
   # 区間更新、区間最小
   def self.range_update_range_min(values : Array(X))
     new(
@@ -34,19 +34,19 @@ class LazySegmentTree(X, A)
       values,
     )
   end
-  
+
   # 区間更新、区間最小
   def self.range_update_range_max(n : I)
     values = Array(X).new(n){ X::MIN }
     range_update_range_max(values)
   end
-  
+
   # 区間更新、区間最小
   def self.range_update_range_max(n : I, init : X)
     values = Array(X).new(n){ init }
     range_update_range_max(values)
   end
-  
+
   # 区間更新、区間最大
   def self.range_update_range_max(values : Array(X))
     new(

@@ -1,14 +1,39 @@
-require "crystal/union_find"
+module PersistentStack
+  class Node(T)
+    getter val : T
+    getter nex : Node(T)?
 
-n, q = gets.to_s.split.map(&.to_i)
-uf = n.to_uf
+    def initialize(@val, @nex)
+    end
+  end
 
-q.times do
-  t,v,nv = gets.to_s.split.map(&.to_i)
-  case t
-  when 0
-    uf.unite v, nv
-  when 1
-    pp uf.same?(v,nv).to_unsafe
+  class Stack(T)
+    getter head : Node(T)?
+
+    def initialize(@head = nil)
+    end
+
+    def top
+      head.try &.val
+    end
+
+    def push(x)
+      self.class.new(Node(T).new(x, head))
+    end
+
+    def pop
+      self.class.new(head.try &.nex)
+    end
   end
 end
+
+alias PStack = PersistentStack::Stack
+
+st = PStack(Int32).new
+st1 = st.push 1
+st2 = st1.push 2
+st3 = st2.pop
+
+pp st1.top
+pp st2.top
+pp st3.top
