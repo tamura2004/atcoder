@@ -3,24 +3,20 @@
 #
 # ```
 # ZAlgorithm.new("abcbcba").solve # => [7,0,0,0,0,0,1]
+# "abcbcba".z_algorithm # => [7,0,0,0,0,0,1]
+# [0,1,2,3,2,1,0].z_algorithm # => [7,0,0,0,0,0,1]
 # ```
-class ZAlgorithm
-  getter n : Int32
-  getter s : String
-  getter ans : Array(Int32)
-
-  def initialize(@s)
-    @n = s.size
-    @ans = Array.new(n, 0)
+module Indexable(T)
+  def z_algorithm
+    n = size
+    ans = Array.new(n, 0)
     ans[0] = n
-  end
 
-  def solve
     i = 1
     j = 0
 
     while i < n
-      while i + j < n && s[j] == s[i + j]
+      while i + j < n && self[j] == self[i + j]
         j += 1
       end
 
@@ -43,5 +39,22 @@ class ZAlgorithm
     end
 
     ans
+  end
+end
+
+class String
+  def z_algorithm
+    chars.z_algorithm
+  end
+end
+
+class ZAlgorithm
+  getter s : String
+
+  def initialize(@s)
+  end
+
+  def solve
+    s.z_algorithm
   end
 end

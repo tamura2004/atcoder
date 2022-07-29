@@ -270,7 +270,8 @@ module Indexable(T)
   # 範囲外エラー時にインデックスを出力
   @[AlwaysInline]
   def [](index : Int)
-    fetch(index) { raise IndexError.new("#{index} not in 0...#{size}") }
+    fetch(index) { raise IndexError.new("[#{first(3).join(',')},..] of index: #{index} not in 0...#{size}") }
+    # fetch(index) { raise IndexError.new("#{index} not in 0...#{size}") }
   end
 end
 
