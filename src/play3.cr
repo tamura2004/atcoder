@@ -1,6 +1,5 @@
-require "crystal/indexable"
-
-s = gets.to_s
-sa, rank = s.chars.map(&.ord.to_i64).suffix_array
-
-puts sa[1..].join(" ")
+t = gets.to_s.to_i64
+t.times do
+  ans = gets.to_s.split.map(&.to_i64).sum
+  pp ans
+end

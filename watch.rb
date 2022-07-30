@@ -25,6 +25,7 @@ LANG_EXT = {
   ".rs" => "rust",
   ".maxima" => "maxima",
   ".lisp" => "common_lisp",
+  ".zig" => "zig",
 }
 
 # %s はソースコードの絶対パスに置き換え
@@ -68,6 +69,7 @@ EXECUTE = {
   "rust" => "target/debug/main",
   "maxima" => "maxima -b src/main.maxima",
   "common_lisp" => "sbcl --script %s",
+  "zig" => "docker run -i --rm -v \"$PWD:/app\" euantorano/zig run /app/src/main.zig",
 }
 
 class Task
