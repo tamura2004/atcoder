@@ -1,9 +1,9 @@
 require "spec"
-require "crystal/original_wavelet_matrix"
+require "crystal/wavelet_matrix"
 
-describe OriginalWaveletMatrix do
+describe WaveletMatrix do
   it "rank" do
-    orm = OriginalWaveletMatrix(Int32).new([0, 1, 4, 2, 1, 2, 3])
+    orm = WaveletMatrix(Int32).new([0, 1, 4, 2, 1, 2, 3])
     orm.rank(x: 0, r: 0).should eq 0
     orm.rank(x: 0, r: 1).should eq 1
     orm.rank(x: 1, r: 1).should eq 0
@@ -15,7 +15,7 @@ describe OriginalWaveletMatrix do
   end
 
   it "kth_smallest" do
-    orm = OriginalWaveletMatrix(Int32).new([0, 1, 4, 2, 1, 2, 3])
+    orm = WaveletMatrix(Int32).new([0, 1, 4, 2, 1, 2, 3])
 
     orm.kth_smallest(0, 7, 0).should eq 0
     orm.kth_smallest(0, 7, 1).should eq 1
@@ -28,7 +28,7 @@ describe OriginalWaveletMatrix do
   end
 
   it "kth_largest" do
-    orm = OriginalWaveletMatrix(Int32).new([0, 1, 4, 2, 1, 2, 3])
+    orm = WaveletMatrix(Int32).new([0, 1, 4, 2, 1, 2, 3])
 
     orm.kth_largest(0, 7, 0).should eq 4
     orm.kth_largest(0, 7, 1).should eq 3
@@ -38,7 +38,7 @@ describe OriginalWaveletMatrix do
 
   # 未満
   it "range_freq" do
-    orm = OriginalWaveletMatrix(Int32).new([3, 1, 2])
+    orm = WaveletMatrix(Int32).new([3, 1, 2])
     orm.range_freq(0, 3, 1).should eq 0
     orm.range_freq(0, 3, 2).should eq 1
     orm.range_freq(0, 3, 3).should eq 2
@@ -46,7 +46,7 @@ describe OriginalWaveletMatrix do
   end
 
   it "range_freq" do
-    orm = OriginalWaveletMatrix(Int32).new([0, 1, 4, 2, 1, 2, 3])
+    orm = WaveletMatrix(Int32).new([0, 1, 4, 2, 1, 2, 3])
 
     orm.range_freq(..3, 3..).should eq 1
 

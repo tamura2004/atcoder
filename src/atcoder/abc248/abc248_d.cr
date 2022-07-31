@@ -1,14 +1,11 @@
-n = gets.to_s.to_i
-a = gets.to_s.split.map(&.to_i.pred)
+require "crystal/wavelet_matrix"
 
-ix = Array.new(n) { [] of Int32 }
-n.times { |i| ix[a[i]] << i }
+n = gets.to_s.to_i
+a = gets.to_s.split.map(&.to_i)
+mt = a.to_wm
 
 q = gets.to_s.to_i64
-
 q.times do
-  l, r, x = gets.to_s.split.map(&.to_i.pred)
-  lo = ix[x].bsearch_index(&.>= l) || ix[x].size
-  hi = ix[x].bsearch_index(&.> r) || ix[x].size
-  pp hi - lo
+  l, r, x = gets.to_s.split.map(&.to_i)
+  pp mt.rank(x, l.pred...r)
 end
