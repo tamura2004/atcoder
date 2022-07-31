@@ -24,9 +24,9 @@ struct Complex(T)
   end
 
   # 平面幾何で利用する場合を想定した辞書順ソート
-  def <=>(b : self)
-    ret = real <=> b.real
-    ret != 0 ? ret : imag <=> b.imag
+  def <=>(other : self)
+    ret = real <=> other.real
+    ret != 0 ? ret : imag <=> other.imag
   end
 
   def zero?

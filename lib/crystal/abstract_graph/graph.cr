@@ -2,30 +2,20 @@
 # ただし`Hash`のキーになる必要がある
 # `#hash`,`#==`を実装
 module AbstractGraph
-  class Graph(V)
-    getter g : Hash(V, Array(V))
+  class Graph(V, E)
+    getter g : Hash(V, Array(E))
     delegate keys, "[]", to: g
 
     def initialize
-      @g = {} of V => Array(V)
-    end
-
-    # 頂点の追加
-    # 頂点の列挙を`#keys`で行う都合上
-    # 明示的に頂点追加を行わないと、入次数0の頂点が漏れる
-    def add_vertex(v)
-      v.tap do |v|
-        g[v] = [] of V if !g.has_key?(v)
+      @g = Hash(V,Array(E)).new do |h, k|
+        h[k] = [] of E
       end
     end
 
     # 辺の追加
     # 頂点の正規化、空の隣接リストの追加を行う
-    def add(v, nv, both = false)
-      v = add_vertex(v)
-      nv = add_vertex(nv)
-      g[v] << nv
-      g[nv] << v if both
+    def add(v, e)
+      g[v] << e
     end
 
     def to_s(io)

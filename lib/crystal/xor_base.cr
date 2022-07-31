@@ -10,10 +10,12 @@
 # ```
 class XorBase
   getter base : Array(Int64)
+  getter raw : Array(Int64)
   delegate each, to: base
 
   def initialize
     @base = [] of Int64
+    @raw = [] of Int64
   end
 
   def initialize(a)
@@ -34,8 +36,9 @@ class XorBase
 
   # vが線形独立なら基底に追加
   def add(v)
-    if v = includes?(v)
-      base << v
+    if nv = includes?(v)
+      base << nv
+      raw << v.to_i64
     end
   end
 

@@ -1,6 +1,6 @@
 require "spec"
-require "crystal/abstruct_graph/dijkstra"
-include AbstructGraph
+require "crystal/abstract_graph/dijkstra"
+include AbstractGraph
 
 record V, v : Int32, rank : Int32
 record E, v : V, nv : V, color : Int32
@@ -12,7 +12,7 @@ record S, cost : Int64, v : V do
   end
 end
 
-describe AbstructGraph::Dijkstra do
+describe AbstractGraph::Dijkstra do
   it "usage" do
 
     a1 = V.new(0, 0)
