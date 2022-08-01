@@ -148,6 +148,8 @@ class Task
     puts "watching, ready for change\n\n"
 
     src_listener = Listen.to("src") do |params|
+      src_listener.pause
+
       parse_params(params)
       check_lang_and_src
       check_compile
@@ -155,9 +157,13 @@ class Task
       input = open("src/input.txt")
       stime = Time.now
       exec_src(exec_str, input, stime)
+
+      src_listener.start
     end
 
     lib_listener = Listen.to("lib") do |params|
+      lib_listener.pause
+
       parse_params(params)
       next if path.extname != ".cr" && path.extname != ".rb"
 
@@ -187,6 +193,8 @@ class Task
         error o
       end
       warning e
+
+      lib_listener.start
     end
 
     src_listener.start

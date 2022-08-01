@@ -81,6 +81,16 @@ class Matrix(T)
     end
   end
 
+  def trace
+    n.times.sum do |i|
+      self[i, i]
+    end
+  end
+
+  def tr
+    trace
+  end
+
   @[AlwaysInline]
   def [](i, j)
     a[i][j]

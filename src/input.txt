@@ -1,3 +1,59 @@
-10 9
-1 2 3 4 5 6 7 8 9 10
-2 1
+176527 15
+1 81279
+2 22308
+2 133061
+1 80744
+2 44603
+1 170938
+2 139754
+2 15220
+1 172794
+1 159290
+2 156968
+1 56426
+2 77429
+1 97459
+2 71282
+
+
+    0 0 0
+  . x x x x
+0 x x x x x
+0 x x x x x
+2 . o x x x
+  x x x x x
+
+    2 0 0
+  . . x x x
+0 x x x x x
+0 x x x x x
+2 . o x x x
+  x x x x x
+
+    2 0 0
+  . . x x x
+2 . o x x x
+0 x x x x x
+2 . o x x x
+  x x x x x
+
+    2 0 4
+  . . x . x
+2 . o x o x
+0 x x x o x
+2 . o x o x
+  x x x x x
+
+    4 4 4
+  . . x . x
+2 . o x o x
+2 . o x o x
+2 . o x o x
+  x x x x x
+
+    4 4 4
+  . . . . x
+4 . o o o x
+4 . o o o x
+4 . o o o x
+  x x x x x

@@ -1,17 +1,15 @@
+require "crystal/matrix"
+
 # 全探索
 n, m = gets.to_s.split.map(&.to_i64)
-g = Array.new(n) { Array.new(n, false) }
+g = Matrix(Int64).zero(n)
 
 m.times do
   v, nv = gets.to_s.split.map(&.to_i.pred)
-  g[v][nv] = true
-  g[nv][v] = true
+  g[v][nv] = 1_i64
+  g[nv][v] = 1_i64
 end
 
-ans = 0_i64
-(0...n).to_a.each_combination(3) do |(a,b,c)|
-  ans += 1 if g[a][b] && g[b][c] && g[c][a]
-end
-
+ans = (g ** 3).tr // 6
 pp ans
   
