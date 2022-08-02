@@ -1,11 +1,9 @@
-require "crystal/lazy_segment_tree"
-alias X = Int64
-alias A = Int64
+require "crystal/dual_segment_tree"
 
 n, q = gets.to_s.split.map(&.to_i64)
 
-yoko = LazySegmentTree(X, A).range_update_range_min([n - 1]*n)
-tate = LazySegmentTree(X, A).range_update_range_min([n - 1]*n)
+yoko = DualSegmentTree(Int64).range_assign([n - 1]*n)
+tate = DualSegmentTree(Int64).range_assign([n - 1]*n)
 x_stop = n - 1
 y_stop = n - 1
 ans = (n - 2) ** 2

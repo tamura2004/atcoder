@@ -1,37 +1,19 @@
-class Node
-  attr_reader :value, :nex
+st = gets.chomp.chars.tally
+x = st["R"] - st["L"]
+y = st["U"] - st["D"]
 
-  def initialize(value, nex)
-    @value = value
-    @nex = nex
-  end
-end
+# st = gets.chomp.chars
+# x = y = 0
 
-class Stack
-  attr_reader :head
+# st.each do |ch|
+#   case ch
+#   when "L" then x -= 1
+#   when "R" then x += 1
+#   when "U" then y += 1
+#   when "D" then y -= 1
+#   else
+#     puts "bad char: #{ch}"
+#   end
+# end
 
-  def initialize(head = nil)
-    @head = head
-  end
-
-  def top
-    head.value
-  end
-
-  def push(x)
-    Stack.new(Node.new(x, head))
-  end
-
-  def pop
-    Stack.new(head.nex)
-  end
-end
-
-st = Stack.new
-st1 = st.push 1
-st2 = st1.push 2
-st3 = st2.pop
-
-pp st1.top
-pp st2.top
-pp st3.top
+puts "#{x} #{y}"
