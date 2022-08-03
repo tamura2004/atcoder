@@ -17,6 +17,13 @@ class DualSegmentTree(T)
     DualSegmentTree(T?).new(values, unit, f)
   end
 
+  # 区間加算
+  def self.range_add(values : Array(T))
+    unit = T.zero
+    f = Proc(T, T, T).new { |x, y| x + y }
+    DualSegmentTree(T).new(values, unit, f)
+  end
+
   def initialize(
     values : Array(T),
     @unit = T::MIN,
@@ -55,6 +62,8 @@ class DualSegmentTree(T)
 
   # 区間更新
   def []=(lo, hi, v)
+    lo = lo < 0 ? 0 : n < lo ? n : lo
+    hi = hi < 0 ? 0 : n < hi ? n : hi
     lo += n
     hi += n
     push_down(lo)
@@ -76,8 +85,22 @@ class DualSegmentTree(T)
     end
   end
 
-  def []=(r, v)
+  def []=(r : Range(B, E), v) forall B, E
     lo, hi = RangeToTuple(Int32).from(r)
     self[lo, hi] = v
+  end
+
+  def []=(i : Int32, v)
+    self[i, i + 1] = v
+  end
+end
+
+class Array(T)
+  def to_dual_st_add
+    DualSegmentTree(T).range_add(self)
+  end
+
+  def to_dual_st_assign
+    DualSegmentTree(T).range_assign(self)
   end
 end
