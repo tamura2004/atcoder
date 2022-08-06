@@ -3,6 +3,8 @@ require "open3"
 require "time"
 require "colorize"
 
+$last_exec_time = Time.new - 10
+
 LANG_EXT = {
   ".dart" => "dart",
   ".dot" => "dot",
@@ -33,6 +35,7 @@ COMPILE = {
   "cpp" => "g++ src/main.cpp -std=c++14 -I /home/tamura/src/acl",
   # "ruby" => "cat %s | clip.exe && touch flag.txt",
   "ruby" => "cat %s | clip.exe",
+  # "crystal" => "ruby build.rb %s target.cr",
   "crystal" => "ruby build.rb %s target.cr && cat target.cr | grep -v pp! |  clip.exe",
   "java" => "javac -d dist src/Main.java",
   "scala" => "scalac -d dist src/Main.scala",
@@ -53,6 +56,7 @@ EXECUTE = {
   # "crystal" => "dist/crystal.out",
   # "crystal" => "crystal run --release target.cr",
   "crystal" => "crystal run target.cr",
+  # "crystal" => "crystal run target.cr && cat target.cr | grep -v pp! | clip.exe",
   "python3" => "python3 src/main.py",
   "perl" => "perl src/main.pl",
   "pypy3" => "pypy3 src/main.pypy",
@@ -148,7 +152,11 @@ class Task
     puts "watching, ready for change\n\n"
 
     src_listener = Listen.to("src") do |params|
-      src_listener.pause
+      if Time.now - $last_exec_time < 2
+        # error "skip"
+        next
+      end
+      $last_exec_time = Time.now
 
       parse_params(params)
       check_lang_and_src
@@ -157,12 +165,14 @@ class Task
       input = open("src/input.txt")
       stime = Time.now
       exec_src(exec_str, input, stime)
-
-      src_listener.start
     end
 
     lib_listener = Listen.to("lib") do |params|
-      lib_listener.pause
+      if Time.now - $last_exec_time < 2
+        # error "skip"
+        next
+      end
+      $last_exec_time = Time.now
 
       parse_params(params)
       next if path.extname != ".cr" && path.extname != ".rb"
@@ -193,8 +203,6 @@ class Task
         error o
       end
       warning e
-
-      lib_listener.start
     end
 
     src_listener.start

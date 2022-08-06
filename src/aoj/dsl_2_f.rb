@@ -1,148 +1,162 @@
 class LazySegmentTree
-  attr_reader :n, :r, :x, :a
+  attr_reader :x, :a, :n, :r, :x_unit, :a_unit, :fxx, :fxa, :faa
 
-  def fxx(x, y)
-    x < y ? x : y
-  end
+  def initialize(fxx, fxa, faa, x_unit, a_unit, values)
+    @fxx = fxx
+    @fxa = fxa
+    @faa = faa
+    @x_unit = x_unit
+    @a_unit = a_unit
 
-  def x_unit
-    1 << 60
-  end
-
-  def faa(a, b)
-    b ? b : a
-  end
-
-  def a_unit
-    nil
-  end
-
-  def fxa(x, a)
-    a ? a : x
-  end
-
-  def initialize(vs)
     @n = 1
     @r = 0
-
-    while @n < vs.size
+    while @n < values.size
       @n <<= 1
       @r += 1
     end
 
-    @x = Array.new(n * 2, x_unit)
-    @a = Array.new(n * 2, a_unit)
+    @x = Array.new(n << 1, x_unit)
+    @a = Array.new(n << 1, a_unit)
 
-    vs.each_with_index do |v, i|
+    values.each_with_index do |v, i|
       x[i + n] = v
     end
 
     (1...n).reverse_each do |i|
-      lo = i << 1
-      hi = lo | 1
-      x[i] = fxx x[lo], x[hi]
+      x[i] = fxx.call x[i << 1], x[i << 1 | 1]
     end
   end
 
-  def set(i, v)
+  def set(i, y)
     i += n
-    propagate_down(i)
-    x[i] = v
+    propagate(i)
+    x[i] = y
     a[i] = a_unit
-    recalc_up(i)
+    recalc(i)
   end
 
-  def fold(lo, hi)
-    lo += n
-    hi += n
-
-    lo0 = lo / (lo & -lo)
-    hi0 = hi / (hi & -hi) - 1
-
-    propagate_down(lo0)
-    propagate_down(hi0)
-
-    left = right = x_unit
-
-    while lo < hi
-      if lo.odd?
-        left = fxx left, fxa(x[lo], a[lo])
-        lo += 1
-      end
-
-      if hi.odd?
-        hi -= 1
-        right = fxx fxa(x[hi], a[hi]), right
-      end
-
-      lo >>= 1
-      hi >>= 1
-    end
-
-    fxx left, right
+  def []=(i, y)
+    set(i, y)
   end
 
-  def update(lo, hi, v)
-    lo += n
-    hi += n
+  def fold(i, j)
+    i += n
+    j += n
 
-    lo0 = lo / (lo & -lo)
-    hi0 = hi / (hi & -hi) - 1
+    i0 = pa(i)
+    j0 = pa(j) - 1
 
-    propagate_down(lo0)
-    propagate_down(hi0)
+    propagate(i0)
+    propagate(j0)
 
-    while lo < hi
-      if lo.odd?
-        a[lo] = faa a[lo], v
-        lo += 1
+    left = x_unit
+    right = x_unit
+    while i < j
+      if i.odd?
+        left = fxx.call left, eval(i)
+        i += 1
       end
-
-      if hi.odd?
-        hi -= 1
-        a[hi] = faa a[hi], v
+      if j.odd?
+        j -= 1
+        right = fxx.call eval(j), right
       end
-
-      lo >>= 1
-      hi >>= 1
-    end
-
-    recalc_up(lo0)
-    recalc_up(hi0)
-  end
-
-  # 上から下に作用を伝播
-  def propagate_down(i)
-    return if i.zero?
-    (1..Math.log2(i).to_i).each do |n|
-      j = i >> n
-      # j = 1
-      # (0...r).reverse_each do |k|
-      lo = j << 1
-      hi = lo | 1
-
-      a[lo] = faa a[lo], a[j]
-      a[hi] = faa a[hi], a[j]
-      x[j] = fxa x[j], a[j]
-      a[j] = a_unit
-
-      # j = j << 1 | i[k]
-    end
-  end
-
-  # 下から上に再計算
-  def recalc_up(i)
-    while i > 1
       i >>= 1
+      j >>= 1
+    end
+    fxx.call left, right
+  end
+
+  def [](r)
+    lo = r.begin || 0
+    hi = (r.end || n - 1) + (r.excludes_end? ? 0 : 1)
+    fold(lo, hi)
+  end
+
+  def [](i)
+    j = i.to_i
+    fold(j, j + 1)
+  end
+
+  def update(i, j, b)
+    i += n
+    j += n
+
+    i0 = pa(i)
+    j0 = pa(j) - 1
+
+    propagate(i0)
+    propagate(j0)
+
+    while i < j
+      if i.odd?
+        a[i] = faa.call a[i], b
+        i += 1
+      end
+      if j.odd?
+        j -= 1
+        a[j] = faa.call a[j], b
+      end
+      i >>= 1
+      j >>= 1
+    end
+
+    recalc(i0)
+    recalc(j0)
+  end
+
+  def []=(r, b)
+    lo = r.begin || 0
+    hi = (r.end || n - 1) + (r.excludes_end? ? 0 : 1)
+    update(lo, hi, b)
+  end
+
+  def recalc(i)
+    path(i >> 1).each do |i|
+      x[i] = fxx.call eval(i << 1), eval(i << 1 | 1)
+    end
+  end
+
+  def propagate(j)
+    return if j.zero?
+
+    path(j).reverse_each do |i|
+      next if a[i] == a_unit
       lo = i << 1
       hi = lo | 1
-      x[i] = fxx fxa(x[lo], a[lo]), fxa(x[hi], a[hi])
+      a[lo] = faa.call a[lo], a[i]
+      a[hi] = faa.call a[hi], a[i]
+      x[i] = fxa.call x[i], a[i]
+      a[i] = a_unit
     end
+  end
+
+  def path(i)
+    return [] if i <= 0
+    ans = [i]
+    while i > 0
+      ans << (i >>= 1)
+    end
+    ans
+  end
+
+  def eval(i)
+    fxa.call x[i], a[i]
+  end
+
+  def pa(i)
+    i / (i & -i)
   end
 end
 
 n, q = gets.split.map(&:to_i)
-st = LazySegmentTree.new(Array.new(n, (1 << 31) - 1))
+
+fxx = ->(x, y) { x < y ? x : y }
+fxa = ->(x, a) { a ? a : x }
+faa = ->(a, b) { b ? b : a }
+x_unit = 2 ** 31 - 1
+a_unit = nil
+values = Array.new(n, 2 ** 31 - 1)
+st = LazySegmentTree.new(fxx, fxa, faa, x_unit, a_unit, values)
 q.times do |i|
   cmd, x, y, z = gets.split.map(&:to_i) + [0]
   case cmd

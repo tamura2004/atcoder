@@ -70,3 +70,5 @@ class Tree
     puts `cat debug.dot | graph-easy --from=dot --as_ascii`
   end
 end
+
+alias Graph = Tree
