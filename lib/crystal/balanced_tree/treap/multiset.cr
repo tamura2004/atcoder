@@ -206,6 +206,13 @@ module BalancedTree
         {lower(k, eq), upper(k, eq)}
       end
 
+      # キーが`lo`以上、`hi`未満のノード数を返す
+      def count_range(lo, hi)
+        tail = self | hi
+        mid = self | lo
+        mid.size.tap { self + mid + tail}
+      end
+
       # 根のキーを返す
       def key : T?
         root.try &.key

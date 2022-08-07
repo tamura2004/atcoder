@@ -1,1 +1,1 @@
-require "crystal/balanced_tree/treap/multiset/multiset"
+require "crystal/balanced_tree/treap/multiset"

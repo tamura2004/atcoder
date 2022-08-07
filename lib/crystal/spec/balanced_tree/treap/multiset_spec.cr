@@ -114,6 +114,15 @@ describe BalancedTree::Treap::Multiset do
     hi.should eq 1000
   end
 
+  it "count" do
+    t = Multiset{1, 10, 100, 1000}
+    t.count_upper(10, eq: true).should eq 3
+    t.count_upper(10, eq: false).should eq 2
+    t.count_lower(10, eq: true).should eq 2
+    t.count_lower(10, eq: false).should eq 1
+    t.count_range(10,1000).should eq 2
+  end
+
   # it "get acc" do
   #   Node.acc = true
   #   t = Multiset{1, 10, 100, 1000}
