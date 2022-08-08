@@ -152,7 +152,7 @@ class Task
     puts "watching, ready for change\n\n"
 
     src_listener = Listen.to("src") do |params|
-      if Time.now - $last_exec_time < 2
+      if Time.now - $last_exec_time < 3.0
         # error "skip"
         next
       end
@@ -168,7 +168,7 @@ class Task
     end
 
     lib_listener = Listen.to("lib") do |params|
-      if Time.now - $last_exec_time < 2
+      if Time.now - $last_exec_time < 3.0
         # error "skip"
         next
       end

@@ -24,6 +24,8 @@ range = case name
     end
   when /^agc/i
     "a".."f"
+  when /^past/i
+    "a".."o"
   else
     "a".."h"
   end

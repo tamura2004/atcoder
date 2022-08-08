@@ -58,7 +58,7 @@ class Pw2Table
 end
 
 struct Int
-  MAX = 10_000_001
+  MAX = 1_000_001
   class_getter ft : FactTable = FactTable.new(MAX)
   class_getter pw2 : Pw2Table = Pw2Table.new(MAX)
 
