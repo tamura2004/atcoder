@@ -1,64 +1,37 @@
 struct Bitset
   DIGIT = 128
 
+  getter size : Int32
   getter n : Int32
   getter a : Array(UInt128)
 
-  def initialize(@size = 128)
+  def initialize(@size)
     @n = (size + DIGIT - 1) // DIGIT
     @a = Array.new(n, 0_u128)
-  end
-  
-  def initialize(@a : Array(UInt128))
-    @n = a.size
-    @size = n * DIGIT
-  end
-  
-  def initialize(s : String, @size = 128)
-    @n = (size + DIGIT - 1) // DIGIT
-    @a = Array.new(n, 0_u128)
-    s.chars.each_with_index do |c, i|
-      if c == '1'
-        set(i)
-      end
-    end
-  end
-
-  def self.zero
-    Bitset.new
   end
 
   def set(i)
     j, k = i.divmod(DIGIT)
-    a[j] |= 1_u128 << k
-  end
-  
-  def bit(i)
-    j, k = i.divmod(DIGIT)
-    a[j].bit(k)
+    a[j] |= 1 << k
   end
 
-  def |(b : self)
-    Bitset.new a.zip(b.a).map { |i,j| i | j }
+  # self = self | self << i
+  def shift_or!(i)
+    long, short = i.divmod(DIGIT)
+    (0...n).reverse_each do |j|
+      a[j] |= at(j - long) << short | at(j - long - 1) >> (DIGIT - short)
+    end
   end
-  
-  def &(b : self)
-    Bitset.new a.zip(b.a).map { |i,j| i & j }
-  end
-  
-  def ^(b : self)
-    Bitset.new a.zip(b.a).map { |i,j| i ^ j }
-  end
-  
-  def zero?
-    a.all?(&.zero?)
+
+  def at(i)
+    i < 0 ? 0_u128 : a[i]
   end
 
   def popcount
-    a.map(&.popcount).sum
+    a.sum(&.popcount)
   end
-
+  
   def to_s
-    a.map { |v| "%0#{DIGIT}b" % v }.join
+    a.reverse.map{|b| "%0#{DIGIT}b" % b}.join[-size,size]
   end
 end
