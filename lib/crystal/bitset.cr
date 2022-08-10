@@ -23,6 +23,21 @@ struct Bitset
     end
   end
 
+  # self = self << i
+  def shift!(i)
+    long, short = i.divmod(DIGIT)
+    (0...n).reverse_each do |j|
+      a[j] = at(j - long) << short | at(j - long - 1) >> (DIGIT - short)
+    end
+  end
+
+  # self = self | other
+  def or!(other)
+    (0...n).each do |j|
+      a[j] |= other.a[j]
+    end
+  end
+
   def at(i)
     i < 0 ? 0_u128 : a[i]
   end
@@ -30,7 +45,7 @@ struct Bitset
   def popcount
     a.sum(&.popcount)
   end
-  
+
   def to_s
     a.reverse.map{|b| "%0#{DIGIT}b" % b}.join[-size,size]
   end

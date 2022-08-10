@@ -225,6 +225,10 @@ module BalancedTree
         t1.root.try(&.key).tap { self + t1 + t2 }
       end
 
+      def [](i)
+        unsafe_fetch(i)
+      end
+
       def each(&block : T -> Nil)
         root.try &.each(&block)
       end
@@ -235,6 +239,16 @@ module BalancedTree
 
       def nil_node_pair
         {nil_node, nil_node}
+      end
+    end
+  end
+end
+
+module Indexable(T)
+  def to_multiset
+    Multiset(T).new.tap do |ms|
+      each do |v|
+        ms << v
       end
     end
   end
