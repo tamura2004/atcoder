@@ -2,7 +2,6 @@ node_modules
 dist/
 target/
 src/nimcache
-.vscode
 docs/
 src/sfpc/users.json
 target.cr
