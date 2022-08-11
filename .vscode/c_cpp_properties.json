@@ -4,7 +4,7 @@
             "name": "Win32",
             "includePath": [
                 "${workspaceFolder}/**",
-                "/home/tamura/src/ac-library/"
+                "/usr/local/lib/ac-library/"
             ],
             "defines": [
                 "_DEBUG",
