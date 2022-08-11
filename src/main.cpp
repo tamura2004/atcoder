@@ -1,18 +1,16 @@
 #include <bits/stdc++.h>
-#include <atcoder/dsu>
+#include <atcoder/all>
 
 using namespace std;
 using namespace atcoder;
+using mint = modint998244353;
 
 int main() {
-  int n, q;
-  cin >> n >> q;
-  dsu uf(n);
+  mint sum = 1;
 
-  for (int i = 0; i < q; i++) {
-    int t, v, nv;
-    cin >> t >> v >> nv;
-    if (t) cout << (uf.same(v, nv) ? "Yes" : "No") << endl;
-    else uf.merge(v, nv);
+  for (int i = 1; i < 10000; i++) {
+    sum *= i;
   }
+
+  cout << sum.val() << endl;
 }

@@ -32,7 +32,7 @@ LANG_EXT = {
 
 # %s はソースコードの絶対パスに置き換え
 COMPILE = {
-  "cpp" => "g++ %s -std=c++14 -I /usr/local/lib/ac-library",
+  "cpp" => "g++ %s -std=c++14",
   # "ruby" => "cat %s | clip.exe && touch flag.txt",
   "ruby" => "cat %s | clip.exe",
   # "crystal" => "ruby build.rb %s target.cr",

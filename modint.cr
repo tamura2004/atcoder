@@ -1,17 +1,52 @@
-record ModInt, v : Int64 do
-  MOD = 998_244_353_i64
-  def +(b); ModInt.new((v + b.to_i64 % MOD) % MOD); end
-  def -(b); ModInt.new((v + MOD - b.to_i64 % MOD) % MOD); end
-  def *(b); ModInt.new((v * (b.to_i64 % MOD)) % MOD); end
-  def self.zero; new(0); end
-  delegate to_i64, to: v
-  delegate to_s, to: v
-  delegate inspect, to: v
-end
+# 自動でMODを取る構造体
+struct StaticModInt(M)
+  getter v : Int64
+  delegate to_i64, to_s, to_m, inspect, to: v
 
-struct Int
-  def to_m
-    ModInt.new(to_i64)
+  def initialize(v)
+    @v = v.to_i64 % M
+  end
+
+  {% for op in %w(+ - *) %}
+    def {{op.id}}(b)
+      StaticModInt(M).new v {{op.id}} (b.to_i64 % M)
+    end
+  {% end %}
+
+  def **(b)
+    a = self
+    ans = 1.to_m(M)
+    while b > 0
+      ans *= a if b.odd?
+      b >>= 1
+      a *= a
+    end
+    return ans
+  end
+
+  def inv
+    self ** (M - 2)
+  end
+
+  def //(b)
+    self * b.to_m(M).inv
+  end
+
+  def self.zero
+    new(0)
+  end
+
+  def ==(b)
+    b.try &.to_i64.==(v)
   end
 end
 
+MOD = 998_244_353_i64
+
+struct Int
+  def to_m
+    StaticModInt(MOD).new(to_i64)
+  end
+end
+
+alias ModInt = StaticModInt(MOD)
