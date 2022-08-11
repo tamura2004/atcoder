@@ -9,7 +9,7 @@ describe ModInt do
   
   it "-" do
     (3.to_m - 2).should eq 1
-    (3.to_m - 4).should eq (ModInt::MOD - 1)
+    (3.to_m - 4).should eq (MOD - 1)
     (Int64::MIN.to_m - Int64::MAX).should eq 66192444
   end
   
