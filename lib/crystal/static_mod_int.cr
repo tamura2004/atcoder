@@ -1,5 +1,5 @@
 # 自動でMODを取る構造体
-struct GenericModInt(M)
+struct StaticModInt(M)
   getter v : Int64
   delegate to_i64, to_s, to_m, inspect, to: v
 
@@ -9,13 +9,13 @@ struct GenericModInt(M)
 
   {% for op in %w(+ - *) %}
     def {{op.id}}(b)
-      GenericModInt(M).new v {{op.id}} (b.to_i64 % M)
+      self.class.new v {{op.id}} (b.to_i64 % M)
     end
   {% end %}
 
   def **(b)
     a = self
-    ans = GenericModInt(M).new(1)
+    ans = self.class.new(1)
     while b > 0
       ans *= a if b.odd?
       b >>= 1
@@ -29,7 +29,7 @@ struct GenericModInt(M)
   end
 
   def //(b)
-    self * GenericModInt(M).new(b).inv
+    self * self.class.new(b).inv
   end
 
   def self.zero

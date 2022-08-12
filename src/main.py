@@ -1,17 +1,11 @@
-st = list(input())
-x = 0
-y = 0
+def garner( mlist, alist ):
+  m, x = mlist[0], alist[0]
+  i = 1
+  while i<len(mlist):
+    x = x + m * inverse( m, mlist[i] ) * ( alist[i] - x )
+    m *= mlist[i]
+    i += 1
+  return x % m, m
 
-for ch in st:
-    if ch == 'L':
-        x -= 1
-    elif ch == 'R':
-        x += 1
-    elif ch == 'U':
-        y += 1
-    elif ch == 'D':
-        y -= 1
-    else:
-        print("bad char: {}".format(ch))
-
-print("{} {}".format(x, y))
+if __name__ == '__main__':
+  print( garner( [ 3, 5, 7 ], [ 2, 3, 3 ] ) )

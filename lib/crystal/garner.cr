@@ -1,10 +1,4 @@
-struct NTT
-  getter mod : Int64
-
-  def initialize(mod = 998244353)
-    @mod = mod.to_i64
-  end
-
+struct NTT(M, G)
   def ceil_pow2(n : Int) : Int32
     (0..).find(-1) do |x|
       n <= (1 << x)
@@ -18,13 +12,13 @@ struct NTT
   end
 
   def pow_mod(x : Int, n : Int) : Int64
-    return 0_i64 if mod == 1
+    return 0_i64 if M == 1
     r = 1_i64
-    y = (x % mod).to_i64
+    y = (x % M).to_i64
 
     while n != 0
-      r = (r * y) % mod if n.odd?
-      y = (y * y) % mod
+      r = (r * y) % M if n.odd?
+      y = (y * y) % M
       n >>= 1
     end
     return r
@@ -59,41 +53,41 @@ struct NTT
     return m0
   end
 
-  def butterfly_unit(g : Int) : Tuple(Int32, Array(Int64), Array(Int64))
+  def butterfly_unit # (g : Int) : Tuple(Int32, Array(Int64), Array(Int64))
     es = Array.new(30, 0_i64)
     ies = Array.new(30, 0_i64)
-    cnt = bsf(mod - 1)
-    e = pow_mod(g, (mod - 1) >> cnt)
-    ie = inv_gcd(e, mod)
+    cnt = bsf(M - 1)
+    e = pow_mod(G, (M - 1) >> cnt)
+    ie = inv_gcd(e, M)
     cnt.downto(2) do |i|
       es[i - 2] = e
       ies[i - 2] = ie
       e *= e
-      e %= mod
+      e %= M
       ie *= ie
-      ie %= mod
+      ie %= M
     end
     return ({cnt, es, ies})
   end
 
-  def butterfly_init(g : Int) : Array(Int64)
-    cnt, es, ies = butterfly_unit(g)
+  def butterfly_init              # (g : Int) : Array(Int64)
+    cnt, es, ies = butterfly_unit # (g)
     se = Array.new(30, 0_i64)
     now = 1_i64
     (cnt - 1).times do |i|
       se[i] = es[i] * now
-      se[i] %= mod
+      se[i] %= M
       now *= ies[i]
-      now %= mod
+      now %= M
     end
     return se
   end
 
   def butterfly(a : Array(Int64)) : Nil
-    g = 3
+    # g = 3
     n = a.size
     h = ceil_pow2(n)
-    se = butterfly_init(g)
+    se = butterfly_init # (g)
 
     1.upto(h) do |ph|
       w = 1_i64 << (ph - 1)
@@ -103,41 +97,41 @@ struct NTT
         j = s << (h - ph + 1)
         p.times do |i|
           l = a[i + j]
-          r = a[i + j + p] * now % mod
+          r = a[i + j + p] * now % M
           a[i + j] = l + r
           a[i + j + p] = l - r
-          a[i + j] %= mod
-          a[i + j + p] %= mod
+          a[i + j] %= M
+          a[i + j + p] %= M
           if a[i + j + p] < 0
-            a[i + j + p] += mod
+            a[i + j + p] += M
           end
         end
         now *= se[bsf(~s)]
-        now %= mod
+        now %= M
       end
     end
   end
 
-  def butterfly_inv_init(g : Int) : Array(Int64)
+  def butterfly_inv_init # (g : Int) : Array(Int64)
     sie = Array.new(30, 0_i64)
-    cnt2, es, ies = butterfly_unit(g)
+    cnt2, es, ies = butterfly_unit # (G)
 
     now = 1_i64
     (cnt2 - 1).times do |i|
       sie[i] = ies[i] * now
-      sie[i] %= mod
+      sie[i] %= M
       now *= es[i]
-      now %= mod
+      now %= M
     end
     sie
   end
 
   def butterfly_inv(a : Array(Int64)) : Nil
-    g = 3
+    # g = 3
     n = a.size
     h = ceil_pow2(n)
     first = true
-    sie = butterfly_inv_init(g)
+    sie = butterfly_inv_init # (g)
 
     h.downto(1) do |ph|
       w = 1_i64 << (ph - 1)
@@ -149,12 +143,12 @@ struct NTT
           l = a[i + j]
           r = a[i + j + p]
           a[i + j] = l + r
-          a[i + j + p] = (l - r + mod) * inow
-          a[i + j] %= mod
-          a[i + j + p] %= mod
+          a[i + j + p] = (l - r + M) * inow
+          a[i + j] %= M
+          a[i + j + p] %= M
         end
         inow *= sie[bsf(~s)]
-        inow %= mod
+        inow %= M
       end
     end
   end
@@ -177,16 +171,16 @@ struct NTT
 
     z.times do |i|
       a[i] *= b[i]
-      a[i] %= mod
+      a[i] %= M
     end
 
     butterfly_inv(a)
 
     a = a[0, n + m - 1]
-    iz = inv_gcd(z, mod)
+    iz = inv_gcd(z, M)
     (n + m - 1).times do |i|
       a[i] *= iz
-      a[i] %= mod
+      a[i] %= M
     end
     return a
   end
@@ -196,24 +190,41 @@ struct NTT
   end
 end
 
-struct Garner
-  getter ntt1 : NTT
-  getter ntt2 : NTT
-  getter ntt3 : NTT
-
-  def initialize
-    @ntt1 = NTT.new(167772161)
-    @ntt2 = NTT.new(469762049)
-    @ntt3 = NTT.new(1224736769)
+def inv(a, b)
+  p = b.to_i64
+  x, y, u, v = 1_i64, 0_i64, 0_i64, 1_i64
+  while b > 0
+    k, r = a.divmod(b)
+    x -= k * u
+    y -= k * v
+    x, u, y, v, a, b = u, x, v, y, b, r
   end
+  x % p
+end
 
-  def conv(p,q)
-    p = p.map!(&.to_i64)
-    q = q.map!(&.to_i64)
+def garner(m, a)
+  ans = 0_i64
+  mod = 1_i64
 
-    x = ntt1.conv(p, q)
-    y = ntt2.conv(p, q)
-    z = ntt3.conv(p, q)
-    
+  m.zip(a).each do |m, a|
+    ans += mod * inv(mod, m) * (a - ans)
+    mod *= m
+  end
+  {ans % mod, mod}
+end
+
+module Convolution2
+  M1 = 167772161
+  M2 = 469762049
+  M3 = 1224736769
+
+  def solve(a, b)
+    x = NTT(M1,3).new.conv(a, b)
+    y = NTT(M2,3).new.conv(a, b)
+    z = NTT(M3,3).new.conv(a, b)
+
+    [x,y,z].transpose.map do |a|
+      garber([M1,M2,M3], a)
+    end
   end
 end

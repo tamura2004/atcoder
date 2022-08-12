@@ -1,16 +1,14 @@
 #include <bits/stdc++.h>
-#include <atcoder/all>
+// #include <atcoder/all>
 
 using namespace std;
-using namespace atcoder;
-using mint = modint998244353;
+// using namespace atcoder;
+// using mint = modint998244353;
 
 int main() {
-  mint sum = 1;
+  int x = 1224736769;
+  int y = 469762049;
+  int z = 167772161;
 
-  for (int i = 1; i < 10000; i++) {
-    sum *= i;
-  }
-
-  cout << sum.val() << endl;
+  cout << x * y * z << endl;
 }

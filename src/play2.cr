@@ -1,1 +1,6 @@
-require "crystal/modint"
+x = 1_224_736_769_i64
+y = 469_762_049_i64
+z = 167_772_161_i64
+
+pp x * y
+pp x &* y &* z
