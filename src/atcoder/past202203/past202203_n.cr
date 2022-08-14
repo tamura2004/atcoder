@@ -53,7 +53,7 @@ struct NTT(M, G)
     return m0
   end
 
-  def butterfly_unit # (g : Int) : Tuple(Int32, Array(Int64), Array(Int64))
+  def butterfly_unit
     es = Array.new(30, 0_i64)
     ies = Array.new(30, 0_i64)
     cnt = bsf(M - 1)
@@ -70,8 +70,8 @@ struct NTT(M, G)
     return ({cnt, es, ies})
   end
 
-  def butterfly_init              # (g : Int) : Array(Int64)
-    cnt, es, ies = butterfly_unit # (g)
+  def butterfly_init
+    cnt, es, ies = butterfly_unit
     se = Array.new(30, 0_i64)
     now = 1_i64
     (cnt - 1).times do |i|
@@ -84,10 +84,9 @@ struct NTT(M, G)
   end
 
   def butterfly(a : Array(Int64)) : Nil
-    # g = 3
     n = a.size
     h = ceil_pow2(n)
-    se = butterfly_init # (g)
+    se = butterfly_init
 
     1.upto(h) do |ph|
       w = 1_i64 << (ph - 1)
@@ -112,9 +111,9 @@ struct NTT(M, G)
     end
   end
 
-  def butterfly_inv_init # (g : Int) : Array(Int64)
+  def butterfly_inv_init
     sie = Array.new(30, 0_i64)
-    cnt2, es, ies = butterfly_unit # (G)
+    cnt2, es, ies = butterfly_unit
 
     now = 1_i64
     (cnt2 - 1).times do |i|
@@ -127,11 +126,10 @@ struct NTT(M, G)
   end
 
   def butterfly_inv(a : Array(Int64)) : Nil
-    # g = 3
     n = a.size
     h = ceil_pow2(n)
     first = true
-    sie = butterfly_inv_init # (g)
+    sie = butterfly_inv_init
 
     h.downto(1) do |ph|
       w = 1_i64 << (ph - 1)
@@ -190,21 +188,20 @@ struct NTT(M, G)
   end
 end
 
-
 module Convolution2
   extend self
 
-  M1 = 167_772_161_i64
-  M2 = 469_762_049_i64
+  M1 =   167_772_161_i64
+  M2 =   469_762_049_i64
   M3 = 1_224_736_769_i64
 
-  def solve(a, b)
-    x = NTT(M1,3).new.conv(a, b)
-    y = NTT(M2,3).new.conv(a, b)
-    z = NTT(M3,3).new.conv(a, b)
+  def solve(a, b, mod)
+    x = NTT(M1, 3).new.conv(a, b)
+    y = NTT(M2, 3).new.conv(a, b)
+    z = NTT(M3, 3).new.conv(a, b)
 
-    [x,y,z].transpose.map do |a|
-      garner([M1,M2,M3], a).first
+    [x, y, z].transpose.map do |a|
+      garner([M1, M2, M3].zip(a), mod)
     end
   end
 
@@ -220,27 +217,38 @@ module Convolution2
     x % p
   end
 
-  def garner(m, a)
-    ans = 0_i64
-    mod = 1_i64
+  def mod_add(a, b, mod)
+    (a + b) % mod
+  end
 
-    m.zip(a).each do |m, a|
-      ans = ans &+ mod &* inv(mod, m) &* (a - ans)
-      mod = mod &* m
+  def mod_mul(a, b, mod)
+    (a * b) % mod
+  end
+
+  def garner(ma, mod)
+    ar = 0_i64
+    mr = 1_i64
+
+    ma.each do |m, a|
+      ar = mod_mul(mod_mul(mod_add(ar, mr, mod), inv(mr, m), mod), a - ar, mod)
+      mr = (mr * m) % mod
     end
-    {ans % mod, mod}
+    ar % mr
   end
 end
 
-n = gets.to_s.to_i64
+n, m = gets.to_s.split.map(&.to_i64)
 a = gets.to_s.split.map(&.to_i64)
+b = gets.to_s.split.map(&.to_i64)
 
-x = Array.new(200_000, 0_i64)
-y = Array.new(200_000, 0_i64)
-
-a.each do |v|
-  x[v - 1] += 1_i64
-  y[200_000 - v] += 1_i64
+if n < m
+  while a.size < m
+    a << 0_i64
+  end
+else
+  while b.size < n
+    b << 0_i64
+  end
 end
 
-pp Convolution2.solve(x, y).count(&.> 0)
+puts Convolution2.solve(a, b, 1_000_000_007_i64)

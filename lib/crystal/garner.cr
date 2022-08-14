@@ -202,29 +202,33 @@ def inv(a, b)
   x % p
 end
 
-def garner(m, a)
-  ans = 0_i64
-  mod = 1_i64
+def garner(m, a, mod = 1000000007)
+  n = m.size
+  m_prod = 1_i64
+  ans = a[0] % m[0]
 
-  m.zip(a).each do |m, a|
-    ans += mod * inv(mod, m) * (a - ans)
-    mod *= m
+  (1...n).each do |i|
+    m_prod *= m[i - 1]
+    t = ((a[i] - ans) * inv(m_prod, m[i])) % m[i]
+    ans += t * m_prod
+    ans %= mod
   end
-  {ans % mod, mod}
+
+  ans
 end
 
-module Convolution2
-  M1 = 167772161
-  M2 = 469762049
-  M3 = 1224736769
+# module Convolution2
+#   M1 = 167772161
+#   M2 = 469762049
+#   M3 = 1224736769
 
-  def solve(a, b)
-    x = NTT(M1,3).new.conv(a, b)
-    y = NTT(M2,3).new.conv(a, b)
-    z = NTT(M3,3).new.conv(a, b)
+#   def solve(a, b)
+#     x = NTT(M1,3).new.conv(a, b)
+#     y = NTT(M2,3).new.conv(a, b)
+#     z = NTT(M3,3).new.conv(a, b)
 
-    [x,y,z].transpose.map do |a|
-      garber([M1,M2,M3], a)
-    end
-  end
-end
+#     [x,y,z].transpose.map do |a|
+#       garber([M1,M2,M3], a)
+#     end
+#   end
+# end

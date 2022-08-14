@@ -97,6 +97,10 @@ struct Complex(T)
     real.abs + imag.abs
   end
 
+  def chebi
+    Math.max real.abs, imag.abs
+  end
+
   # 偏角ソート用、有理数角度
   def phase
     area = (real < 0).to_unsafe
