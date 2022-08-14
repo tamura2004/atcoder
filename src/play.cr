@@ -1,238 +1,60 @@
-struct NTT(M, G)
-  def ceil_pow2(n : Int) : Int32
-    (0..).find(-1) do |x|
-      n <= (1 << x)
-    end
+class UnionFind
+  getter n : Int32
+  getter pa : Array(Int32)
+  getter sz : Array(Int64)
+
+  def initialize(n)
+    @n = n.to_i
+    @pa = Array.new(@n, &.itself)
+    @sz = Array.new(@n, 1_i64)
   end
 
-  def bsf(n : Int) : Int32
-    (0..).find(-1) do |x|
-      (n >> x) & 1 == 1
-    end
+  def root(v)
+    pa[v] = v == pa[v] ? v : root(pa[v])
   end
 
-  def pow_mod(x : Int, n : Int) : Int64
-    return 0_i64 if M == 1
-    r = 1_i64
-    y = (x % M).to_i64
-
-    while n != 0
-      r = (r * y) % M if n.odd?
-      y = (y * y) % M
-      n >>= 1
-    end
-    return r
+  def same?(v, nv)
+    root(v) == root(nv)
   end
 
-  def inv_gcd(a : Int, b : Int) : Int
-    a = a % b
-
-    if a < 0
-      a += b
-    end
-
-    s, t = b, a
-    m0, m1 = 0_i64, 1_i64
-
-    while t != 0
-      u = s // t
-      s -= t * u
-      m0 -= m1 * u
-      tmp = s
-      s = t
-      t = tmp
-      tmp = m0
-      m0 = m1
-      m1 = tmp
-    end
-
-    if m0 < 0
-      m0 += b // s
-    end
-
-    return m0
+  def unite(v, nv)
+    v = root(v)
+    nv = root(nv)
+    return if v == nv
+    sz[nv] += sz[v]
+    pa[v] = nv
   end
 
-  def butterfly_unit # (g : Int) : Tuple(Int32, Array(Int64), Array(Int64))
-    es = Array.new(30, 0_i64)
-    ies = Array.new(30, 0_i64)
-    cnt = bsf(M - 1)
-    e = pow_mod(G, (M - 1) >> cnt)
-    ie = inv_gcd(e, M)
-    cnt.downto(2) do |i|
-      es[i - 2] = e
-      ies[i - 2] = ie
-      e *= e
-      e %= M
-      ie *= ie
-      ie %= M
-    end
-    return ({cnt, es, ies})
-  end
-
-  def butterfly_init              # (g : Int) : Array(Int64)
-    cnt, es, ies = butterfly_unit # (g)
-    se = Array.new(30, 0_i64)
-    now = 1_i64
-    (cnt - 1).times do |i|
-      se[i] = es[i] * now
-      se[i] %= M
-      now *= ies[i]
-      now %= M
-    end
-    return se
-  end
-
-  def butterfly(a : Array(Int64)) : Nil
-    # g = 3
-    n = a.size
-    h = ceil_pow2(n)
-    se = butterfly_init # (g)
-
-    1.upto(h) do |ph|
-      w = 1_i64 << (ph - 1)
-      p = 1_i64 << (h - ph)
-      now = 1_i64
-      w.times do |s|
-        j = s << (h - ph + 1)
-        p.times do |i|
-          l = a[i + j]
-          r = a[i + j + p] * now % M
-          a[i + j] = l + r
-          a[i + j + p] = l - r
-          a[i + j] %= M
-          a[i + j + p] %= M
-          if a[i + j + p] < 0
-            a[i + j + p] += M
-          end
-        end
-        now *= se[bsf(~s)]
-        now %= M
-      end
-    end
-  end
-
-  def butterfly_inv_init # (g : Int) : Array(Int64)
-    sie = Array.new(30, 0_i64)
-    cnt2, es, ies = butterfly_unit # (G)
-
-    now = 1_i64
-    (cnt2 - 1).times do |i|
-      sie[i] = ies[i] * now
-      sie[i] %= M
-      now *= es[i]
-      now %= M
-    end
-    sie
-  end
-
-  def butterfly_inv(a : Array(Int64)) : Nil
-    # g = 3
-    n = a.size
-    h = ceil_pow2(n)
-    first = true
-    sie = butterfly_inv_init # (g)
-
-    h.downto(1) do |ph|
-      w = 1_i64 << (ph - 1)
-      p = 1_i64 << (h - ph)
-      inow = 1_i64
-      w.times do |s|
-        j = s << (h - ph + 1)
-        p.times do |i|
-          l = a[i + j]
-          r = a[i + j + p]
-          a[i + j] = l + r
-          a[i + j + p] = (l - r + M) * inow
-          a[i + j] %= M
-          a[i + j + p] %= M
-        end
-        inow *= sie[bsf(~s)]
-        inow %= M
-      end
-    end
-  end
-
-  def convolution(p, q)
-    p = p.map(&.to_i64)
-    q = q.map(&.to_i64)
-
-    n = p.size
-    m = q.size
-
-    return [] of Int64 if n == 0 || m == 0
-
-    z = 1_i64 << ceil_pow2(n + m - 1)
-    a = Array.new(z) { |i| i < n ? p[i] : 0_i64 }
-    b = Array.new(z) { |i| i < m ? q[i] : 0_i64 }
-
-    butterfly(a)
-    butterfly(b)
-
-    z.times do |i|
-      a[i] *= b[i]
-      a[i] %= M
-    end
-
-    butterfly_inv(a)
-
-    a = a[0, n + m - 1]
-    iz = inv_gcd(z, M)
-    (n + m - 1).times do |i|
-      a[i] *= iz
-      a[i] %= M
-    end
-    return a
-  end
-
-  def conv(p, q)
-    convolution(p, q)
+  def size(v)
+    sz[root(v)]
   end
 end
 
+n,m,e = gets.to_s.split.map(&.to_i)
 
-module Convolution2
-  extend self
-
-  M1 = 167_772_161_i64
-  M2 = 469_762_049_i64
-  M3 = 1_224_736_769_i64
-
-  def solve(a, b)
-    x = NTT(M1,3).new.conv(a, b)
-    y = NTT(M2,3).new.conv(a, b)
-    z = NTT(M3,3).new.conv(a, b)
-
-    [x,y,z].transpose.map do |a|
-      garner([M1,M2,M3], a).first
-    end
-  end
-
-  def inv(a, b)
-    p = b.to_i64
-    x, y, u, v = 1_i64, 0_i64, 0_i64, 1_i64
-    while b > 0
-      k = a // b
-      x -= k * u
-      y -= k * v
-      x, u, y, v, a, b = u, x, v, y, b, a % b
-    end
-    x % p
-  end
-
-  def garner(m, a)
-    ans = 0_i64
-    mod = 1_i64
-
-    m.zip(a).each do |m, a|
-      ans = ans &+ mod &* inv(mod, m) &* (a - ans)
-      mod = mod &* m
-    end
-    {ans % mod, mod}
-  end
-
+edges = Array.new(e) do
+  v, nv = gets.to_s.split.map(&.to_i.pred)
+  chmin v, n
+  chmin nv, n
+  {v, nv}
 end
 
-pp Convolution2.garner([3,5,7],[2,2,2])
+q = gets.to_s.to_i64
+x = Array.new(q) { gets.to_s.to_i.pred }
+seen = x.to_set
 
-pp Convolution2.solve([1,1],[1,1])
+uf = UnionFind.new(n+1)
+
+edges.each_with_index do |(v,nv),i|
+  next if i.in?(seen)
+  uf.unite v, nv
+end
+
+ans = Array.new(q, 0_i64)
+(0...q).reverse_each do |i|
+  v, nv = edges[x[i]]
+  ans[i] = uf.size(n) - 1
+  uf.unite(v, nv)
+end
+
+puts ans.join("\n")

@@ -97,7 +97,7 @@ struct Complex(T)
     real.abs + imag.abs
   end
 
-  def chebi
+  def chebyshev
     Math.max real.abs, imag.abs
   end
 
