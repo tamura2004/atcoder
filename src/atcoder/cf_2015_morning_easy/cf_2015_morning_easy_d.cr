@@ -1,4 +1,6 @@
+# 最長共通部分列の長さ
 def lcs(a, b)
+  # pp! [a.join,b.join]
   h = a.size
   w = b.size
 
@@ -12,5 +14,16 @@ def lcs(a, b)
       end
     end
   end
+  # pp! dp[-1][-1]
   dp[-1][-1]
 end
+
+n = gets.to_s.to_i64
+s = gets.to_s.chars
+
+ans = 0_i64
+n.times do |i|
+  chmax ans, lcs(s[0..i],s[i+1..])
+end
+
+pp n - ans * 2

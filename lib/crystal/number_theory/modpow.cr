@@ -1,11 +1,12 @@
 require "crystal/prime"
 
 # a ** b (mod)
-def modpow(a,b,mod)
+def modpow(a, b, mod)
+  a = a.to_i64
   ans = 1_i64
   while b > 0
     if b.odd?
-      ans *= a 
+      ans *= a
       ans %= mod
     end
     b //= 2
