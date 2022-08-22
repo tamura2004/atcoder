@@ -165,3 +165,9 @@ struct Int
     C.new(b.real + to_i64, b.imag)
   end
 end
+
+class Array
+  def to_c
+    C.new self[0].not_nil!,self[1].not_nil!
+  end
+end

@@ -1,84 +1,43 @@
 require "crystal/modint9"
 require "crystal/complex"
 
-# divn3(3) do |a|
-#   pp! a
-# end
-# exit
-
 n, m = gets.to_s.split.map(&.to_i64)
-a, b, c, d, e, f = gets.to_s.split.map(&.to_i64)
+values = gets.to_s.split.map(&.to_i64)
+a = values.in_groups_of(2).map(&.to_c)
+dp = make_array(0.to_m, n+1, n+1, n+1)
+dp[0][0][0] = 1.to_m
 
-class Problem
-  getter a : Int64
-  getter b : Int64
-  getter c : Int64
-  getter d : Int64
-  getter e : Int64
-  getter f : Int64
+ng = (0...m).map do
+  C.read
+end.to_set
 
-  def initialize(@a, @b, @c, @d, @e, @f)
-  end
-
-  def pos(i, j, k)
-    x = a*i + c*j + e*k
-    y = b*i + d*j + f*k
-    {x, y}
-  end
-end
-
-pr = Problem.new(a, b, c, d, e, f)
-
-ng = Set(Tuple(Int64, Int64)).new
-m.times do
-  x, y = gets.to_s.split.map(&.to_i64)
-  ng << {x, y}
-end
-
-# 300を３分割、C(302,2)
-# nを３分割、C(n+2,2)
-
-dp = Hash(Tuple(Int64, Int64, Int32), ModInt).new(0.to_m)
-dp[{0_i64, 0_i64, 0}] = 1.to_m
 ans = 0.to_m
 
-(1..n).each do |i|
-  divn3(i) do |s, t, u|
-    x, y = pr.pos(s, t, u)
-    next if ng.includes?({x, y})
+(0..n).each do |i|
+  (0..i).each do |s|
+    (0..i - s).each do |t|
+      u = i - s - t
+      w = a.zip({s, t, u}).sum { |a, b| a*b }
 
-    if s > 0
-      nx, ny = pr.pos(s - 1, t, u)
+      if i == n
+        ans += dp[i][s][t]
+      else
+        3.times do |j|
+          z = w + a[j]
+          next if ng.includes?(z)
+          ii = i + 1
 
-      dp[{x, y, i}] += dp[{nx, ny, i - 1}]
-    end
+          ss = s
+          tt = t
 
-    if t > 0
-      nx, ny = pr.pos(s, t - 1, u)
+          ss += 1 if j == 0
+          tt += 1 if j == 1
 
-      dp[{x, y, i}] += dp[{nx, ny, i - 1}]
-    end
-
-    if u > 0
-      nx, ny = pr.pos(s, t, u - 1)
-
-      dp[{x, y, i}] += dp[{nx, ny, i - 1}]
-    end
-
-    if i == n
-      # pp! [i,x,y,dp[{x, y}]]
-      ans += dp[{x, y, i}]
+          dp[ii][ss][tt] += dp[i][s][t]
+        end
+      end
     end
   end
 end
 
-# pp dp
 pp ans
-
-def divn3(n)
-  (0..n).each do |lo|
-    (lo..n).each do |hi|
-      yield ({lo, hi - lo, n - hi})
-    end
-  end
-end
