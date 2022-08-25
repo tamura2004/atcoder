@@ -85,3 +85,21 @@ class PriorityQueue(T)
 end
 
 alias PQ = PriorityQueue
+
+module Indexable(T)
+  def to_pq_lesser
+    q = PriorityQueue(T).lesser
+    each do |v|
+      q << v
+    end
+    q
+  end
+
+  def to_pq_greater
+    q = PriorityQueue(T).greater
+    each do |v|
+      q << v
+    end
+    q
+  end
+end
