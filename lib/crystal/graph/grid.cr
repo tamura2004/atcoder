@@ -4,7 +4,7 @@ class Grid
   include IGraph
   include Printable
 
-  D = [{-1, 0}, {0, -1}, {1, 0}, {0, 1}]
+  DIR = [{-1, 0}, {1, 0}, {0, 1}, {0, -1}, {1, 1}, {-1, -1}, {1, -1}, {-1, 1}]
 
   getter h : Int32
   getter w : Int32
@@ -27,6 +27,19 @@ class Grid
 
   def each(v, &b : Int32 -> _)
     y, x = v.divmod(w)
+
+    D[0,4].each do |dy, dx|
+      ny = y + dy
+      nx = x + dx
+      next if outside?(ny, nx)
+      next if wall?(ny, nx)
+      b.call ny * w + nx
+    end
+  end
+
+  def each8(v, &b : Int32 -> _)
+    y, x = v.divmod(w)
+
     D.each do |dy, dx|
       ny = y + dy
       nx = x + dx

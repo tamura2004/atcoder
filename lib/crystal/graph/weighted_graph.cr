@@ -8,10 +8,14 @@ class WeightedGraph
   include Printable
 
   getter n : Int32
+  getter m : Int32
+  getter both : Bool
   getter g : Array(Array(Tuple(Int32, Int64)))
 
   def initialize(n)
     @n = n.to_i
+    @m = 0
+    @both = true
     @g = Array.new(@n) { [] of Tuple(Int32, Int64) }
   end
 
@@ -19,6 +23,7 @@ class WeightedGraph
     v = v.to_i - origin
     nv = nv.to_i - origin
     cost = cost.to_i64
+    @both = both
 
     g[v] << {nv, cost}
     g[nv] << {v, cost} if both

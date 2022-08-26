@@ -13,8 +13,8 @@ describe Dijkstra do
 
   it "with weighted pair graph" do
     g = WeightedPairGraph.new
-    g.add 1, 10, 2, 20, 3
-    g.add 2, 20, 3, 30, 4
+    g.add ({1, 10}), ({2, 20}), 3
+    g.add ({2, 20}), ({3, 30}), 4
     Dijkstra.new(g).solve.should eq [0, 3, 7]
   end
 end
