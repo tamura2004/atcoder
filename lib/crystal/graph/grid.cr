@@ -2,7 +2,6 @@ require "crystal/graph/i_graph"
 
 class Grid
   include IGraph
-  include Printable
 
   DIR = [{-1, 0}, {1, 0}, {0, 1}, {0, -1}, {1, 1}, {-1, -1}, {1, -1}, {-1, 1}]
 
@@ -10,11 +9,13 @@ class Grid
   getter w : Int32
   getter g : Array(String)
   getter n : Int32
+  getter both : Bool
 
   def initialize(h, w, @g)
     @h = h.to_i
     @w = w.to_i
     @n = h * w
+    @both = true
   end
 
   def each(&b : Int32 -> _)
@@ -28,7 +29,7 @@ class Grid
   def each(v, &b : Int32 -> _)
     y, x = v.divmod(w)
 
-    D[0,4].each do |dy, dx|
+    DIR[0,4].each do |dy, dx|
       ny = y + dy
       nx = x + dx
       next if outside?(ny, nx)
@@ -40,7 +41,7 @@ class Grid
   def each8(v, &b : Int32 -> _)
     y, x = v.divmod(w)
 
-    D.each do |dy, dx|
+    DIR.each do |dy, dx|
       ny = y + dy
       nx = x + dx
       next if outside?(ny, nx)

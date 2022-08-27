@@ -1,4 +1,4 @@
-require "crystal/graph"
+require "crystal/graph/i_graph"
 
 # ρ法で問題を解く
 #
@@ -28,7 +28,7 @@ require "crystal/graph"
 # ro.hist # => [1, 1, 3, 3, 2] # ループしない場合は hist.size <= path.size
 # ```
 class Ro
-  getter g : Graph
+  getter g : IGraph
 
   getter path : Array(Int32) # 移動経路
   getter seen : Array(Int32) # 最初に通過した順番
@@ -86,7 +86,7 @@ class Ro
     seen[v] = i
     path << v
 
-    g[v].each do |nv|
+    g.each(v) do |nv|
       dfs(nv, i + 1)
     end
   end

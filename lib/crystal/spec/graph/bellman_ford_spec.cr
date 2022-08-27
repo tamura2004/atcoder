@@ -1,5 +1,5 @@
 require "spec"
-require "crystal/graph/weighted_graph"
+require "crystal/graph/graph"
 require "crystal/graph/bellman_ford"
 
 describe BellmanFord do
@@ -38,7 +38,7 @@ describe BellmanFord do
   # dp  # => [0, 1, -8, -7, 0]
   # neg #
   it "usage" do
-    g = WeightedGraph.new(5)
+    g = Graph.new(5)
     g.add 1, 2, 1, both: false
     g.add 2, 3, 1, both: false
     g.add 3, 4, -1, both: false

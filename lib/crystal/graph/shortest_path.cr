@@ -1,4 +1,4 @@
-require "crystal/graph"
+require "crystal/graph/i_graph"
 
 # グラフの最短経路を一つ検出する
 # *start* : 開始点
@@ -27,13 +27,12 @@ require "crystal/graph"
 # ShortestPath.new(g).solve # => nil
 # ```
 struct ShortestPath
-  getter n : Int32
-  getter g : Graph
+  getter g : IGraph
+  delegate n, to: g
   getter depth : Array(Int32)
   getter par : Array(Int32)
 
   def initialize(@g)
-    @n = g.n
     @depth = Array.new(n, -1)
     @par = Array.new(n, -1)
   end
@@ -42,7 +41,7 @@ struct ShortestPath
   def solve(start = 0, goal = n - 1, dv = -1, dnv = -1)
     start = start.to_i
     goal = goal.to_i
-    
+
     depth.fill(-1)
     par.fill(-1)
     bfs(start, dv, dnv)
@@ -67,7 +66,7 @@ struct ShortestPath
 
     while q.size > 0
       v = q.shift
-      g[v].each do |nv|
+      g.each(v) do |nv|
         next if v == dv && nv == dnv
         next if seen[nv]
         seen[nv] = true

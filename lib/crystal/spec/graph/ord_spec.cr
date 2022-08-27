@@ -1,5 +1,6 @@
 require "spec"
 require "crystal/graph/ord"
+require "crystal/graph/graph"
 
 describe Ord do
  it "usage" do

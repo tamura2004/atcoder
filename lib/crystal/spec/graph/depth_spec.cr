@@ -1,7 +1,6 @@
 require "spec"
 require "crystal/graph"
 require "crystal/graph/grid"
-require "crystal/graph/weighted_graph"
 require "crystal/graph/pair_graph"
 require "crystal/graph/depth"
 
@@ -15,7 +14,7 @@ describe Depth do
   end
 
   it "weighted graph" do
-    g = WeightedGraph.new(4)
+    g = Graph.new(4)
     g.add 1, 2, 3
     g.add 1, 4, 5
     g.add 4, 3, 6

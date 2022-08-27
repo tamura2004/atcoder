@@ -1,7 +1,8 @@
-require "crystal/graph"
+require "crystal/graph/i_graph"
 
+# DFSの訪問順を求める
 struct Ord
-  getter g : Graph
+  getter g : IGraph
   delegate n, to: g
   getter seen : Array(Bool)
   getter ord : Array(Int32)
@@ -23,7 +24,7 @@ struct Ord
     return if seen[v]
     seen[v] = true
     
-    g[v].each do |nv|
+    g.each(v) do |nv|
       dfs(nv)
     end
 

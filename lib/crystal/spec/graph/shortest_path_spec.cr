@@ -1,4 +1,5 @@
 require "spec"
+require "crystal/graph"
 require "crystal/graph/shortest_path"
 
 describe ShortestPath do
