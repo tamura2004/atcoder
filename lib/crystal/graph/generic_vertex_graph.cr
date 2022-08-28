@@ -13,6 +13,7 @@ class GenericVertexGraph(V)
   getter n : Int32                             # 頂点数
   getter m : Int32                             # 辺数
   getter both : Bool                           # 双方向
+  getter origin : Int32                           # 頂点の開始番号
   getter g : Array(Array(Tuple(Int32, Int64))) # 隣接リスト
   getter vs : Array(V)                         # 頂点の配列
   getter ix : Hash(V, Int32)                   # 頂点から配列のインデックスへ
@@ -20,6 +21,7 @@ class GenericVertexGraph(V)
   def initialize
     @n = 0
     @m = 0
+    @origin = 1
     @both = true
     @g = [] of Array(Tuple(Int32, Int64))
     @ix = Hash(V, Int32).new

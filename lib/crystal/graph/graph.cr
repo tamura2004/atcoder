@@ -3,21 +3,23 @@ require "crystal/graph/i_weighted_graph"
 require "crystal/graph/i_tree"
 require "crystal/graph/printable"
 
+# グラフコンテナ
 class Graph
   include IGraph
   include IWeightedGraph
   include ITree
   include Printable
 
-  getter n : Int32               # 頂点数
-  getter m : Int32               # 辺数
-  getter both : Bool             # 無向/有向
-  getter g : Array(Array(Tuple(Int32,Int64))) # 隣接リスト
+  getter n : Int32                             # 頂点数
+  getter m : Int32                             # 辺数
+  getter both : Bool                           # 無向/有向
+  getter origin : Int32                        # 頂点番号の開始
+  getter g : Array(Array(Tuple(Int32, Int64))) # 隣接リスト
 
-  def initialize(n, @both = true)
+  def initialize(n, @origin = 1, @both = true)
     @n = n.to_i
     @m = 0
-    @g = Array.new(@n) { [] of Tuple(Int32,Int64) }
+    @g = Array.new(@n) { [] of Tuple(Int32, Int64) }
   end
 
   def read(origin = 1, both = true)
@@ -33,6 +35,7 @@ class Graph
   def add(v, nv, cost = 1_i64, origin = 1, both = true)
     @m += 1
     @both = both
+    @origin = origin
 
     v = v.to_i - origin
     nv = nv.to_i - origin

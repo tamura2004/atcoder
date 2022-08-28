@@ -10,12 +10,14 @@ class Grid
   getter g : Array(String)
   getter n : Int32
   getter both : Bool
+  getter origin : Int32
 
   def initialize(h, w, @g)
     @h = h.to_i
     @w = w.to_i
     @n = h * w
     @both = true
+    @origin = 0
   end
 
   def each(&b : Int32 -> _)

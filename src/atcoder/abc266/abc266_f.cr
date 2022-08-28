@@ -1,20 +1,6 @@
 require "crystal/union_find"
 require "crystal/graph"
-
-class Deg
-  getter g : IGraph
-  delegate n, to: g
-  getter deg : Array(Int32)
-
-  def initialize(@g)
-    @deg = Array.new(n, 0)
-    g.each do |v|
-      g.each(v) do |nv|
-        deg[v] += 1
-      end
-    end
-  end
-end
+require "crystal/graph/deg"
 
 n = gets.to_s.to_i
 g = Graph.new(n)
@@ -22,7 +8,7 @@ n.times do
   g.read
 end
 
-deg = Deg.new(g).deg
+deg = Deg.new(g).solve
 uf = n.to_uf
 
 q = Deque(Int32).new
