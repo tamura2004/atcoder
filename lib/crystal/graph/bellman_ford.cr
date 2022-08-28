@@ -1,4 +1,4 @@
-require "crystal/graph/i_weighted_graph"
+require "crystal/graph/i_graph"
 
 # ベルマンフォード法により最短経路を求める
 #
@@ -37,7 +37,7 @@ require "crystal/graph/i_weighted_graph"
 # ```
 struct BellmanFord
   INF = Int64::MAX//4
-  getter g : IWeightedGraph
+  getter g : IGraph
   delegate n, to: g
 
   def initialize(@g)

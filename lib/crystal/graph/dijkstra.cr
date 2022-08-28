@@ -1,10 +1,12 @@
 require "crystal/priority_queue"
-require "crystal/graph/i_weighted_graph"
+require "crystal/graph/i_graph"
 
+# ダイクストラ法により、正の重み付きグラフの
+# 一点開始、全点への最短距離を求める
 class Dijkstra
   INF = Int64::MAX // 4
 
-  getter g : IWeightedGraph
+  getter g : IGraph
   delegate n, to: g
 
   def initialize(@g)

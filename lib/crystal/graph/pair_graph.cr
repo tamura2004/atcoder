@@ -1,3 +1,3 @@
-require "crystal/graph/generic_vertex_graph"
+require "crystal/graph/base_graph"
 
-alias PairGraph = GenericVertexGraph(Tuple(Int32,Int32))
+alias PairGraph = BaseGraph(Tuple(Int32,Int32),Int64)
