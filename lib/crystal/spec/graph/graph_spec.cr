@@ -85,4 +85,5 @@ describe Graph do
     g.add 2, 3, 3, both: false
     InDeg.new(g).solve.should eq [1,1,1,1]
   end
+
 end

@@ -12,14 +12,14 @@ class BaseGraph(V, E)
   getter both : Bool
   getter origin : Int32
 
-  getter g : Array(Array(Tuple(Int32,Int64,Int32)))
+  getter g : Array(Array(Tuple(Int32, Int64, Int32)))
   getter ix : Hash(V, Int32)
   getter vs : Array(V)
   getter es : Array(E)
 
   def initialize(@n = 0, @origin = 1, @both = true)
     @m = 0
-    @g = Array.new(n) { [] of Tuple(Int32,Int64,Int32) }
+    @g = Array.new(n) { [] of Tuple(Int32, Int64, Int32) }
     @ix = {} of V => Int32
     @vs = [] of V
     @es = [] of E
@@ -28,15 +28,13 @@ class BaseGraph(V, E)
   def add(v : V, nv : V, e : E? = nil, origin = nil, both = nil)
     @origin = origin unless origin.nil?
     @both = both unless both.nil?
-    
+
     i = add_vertex(v)
     j = add_vertex(nv)
-    cost = e ? get_cost(e) : 1_i64
-    
-    g[i] << { j, cost, m }
-    g[j] << { i, cost, m } if @both
-    
-    @m += 1
+    k, cost = add_edge(e)
+
+    g[i] << {j, cost, k}
+    g[j] << {i, cost, k} if @both
   end
 
   def each(&b : Int32 -> _)
@@ -57,17 +55,41 @@ class BaseGraph(V, E)
     end
   end
 
-  private def get_cost(e : Int64) : Int64
-    e
+  def each_with_edge(i : Int32, &b : (Int32, E) -> _)
+    g[i].each do |j, _, k|
+      b.call j, es[k]
+    end
+  end
+  
+  def each_with_index(i : Int32, &b : (Int32, Int64, Int32) -> _)
+    g[i].each do |j, cost, k|
+      b.call j, cost, k
+    end
+  end
+
+  private def add_edge(e : E) : Tuple(Int32, Int64)
+    ({@m, get_cost(e)}).tap do
+      @es << e
+      @m += 1
+    end
   end
 
   private def get_cost(e : E) : Int64
-    if e.responds_to?(:cost)
-      e.cost
-    elsif e.responds_to?(:first)
-      e.first
-    else
+    case e
+    when Int64
+      e
+    when Nil
       1_i64
+    when NamedTuple
+      e[:cost]? || 1_i64
+    else
+      if e.responds_to?(:cost)
+        e.cost
+      elsif e.responds_to?(:first)
+        e.first
+      else
+        1_i64
+      end
     end
   end
 
@@ -82,7 +104,7 @@ class BaseGraph(V, E)
 
     ret = ix[v] = vs.size
     vs << v
-    g << [] of Tuple(Int32,Int64,Int32)
+    g << [] of Tuple(Int32, Int64, Int32)
     @n += 1
     ret
   end
