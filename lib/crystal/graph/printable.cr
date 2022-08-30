@@ -8,13 +8,18 @@ module Printable
   def to_s(io)
     graph_type = both ? "digraph" : "graph"
     arrow = both ? "--" : "->"
+    weighted = weighted?
 
     File.open("debug.dot", "w") do |fh|
       fh.puts "#{graph_type} g {"
       each do |v|
-        each(v) do |nv|
+        each_with_cost(v) do |nv, cost|
           next if both && v > nv
-          fh.puts "\"#{v + origin}\" #{arrow} \"#{nv + origin}\";"
+          if weighted
+            fh.puts "\"#{v + origin}\" #{arrow} \"#{nv + origin}\" [label = \"#{cost}\"];"
+          else
+            fh.puts "\"#{v + origin}\" #{arrow} \"#{nv + origin}\";"
+          end
         end
       end
       fh.puts "}"

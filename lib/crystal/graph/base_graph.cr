@@ -67,14 +67,18 @@ class BaseGraph(V, E)
     end
   end
 
-  private def add_edge(e : E) : Tuple(Int32, Int64)
+  def weighted?
+    g.flatten.any?(&.[1].> 1)
+  end
+
+  private def add_edge(e : E?) : Tuple(Int32, Int64)
     ({@m, get_cost(e)}).tap do
-      @es << e
+      @es << e unless e.nil?
       @m += 1
     end
   end
 
-  private def get_cost(e : E) : Int64
+  private def get_cost(e : E?) : Int64
     case e
     when Int64
       e
