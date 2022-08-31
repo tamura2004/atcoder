@@ -42,5 +42,15 @@ describe BaseGraph do
     Dijkstra.new(g).solve.should eq [0,100,300]
   end
 
+  it "breakable" do
+    g = BaseGraph(Int32,Int64).new(4)
+    got = [] of Int32
+    g.each do |v|
+      got << v
+      break if v == 1
+    end
+    got.should eq [0,1]
+  end
+
 
 end

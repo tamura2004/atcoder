@@ -1,8 +1,7 @@
 require "spec"
-require "crystal/weighted_tree/rerooting"
-include WeightedTree
+require "crystal/graph/rerooting"
 
-describe WeightedTree::Rerooting do
+describe Rerooting do
   it "usage" do
   end
 end

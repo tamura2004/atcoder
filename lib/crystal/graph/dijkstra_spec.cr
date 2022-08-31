@@ -12,9 +12,9 @@ describe Dijkstra do
   end
 
   it "with weighted pair graph" do
-    g = BaseGraph(Tuple(Int32,Int32),Nil).new
-    g.add ({1, 10}), ({2, 20}), 3
-    g.add ({2, 20}), ({3, 30}), 4
+    g = BaseGraph(Tuple(Int32, Int32), Int64).new
+    g.add ({1, 10}), ({2, 20}), 3_i64
+    g.add ({2, 20}), ({3, 30}), 4_i64
     Dijkstra.new(g).solve.should eq [0, 3, 7]
   end
 end

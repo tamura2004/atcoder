@@ -1,15 +1,32 @@
-# alias V = Tuple(Int32,Int32)
-# alias E = NamedTuple(cost: Int64, color: Int32)
+module IGraph
+  abstract def each(&b : Int32 -> _)
+  abstract def each_with_cost(&b : (Int32,Int64) -> _)
+end
 
-class Hoge
+class Graph
+  include IGraph
+
   def each
-    10.times do |i|
-      yield i
-    end
+    yield 1
+    yield 2
+    yield 3
+  end
+
+  def each_with_cost
+    yield 1, 1_i64
+    yield 2, 1_i64
+    yield 3, 1_i64
   end
 end
 
-Hoge.new.each do |i|
+Graph.new.each do |i|
   pp i
-  break if i == 5
+  break if i == 2
 end
+
+Graph.new.each_with_cost do |i, cost|
+  pp [i,cost]
+  break if i == 2
+end
+
+

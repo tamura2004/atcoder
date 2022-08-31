@@ -1,7 +1,9 @@
 require "crystal/graph/i_graph"
+require "crystal/graph/i_tree"
 
 class Grid
   include IGraph
+  include ITree
 
   DIR = [{-1, 0}, {1, 0}, {0, 1}, {0, -1}, {1, 1}, {-1, -1}, {1, -1}, {-1, 1}]
 
@@ -25,7 +27,8 @@ class Grid
   def each #(&b : Int32 -> _)
     h.times do |y|
       w.times do |x|
-        b.call y * w + x
+        next if wall?(y, x)
+        yield y * w + x
       end
     end
   end

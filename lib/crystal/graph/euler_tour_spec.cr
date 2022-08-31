@@ -1,10 +1,10 @@
 require "spec"
-require "crystal/weighted_tree/euler_tour"
-include WeightedTree
+require "crystal/graph"
+require "crystal/graph/euler_tour"
 
-describe WeightedTree::EulerTour do
+describe EulerTour do
   it "usage" do
-    g = Tree.new(5)
+    g = Graph.new(5)
     g.add 1, 2, 100
     g.add 1, 3, 100
     g.add 2, 4, 100

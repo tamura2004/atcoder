@@ -1,10 +1,10 @@
 require "spec"
-require "crystal/weighted_tree/lca"
-include WeightedTree
+require "crystal/graph"
+require "crystal/graph/lca"
 
-describe WeightedTree::Lca do
+describe Lca do
   it "usage" do
-    g = Tree.new(5)
+    g = Graph.new(5)
     g.add 1, 3, 100
     g.add 1, 4, 100
     g.add 4, 2, 100

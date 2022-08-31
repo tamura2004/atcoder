@@ -1,10 +1,9 @@
-require "crystal/weighted_tree/tree"
-require "crystal/weighted_tree/depth"
-require "crystal/weighted_tree/parent"
-require "crystal/weighted_tree/euler_tour"
+require "crystal/graph/i_graph"
+require "crystal/graph/depth"
+require "crystal/graph/parent"
+require "crystal/graph/euler_tour"
 require "crystal/segment_tree"
 
-module WeightedTree
   # 最小共通祖先を与えるProcオブジェクトを求める
   #
   # Example:
@@ -35,7 +34,7 @@ module WeightedTree
   # lca.call(5, 2) # => 4
   # ```
   class Lca
-    getter g : Tree
+    getter g : IGraph
     delegate n, to: g
 
     def initialize(@g)
@@ -47,10 +46,10 @@ module WeightedTree
       enter, leave, index = EulerTour.new(g).solve(root)
 
       val = index.map do |i|
-        i >= 0 ? {depth[i], i} : {depth[parent[~i][0]], parent[~i][0]}
+        i >= 0 ? {depth[i], i} : {depth[parent[~i]], parent[~i]}
       end
 
-      st = SegmentTree.range_min_query(values: val, unit: {Int32::MAX, Int32::MAX})
+      st = SegmentTree.min(values: val, unit: {Int32::MAX, Int32::MAX})
 
       ->(u : Int32, v : Int32) {
         u -= origin
@@ -60,4 +59,3 @@ module WeightedTree
       }
     end
   end
-end

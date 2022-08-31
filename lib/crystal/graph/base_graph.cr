@@ -37,36 +37,33 @@ class BaseGraph(V, E)
     g[j] << {i, cost, k} if @both
   end
 
-  def each #(&b : Int32 -> _)
+  def each
     n.times do |i|
       yield i
-      # b.call i
     end
   end
 
-  def each(i : Int32) #, &b : Int32 -> _)
+  def each(i : Int32)
     g[i].each do |j, _, _|
       yield j
-      # b.call j
     end
   end
 
-  def each_with_cost(i : Int32) #, &b : (Int32, Int64) -> _)
+  def each_with_cost(i : Int32)
     g[i].each do |j, cost, _|
       yield j, cost
-      # b.call j, cost
     end
   end
 
-  def each_with_edge(i : Int32, &b : (Int32, E) -> _)
+  def each_with_edge(i : Int32)
     g[i].each do |j, _, k|
-      b.call j, es[k]
+      yield j, es[k]
     end
   end
   
-  def each_with_index(i : Int32, &b : (Int32, Int64, Int32) -> _)
+  def each_with_index(i : Int32)
     g[i].each do |j, cost, k|
-      b.call j, cost, k
+      yield j, cost, k
     end
   end
 

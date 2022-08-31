@@ -1,5 +1,4 @@
 require "spec"
-require "crystal/graph/pair_graph"
 require "crystal/graph/dfs_tree_factory"
 
 describe DfsTreeFactory do
@@ -13,7 +12,7 @@ describe DfsTreeFactory do
   end
 
   it "pair graph" do
-    g = PairGraph.new
+    g = BaseGraph(Tuple(Int32,Int32),Int64).new
     g.add ({1, 10}), ({2, 20})
     g.add ({1, 10}), ({3, 30})
     g.add ({2, 20}), ({3, 30})
