@@ -24,7 +24,7 @@ class Grid
     @origin = 0
   end
 
-  def each #(&b : Int32 -> _)
+  def each
     h.times do |y|
       w.times do |x|
         next if wall?(y, x)
@@ -33,7 +33,7 @@ class Grid
     end
   end
 
-  def each(v : Int32) #, &b : Int32 -> _)
+  def each(v : Int32)
     y, x = v.divmod(w)
 
     DIR[0,4].each do |dy, dx|
@@ -42,7 +42,6 @@ class Grid
       next if outside?(ny, nx)
       next if wall?(ny, nx)
       yield ny * w + nx
-      # b.call ny * w + nx
     end
   end
 
@@ -52,7 +51,7 @@ class Grid
     end
   end
 
-  def each8(v, &b : Int32 -> _)
+  def each8(v)
     y, x = v.divmod(w)
 
     DIR.each do |dy, dx|
@@ -60,7 +59,7 @@ class Grid
       nx = x + dx
       next if outside?(ny, nx)
       next if wall?(ny, nx)
-      b.call ny * w + nx
+      yield ny * w + nx
     end
   end
 
