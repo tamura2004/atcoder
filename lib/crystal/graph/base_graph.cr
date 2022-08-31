@@ -37,21 +37,24 @@ class BaseGraph(V, E)
     g[j] << {i, cost, k} if @both
   end
 
-  def each(&b : Int32 -> _)
+  def each #(&b : Int32 -> _)
     n.times do |i|
-      b.call i
+      yield i
+      # b.call i
     end
   end
 
-  def each(i : Int32, &b : Int32 -> _)
+  def each(i : Int32) #, &b : Int32 -> _)
     g[i].each do |j, _, _|
-      b.call j
+      yield j
+      # b.call j
     end
   end
 
-  def each_with_cost(i : Int32, &b : (Int32, Int64) -> _)
+  def each_with_cost(i : Int32) #, &b : (Int32, Int64) -> _)
     g[i].each do |j, cost, _|
-      b.call j, cost
+      yield j, cost
+      # b.call j, cost
     end
   end
 

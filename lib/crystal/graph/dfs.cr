@@ -16,7 +16,7 @@ class Dfs
     @seen = Array.new(n, false)
   end
 
-  def tree_dfs(v, pv, &b : (Event, Int32, Int32) -> _)
+  def tree_dfs(v, pv, &b : (Event, Int32, Int32) -> Bool)
     b.call Event::Enter, v, -1
     g.each(v) do |nv|
       next if nv == pv
@@ -27,7 +27,7 @@ class Dfs
     b.call Event::Leave, v, -1
   end
 
-  def graph_dfs(v, &b : (Event, Int32, Int32) -> _)
+  def graph_dfs(v, &b : (Event, Int32, Int32) -> Bool)
     b.call Event::Enter, v, -1
     g.each(v) do |nv|
       next if seen[nv]
@@ -39,7 +39,7 @@ class Dfs
     b.call Event::Leave, v, -1
   end
 
-  def dfs(v, &b : (Event, Int32, Int32) -> _)
+  def dfs(v, &b : (Event, Int32, Int32) -> Bool)
     if g.tree?
       tree_dfs(v, -1, &b)
     else

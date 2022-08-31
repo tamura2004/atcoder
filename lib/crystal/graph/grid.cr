@@ -9,6 +9,7 @@ class Grid
   getter w : Int32
   getter g : Array(String)
   getter n : Int32
+  getter m : Int32
   getter both : Bool
   getter origin : Int32
 
@@ -16,11 +17,12 @@ class Grid
     @h = h.to_i
     @w = w.to_i
     @n = h * w
+    @m = h * (w - 1) + (h - 1) * w
     @both = true
     @origin = 0
   end
 
-  def each(&b : Int32 -> _)
+  def each #(&b : Int32 -> _)
     h.times do |y|
       w.times do |x|
         b.call y * w + x
@@ -28,7 +30,7 @@ class Grid
     end
   end
 
-  def each(v, &b : Int32 -> _)
+  def each(v : Int32) #, &b : Int32 -> _)
     y, x = v.divmod(w)
 
     DIR[0,4].each do |dy, dx|
@@ -36,7 +38,14 @@ class Grid
       nx = x + dx
       next if outside?(ny, nx)
       next if wall?(ny, nx)
-      b.call ny * w + nx
+      yield ny * w + nx
+      # b.call ny * w + nx
+    end
+  end
+
+  def each_with_cost(v)
+    each(v) do |nv|
+      yield nv, 1_i64
     end
   end
 

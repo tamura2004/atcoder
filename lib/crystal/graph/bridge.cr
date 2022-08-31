@@ -25,15 +25,14 @@ require "crystal/graph/i_graph"
 # Bridge.new(g).solve # => [] of Tuple(Int32, Int32)
 # ```
 struct Bridge
-  getter n : Int32
   getter g : IGraph
+  delegate n, to: g
   getter seen : Array(Bool)
   getter ord : Array(Int32)
   getter low : Array(Int32)
   getter bridges : Array(Tuple(Int32, Int32))
 
   def initialize(@g)
-    @n = g.n
     @seen = Array.new(n, false)
     @ord = Array.new(n, -1)
     @low = Array.new(n, -1)
@@ -41,7 +40,7 @@ struct Bridge
   end
 
   def solve
-    g.each do | v|
+    g.each do |v|
       next if seen[v]
       dfs(v, 0, -1)
     end

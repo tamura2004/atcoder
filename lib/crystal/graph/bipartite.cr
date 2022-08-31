@@ -33,11 +33,10 @@ struct Bipartite
   end
 
   def solve : Array(Int32) | Nil
-    n.times do |root|
+    g.each do |root|
       next true if color[root] != -1
       dfs(root, BLACK) || return nil
     end
-
     color
   end
 
