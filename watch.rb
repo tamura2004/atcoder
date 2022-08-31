@@ -185,7 +185,11 @@ class Task
       when /lib\/ruby\/test/
         src = Pathname src
       when /lib\/crystal/
-        src = Pathname(src.to_s.gsub("lib/crystal", "lib/crystal/spec").gsub(".cr", "_spec.cr"))
+        if src =~ /spec/
+          src = Pathname src
+        else
+          src = Pathname(src.to_s.gsub(".cr", "_spec.cr"))
+        end
       else
         src = Pathname(src.to_s.gsub("lib/ruby", "lib/ruby/test/test_").gsub(".cr", "_spec.cr"))
       end

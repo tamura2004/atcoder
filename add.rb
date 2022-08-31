@@ -33,7 +33,7 @@ ARGV.each do |name|
   name = name.downcase
 
   src = lib + (name + ".cr")
-  spec = lib + "spec" + (name + "_spec.cr")
+  spec = lib + (name + "_spec.cr")
   modules = name.split("/").map { |s| camelcase(s) }
   classname = modules.pop
 

@@ -1,4 +1,5 @@
 require "spec"
+require "crystal/graph"
 require "crystal/graph/bridge"
 
 describe Bridge do

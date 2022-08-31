@@ -1,4 +1,5 @@
 require "spec"
+require "crystal/graph"
 require "crystal/graph/connected_decomposition"
 
 describe ConnectedDecomposition do

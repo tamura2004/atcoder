@@ -1,4 +1,5 @@
 require "spec"
+require "crystal/graph"
 require "crystal/graph/backtrack"
 
 describe Backtrack do
@@ -7,9 +8,9 @@ describe Backtrack do
     g.add 3, 3, both: false
     g.add 2, 1, both: false
     Backtrack.new(g).solve.should eq [
-      Backtrack::WIN,
-      Backtrack::LOSE,
-      Backtrack::DRAW,
+      Backtrack::Game::Win,
+      Backtrack::Game::Lose,
+      Backtrack::Game::Draw,
     ]
   end
 end
