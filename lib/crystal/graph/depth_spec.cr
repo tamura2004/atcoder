@@ -26,7 +26,7 @@ describe Depth do
   end
 
   it "pair graph" do
-    g = BaseGraph(Tuple(Int32,Int32),Int64).new
+    g = BaseGraph(Tuple(Int32,Int32)).new
     g.add ({1, 10}), ({2, 20})
     g.add ({2, 20}), ({3, 30})
     Depth.new(g).solve.should eq [0, 1, 2]

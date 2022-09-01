@@ -2,7 +2,7 @@ require "crystal/graph/i_graph"
 require "crystal/graph/i_tree"
 require "crystal/graph/printable"
 
-class BaseGraph(V, E)
+class BaseGraph(V)
   include IGraph
   include ITree
   include Printable
@@ -12,29 +12,34 @@ class BaseGraph(V, E)
   getter both : Bool
   getter origin : Int32
 
-  getter g : Array(Array(Tuple(Int32, Int64, Int32)))
+  getter g : Array(Array(Tuple(Int32,Int64,Int32)))
   getter ix : Hash(V, Int32)
   getter vs : Array(V)
-  getter es : Array(E)
+  getter es : Array(Tuple(Int32,Int32,Int64,Int32))
 
   def initialize(@n = 0, @origin = 1, @both = true)
     @m = 0
     @g = Array.new(n) { [] of Tuple(Int32, Int64, Int32) }
     @ix = {} of V => Int32
     @vs = [] of V
-    @es = [] of E
+    @es = [] of Tuple(Int32,Int32,Int64,Int32)
   end
 
-  def add(v : V, nv : V, e : E? = nil, origin = nil, both = nil)
+  def add(v : V, nv : V, cost = 1_i64, origin = nil, both = nil)
     @origin = origin unless origin.nil?
     @both = both unless both.nil?
 
     i = add_vertex(v)
     j = add_vertex(nv)
-    k, cost = add_edge(e)
+    cost = cost.to_i64
 
-    g[i] << {j, cost, k}
-    g[j] << {i, cost, k} if @both
+    es << {i, j, cost, g[i].size}
+    g[i] << {j, cost, m}
+    @m += 1
+
+    if @both
+      g[j] << {i, cost, m}
+    end
   end
 
   def each
@@ -55,13 +60,13 @@ class BaseGraph(V, E)
     end
   end
 
-  def each_with_edge(i : Int32)
+  def each_with_index(i : Int32)
     g[i].each do |j, _, k|
-      yield j, es[k]
+      yield j, k
     end
   end
-  
-  def each_with_index(i : Int32)
+
+  def each_cost_with_index(i : Int32)
     g[i].each do |j, cost, k|
       yield j, cost, k
     end
@@ -69,32 +74,6 @@ class BaseGraph(V, E)
 
   def weighted?
     g.flatten.any?(&.[1].> 1)
-  end
-
-  private def add_edge(e : E?) : Tuple(Int32, Int64)
-    ({@m, get_cost(e)}).tap do
-      @es << e unless e.nil?
-      @m += 1
-    end
-  end
-
-  private def get_cost(e : E?) : Int64
-    case e
-    when Int64
-      e
-    when Nil
-      1_i64
-    when NamedTuple
-      e[:cost]? || 1_i64
-    else
-      if e.responds_to?(:cost)
-        e.cost
-      elsif e.responds_to?(:first)
-        e.first
-      else
-        1_i64
-      end
-    end
   end
 
   private def add_vertex(i : Int32)
