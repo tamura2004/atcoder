@@ -1,9 +1,10 @@
 require "spec"
-require "crystal/tree/in_order_tree"
+require "crystal/graph"
+require "crystal/graph/in_order_tree"
 
 describe InOrderTree do
   it "usage" do
-    g = Tree.new(4)
+    g = Graph.new(4)
     g.add 4, 3, both: false
     g.add 4, 1, both: false
     g.add 1, 2, both: false

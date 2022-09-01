@@ -1,4 +1,4 @@
-require "crystal/tree/subtree_size"
+require "crystal/graph/subtree_size"
 
 # HL分解で使用
 # 各隣接リストにおいて、先頭にHeavyPathが来るように自身を並べ替える
@@ -13,7 +13,7 @@ require "crystal/tree/subtree_size"
 # g.g.should eq [[2, 1], [] of Int32, [3], [] of Int32]
 # ```
 class HLSort
-  getter g : Tree
+  getter g : IGraph
   delegate n, to: g
 
   def initialize(@g)
@@ -22,7 +22,8 @@ class HLSort
   def solve(root = 0)
     ss = SubtreeSize.new(g).solve(root)
 
-    n.times do |v|
+    g.each do |v|
+      g.each(v) do |nv|
       g[v].sort_by! do |nv|
         -ss[nv]
       end

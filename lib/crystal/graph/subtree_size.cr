@@ -1,4 +1,4 @@
-require "crystal/tree"
+require "crystal/graph/i_graph"
 
 # 部分木の大きさを求める
 #
@@ -12,11 +12,12 @@ require "crystal/tree"
 # SubtreeSize.new(g).solve.should eq [6, 3, 2, 1, 1, 1]
 # ```
 struct SubtreeSize
-  getter g : Tree
+  getter g : IGraph
   getter ans : Array(Int32)
   delegate n, to: g
 
   def initialize(@g)
+    @g.tree!
     @ans = Array.new(n, 0)
   end
 
@@ -28,7 +29,7 @@ struct SubtreeSize
   def dfs(v, pv)
     ans[v] = 1
 
-    g[v].each do |nv|
+    g.each(v) do |nv|
       next if nv == pv
       dfs(nv, v)
       ans[v] += ans[nv]

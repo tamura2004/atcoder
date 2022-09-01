@@ -1,9 +1,10 @@
 require "spec"
-require "crystal/tree/subtree_size"
+require "crystal/graph"
+require "crystal/graph/subtree_size"
 
 describe SubtreeSize do
   it "usage" do
-    g = Tree.new(6)
+    g = Graph.new(6)
     g.add 1, 2
     g.add 1, 3
     g.add 2, 4

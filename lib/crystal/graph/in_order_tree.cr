@@ -1,4 +1,4 @@
-require "crystal/tree"
+require "crystal/graph/i_graph"
 
 # 頂点番号をDFSの訪問順(in-order)に振りなおす。
 #
@@ -18,7 +18,7 @@ require "crystal/tree"
 # pa.should eq [-1, 0, 0, 2]
 # ```
 class InOrderTree
-  getter g : Tree
+  getter g : IGraph
   getter ord : Array(Int32)
   getter pa : Array(Int32)
   delegate n, to: g
@@ -31,10 +31,10 @@ class InOrderTree
   def solve(root = 0)
     dfs(root, -1)
     vid = ord.zip(0..).sort.map(&.last)
-    gg = Tree.new(n)
+    gg = Graph.new(n)
 
-    n.times do |v|
-      g[v].each do |nv|
+    g.each do |v|
+      g.each(v) do |nv|
         next if vid[v] > vid[nv]
         gg.add vid[v], vid[nv], origin: 0, both: false
         pa[vid[nv]] = vid[v]
@@ -46,7 +46,7 @@ class InOrderTree
 
   def dfs(v, pv)
     ord << v
-    g[v].each do |nv|
+    g.each(v) do |nv|
       next if nv == pv
       dfs(nv, v)
     end
