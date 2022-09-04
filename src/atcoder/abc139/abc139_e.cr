@@ -3,34 +3,30 @@
 # トポロジカルソートしてＤＰすると最長パスが求められるが
 # それが試合日数になる
 
-require "crystal/abstract_graph/tsort"
+require "crystal/graph"
+require "crystal/graph/tsort"
 
-struct V
-  getter i : Int32
-  getter j : Int32
+alias V = Tuple(Int32, Int32)
 
-  def initialize(@i, @j)
-    @i, @j = j, i if i > j
+n = gets.to_s.to_i
+g = BaseGraph(V).new
+
+n.times do |a|
+  gets.to_s.split.map(&.to_i.pred).each_cons_pair do |b, c|
+    v = ({a, b}).minmax
+    nv = ({a, c}).minmax
+    g.add v, nv, both: false
   end
 end
 
-n = gets.to_s.to_i64
-g = Graph(V).new
-
-(1..n).each do |i|
-  a = gets.to_s.split.map(&.to_i)
-
-  a.each do |j|
-    g.add_vertex V.new(i, j)
+if path = Tsort.new(g).solve?
+  dp = Array.new(g.n, 1)
+  path.each do |v|
+    g.each(v) do |nv|
+      chmax dp[nv], dp[v] + 1
+    end
   end
-
-  a.each_cons_pair do |j, k|
-    g.add V.new(i, j), V.new(i, k)
-  end
-end
-
-if ans = Tsort(V).new(g).longest_path
-  pp ans.values.max + 1
+  puts dp.max
 else
-  pp -1
+  puts -1
 end

@@ -1,28 +1,36 @@
-require "crystal/weighted_graph/graph"
+require "crystal/graph"
 
-n = gets.to_s.to_i64
+n = gets.to_s.to_i
 g = Graph.new(n)
 
 (n-1).times do
-  v, nv, cost = gets.to_s.split.map(&.to_i64)
-  g.add v, nv, cost
+  g.read
 end
 
-ans = Array.new(n, -1)
+ans = Problem.new(g).solve
+puts ans.join("\n")
 
-dfs = uninitialized Proc(Int32,Int32,Nil)
-dfs = Proc(Int32,Int32,Nil).new do |v, pv|
-  g[v].each do |nv, cost|
-    next if nv == pv
-    if cost.odd?
-      ans[nv] = 1 - ans[v]
-    else
-      ans[nv] = ans[v]
+class Problem
+  getter g : IGraph
+  delegate n, to: g
+  getter dp : Array(Int32)
+  
+  def initialize(@g)
+    g.tree!
+    @dp = Array.new(n, -1)
+  end
+
+  def solve
+    dfs(0, -1, 0)
+    dp
+  end
+
+  def dfs(v,pv,color)
+    dp[v] = color
+    g.each_with_cost(v) do |nv, cost|
+      next if nv == pv
+      ncolor = cost.odd? ? 1 - color : color
+      dfs(nv,v,ncolor)
     end
-    dfs.call(nv, v)
   end
 end
-ans[0] = 0
-dfs.call(0, -1)
-
-puts ans.join("\n")

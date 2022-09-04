@@ -1,13 +1,10 @@
-require "crystal/graph/i_graph"
 require "crystal/graph"
-require "crystal/graph/lca"
 require "crystal/graph/depth"
 
 n = gets.to_s.to_i
 g = Graph.new(n)
 (n-1).times do
-  v, nv, cost = gets.to_s.split.map(&.to_i)
-  g.add v, nv, cost.to_i64
+  g.read
 end
 
 q, k = gets.to_s.split.map(&.to_i)

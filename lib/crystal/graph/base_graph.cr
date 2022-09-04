@@ -13,20 +13,21 @@ class BaseGraph(V)
   getter both : Bool
   getter origin : Int32
 
-  getter g : Array(Array(Tuple(Int32,Int64,Int32)))
+  getter g : Array(Array(Tuple(Int32, Int64, Int32)))
   getter ix : Hash(V, Int32)
   getter vs : Array(V)
-  getter es : Array(Tuple(Int32,Int32,Int64,Int32))
+  getter es : Array(Tuple(Int32, Int32, Int64, Int32))
 
   # 空のグラフを初期化
-  def initialize(@n = 0, @origin = 1, @both = true)
+  def initialize(n = 0, @origin = 1, @both = true)
+    @n = n.to_i
     @m = 0
     @g = Array.new(n) { [] of Tuple(Int32, Int64, Int32) }
     @ix = {} of V => Int32
     @vs = [] of V
-    @es = [] of Tuple(Int32,Int32,Int64,Int32)
+    @es = [] of Tuple(Int32, Int32, Int64, Int32)
   end
-  
+
   # 親の頂点リストで木を初期化
   def initialize(pa : Array(Int32), @origin = 0, @both = true)
     @n = pa.size
@@ -34,7 +35,7 @@ class BaseGraph(V)
     @g = Array.new(n) { [] of Tuple(Int32, Int64, Int32) }
     @ix = {} of V => Int32
     @vs = [] of V
-    @es = [] of Tuple(Int32,Int32,Int64,Int32)
+    @es = [] of Tuple(Int32, Int32, Int64, Int32)
 
     pa.each_with_index do |pv, v|
       next if pv == -1
@@ -53,12 +54,26 @@ class BaseGraph(V)
 
     es << {i, j, cost, g[i].size}
     g[i] << {j, cost, m}
-    
+
     if @both
       g[j] << {i, cost, m}
     end
-    
+
     @m += 1
+  end
+
+  def read(origin = 1, both = true)
+    line = gets.to_s.split.map(&.to_i64)
+    case line.size
+    when 2
+      v, nv = line.map(&.to_i)
+      add v, nv, origin: origin, both: both
+    when 3
+      v, nv, cost = line
+      v = v.to_i
+      nv = nv.to_i
+      add v, nv, cost, origin: origin, both: both 
+    end
   end
 
   def each

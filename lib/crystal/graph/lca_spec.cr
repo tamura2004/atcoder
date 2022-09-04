@@ -12,10 +12,10 @@ describe Lca do
     g.add 6, 5
 
     lca = Lca.new(g, 4)
-    lca.solve(2,5).should eq 4
-    lca.solve(2,0).should eq 1
-    lca.solve(2,1).should eq 1
-    lca.solve(2,5).should eq 4
-    lca.solve(0,4).should eq 4
+    lca.solve(2, 5).should eq 4
+    lca.solve(2, 0).should eq 1
+    lca.solve(2, 1).should eq 1
+    lca.solve(2, 5).should eq 4
+    lca.solve(0, 4).should eq 4
   end
 end

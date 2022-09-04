@@ -1,3 +1,1 @@
-require "crystal/graph"
-require "crystal/graph/diameter"
-require "crystal/graph/parent"
+pp ({3,2}).minmax
