@@ -5,26 +5,23 @@ require "crystal/graph/trees_hash"
 def to_tree(a)
   g = Graph.new(a.size + 1)
   a.zip(0..).each do |v, nv|
-    g.add v, nv, origin: 0
+    g.add v, nv + 1, origin: 0
   end
   g
 end
 
 describe TreesHash do
   it "usage" do
-    g = Graph.new(7)
-    g.add 1,2
-    g.add 1,3
-    g.add 2,4
-    g.add 2,5
-    g.add 2,6
-    g.add 2,7
-    h = TreesHash.new(g).solve
-    # g2 = TreesHash.new(to_tree([0,1,1,0,4,4])).solve
-    # g3 = TreesHash.new(to_tree([0,0,2,2,2,2])).solve
+    g1 = to_tree([0,0,2])
+    g2 = to_tree([0,1,0])
+    g3 = to_tree([0,0,0])
 
-    # g1.should eq g3
-    # g1.should_not eq g2
+    h1 = TreesHash.new(g1).solve
+    h2 = TreesHash.new(g2).solve
+    h3 = TreesHash.new(g3).solve
+
+    h1.should eq h2
+    h1.should_not eq h3
 
   end
 end

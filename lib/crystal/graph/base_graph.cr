@@ -2,6 +2,7 @@ require "crystal/graph/i_graph"
 require "crystal/graph/i_tree"
 require "crystal/graph/printable"
 
+# 汎用グラフ
 class BaseGraph(V)
   include IGraph
   include ITree
@@ -17,6 +18,7 @@ class BaseGraph(V)
   getter vs : Array(V)
   getter es : Array(Tuple(Int32,Int32,Int64,Int32))
 
+  # 空のグラフを初期化
   def initialize(@n = 0, @origin = 1, @both = true)
     @m = 0
     @g = Array.new(n) { [] of Tuple(Int32, Int64, Int32) }
@@ -24,7 +26,23 @@ class BaseGraph(V)
     @vs = [] of V
     @es = [] of Tuple(Int32,Int32,Int64,Int32)
   end
+  
+  # 親の頂点リストで木を初期化
+  def initialize(pa : Array(Int32), @origin = 0, @both = true)
+    @n = pa.size
+    @m = 0
+    @g = Array.new(n) { [] of Tuple(Int32, Int64, Int32) }
+    @ix = {} of V => Int32
+    @vs = [] of V
+    @es = [] of Tuple(Int32,Int32,Int64,Int32)
 
+    pa.each_with_index do |pv, v|
+      next if pv == -1
+      add v + origin, pv
+    end
+  end
+
+  # 辺の追加
   def add(v : V, nv : V, cost = 1_i64, origin = nil, both = nil)
     @origin = origin unless origin.nil?
     @both = both unless both.nil?
@@ -35,11 +53,12 @@ class BaseGraph(V)
 
     es << {i, j, cost, g[i].size}
     g[i] << {j, cost, m}
-    @m += 1
-
+    
     if @both
       g[j] << {i, cost, m}
     end
+    
+    @m += 1
   end
 
   def each

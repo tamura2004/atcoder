@@ -4,13 +4,18 @@ require "crystal/graph/lca"
 
 describe Lca do
   it "usage" do
-    g = Graph.new(5)
-    g.add 1, 3, 100
-    g.add 1, 4, 100
-    g.add 4, 2, 100
-    g.add 4, 5, 100
-    lca = Lca.new(g).solve(origin: 1)
-    lca.call(5, 3).should eq 1
-    lca.call(5, 2).should eq 4
+    g = Graph.new(6)
+    g.add 1, 2
+    g.add 3, 2
+    g.add 5, 2
+    g.add 4, 5
+    g.add 6, 5
+
+    lca = Lca.new(g, 4)
+    lca.solve(2,5).should eq 4
+    lca.solve(2,0).should eq 1
+    lca.solve(2,1).should eq 1
+    lca.solve(2,5).should eq 4
+    lca.solve(0,4).should eq 4
   end
 end

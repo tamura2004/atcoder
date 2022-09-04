@@ -48,7 +48,7 @@ while flag
   tmp = []
   buf.each do |line|
     # line.gsub!(/\b([0-9]+)\b/, '\1_i64')
-    if line =~ /^require "crystal\/(.*)"/
+    if line =~ /^require "crystal\/(.*)"/ && !flag
       name = $1
 
       next if seen[name]
