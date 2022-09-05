@@ -34,7 +34,7 @@ class Doubling(T)
     v = from
     depth.times do |k|
       break if v.nil?
-      v = link[k][v] if step >> k & 1 == 1
+      v = link[k][v] if step.bit(k) == 1
     end
     return v
   end
@@ -53,7 +53,7 @@ class Doubling(T)
     v = from
     depth.times do |k|
       break if v.nil?
-      if (step+1) >> k & 1 == 1
+      if (step+1).bit(k) == 1
         ans = add(ans, csum[k][v])
         v = link[k][v]
       end

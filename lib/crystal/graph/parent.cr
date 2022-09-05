@@ -14,16 +14,16 @@ class Parent
   getter g : IGraph
   delegate n, to: g
   getter root : Int32
-  getter pa : Array(Array(Int32))
+  getter pa : Array(Array(Int32?))
   delegate "[]", to: pa
-  
+
   # ダブリング用に2^k先の親の頂点を求める
   def initialize(@g, @root = 0)
     g.tree!
-    @pa = Array.new(D) { Array.new(n, -1) }
+    @pa = Array.new(D) { Array.new(n, nil.as(Int32?)) }
 
     # 親の頂点を求める
-    q = Deque.new([{root,-1}])
+    q = Deque.new([{root,nil.as(Int32?)}])
     while q.size > 0
       v, pv = q.shift
       pa[0][v] = pv
@@ -35,8 +35,9 @@ class Parent
 
     (1...D).each do |k|
       g.each do |v|
-        next if pa[k-1][v] == -1
-        pa[k][v] = pa[k-1][pa[k-1][v]]
+        if pv = pa[k-1][v]
+          pa[k][v] = pa[k-1][pv]
+        end
       end
     end
   end
@@ -51,7 +52,7 @@ class Parent
       if k.bit(i) == 1
         v = pa[i][v]
       end
-      break if v == -1
+      break if v.nil?
     end
     v
   end

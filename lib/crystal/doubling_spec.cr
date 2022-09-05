@@ -1,5 +1,5 @@
 require "spec"
-require "../doubling"
+require "crystal/doubling"
 
 describe Doubling do
   it "itself test" do

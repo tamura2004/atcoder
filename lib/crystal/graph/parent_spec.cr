@@ -24,7 +24,7 @@ describe Parent do
     #           +---+
     #           | 4 |
     #           +---+
-    Parent.new(g).solve.should eq [-1, 0, 0, 1, 1]
+    Parent.new(g).solve.should eq [nil, 0, 0, 1, 1]
   end
 
   it "upto root" do
@@ -32,15 +32,15 @@ describe Parent do
     pa = Parent.new(g, 8)
     pa.up(0, 1).should eq 3
     pa.up(0, 2).should eq 8
-    pa.up(0, 3).should eq -1
+    pa.up(0, 3).should eq nil
     pa.up(5, 1).should eq 9
     pa.up(5, 2).should eq 4
     pa.up(5, 3).should eq 8
-    pa.up(5, 4).should eq -1
+    pa.up(5, 4).should eq nil
     pa.up(11, 1).should eq 9
     pa.up(11, 2).should eq 4
     pa.up(11, 3).should eq 8
-    pa.up(11, 4).should eq -1
+    pa.up(11, 4).should eq nil
   end
 
   it "bug 4bit?" do

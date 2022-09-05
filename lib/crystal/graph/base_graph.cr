@@ -29,18 +29,33 @@ class BaseGraph(V)
   end
 
   # 親の頂点リストで木を初期化
-  def initialize(pa : Array(Int32), @origin = 0, @both = true)
-    @n = pa.size
-    @m = 0
-    @g = Array.new(n) { [] of Tuple(Int32, Int64, Int32) }
-    @ix = {} of V => Int32
-    @vs = [] of V
-    @es = [] of Tuple(Int32, Int32, Int64, Int32)
-
-    pa.each_with_index do |pv, v|
-      next if pv == -1
-      add v + origin, pv
+  def self.from_pa(pa : Array(Int32), origin = 0, both = true)
+    BaseGraph(Int32).new(pa.size).tap do |g|
+      pa.each_with_index do |pv, v|
+        next if pv == -1
+        g.add v + origin, pv
+      end
     end
+  end
+
+  # s式で木を初期化
+  def self.from_sexp(s : Array(T)) forall T
+    n = s.flatten.size
+    g = BaseGraph(Int32).new(n)
+    parse_sexp(s, g)
+    return g
+  end
+
+  def self.parse_sexp(s, g : BaseGraph(Int32))
+    return s if s.is_a?(Int32)
+    v = s.shift
+    raise "bad sexp #{v}" unless v.is_a?(Int32)
+
+    s.each do |ss|
+      nv = parse_sexp(ss, g)
+      g.add v, nv
+    end
+    return v
   end
 
   # 辺の追加
@@ -72,7 +87,7 @@ class BaseGraph(V)
       v, nv, cost = line
       v = v.to_i
       nv = nv.to_i
-      add v, nv, cost, origin: origin, both: both 
+      add v, nv, cost, origin: origin, both: both
     end
   end
 

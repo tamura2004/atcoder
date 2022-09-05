@@ -31,8 +31,8 @@ class Lca
     # 二分探索
     # 2^40上、2^39上を降り順に調べ、不一致なら上る
     (0...Parent::D).reverse_each do |i|
-      pv = pa[i][v]
-      pnv = pa[i][nv]
+      pv = pa[i][v.not_nil!]
+      pnv = pa[i][nv.not_nil!]
 
       if pv != pnv
         v = pv
@@ -41,6 +41,6 @@ class Lca
     end
 
     # 親がLCA
-    pa[0][v]
+    pa[0][v.not_nil!]
   end
 end
