@@ -1,5 +1,5 @@
 require "spec"
-require "crystal//fft"
+require "crystal/fft"
 
 describe "FFT" do
   it "usage" do

@@ -1,5 +1,5 @@
 require "spec"
-require "../segment_tree"
+require "crystal/segment_tree"
 
 alias Pair = Tuple(Int32, Int32)
 

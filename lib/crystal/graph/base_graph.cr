@@ -28,32 +28,35 @@ class BaseGraph(V)
     @es = [] of Tuple(Int32, Int32, Int64, Int32)
   end
 
-  # 親の頂点リストで木を初期化
-  def self.from_pa(pa : Array(Int32), origin = 0, both = true)
-    BaseGraph(Int32).new(pa.size).tap do |g|
-      pa.each_with_index do |pv, v|
-        next if pv == -1
-        g.add v + origin, pv
-      end
+  # 親の頂点リストまたはS式で木を初期化
+  def initialize(a : Array(T), @origin = 1, @both = true) forall T
+    if a.is_a?(Array(Int32)) && a.includes?(-1) # 親の頂点リスト
+      n = a.size
+      initialize(n, origin: origin, both: both)
+      parse_plist(a)
+    else # s式
+      n = a.flatten.size
+      initialize(n, origin: origin, both: both)
+      parse_sexp(a)
     end
   end
-
-  # s式で木を初期化
-  def self.from_sexp(s : Array(T)) forall T
-    n = s.flatten.size
-    g = BaseGraph(Int32).new(n)
-    parse_sexp(s, g)
-    return g
+  
+  # 親の頂点リストで木を初期化
+  def parse_plist(a)
+    a.each_with_index do |pv, v|
+      next if pv == -1
+      add v + origin, pv
+    end
   end
-
-  def self.parse_sexp(s, g : BaseGraph(Int32))
+    
+  # s式で木を初期化
+  def parse_sexp(s)
     return s if s.is_a?(Int32)
     v = s.shift
     raise "bad sexp #{v}" unless v.is_a?(Int32)
-
     s.each do |ss|
-      nv = parse_sexp(ss, g)
-      g.add v, nv
+      nv = parse_sexp(ss)
+      add v, nv
     end
     return v
   end

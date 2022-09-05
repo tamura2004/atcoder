@@ -1,5 +1,5 @@
 require "spec"
-require "../sqrt_decomposition"
+require "crystal/sqrt_decomposition"
 
 describe SqrtDecompositionRSUM do
   it "usage" do

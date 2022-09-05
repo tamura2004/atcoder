@@ -1,5 +1,5 @@
 require "spec"
-require "../trie"
+require "crystal/trie"
 
 describe Trie do
   it "usage" do

@@ -30,4 +30,24 @@ module Printable
   def inspect(io)
     to_s(io)
   end
+
+  # s式の文字列に変換
+  def to_sexp(root = 0)
+    dfs_sexp(root, -1)
+  end
+
+  def dfs_sexp(v, pv)
+    # pp! [v,pv]
+    ret = [v.to_s]
+    each(v) do |nv|
+      next if nv == pv
+      ret << dfs_sexp(nv, v)
+    end
+    
+    if ret.size > 1
+      ret[0] = "(" + ret[0]
+      ret[-1] += ")"
+    end
+    ret.join(" ")
+  end
 end

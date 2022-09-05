@@ -1,5 +1,5 @@
 require "spec"
-require "../string"
+require "crystal/string"
 
 describe String do
   it "make suffix array" do

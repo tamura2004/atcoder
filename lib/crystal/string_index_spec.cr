@@ -1,5 +1,5 @@
 require "spec"
-require "../string_index"
+require "crystal/string_index"
 
 describe StringIndex do
   it "usage" do

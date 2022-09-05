@@ -1,5 +1,5 @@
 require "spec"
-require "../fenwick_tree"
+require "crystal/fenwick_tree"
 
 describe "inversion number" do
   it "usage" do
