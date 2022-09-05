@@ -1,5 +1,5 @@
 require "spec"
-require "crystal//hash_count"
+require "crystal/hash_count"
 
 describe HashCount do
   it "usage" do

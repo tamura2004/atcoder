@@ -1,5 +1,5 @@
 require "spec"
-require "crystal//xor_base"
+require "crystal/xor_base"
 
 describe XorBase do
   it "usage" do

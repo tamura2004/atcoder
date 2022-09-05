@@ -1,5 +1,5 @@
 require "spec"
-require "../lucas"
+require "crystal/lucas"
 
 describe Lucas do
   it "usage" do

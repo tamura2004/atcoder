@@ -1,5 +1,5 @@
 require "spec"
-require "../segment_sieve"
+require "crystal/segment_sieve"
 
 describe SegmentSieve do
   it "usage" do

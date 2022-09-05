@@ -1,5 +1,5 @@
 require "spec"
-require "crystal//persistent_union_find"
+require "crystal/persistent_union_find"
 
 describe PersistentUnionFind do
   it "usage" do

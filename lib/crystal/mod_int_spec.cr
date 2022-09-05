@@ -1,5 +1,5 @@
 require "spec"
-require "../mod_int"
+require "crystal/mod_int"
 
 describe ModInt do
   it "+" do

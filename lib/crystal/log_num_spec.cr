@@ -1,5 +1,5 @@
 require "spec"
-require "../log_num"
+require "crystal/log_num"
 
 EPS = 0.0000001
 

@@ -1,5 +1,5 @@
 require "spec"
-require "../lis.cr"
+require "crystal/lis.cr"
 
 describe LIS do
   it "basic usage" do

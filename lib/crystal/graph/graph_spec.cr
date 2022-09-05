@@ -19,15 +19,6 @@ describe Graph do
     a.should eq [0, 1, 2]
   end
 
-  it "depth" do
-    g = Graph.new(4)
-    g.add 1, 2
-    g.add 4, 1
-    g.add 4, 2
-    g.add 3, 2
-    Depth.new(g).solve.should eq [0, 1, 2, 1]
-  end
-
   it "dijkstra" do
     g = Graph.new(4)
     g.add 1, 2, 4

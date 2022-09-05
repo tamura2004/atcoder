@@ -1,5 +1,5 @@
 require "spec"
-require "crystal//cht"
+require "crystal/cht"
 
 describe CHT do
   it "usage" do

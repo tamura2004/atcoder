@@ -1,5 +1,5 @@
 require "spec"
-require "../rolling_hash"
+require "crystal/rolling_hash"
 
 describe RollingHash do
   it "solve abc141e" do

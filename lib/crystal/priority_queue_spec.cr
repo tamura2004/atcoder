@@ -1,5 +1,5 @@
 require "spec"
-require "../priority_queue"
+require "crystal/priority_queue"
 
 describe PriorityQueue do
   it "usage max heap" do

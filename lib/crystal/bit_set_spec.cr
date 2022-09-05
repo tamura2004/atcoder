@@ -1,5 +1,5 @@
 require "spec"
-require "../bit_set"
+require "crystal/bit_set"
 
 # bitを利用した集合表現
 describe Int do

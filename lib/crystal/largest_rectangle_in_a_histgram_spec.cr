@@ -1,5 +1,5 @@
 require "spec"
-require "../largest_rectangle_in_a_histgram"
+require "crystal/largest_rectangle_in_a_histgram"
 
 describe LargestRectanbleInAHistgram do
   it "右下がり" do

@@ -1,5 +1,5 @@
 require "spec"
-require "crystal//dual_segment_tree"
+require "crystal/dual_segment_tree"
 
 alias T = Tuple(Int32,Int32)
 

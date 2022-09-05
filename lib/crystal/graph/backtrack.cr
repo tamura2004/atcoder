@@ -2,7 +2,7 @@ require "crystal/graph/i_graph"
 require "crystal/graph/in_deg"
 
 # 後退解析によりゲーム木のノードごとの勝敗・引き分けを求める
-# 
+#
 # Example:
 # ```
 # # 3 -> 3, 1 -> 2の場合
@@ -12,7 +12,7 @@ require "crystal/graph/in_deg"
 # Backtrack.new(g).solve.should eq [
 #   Backtrack::Game::Win,
 #   Backtrack::Game::Lose,
-#   Backtrack::Game::Draw
+#   Backtrack::Game::Draw,
 # ]
 # ```
 class Backtrack
@@ -20,7 +20,7 @@ class Backtrack
     Win
     Lose
     Draw
-end
+  end
 
   getter g : IGraph
   delegate n, to: g
@@ -31,9 +31,9 @@ end
 
   def solve
     ans = Array.new(n, Game::Draw) # 勝敗・引き分け
-    seen = Array.new(n, false) # 決定済
-    q = Deque.new([] of Int32) # キュー
-    deg = InDeg.new(g).solve # 入次数
+    seen = Array.new(n, false)     # 決定済
+    q = Deque.new([] of Int32)     # キュー
+    deg = InDeg.new(g).solve       # 入次数
 
     # 入次数が0のノードは末端なので遷移先がなく負け
     n.times do |v|

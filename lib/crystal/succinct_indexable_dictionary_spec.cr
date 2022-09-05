@@ -1,5 +1,5 @@
 require "spec"
-require "crystal//succinct_indexable_dictionary"
+require "crystal/succinct_indexable_dictionary"
 
 describe SuccinctIndexableDictionary do
   it "usage" do

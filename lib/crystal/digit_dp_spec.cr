@@ -1,6 +1,6 @@
 require "spec"
-require "../digit_dp"
-require "../mod_int"
+require "crystal/digit_dp"
+require "crystal/mod_int"
 
 macro make_array(value, *dims)
   {% for dim in dims %} Array.new({{dim}}) { {% end %}

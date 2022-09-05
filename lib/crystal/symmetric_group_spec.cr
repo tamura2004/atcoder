@@ -1,5 +1,5 @@
 require "spec"
-require "crystal//symmetric_group"
+require "crystal/symmetric_group"
 
 describe SymmetricGroup do
   it "usage" do

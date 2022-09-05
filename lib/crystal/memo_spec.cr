@@ -1,5 +1,5 @@
 require "spec"
-require "../memo"
+require "crystal/memo"
 
 describe Memo do
   it "solve fibonacci" do

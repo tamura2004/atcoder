@@ -1,5 +1,5 @@
 require "spec"
-require "crystal//string_scanner_sample"
+require "crystal/string_scanner_sample"
 
 alias SSS = StringScannerSample
 

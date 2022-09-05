@@ -1,5 +1,5 @@
 require "spec"
-require "../matrix"
+require "crystal/matrix"
 
 describe Matrix do
   it "usage" do

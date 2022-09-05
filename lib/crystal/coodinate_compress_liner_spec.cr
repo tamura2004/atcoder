@@ -1,5 +1,5 @@
 require "spec"
-require "../coodinate_compress_liner"
+require "crystal/coodinate_compress_liner"
 
 describe CoodinateCompressLiner do
   it "usage" do

@@ -1,5 +1,5 @@
 require "spec"
-require "crystal//bitset"
+require "crystal/bitset"
 
 describe Bitset do
   it "usage" do

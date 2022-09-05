@@ -1,5 +1,5 @@
 require "spec"
-require "crystal//avl_tree"
+require "crystal/avl_tree"
 
 describe AVLTree do
   it "usage" do

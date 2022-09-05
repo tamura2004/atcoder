@@ -1,5 +1,5 @@
 require "spec"
-require "../mod_pow"
+require "crystal/mod_pow"
 
 describe "mod_pow" do
   it "usage" do

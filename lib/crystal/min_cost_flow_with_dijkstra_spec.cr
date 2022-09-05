@@ -1,5 +1,5 @@
 require "spec"
-require "crystal//min_cost_flow_with_dijkstra"
+require "crystal/min_cost_flow_with_dijkstra"
 
 describe MinCostFlow do
   it "usage" do

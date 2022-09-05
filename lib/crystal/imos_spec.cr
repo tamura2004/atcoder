@@ -1,5 +1,5 @@
 require "spec"
-require "../imos"
+require "crystal/imos"
 
 describe IMOS do
   it "usage" do

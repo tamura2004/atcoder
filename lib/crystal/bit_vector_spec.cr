@@ -1,5 +1,5 @@
 require "spec"
-require "crystal//bit_vector"
+require "crystal/bit_vector"
 
 describe BitVector do
   it "usage" do

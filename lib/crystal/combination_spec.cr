@@ -1,5 +1,5 @@
 require "spec"
-require "../combination"
+require "crystal/combination"
 
 describe "combination" do
   it "usage" do

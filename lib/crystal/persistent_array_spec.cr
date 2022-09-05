@@ -1,5 +1,5 @@
 require "spec"
-require "crystal//persistent_array"
+require "crystal/persistent_array"
 
 describe PersistentArray do
   it "usage" do

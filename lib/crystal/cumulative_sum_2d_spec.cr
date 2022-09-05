@@ -1,5 +1,5 @@
 require "spec"
-require "../cumulative_sum_2d"
+require "crystal/cumulative_sum_2d"
 
 describe CumulativeSum2D do
   it "solve arc025b case 1" do

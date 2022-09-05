@@ -1,5 +1,5 @@
 require "spec"
-require "crystal//mo"
+require "crystal/mo"
 
 describe Mo do
   it "usage" do

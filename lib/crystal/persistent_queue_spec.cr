@@ -1,5 +1,5 @@
 require "spec"
-require "crystal//persistent_queue"
+require "crystal/persistent_queue"
 
 describe PersistentQueue do
   it "usage" do

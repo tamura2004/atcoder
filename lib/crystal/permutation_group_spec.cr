@@ -1,5 +1,5 @@
 require "spec"
-require "../permutation_group"
+require "crystal/permutation_group"
 
 describe PermutationGroup do
   it "usage" do

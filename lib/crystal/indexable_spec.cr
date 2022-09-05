@@ -1,5 +1,5 @@
 require "spec"
-require "../indexable"
+require "crystal/indexable"
 
 describe Indexable do
   it "ソート済の配列に対し*u*未満の要素数を返す" do

@@ -1,5 +1,5 @@
 require "spec"
-require "crystal//union_find"
+require "crystal/union_find"
 
 describe UnionFind do
   it "usage" do

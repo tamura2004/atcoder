@@ -1,5 +1,5 @@
 require "spec"
-require "crystal//range_add"
+require "crystal/range_add"
 
 describe RangeAdd do
   it "usage" do

@@ -1,5 +1,5 @@
 require "spec"
-require "../diff_hash"
+require "crystal/diff_hash"
 
 describe DiffHash do
   it "usage" do
