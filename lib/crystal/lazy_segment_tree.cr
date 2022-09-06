@@ -11,51 +11,87 @@ class LazySegmentTree(X, A)
   getter x : Array(X)
   getter a : Array(A)
 
+  # 演算と単位元で初期化
+  #
+  def initialize(
+    values : Array(X),
+    @fxx : Proc(X, X, X) = Proc(X, X, X).new { |x, y| x + y },
+    @fxa : Proc(X, A, X) = Proc(X, A, X).new { |x, a| x * a },
+    @faa : Proc(A, A, A) = Proc(A, A, A).new { |a, b| a * b },
+    @x_unit = X.zero,
+    @a_unit = A.zero
+  )
+    @n = Math.max 2, Math.pw2ceil(values.size)
+    @x = Array(X).new(@n*2, x_unit)
+    @a = Array(A).new(@n*2, a_unit)
+
+    values.each_with_index do |v, i|
+      x[i + n] = v
+    end
+
+    (n - 1).downto(1) do |i|
+      x[i] = fxx.call x[lch(i)], x[rch(i)]
+    end
+  end
+
+  # 要素数で初期化
+  def initialize(
+    n : Int32,
+    @fxx : Proc(X, X, X) = Proc(X, X, X).new { |x, y| x + y },
+    @fxa : Proc(X, A, X) = Proc(X, A, X).new { |x, a| x * a },
+    @faa : Proc(A, A, A) = Proc(A, A, A).new { |a, b| a * b },
+    @x_unit = X.zero,
+    @a_unit = A.zero
+  )
+    values = [x_unit] * n
+    initialize(values, fxx, fxa, faa, x_unit, a_unit)
+  end
+
   # 区間更新、区間最小
   def self.range_update_range_min(n : I)
-    values = Array(X).new(n){ X::MAX }
+    values = Array(X).new(n) { X::MAX }
     range_update_range_min(values)
   end
 
   # 区間更新、区間最小
   def self.range_update_range_min(n : I, init : X)
-    values = Array(X).new(n){ init }
+    values = Array(X).new(n) { init }
     range_update_range_min(values)
   end
 
   # 区間更新、区間最小
   def self.range_update_range_min(values : Array(X))
     new(
+      values,
       Proc(X, X, X).new { |x, y| Math.min x, y },
       Proc(X, A, X).new { |x, a| Math.min x, a },
       Proc(A, A, A).new { |a, b| Math.min a, b },
       X::MAX,
       A::MAX,
-      values,
     )
   end
 
   # 区間更新、区間最小
   def self.range_update_range_max(n : I)
-    values = Array(X).new(n){ X::MIN }
+    values = Array(X).new(n) { X::MIN }
     range_update_range_max(values)
   end
 
   # 区間更新、区間最小
   def self.range_update_range_max(n : I, init : X)
-    values = Array(X).new(n){ init }
+    values = Array(X).new(n) { init }
     range_update_range_max(values)
   end
 
   # 区間更新、区間最大
   def self.range_update_range_max(values : Array(X))
     new(
+      values,
       Proc(X, X, X).new { |x, y| Math.max x, y },
       Proc(X, A, X).new { |x, a| Math.max x, a },
       Proc(A, A, A).new { |a, b| Math.max a, b },
       X.zero,
       A.zero,
-      values,
     )
   end
 
@@ -74,12 +110,12 @@ class LazySegmentTree(X, A)
   # 区間加算、区間最小
   def self.range_add_range_min(values : Array(X))
     new(
+      values,
       Proc(X, X, X).new { |x, y| Math.min x, y },
       Proc(X, A, X).new { |x, a| x + a },
       Proc(A, A, A).new { |a, b| a + b },
       X::MAX,
       A.zero,
-      values
     )
   end
 
@@ -94,12 +130,12 @@ class LazySegmentTree(X, A)
   # 常に０以上を返す
   def self.range_add_range_max(values : Array(X))
     new(
+      values,
       Proc(X, X, X).new { |x, y| Math.max x, y },
       Proc(X, A, X).new { |x, a| x + a },
       Proc(A, A, A).new { |a, b| a + b },
       X.zero,
       A.zero,
-      values
     )
   end
 
@@ -117,34 +153,13 @@ class LazySegmentTree(X, A)
   # 更新は単位元を持たないため、nilを加えて単位元としている
   def self.range_update_range_sum(values : Array(X))
     new(
+      values,
       Proc(X, X, X).new { |(x0, x1), (y0, y1)| {x0 + y0, x1 + y1} },
       Proc(X, A, X).new { |(x0, x1), a| a ? {x1 * a, x1} : {x0, x1} },
       Proc(A, A, A).new { |a, b| a && b ? b : b ? b : nil },
       X.new(0_i64, 1_i64),
       nil.as(A?),
-      values
     )
-  end
-
-  def initialize(
-    @fxx : Proc(X, X, X),
-    @fxa : Proc(X, A, X),
-    @faa : Proc(A, A, A),
-    @x_unit,
-    @a_unit,
-    values : Array(X),
-  )
-    @n = Math.max 2, Math.pw2ceil(values.size)
-    @x = Array(X).new(@n*2, x_unit)
-    @a = Array(A).new(@n*2, a_unit)
-
-    values.each_with_index do |v, i|
-      x[i + n] = v
-    end
-
-    (n - 1).downto(1) do |i|
-      x[i] = fxx.call x[lch(i)], x[rch(i)]
-    end
   end
 
   def set(i : I, y : X)

@@ -43,4 +43,16 @@ class Lca
     # 親がLCA
     pa[0][v.not_nil!]
   end
+
+  # vとnvのパスの長さを求める
+  def len(v, nv)
+    path_query(v, nv, depth)
+  end
+  
+  # st[v]が根から頂点までのコストを返すとき
+  # v〜nvパスのコストを返す
+  def path_query(v, nv, st)
+    t = solve(v, nv).not_nil!
+    st[enter[v]] + st[enter[nv]] - st[t] * 2
+  end
 end
