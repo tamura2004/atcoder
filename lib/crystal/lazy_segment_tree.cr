@@ -1,6 +1,9 @@
+require "crystal/i_segment_tree"
+
 # 遅延評価セグメント木
 class LazySegmentTree(X, A)
   alias I = Int::Signed
+  include ISegmentTree(X)
 
   getter fxx : Proc(X, X, X)
   getter fxa : Proc(X, A, X)
@@ -201,7 +204,7 @@ class LazySegmentTree(X, A)
     fxx.call left, right
   end
 
-  def [](r : Range(I?, I?)) : X
+  def [](r : Range(Int::Primitive?, Int::Primitive?)) : X
     lo = r.begin || 0
     hi = (r.end || n - 1) + (r.excludes_end? ? 0 : 1)
     fold(lo, hi)
@@ -285,6 +288,14 @@ class LazySegmentTree(X, A)
   @[AlwaysInline]
   def pa(i)
     i // (i & -i)
+  end
+
+  def fx
+    fxx
+  end
+
+  def unit
+    x_unit
   end
 
   def pp

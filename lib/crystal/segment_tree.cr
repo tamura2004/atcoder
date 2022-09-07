@@ -1,3 +1,5 @@
+require "crystal/i_segment_tree"
+
 # セグメント木
 #
 # 一点更新、区間計算をO(log n)で実行
@@ -10,6 +12,8 @@
 # st[1..2] # => 30
 # ```
 class SegmentTree(T)
+  include ISegmentTree(T)
+
   getter n : Int32
   getter unit : T
   getter xs : Array(T)
@@ -102,11 +106,11 @@ class SegmentTree(T)
     end
   end
 
-  def initialize(@unit,@fx,@n,@xs)
+  def initialize(@unit, @fx, @n, @xs)
   end
 
   def dup
-    SegmentTree(T).new(unit,fx,n,xs.dup)
+    SegmentTree(T).new(unit, fx, n, xs.dup)
   end
 
   def set(i : Int::Primitive, v : T)
