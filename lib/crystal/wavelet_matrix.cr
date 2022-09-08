@@ -13,7 +13,7 @@ class WaveletMatrix(T)
     v = v.dup
     max_value = v.max
     x = max_value < 0 ? ~max_value : max_value
-    @maxlog = sizeof(typeof(max_value)) * 8 - x.leading_zeros_count
+    @maxlog = 32 #sizeof(typeof(max_value)) * 8 - x.leading_zeros_count
     @mid = Array.new(maxlog, 0)
     @size = v.size
     @matrix = Array.new(maxlog) { SID.new(size + 1) }
@@ -73,12 +73,12 @@ class WaveletMatrix(T)
     rank(x, hi) - rank(x, lo)
   end
 
-  # [lo,hi)でのxの出現回数
-  def rank(x : T, r : Range(Int::Primitive?, Int::Primitive?))
-    lo = r.begin || 0
-    hi = (r.end || size - 1) + (r.excludes_end? ? 0 : 1)
-    rank(x, hi) - rank(x, lo)
-  end
+  # # [lo,hi)でのxの出現回数
+  # def rank(x : T, r : Range(Int::Primitive?, Int::Primitive?))
+  #   lo = r.begin || 0
+  #   hi = (r.end || size - 1) + (r.excludes_end? ? 0 : 1)
+  #   rank(x, hi) - rank(x, lo)
+  # end
   
   # [l,r)でk番目に小さい数
   def kth_smallest(l : Int, r : Int, k : Int) : T
