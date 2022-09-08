@@ -203,6 +203,10 @@ class TreeMap(K, T)
     insert(k, v)
   end
 
+  # def find(k)
+  #   @root = root.try &.find(k)
+  # end
+
   def delete(k)
     @root = root.try &.delete(k)
   end

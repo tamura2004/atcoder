@@ -39,35 +39,41 @@ require "crystal/graph/i_graph"
 # index.should eq [0, 1, 3, -4, 4, -5, -2, 2, -3, -1]
 # ```
 class EulerTour
+  enum Event
+    Enter
+    Leave
+  end
+
   getter g : IGraph
   delegate n, to: g
 
   getter enter : Array(Int32)
   getter leave : Array(Int32)
-  getter index : Array(Int32)
+  getter events : Array(Tuple(Int32, Event))
 
-  def initialize(@g)
+  def initialize(@g, root = 0)
     @g.tree!
     @enter = Array.new(n, -1)
     @leave = Array.new(n, -1)
-    @index = [] of Int32
+    @events = [] of Tuple(Int32,Event)
+
+    dfs(root, -1)
   end
 
-  def solve(root = 0)
-    dfs(root, -1)
-    {enter, leave, index}
+  def solve
+    {enter, leave, events}
   end
 
   def dfs(v, pv)
-    enter[v] = index.size
-    index << v
+    enter[v] = events.size
+    events << { v, Event::Enter }
 
     g.each(v) do |nv|
       next if nv == pv
       dfs(nv, v)
     end
 
-    leave[v] = index.size
-    index << ~v
+    leave[v] = events.size
+    events << { v, Event::Leave }
   end
 end

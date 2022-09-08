@@ -62,7 +62,7 @@ class BaseGraph(V)
   end
 
   # 辺の追加
-  def add(v : V, nv : V, cost = 1_i64, origin = nil, both = nil)
+  def add(v : V | Int, nv : V | Int, cost = 1_i64, origin = nil, both = nil)
     @origin = origin unless origin.nil?
     @both = both unless both.nil?
 
@@ -128,8 +128,8 @@ class BaseGraph(V)
     g.flatten.any?(&.[1].> 1)
   end
 
-  private def add_vertex(i : Int32)
-    i - origin
+  private def add_vertex(i : Int)
+    i.to_i - origin
   end
 
   private def add_vertex(v : V)

@@ -21,27 +21,12 @@ end
 
 dfs = uninitialized Int32, Int32 -> Nil
 dfs = ->(v : Int32, pv : Int32) do
-  g[v].each do |nv|
+  g.each(v) do |nv|
     next if nv == pv
     dp[nv] += dp[v]
     dfs.call(nv, v)
   end
 end
 dfs.call(0, -1)
-
-# q = Deque.new([0])
-# seen = Array.new(n, false)
-# seen[0] = true
-
-# while q.size > 0
-#   v = q.shift
-
-#   g[v].each do |nv|
-#     next if seen[nv]
-#     seen[nv] = true
-#     dp[nv] += dp[v]
-#     q << nv
-#   end
-# end
 
 puts dp.join(" ")
