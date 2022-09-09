@@ -1,13 +1,18 @@
-require "crystal/wavelet_matrix"
+require "big"
+require "benchmark"
 
-N = 200000
+N = 10000
 
-vs = Array.new(N, 0)
-N.times do |i|
-  vs[i] = i % 7
+def bigint
+  ranges = Array.new(N) do
+    (0...N).to_a.sample(2).minmax
+  end
+  bint = 0.to_big_i
+  ranges.each do |lo, hi|
+    bint |= (1.to_big_i << hi - lo) - 1 << lo
+  end
+
+  puts N - bint.popcount
 end
-mt = WaveletMatrix(Int32).new(vs)
 
-7.times do |i|
-  pp mt.rank(i, 0...N)
-end
+bigint

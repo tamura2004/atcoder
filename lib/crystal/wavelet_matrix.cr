@@ -13,13 +13,13 @@ class WaveletMatrix(T)
     v = v.dup
     max_value = v.max
     x = max_value < 0 ? ~max_value : max_value
-    @maxlog = 32 #sizeof(typeof(max_value)) * 8 - x.leading_zeros_count
+    @maxlog = sizeof(T) * 8 #sizeof(typeof(max_value)) * 8 - x.leading_zeros_count
     @mid = Array.new(maxlog, 0)
     @size = v.size
     @matrix = Array.new(maxlog) { SID.new(size + 1) }
 
-    l = Array(Int32).new(size, 0)
-    r = Array(Int32).new(size, 0)
+    l = Array(T).new(size, 0)
+    r = Array(T).new(size, 0)
 
     (0...maxlog).reverse_each do |level|
       left, right = 0, 0
@@ -73,13 +73,6 @@ class WaveletMatrix(T)
     rank(x, hi) - rank(x, lo)
   end
 
-  # # [lo,hi)でのxの出現回数
-  # def rank(x : T, r : Range(Int::Primitive?, Int::Primitive?))
-  #   lo = r.begin || 0
-  #   hi = (r.end || size - 1) + (r.excludes_end? ? 0 : 1)
-  #   rank(x, hi) - rank(x, lo)
-  # end
-  
   # [l,r)でk番目に小さい数
   def kth_smallest(l : Int, r : Int, k : Int) : T
     raise IndexError.new unless 0 <= k && k < r - l
@@ -95,18 +88,18 @@ class WaveletMatrix(T)
     end
     ret
   end
-  
+
   # 範囲内でk番目に小さい
   def kth_smallest(r : Rng, k : Int)
     lo, hi = range_to_tuple(r)
     kth_smallest(lo, hi, k)
   end
-  
+
   # 範囲内でk番目に多きい
   def kth_largest(l : Int, r : Int, k : Int) : T
     kth_smallest(l, r, r - l - k - 1)
   end
-  
+
   # 範囲内でk番目に多きい
   def kth_largest(r : Rng, k : Int) : T
     lo, hi = range_to_tuple(r)
@@ -117,7 +110,7 @@ class WaveletMatrix(T)
   def range_freq(l : Int, r : Int, lower : T, upper : T) : Int
     range_freq(l, r, upper) - range_freq(l, r, lower)
   end
-  
+
   # インデックス範囲、値の範囲での出現回数
   def range_freq(r : Rng, value_range : Range(T?,T?))
     lo, hi = range_to_tuple(r)

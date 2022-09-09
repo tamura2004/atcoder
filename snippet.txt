@@ -281,4 +281,17 @@
 			"Tuple(Int32,Int32,Int32,Int32)",
 		]
 	},
+	"dfs": {
+		"prefix": "dfs",
+		"body": [
+			"dfs = uninitialized (Int32, Int32) -> Nil",
+			"dfs = -> (v : Int32, pv : Int32) do",
+			"  g.each(v) do |nv|",
+			"    next if nv == pv",
+			"    $0",
+			"  end",
+			"end",
+			"dfs.call(0, -1)",
+		]
+	}
 }

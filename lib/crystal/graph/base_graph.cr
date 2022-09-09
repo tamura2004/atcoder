@@ -18,6 +18,16 @@ class BaseGraph(V)
   getter vs : Array(V)
   getter es : Array(Tuple(Int32, Int32, Int64, Int32))
 
+  def self.random(n)
+    g = new(n)
+    vs = (0...n).to_a.shuffle
+    (1...n).each do |v|
+      pv = rand(0...v)
+      g.add vs[v], vs[pv], origin: 0
+    end
+    g
+  end
+
   # 空のグラフを初期化
   def initialize(n = 0, @origin = 1, @both = true)
     @n = n.to_i
@@ -40,7 +50,7 @@ class BaseGraph(V)
       parse_sexp(a)
     end
   end
-  
+
   # 親の頂点リストで木を初期化
   def parse_plist(a)
     a.each_with_index do |pv, v|
@@ -48,7 +58,7 @@ class BaseGraph(V)
       add v + origin, pv
     end
   end
-    
+
   # s式で木を初期化
   def parse_sexp(s)
     return s if s.is_a?(Int32)
