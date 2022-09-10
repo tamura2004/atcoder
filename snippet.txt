@@ -288,6 +288,7 @@
 			"dfs = -> (v : Int32, pv : Int32) do",
 			"  g.each(v) do |nv|",
 			"    next if nv == pv",
+			"    dfs.call(nv, v)",
 			"    $0",
 			"  end",
 			"end",
