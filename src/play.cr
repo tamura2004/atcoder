@@ -1,18 +1,7 @@
-require "big"
-require "benchmark"
+require "crystal/graph"
 
-N = 10000
+g = Graph.new([1, [2, [3, 6], 4, 5], [7, 8]])
+n = g.n
 
-def bigint
-  ranges = Array.new(N) do
-    (0...N).to_a.sample(2).minmax
-  end
-  bint = 0.to_big_i
-  ranges.each do |lo, hi|
-    bint |= (1.to_big_i << hi - lo) - 1 << lo
-  end
+dp = Array.new(n) { [] of Bool }
 
-  puts N - bint.popcount
-end
-
-bigint

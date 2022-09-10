@@ -122,13 +122,14 @@ class BaseGraph(V)
     end
   end
 
-  def each_with_index(i : Int32)
+  # 
+  def each_with_edge_index(i : Int32)
     g[i].each do |j, _, k|
       yield j, k
     end
   end
 
-  def each_cost_with_index(i : Int32)
+  def each_cost_with_edge_index(i : Int32)
     g[i].each do |j, cost, k|
       yield j, cost, k
     end
