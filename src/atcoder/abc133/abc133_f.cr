@@ -1,55 +1,67 @@
-# u-v間のパス長|uv|は、根をr,LCAをpとすると
-# |ru| + |rv| - 2|rp|
-# 各頂点での、色の出現頻度cと、色の累積長さxがわかれば、
-# 長さをx->yに変えた時の長さは、|uv|' = |uv| - x + cy
-# dfsで調べて回ることはできるが、空間計算量N^2となりMLE
-# 同じ配列に記録しながらdfsで更新し、クエリ先読みをしておいて
-# 必要な値を都度記録する。
+require "crystal/graph"
+require "crystal/graph/h_l_decomposition"
 
-require "crystal/weighted_tree/lca"
-include WeightedTree
+n, q = gets.to_s.split.map(&.to_i)
+g = Graph.new(n)
 
-struct Query
-  property u : Int32
-  property v : Int32
-  property x : Int32
-  property y : Int64
+colors = Array.new(n - 1, 0)
+(n - 1).times do |i|
+  v, nv, color, cost = gets.to_s.split.map(&.to_i)
+  g.add v, nv, cost
+  colors[i] = color
+end
+hl = HLDecomposition.new(g, 0)
 
-  def initialize(@u, @v, @x, @y)
-  end
+events = Array.new(n) do
+  [] of {is_lca: Bool, query_id: Int32}
 end
 
-getter g : Graph
-delegate n, to: g
+queries = Array.new(q) do |i|
+  x, y, v, nv = gets.to_s.split.map(&.to_i)
+  v = v.pred
+  nv = nv.pred
 
-n,q = gets.to_s.split.map(&.to_i)
-len = Array.new(n, 0_i64)
-t = Tree.new(n)
-g = Array.new(n) { [] of Tuple(Int64,Int64) }
+  lca = hl.lca(v, nv)
+  events[v] << {is_lca: false, query_id: i}
+  events[nv] << {is_lca: false, query_id: i}
+  events[lca] << {is_lca: true, query_id: i}
 
-# (n-1).times do
-#   a,b,c,d = gets.to_s.split.map(&.to_i64)
-#   t.add a,b,c
+  {color: x, new_cost: y, v: v, nv: nv, i: i}
+end
 
-#   a = a.to_i.pred
-#   b = b.to_i.pred
-#   g[a] << {c,d}
-#   g[b] << {c,d}
-# end
+# pp! queries
+# pp! events
 
-# lca = Lca.new(t).solve
+ans = Array.new(q, 0_i64)
+cnt = Array.new(n, 0_i64)
+tot = Array.new(n, 0_i64)
 
-# record Ans, u : Int32, v : Int32, p : Int32, x : Int32, y : Int64
+dfs = uninitialized (Int32, Int32, Int64) -> Nil
+dfs = -> (v : Int32, pv : Int32, cost: Int64) do
+  events[v].each do |event|
+    i = event[:query_id]
+    query = queries[i]
+    re_cost = cost - tot[query[:color]] + cnt[query[:color]] * query[:new_cost]
 
-# ans = Array.new(q) { Ans.new(-1,-1,-1,-1,0_i64) }
-# event = Array.new(n) { [] of Int32 }
+    if event[:is_lca]
+      ans[i] -= re_cost
+    else
+      ans[i] += re_cost
+    end
+  end
 
-# q.times do |i|
-#   x,y,u,v = gets.to_s.split.map(&.to_i64)
-#   u = u.to_i.pred
-#   v = v.to_i.pred
+  g.each_cost_with_index(v) do |nv, n_cost, i|
+    next if nv == pv
+    color = colors[i]
+    cnt[color] += 1
+    tot[color] += n_cost
 
-#   ans[i][0] = u
-#   ans[i][1] = v
-#   ans[i][2] = lca.call(u,v)
-#   ans[i][3] =
+    dfs.call(nv, v, cost + n_cost)
+
+    cnt[color] -= 1
+    tot[color] -= n_cost
+  end
+end
+dfs.call(0, -1, 0_i64)
+
+puts ans.join("\n")

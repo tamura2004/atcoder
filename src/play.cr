@@ -1,18 +1,8 @@
-require "big"
-require "benchmark"
+ev = [
+  { x: 10, y: 20 },
+  { x: 15, y: 25 },
+]
 
-N = 10000
-
-def bigint
-  ranges = Array.new(N) do
-    (0...N).to_a.sample(2).minmax
-  end
-  bint = 0.to_big_i
-  ranges.each do |lo, hi|
-    bint |= (1.to_big_i << hi - lo) - 1 << lo
-  end
-
-  puts N - bint.popcount
+ev.each do |t|
+  pp [t[:x],t[:y]]
 end
-
-bigint
