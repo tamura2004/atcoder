@@ -1,7 +1,7 @@
 # トライ木
 #
 class Trie(T)
-  A = 26
+  A = 27
 
   # 文字ごとのノード
   class Node(T)
