@@ -1,9 +1,16 @@
+/*
 display2d:false$
+*/
 linel:200$
-solve([x^2+y^2=r^2,a*x+b*y+c=0],[x,y]);
+expand(a*(c*x+d)+b);
 
+m1: matrix([a,b],[0,1]);
+m2: matrix([c,d],[0,1]);
+m1 . m2;
+m2 . m1;
 
 /*
+solve([x^2+y^2=r^2,a*x+b*y+c=0],[x,y]);
 f0: 1/(1-x)^6$
 f1: 6/(1-x)^2/(1-x^4)$
 f2: 3/(1-x)^2/(1-x^2)^2$
