@@ -25,8 +25,10 @@ values = values.zip(0..).sort_by! { |m,v| hld.enter[v] }.map(&.first)
 st = SegmentTree(X).new(
   values: values,
   unit: X.eye(2),
-  fx: ->(x : X, y : X) { y * x }
+  fx: ->(x : X, y : X) { y }
 )
+
+pp g
 
 q.times do
   cmd, x, y, z = gets.to_s.split.map(&.to_i64)
@@ -35,25 +37,17 @@ q.times do
     st[x] = X.new([[y.to_m, z.to_m], [0.to_m, 1.to_m]])
   when 1
     lca = hld.lca(x, y)
-    x, y = y, x unless hld.enter[x] < hld.enter[y]
 
-    left = X.eye(2)
-    hld.path_query(x, lca) do |v, nv|
-      mat = st[v..nv]
-      left = left * mat
+    hld.path_query(x, lca) do |lo, hi|
+      mat = st[lo..hi]
+      pp! mat
+    end
+    
+    hld.path_query(lca, y) do |lo, hi|
+      mat = st[lo..hi]
+      pp! mat
     end
 
-    right = X.eye(2)
-    hld.path_query(lca, y) do |v, nv|
-      mat = st[v..nv]
-      right = right * mat
-    end
-
-    mid = st[hld.enter[lca]]
-
-    mat = right * mid * left
-    ans = mat[0, 0] * z + mat[0, 1]
-
-    pp ans
+    # pp ans
   end
 end
