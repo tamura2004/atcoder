@@ -26,6 +26,8 @@ range = case name
     "a".."f"
   when /^past/i
     "a".."o"
+  when /^typical90/
+    "001".."090"
   else
     "a".."h"
   end

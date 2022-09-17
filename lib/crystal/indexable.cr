@@ -30,6 +30,20 @@ module Indexable(T)
     bsearch_index { |v| eq ? u <= v : u < v } || size
   end
 
+  # ソート済の配列に対し、*u*以下の要素の値を返す
+  def lower(u : T, eq = true)
+    j = (0...size).bsearch do |i|
+      v = self[size - 1 - i]
+      eq ? v <= u : v < u
+    end
+    j.nil? ? nil : self[j]
+  end
+
+  # ソート済の配列に対し、*u*以上の要素の値を返す
+  def upper(u : T, eq = true)
+    bsearch { |v| eq ? u <= v : u < v }
+  end
+
   def count_range(r : Range(T?, T?))
     lo = r.try &.begin || T::MIN
     hi = (r.try &.end || T::MAX) + (r.excludes_end? ? -1 : 0)
