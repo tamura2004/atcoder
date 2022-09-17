@@ -6,6 +6,10 @@ struct Complex(T)
   getter real : T
   getter imag : T
 
+  def ===(v : Int)
+    real === v && imag.zero?
+  end
+
   def y
     imag
   end
@@ -163,6 +167,10 @@ struct Int
 
   def +(b : C)
     C.new(b.real + to_i64, b.imag)
+  end
+
+  def ===(b : C)
+    self === b.real && b.imag.zero?
   end
 end
 
