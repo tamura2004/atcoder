@@ -11,8 +11,8 @@ class WaveletMatrix(T)
 
   def initialize(v : Array(Int))
     v = v.dup
-    max_value = v.max
-    x = max_value < 0 ? ~max_value : max_value
+    # max_value = v.max
+    # x = max_value < 0 ? ~max_value : max_value
     @maxlog = sizeof(T) * 8 #sizeof(typeof(max_value)) * 8 - x.leading_zeros_count
     @mid = Array.new(maxlog, 0)
     @size = v.size

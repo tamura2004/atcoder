@@ -15,10 +15,10 @@ describe WaveletMatrix do
   end
 
   it "rank bug?" do
-    wm = WaveletMatrix(Int32).new([0, 1, 2, 1, 1,100])
+    wm = WaveletMatrix(Int32).new([0, -10, 1, 2, 1, 1])
     wm.rank(4, 0).should eq 0
     wm.rank(4, 4).should eq 0
-    wm.rank(4, 0..4).should eq 0
+    wm.rank(4, ..4).should eq 0
 
   end
 
