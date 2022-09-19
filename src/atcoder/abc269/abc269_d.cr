@@ -11,17 +11,7 @@ end
 (0...n - 1).each do |i|
   (i + 1...n).each do |j|
     case xy[i] - xy[j]
-    when 1 + 0.i
-      uf.unite i, j
-    when -1 + 0.i
-      uf.unite i, j
-    when 1.i
-      uf.unite i, j
-    when -1.i
-      uf.unite i, j
-    when 1.i + 1
-      uf.unite i, j
-    when -1.i - 1
+    when 1.x, -1.x, 1.y, -1.y, 1.x + 1.y, -1.x + -1.y
       uf.unite i, j
     end
   end

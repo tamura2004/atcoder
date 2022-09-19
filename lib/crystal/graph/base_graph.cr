@@ -104,10 +104,16 @@ class BaseGraph(V)
     end
   end
 
+  # ブロックあり
   def each
     n.times do |i|
       yield i
     end
+  end
+  
+  # ブロックなしはイテレータを返す
+  def each : Iterator(Int32)
+    n.times
   end
 
   def each(i : Int32)

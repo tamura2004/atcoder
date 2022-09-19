@@ -1,10 +1,12 @@
 require "crystal/graph/i_graph"
 require "crystal/graph/i_matrix_graph"
+require "crystal/graph/printable"
 
 # 隣接行列によるグラフ
 class MatrixGraph
   include IGraph
   include IMatrixGraph
+  include Printable
 
   INF = Int64::MAX//4
 
@@ -15,7 +17,7 @@ class MatrixGraph
 
   getter g : Array(Array(Int64))
 
-  def initialize(n, @origin = 1, @both = true)
+  def initialize(n : Int32, @origin = 1, @both = true)
     @n = n.to_i
     @m = 0
     @g = Array.new(n) { Array.new(n, INF) }
@@ -38,6 +40,10 @@ class MatrixGraph
     n.times do |i|
       yield i
     end
+  end
+
+  def each : Iterator(Int32)
+    n.times
   end
 
   def each(i : Int32)
@@ -68,5 +74,9 @@ class MatrixGraph
 
   def []=(i,j,cost)
     update(i,j,cost)
+  end
+
+  def weighted?
+    g.flatten.max > 1
   end
 end
