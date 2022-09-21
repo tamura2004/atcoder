@@ -1,5 +1,5 @@
 require "spec"
-require "crystal/rolling_hash"
+require "crystal/string/rolling_hash"
 
 describe RollingHash do
   it "solve abc141e" do
@@ -34,7 +34,7 @@ class ABC141E < RollingHash
     end
     return false
   end
-  
+
   def lcp
     j = (0..n).bsearch do |i|
       len = n - i
@@ -43,4 +43,3 @@ class ABC141E < RollingHash
     return n - j if j
   end
 end
-

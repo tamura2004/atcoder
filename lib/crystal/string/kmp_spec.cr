@@ -3,7 +3,6 @@ require "crystal/string/kmp"
 
 describe Kmp do
   it "usage" do
-    s = "aabaabaaa"
-    pp Kmp.new(s).solve
+    Kmp.new("abcabc").repeat_size.should eq [1, 1, 2, 3, 3, 3, 3]
   end
 end

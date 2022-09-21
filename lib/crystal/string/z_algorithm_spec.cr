@@ -1,5 +1,5 @@
 require "spec"
-require "crystal/z_algorithm"
+require "crystal/string/z_algorithm"
 
 describe ZAlgorithm do
   it "usage" do

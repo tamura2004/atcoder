@@ -1,6 +1,7 @@
 # Manacharアルゴリズム
 #
 # i番目の要素を中心とする最長の回文の半径
+# 半径は自身を含む。１文字も回文。
 module Indexable(T)
   def manacher
     n = size
