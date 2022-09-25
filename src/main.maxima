@@ -1,13 +1,9 @@
-/*
 display2d:false$
-*/
 linel:200$
-expand(a*(c*x+d)+b);
+s*x+b*(x-1)/(a-1);
+expand(%);
+solve(%,x);
 
-m1: matrix([a,b],[0,1]);
-m2: matrix([c,d],[0,1]);
-m1 . m2;
-m2 . m1;
 
 /*
 solve([x^2+y^2=r^2,a*x+b*y+c=0],[x,y]);
