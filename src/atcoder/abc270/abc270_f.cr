@@ -70,6 +70,7 @@ edges.each do |edge|
 end
 
 
+
 while pq.size > 0
   cost, v, nv = pq.pop
   next if uf.same?(v,nv)

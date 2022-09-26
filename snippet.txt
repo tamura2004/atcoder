@@ -294,5 +294,25 @@
 			"end",
 			"dfs.call(0, -1)",
 		]
-	}
+	},
+  "class problem": {
+    "classp": [
+      "class Problem",
+      "  getter n : Int32",
+      "  getter a : Array(Int64)",
+      "",
+      "  def initialize(@n,@a)",
+      "  end",
+      "",
+      "  def self.read",
+      "    n = gets.to_s.to_i",
+      "    a = gets.to_s.split.map(&.to_i64)",
+      "    new(n, a)",
+      "  end",
+      "",
+      "  def solve",
+      "  end",
+      "end"
+    ]
+  }
 }
