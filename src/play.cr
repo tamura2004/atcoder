@@ -1,17 +1,11 @@
-class Problem
-  getter n : Int32
-  getter m : Int32
-  getter a : Array(Int32)
+# query = -> (x : Int32) do
+#   x * x > 1000
+# end
 
-  def initialize(@n,@m,@a)
-  end
-
-  def self.read
-    n,m = gets.to_s.split.map(&.to_i64)
-    a = Array.new(n){gets.to_s.to_i64}
-    new(n,m,a)
-  end
-
-  def solve
-  end
+def query(x)
+  x * x > 1000
 end
+
+# q = ->query(Int32)
+
+pp (0...1000).bsearch(&->query(Int32))

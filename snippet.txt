@@ -296,12 +296,13 @@
 		]
 	},
   "class problem": {
-    "classp": [
+    "prefix": "classp",
+		"body": [
       "class Problem",
       "  getter n : Int32",
       "  getter a : Array(Int64)",
       "",
-      "  def initialize(@n,@a)",
+      "  def initialize(@n, @a)",
       "  end",
       "",
       "  def self.read",
@@ -311,8 +312,11 @@
       "  end",
       "",
       "  def solve",
+      "    pp self",
       "  end",
-      "end"
+      "end",
+      "",
+      "Problem.read.solve"
     ]
   }
 }
