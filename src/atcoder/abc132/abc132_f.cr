@@ -1,25 +1,9 @@
 require "crystal/indexable"
 require "crystal/mod_int"
-
-def isqrt(value : Int::Primitive)
-  return value if value < 2
-  res = value.class.zero
-  bit = res.succ << (res.leading_zeros_count - 2)
-  bit >>= value.leading_zeros_count & ~0x3
-  while (bit != 0)
-    if value >= res + bit
-      value -= res + bit
-      res = (res >> 1) + bit
-    else
-      res >>= 1
-    end
-    bit >>= 2
-  end
-  res
-end
+require "crystal/math"
 
 n, m = gets.to_s.split.map(&.to_i64)
-r = isqrt(n)
+r = Math.isqrt(n)
 cnt = [] of Int64
 (1..r).each do |i|
   cnt << n // i - n // (i + 1)
