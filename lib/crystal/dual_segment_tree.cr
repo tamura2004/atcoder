@@ -7,29 +7,27 @@ class DualSegmentTree(T)
   getter n : Int32
   getter r : Int32
   getter a : Array(T)
-  getter f : Proc(T, T, T)
+  getter f : T, T -> T # Proc(T, T, T)
   getter unit : T
 
   # 区間代入
   def self.range_assign(values : Array(T))
     unit = nil.as(T?)
-    f = Proc(T?, T?, T?).new { |x, y| y.nil? ? x : y }
+    f = -> (x : T?, y : T?) { y || x }
     DualSegmentTree(T?).new(values, unit, f)
   end
 
   # 区間加算
   def self.range_add(values : Array(T))
     unit = T.zero
-    f = Proc(T, T, T).new { |x, y| x + y }
+    f = -> (x : T, y : T) { x + y }
     DualSegmentTree(T).new(values, unit, f)
   end
 
   def initialize(
     values : Array(T),
     @unit = T::MIN,
-    @f = Proc(T, T, T).new do |x, y|
-      Math.max x, y
-    end
+    @f = -> (x : T, y : T) { Math.max x, y }
   )
     @n = Math.pw2ceil(values.size)
     @r = Math.ilogb(n)
