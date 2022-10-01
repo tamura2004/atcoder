@@ -1,21 +1,4 @@
-# dp[vを根とする部分木][k警備されている頂点数][根の分類0,1,2] := 場合の数
-# 0: 頂点が0で警備されていない
-# 1: 頂点が0で警備されている
-# 2: 頂点が1
-
-# dp_a[0]
-# dp_a[1]: x
-# dp_a[2]: x
-
-# dp_b[1]: 0
-# dp_b[2]: 0
-
-# dp_c[1]: 1
-# dp_c[2]: 1
-
-# dp_a[0] = x * PI i=0..1, dp_a[i] + dp_b[i] + x dp_x[i]
-# = x (x + 0 + x)^2
-# = 4x^3 -> 3つ警備されていて点0が1であるのは4通り　ok
+require "crystal/fft"
 
 class FormalPowerSeries(T)
   getter n : Int32

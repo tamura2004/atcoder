@@ -1,8 +1,10 @@
 # 数Tを要素とする行列
+# 列ベクトルは個別クラスとしては定義せずArray(T)を用いる
 struct Matrix(T)
   getter h : Int32           # 行数
   getter w : Int32           # 列数
   getter a : Array(Array(T)) # 要素
+  delegate "[]", "[]=", to: a
 
   class DimensionMismatch < Exception
   end
@@ -12,10 +14,16 @@ struct Matrix(T)
     @w = a.first.size
   end
 
+  # ゼロ行列を生成する
+  def self.zero(h, w)
+    a = Array.new(h) { Array.new(w, T.zero)}
+    new(a)
+  end
+
   # n次の単位行列を生成する
   def self.identity(n)
     a = Array.new(n) { Array.new(n, T.zero) }
-    n.times { |i| a[i] += 1 }
+    n.times { |i| a[i][i] += 1 }
     new(a)
   end
 
@@ -44,7 +52,7 @@ struct Matrix(T)
     new(a)
   end
 
-  # 列ベクトルbを右から乗じた列ベクトルを返す
+  # Arrayを列ベクトルとみなし右から乗じた列ベクトルを返す
   def *(b : Array(T))
     raise DimensionMismatch.new("#{b.size} != #{w}") if b.size != w
 
@@ -66,6 +74,24 @@ struct Matrix(T)
     )
   end
 
+  # 正方行列か
+  def square?
+    h == w
+  end
+
+  # 正方行列について、繰り返し二乗法で累乗を計算する
+  def **(k : Int)
+    raise DimensionMismatch.new("正方行列ではありません") unless square?
+    ans = Matrix(T).unit(h)
+    m = Math.ilogb(k) + 1
+    b = dup
+    m.times do |i|
+      ans *= b if k.bit(i) == 1
+      b *= b
+    end
+    ans
+  end
+
   # 列ベクトルを返す
   def columns
     a.transpose
@@ -76,8 +102,31 @@ struct Matrix(T)
   def self.rows(rows, copy = true)
     copy ? new(rows) : new(rows.map(&.dup))
   end
+
+  @[AlwaysInline]
+  def [](i, j)
+    a[i][j]
+  end
+
+  @[AlwaysInline]
+  def []=(i, j, x)
+    a[i][j] = x
+  end
+
+  def ==(b : self) : Bool
+    n.times.all? do |i|
+      n.times.all? do |j|
+        self[i, j] == b[i, j]
+      end
+    end
+  end
+
+  def inspect
+    w = a.flatten.map(&.to_s.size).max
+    a.map(&.map { |v| "%#{w}s" % v }.join(" ")).join("\n")
+  end
 end
 
-a = Matrix(Int32).rows([[1, 2, 3], [3, 4, 5]])
+a = Matrix(Int32).rows([[1, 2], [3, 4]])
 b = Matrix(Int32).rows([[1, 2], [3, 4], [5, 6]])
-pp a * b
+pp a ** 6
