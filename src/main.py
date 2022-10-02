@@ -1,11 +1,14 @@
-def garner( mlist, alist ):
-  m, x = mlist[0], alist[0]
-  i = 1
-  while i<len(mlist):
-    x = x + m * inverse( m, mlist[i] ) * ( alist[i] - x )
-    m *= mlist[i]
-    i += 1
-  return x % m, m
+N=int(input())
+A=set(map(int,input().split()))
+print(A)
 
-if __name__ == '__main__':
-  print( garner( [ 3, 5, 7 ], [ 2, 3, 3 ] ) )
+l=0
+r=N+1
+while r-l>1:
+  m=(l+r)//2
+  # m巻まで読めるか?
+  c=len(set(range(1,m+1))&A)
+  if c+(N-c)//2>=m: l=m
+  else: r=m
+
+print(l)
