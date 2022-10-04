@@ -3,7 +3,6 @@ require "crystal/graph/i_tree"
 
 class Grid
   include IGraph
-  include ITree
 
   DIR = [{-1, 0}, {1, 0}, {0, 1}, {0, -1}, {1, 1}, {-1, -1}, {1, -1}, {-1, 1}]
 
@@ -22,6 +21,10 @@ class Grid
     @m = h * (w - 1) + (h - 1) * w
     @both = true
     @origin = 0
+  end
+
+  def each : Iterator(Int32)
+    (h*w).times
   end
 
   def each
