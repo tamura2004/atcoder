@@ -14,6 +14,15 @@ struct Matrix(T)
     @w = a.first.size
   end
 
+  def index(v : T)
+    h.times do |y|
+      w.times do |x|
+        return {y, x} if a[y][x] == v
+      end
+    end
+    return nil
+  end
+
   # ゼロ行列を生成する
   def self.zero(h, w = h)
     a = Array.new(h) { Array.new(w, T.zero)}

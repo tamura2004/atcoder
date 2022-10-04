@@ -3,6 +3,7 @@ require "crystal/graph/i_tree"
 
 class Grid
   include IGraph
+  delegate "[]", to: g
 
   DIR = [{-1, 0}, {1, 0}, {0, 1}, {0, -1}, {1, 1}, {-1, -1}, {1, -1}, {-1, 1}]
 
