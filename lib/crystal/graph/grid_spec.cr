@@ -1,16 +1,14 @@
 require "spec"
+require "crystal/complex"
 require "crystal/graph/grid"
-require "crystal/graph/depth"
-require "crystal/graph/deg"
 
 describe Grid do
   it "usage" do
-    g = Grid.new(2,3,["..#","#.."])
-    # Depth.new(g).solve.should eq [0,1,-1,-1,2,3]
-  end
-  
-  it "deg" do
-    g = Grid.new(2,3,["..#","#.."])
-    # Deg.new(g).solve.should eq [1,2,0,0,2,1]
+    g = Grid.new(2,3,["a.#","#.z"])
+    g.index('a').should eq C.zero
+    g.index('z').should eq (1.y + 2.x)
+    g[0.y+1.x].should eq '.'
+    g.outside?(0.y+1.x).should eq false
+    g.outside?(0.y+10.x).should eq true
   end
 end

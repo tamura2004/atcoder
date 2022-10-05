@@ -63,3 +63,9 @@ class String
     R.new(a,b)
   end
 end
+
+struct Complex
+  def to_r
+    R.new(real, imag)
+  end
+end

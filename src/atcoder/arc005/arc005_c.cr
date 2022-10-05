@@ -1,44 +1,28 @@
-# 01bfs
-DIR = [{0, 1}, {1, 0}, {0, -1}, {-1, 0}]
+require "crystal/graph/grid"
 
 h, w = gets.to_s.split.map(&.to_i)
-g = Array.new(h) { gets.to_s }
+a = Array.new(h) { gets.to_s }
+g = Grid.new(h, w, a)
 
-sx = sy = gx = gy = -1
-h.times do |y|
-  w.times do |x|
-    if g[y][x] == 's'
-      sy = y
-      sx = x
-    end
+sz = g.index('s')
+gz = g.index('g')
 
-    if g[y][x] == 'g'
-      gy = y
-      gx = x
-    end
-  end
-end
-
-q = Deque.new([{sy,sx,0}])
-seen = Array.new(h){Array.new(w,false)}
-seen[sy][sx] = true
+q = Deque.new([{sz, 0}])
+seen = [sz].to_set
 
 while q.size > 0
-  y, x, cost = q.shift
+  z, cost = q.shift
+  next if cost >= 3
 
-  DIR.each do |dy,dx|
-    ny = y + dy
-    nx = x + dx
-    next if ny < 0 || h <= ny || nx < 0 || w <= nx
-    next if cost >= 3
-    next if seen[ny][nx]
-    seen[ny][nx] = true
+  g.each(z, wall: false) do |nz|
+    next if nz.in?(seen)
+    seen << nz
 
-    case g[ny][nx]
+    case g[nz]
     when '.'
-      q.unshift({ny,nx,cost})
+      q.unshift({nz, cost})
     when '#'
-      q << {ny,nx,cost + 1}
+      q << {nz, cost + 1}
     when 'g'
       quit "YES"
     end
@@ -46,4 +30,3 @@ while q.size > 0
 end
 
 puts "NO"
-

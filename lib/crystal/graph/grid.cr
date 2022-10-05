@@ -1,77 +1,70 @@
-require "crystal/graph/i_graph"
-require "crystal/graph/i_tree"
+require "crystal/complex"
 
+# 文字列によるグリッド
+# 利便性のため、参照に複素数を利用
 class Grid
-  include IGraph
-  delegate "[]", to: g
-
-  DIR = [{-1, 0}, {1, 0}, {0, 1}, {0, -1}, {1, 1}, {-1, -1}, {1, -1}, {-1, 1}]
-
   getter h : Int32
   getter w : Int32
-  getter g : Array(String)
-  getter n : Int32
-  getter m : Int32
-  getter both : Bool
-  getter origin : Int32
+  getter a : Array(String)
+  getter dir : Array(C)
+  delegate "[]", to: a
 
-  def initialize(h, w, @g)
-    @h = h.to_i
-    @w = w.to_i
-    @n = h * w
-    @m = h * (w - 1) + (h - 1) * w
-    @both = true
-    @origin = 0
-  end
-
-  def each : Iterator(Int32)
-    (h*w).times
+  def initialize(@h, @w, @a)
+    @dir = [1.i]
+    3.times { dir << dir[-1] * 1.i }
+    3.times { dir << dir[-1] * (1.i + 1) }
   end
 
   def each
     h.times do |y|
       w.times do |x|
-        next if wall?(y, x)
-        yield y * w + x
+        yield C.new(x,y)
       end
     end
   end
 
-  def each(v : Int32)
-    y, x = v.divmod(w)
-
-    DIR[0,4].each do |dy, dx|
-      ny = y + dy
-      nx = x + dx
-      next if outside?(ny, nx)
-      next if wall?(ny, nx)
-      yield ny * w + nx
+  def each(z : C, wall = true)
+    dir[0,4].each do |dz|
+      nz = z + dz
+      next if outside?(nz)
+      next if wall && wall?(nz)
+      yield nz
     end
   end
 
-  def each_with_cost(v)
-    each(v) do |nv|
-      yield nv, 1_i64
+  def each8(z : C, wall = true)
+    dir.each do |dz|
+      nz = z + dz
+      next if outside?(nz)
+      next if wall && wall?(nz)
+      yield nz
     end
   end
 
-  def each8(v)
-    y, x = v.divmod(w)
-
-    DIR.each do |dy, dx|
-      ny = y + dy
-      nx = x + dx
-      next if outside?(ny, nx)
-      next if wall?(ny, nx)
-      yield ny * w + nx
+  def index(c : Char)
+    each do |z|
+      return z if self[z] == c
     end
+    raise "no #{c}"
   end
 
-  def wall?(y, x, w = '#')
-    g[y][x] == w
+  def [](z : C) : Char
+    a[z.y][z.x]
   end
 
-  def outside?(y, x)
+  def outside?(y : Int, x : Int) : Bool
     y < 0 || h <= y || x < 0 || w <= x
+  end
+
+  def outside?(z : C) : Bool
+    outside?(z.y, z.x)
+  end
+
+  def wall?(y : Int, x : Int) : Bool
+    a[y][x] == '#'
+  end
+
+  def wall?(z : C) : Bool
+    wall?(z.y, z.x)
   end
 end

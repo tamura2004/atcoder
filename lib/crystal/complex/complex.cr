@@ -1,5 +1,3 @@
-require "crystal/rational"
-
 struct Complex(T)
   include Comparable(Complex(T))
 
@@ -10,12 +8,16 @@ struct Complex(T)
     real === v && imag.zero?
   end
 
-  def y
+  def y : T
     imag
   end
 
-  def x
+  def x : T
     real
+  end
+
+  def flip
+    self.class.new(imag, real)
   end
 
   def self.read
@@ -109,10 +111,6 @@ struct Complex(T)
   def phase
     area = (real < 0).to_unsafe
     {area, R.new(imag, real)}
-  end
-
-  def to_r
-    R.new(real,imag)
   end
 
   def deg
