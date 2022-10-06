@@ -11,7 +11,7 @@ struct Complex(T)
   def y : T
     imag
   end
-
+  
   def x : T
     real
   end
@@ -158,7 +158,7 @@ struct Int
   def y
     C.new(0_i64, to_i64)
   end
-
+  
   def x
     C.new(to_i64, 0_i64)
   end

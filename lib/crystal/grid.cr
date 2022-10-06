@@ -9,10 +9,14 @@ class Grid
   getter dir : Array(C)
   delegate "[]", to: a
 
-  def initialize(@h, @w, @a)
+  def initialize(@h, @w, @a = [] of String)
     @dir = [1.i]
     3.times { dir << dir[-1] * 1.i }
     3.times { dir << dir[-1] * (1.i + 1) }
+  end
+
+  def read
+    @a = Array.new(h) { gets.to_s }
   end
 
   def each
@@ -23,8 +27,20 @@ class Grid
     end
   end
 
-  def each(z : C, wall = true)
+  def each_dir
     dir[0,4].each do |dz|
+      yield dz
+    end
+  end
+
+  def each_dir8
+    dir.each do |dz|
+      yield dz
+    end
+  end
+
+  def each(z : C, wall = true)
+    each_dir do |dz|
       nz = z + dz
       next if outside?(nz)
       next if wall && wall?(nz)
