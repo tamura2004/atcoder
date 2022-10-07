@@ -1,3 +1,5 @@
+require "crystal/complex"
+
 # 数Tを要素とする行列
 # 列ベクトルは個別クラスとしては定義せずArray(T)を用いる
 struct Matrix(T)
@@ -14,6 +16,11 @@ struct Matrix(T)
     @w = a.first.size
   end
 
+  def self.parse(s : String)
+    a = s.split(/;/).map(&.split.map { |v| T.new(v.to_i64) })
+    new(a)
+  end
+
   def index(v : T)
     h.times do |y|
       w.times do |x|
@@ -25,7 +32,7 @@ struct Matrix(T)
 
   # ゼロ行列を生成する
   def self.zero(h, w = h)
-    a = Array.new(h) { Array.new(w, T.zero)}
+    a = Array.new(h) { Array.new(w, T.zero) }
     new(a)
   end
 
@@ -125,9 +132,52 @@ struct Matrix(T)
     copy ? new(rows) : new(rows.map(&.dup))
   end
 
+  def transpose
+    self.class.new(a.transpose)
+  end
+
+  # ::ditto::
+  def flip_ld_ru
+    transpose
+  end
+
+  def flip_lu_rd
+    self.class.new(a.reverse.transpose.reverse)
+  end
+
+  # ::ditto::
+  def flip_diag
+    flip_lu_rd
+  end
+
+  def flip_lr
+    self.class.new(a.map(&.reverse))
+  end
+
+  def flip_ud
+    self.class.new(a.reverse)
+  end
+
+  def rot90
+    self.class.new(a.transpose.map(&.reverse))
+  end
+
+  def rot180
+    self.class.new(a.map(&.reverse).reverse)
+  end
+
+  def rot270
+    self.class.new(a.transpose.reverse)
+  end
+
   @[AlwaysInline]
   def [](i, j)
     a[i][j]
+  end
+
+  @[AlwaysInline]
+  def [](z : C)
+    a[z.y][z.x]
   end
 
   @[AlwaysInline]
@@ -135,10 +185,15 @@ struct Matrix(T)
     a[i][j] = x
   end
 
+  @[AlwaysInline]
+  def []=(z : C, v)
+    a[z.y][z.x] = v
+  end
+
   def ==(b : self) : Bool
     h.times.all? do |i|
       w.times.all? do |j|
-        self[i, j] == b[i, j]
+        a[i][j] == b[i][j]
       end
     end
   end

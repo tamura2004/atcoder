@@ -1,6 +1,8 @@
 require "spec"
 require "crystal/matrix"
 
+alias M = Matrix(Int32)
+
 describe Matrix do
   it "usage" do
     a = Matrix(Int32).new([
@@ -55,7 +57,55 @@ describe Matrix do
   end
 
   it "// int" do
-    m = Matrix(Int32).new([[1, 2], [3, 4]])
-    (m // 2).a.should eq [[0, 1], [1, 2]]
+    m = M.parse("1 2;3 4")
+    (m // 2).should eq M.parse("0 1;1 2")
+  end
+
+  it "rot90" do
+    m = M.parse("1 2;3 4")
+    m.rot90.should eq M.parse("3 1;4 2")
+  end
+
+  it "rot180" do
+    m = M.parse("1 2;3 4")
+    m.rot180.should eq M.parse("4 3;2 1")
+  end
+
+  it "rot270" do
+    m = M.parse("1 2;3 4")
+    m.rot270.should eq M.parse("2 4;1 3")
+  end
+
+  it "transpose" do
+    m = M.parse("1 2;3 4")
+    m.transpose.should eq M.parse("1 3;2 4")
+  end
+
+  it "flip_lr" do
+    m = M.parse("1 2;3 4")
+    m.flip_lr.should eq M.parse("2 1;4 3")
+  end
+
+  it "flip_ud" do
+    m = M.parse("1 2;3 4")
+    m.flip_ud.should eq M.parse("3 4;1 2")
+  end
+
+  it "flip_diag" do
+    m = M.parse("1 2;3 4")
+    m.flip_diag.should eq M.parse("4 2;3 1")
+  end
+
+  it "index by complex" do
+    m = M.parse("1 2;3 4")
+    z = 1.x + 0.y
+    m[z].should eq 2
+  end
+
+  it "change by complex" do
+    m = M.parse("1 2;3 4")
+    z = 1.x + 0.y
+    m[z] = 5
+    m[z].should eq 5
   end
 end
