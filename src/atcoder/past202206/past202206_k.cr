@@ -1,18 +1,22 @@
-require "crystal/segment_tree"
+require "crystal/graph"
+require "crystal/graph/dijkstra"
 
-s = gets.to_s.chars.map(&.ord.- 'a'.ord)
-n = s.size
-ix = Array.new(26, 0)
-pre = [] of Int32
-st = SegmentTree(Int32).sum(n + 1)
-st[0] = 1
+n, m, q, k = gets.to_s.split.map(&.to_i)
+g = Graph.new(n)
+a = gets.to_s.split.map(&.to_i.pred)
 
-n.times do |i|
-  st[i + 1] += st[ix[s[i]]..i]
-  ix[s[i]] = i + 1
+m.times do
+  g.read
 end
 
-pp st[1..]
+dp = Array.new(k) do |i|
+  Dijkstra.new(g).solve(a[i])
+end
 
-pp ix
-pp st
+q.times do
+  v, nv = gets.to_s.split.map(&.to_i.pred)
+  ans = k.times.min_of do |i|
+    dp[i][v] + dp[i][nv]
+  end
+  pp ans
+end

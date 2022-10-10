@@ -199,7 +199,8 @@ struct Matrix(T)
   end
 
   def inspect
-    w = a.flatten.map(&.to_s.size).max
-    a.map(&.map { |v| "%#{w}s" % v }.join(" ")).join("\n")
+    # w = a.flatten.map(&.to_s.size).max
+    # a.map(&.map { |v| "%#{w}s" % v }.join(" ")).join("\n")
+    # a.map(&.map.(&.join(" "))).join("\n")
   end
 end
