@@ -3,97 +3,44 @@ package main
 import (
 	"bufio"
 	"fmt"
+	"log"
 	"os"
+	"path/filepath"
+	"regexp"
+	"strings"
 )
 
-type SegmentTree struct {
-	a []int
-	n int
-}
-
-type ST = SegmentTree
-
-func NewSegmentTree(values []int) *ST {
-	st := new(ST)
-	st.n = 1
-	for st.n < len(values) {
-		st.n <<= 1
+func fileterFile(path string, info os.FileInfo, err error) error {
+	if err != nil {
+		log.Print(err)
+		return nil
 	}
-	st.a = make([]int, st.n<<1)
-	for i, v := range values {
-		st.a[i+st.n] = v
+	if !strings.HasSuffix(path, ".txt") {
+		return nil
 	}
-
-	for i := st.n - 1; i > 0; i-- {
-		st.a[i] = st.a[i<<1] ^ st.a[i<<1|1]
+	fh, err := os.Open(path)
+	if err != nil {
+		log.Print(err)
+		return nil
 	}
-	return st
-}
+	defer fh.Close()
 
-func (st ST) Get(i int) int {
-	i += st.n
-	return st.a[i]
-}
-
-func (st ST) Set(i, v int) {
-	i += st.n
-	st.a[i] = v
-	i >>= 1
-	for i > 0 {
-		lo := i << 1
-		hi := lo | 1
-		st.a[i] = st.a[lo] ^ st.a[hi]
-		i >>= 1
-	}
-}
-
-func (st ST) Fold(lo, hi int) int {
-	lo += st.n
-	hi += st.n
-
-	left := 0
-	right := 0
-
-	for lo < hi {
-		if lo&1 == 1 {
-			left = left ^ st.a[lo]
-			lo++
+	ip := regexp.MustCompile(`\d+(\.\d+){3}`)
+	scanner := bufio.NewScanner(fh)
+	line_number := 0
+	for scanner.Scan() {
+		line := scanner.Text()
+		line_number++
+		if ip.MatchString(line) {
+			fmt.Printf("%s:%d %s\n", path, line_number, line)
 		}
-
-		if hi&1 == 1 {
-			hi--
-			right = st.a[hi] ^ right
-		}
-
-		lo >>= 1
-		hi >>= 1
 	}
-	return left ^ right
+	return nil
 }
 
 func main() {
-	r := bufio.NewReader(os.Stdin)
-	w := bufio.NewWriter(os.Stdout)
-	defer w.Flush()
-
-	var n, q, t, x, y int
-
-	fmt.Fscan(r, &n, &q)
-
-	a := make([]int, n)
-	for i := 0; i < n; i++ {
-		fmt.Fscan(r, &a[i])
-	}
-
-	st := NewSegmentTree(a)
-
-	for i := 0; i < q; i++ {
-		fmt.Fscan(r, &t, &x, &y)
-		x--
-		if t == 1 {
-			st.Set(x, st.Get(x)^y)
-		} else {
-			fmt.Fprintln(w, st.Fold(x, y))
-		}
+	err := filepath.Walk(".", fileterFile)
+	if err != nil {
+		log.Fatal(err)
 	}
 }
