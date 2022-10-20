@@ -24,6 +24,13 @@ class DualSegmentTree(T)
     DualSegmentTree(T).new(values, unit, f)
   end
 
+  # 区間chmin
+  def self.range_min(values : Array(T))
+    unit = T::MAX
+    f = -> (x : T, y : T) { Math.min x, y }
+    DualSegmentTree(T).new(values, unit, f)
+  end
+
   def initialize(
     values : Array(T),
     @unit = T::MIN,
