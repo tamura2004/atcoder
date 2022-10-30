@@ -1,5 +1,7 @@
 require "crystal/flow_graph/graph"
 
+# 最大流
+# 最小カット
 module FlowGraph
   class Dinic
     getter g : Graph
