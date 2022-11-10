@@ -1,31 +1,22 @@
-import java.util.*;
+import java.util.Scanner;
+import java.util.PriorityQueue;
+import java.util.Comparator;
 
-public class Main {
-  public static void main(String[] g) {
-    var sc = new Scanner(System.in);
-    String st = sc.next();
-    int x = 0;
-    int y = 0;
+class Main{
+	public static void main(String[] args){
+		Scanner sc = new Scanner(System.in);
+		int n = sc.nextInt();
+    int m = sc.nextInt();
 
-    for (String ch : st.split("")) {
-      switch(ch) {
-        case "L":
-          x--;
-          break;
-        case "R":
-          x++;
-          break;
-        case "U":
-          y++;
-          break;
-        case "D":
-          y--;
-          break;
-        default:
-          System.out.printf("bad char: %s\n", ch);
-      }
+		PriorityQueue<Integer> pq = new PriorityQueue<Integer>(Comparator.reverseOrder());
+
+		for(int i = 0; i < n; i++) {
+			pq.add(sc.nextInt());
     }
-    System.out.printf("%d %d\n", x, y);
+		for(int i = 0; i < m; i++) {
+			pq.add(pq.poll() / 2);
+    }
+		System.out.println(pq.stream().mapToLong(i->i).sum());
     sc.close();
-  }
+	}
 }
