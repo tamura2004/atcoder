@@ -1,31 +1,50 @@
-import java.util.*;
+import java.util.Scanner;
+import java.util.PriorityQueue;
 
-public class Main {
-  public static void main(String[] g) {
-    var sc = new Scanner(System.in);
-    String st = sc.next();
-    int x = 0;
-    int y = 0;
+class Main{
+	public static void main(String[] args){
+		// Scanner sc = new Scanner(System.in);
+		// int n = sc.nextInt();
+    // int m = sc.nextInt();
 
-    for (String ch : st.split("")) {
-      switch(ch) {
-        case "L":
-          x--;
-          break;
-        case "R":
-          x++;
-          break;
-        case "U":
-          y++;
-          break;
-        case "D":
-          y--;
-          break;
-        default:
-          System.out.printf("bad char: %s\n", ch);
-      }
+		PriorityQueue<Node> pq = new PriorityQueue<Node>();
+
+    pq.add(new Node(1, 40l));
+    pq.add(new Node(2, 30l));
+    pq.add(new Node(3, 20l));
+    pq.add(new Node(4, 50l));
+    pq.add(new Node(5, 60l));
+
+		for(int i = 0; i < 5; i++) {
+		  System.out.println(pq.poll());
     }
-    System.out.printf("%d %d\n", x, y);
-    sc.close();
+	}
+}
+
+class Node implements Comparable<Node> {
+  private Integer id;
+  private Long cost;
+
+  public Node(Integer id, Long cost) {
+    this.id = id;
+    this.cost = cost;
+  }
+
+  public Integer getId() {
+    return this.id;
+  }
+
+  public Long getCost() {
+    return this.cost;
+  }
+
+  @Override
+  public String toString() {
+    return "id = " + id + ", cost = " + cost;
+  }
+
+  @Override
+  public int compareTo(Node other) {
+    return Long.compare(this.cost, other.getCost());
   }
 }
