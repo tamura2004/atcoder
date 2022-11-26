@@ -1,22 +1,13 @@
-def isqrt(value : Int::Primitive)
-  return value if value < 2
-  res = value.class.zero
-  bit = res.succ << (res.leading_zeros_count - 2)
-  bit >>= value.leading_zeros_count & ~0x3
-  while (bit != 0)
-    if value >= res + bit
-      value -= res + bit
-      res = (res >> 1) + bit
-    else
-      res >>= 1
-    end
-    bit >>= 2
+h = 35
+w = 22
+y = 3
+x = 5
+
+a = Array.new(h) { Array.new(w, '.') }
+h.times do |i|
+  w.times do |j|
+    a[i][j] = '#' if ((i//y) + (j//x)).odd?
   end
-  res
 end
 
-a = 9e18.to_i64
-10.times do
-  pp a
-  a = isqrt(a)
-end
+puts a.map(&.join).join("\n")
