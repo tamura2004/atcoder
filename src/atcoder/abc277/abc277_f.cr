@@ -1,14 +1,34 @@
-# すべての要素が０の行と列は除外して良い
-# 行の０以外の最小値と最大値を取る
-# 最小値で並べ替えて、最大値が次の最小値以下であるならYes
+# # 行と列は独立に考えてよい
+# # 行を並べ替えて、０以外の列の間に有向辺を貼る
+# # ループがなければYES
 
-h,w = gets.to_s.split.map(&.to_i64)
+require "crystal/graph"
+require "crystal/graph/tsort"
+
+h, w = gets.to_s.split.map(&.to_i64)
 a = Array.new(h) { gets.to_s.split.map(&.to_i64) }
+ans = false
 
 2.times do
+  g = Graph.new(w)
+
+  h.times do |y|
+    cnt = a[y].zip(0..).select(&.first.!= 0).group_by(&.first)
+    cnt.keys.sort.each_cons_pair do |vk, nvk|
+      
+      cnt[vk].each do |_, v|
+        cnt[nvk].each do |_, nv|
+          g.add v, nv, both: false
+        end
+      end
+    end
+  end
+
+  pp! g
+  ans ||= Tsort.new(g).has_loop?
+
+  h, w = w, h
   a = a.transpose
-  a = a.reject(&.all?(&.zero?))
-  a.sort_by!(&.reject(&.zero?).minmax)
 end
 
-pp! a
+puts ans ? "No" : "Yes"

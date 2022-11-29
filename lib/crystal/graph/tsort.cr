@@ -6,7 +6,7 @@ class Tsort
   getter ind : Array(Int32)
 
   def initialize(@g)
-    raise "有向グラフではありません #{g}" if g.both
+    # raise "有向グラフではありません #{g}" if g.both
     @ind = Array.new(n, 0)
 
     g.each do |v|
