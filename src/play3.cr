@@ -1,11 +1,13 @@
-def chmin(a, b)
-  p = pointerof(a)
-  if a > b
-    p.value = b
+require "crystal/graph"
+w = 5
+g = Graph.new(w*2+1)
+a = [1,2,1,2,3]
+cnt = a.zip(0..).group_by(&.first).transform_values(&.map(&.last))
+cnt.keys.sort.zip(w..).each do |key, nv|
+  cnt[key].each do |v|
+    g.add nv, v, both: false, origin: 0
+    g.add v, nv + 1, both: false, origin: 0
   end
 end
 
-a = 100
-b = 50
-chmin(a,b)
-pp a
+pp g.g
