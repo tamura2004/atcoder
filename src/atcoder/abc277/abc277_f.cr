@@ -8,9 +8,9 @@ require "crystal/graph/tsort"
 def is_ranges_overlap?(a : Array(Tuple(Int32, Int32))) : Bool
   a.sort!
   a.each_cons_pair do |(min_left, max_left), (min_right, max_right)|
-    return false unless max_left <= min_right
+    return true if min_right < max_left
   end
-  true
+  false
 end
 
 h, w = gets.to_s.split.map(&.to_i)
@@ -28,8 +28,7 @@ a.each do |row|
   end
 end
 
-ans = is_ranges_overlap?(b)
-quit "No" unless ans
+quit "No" if is_ranges_overlap?(b)
 
 mid = w
 
@@ -48,9 +47,7 @@ a.each do |row|
   end
 end
 
-ans = Tsort.new(g).has_loop?
-
-quit "No" if ans
+quit "No" if Tsort.new(g).has_loop?
 puts "Yes"
 
 # 
