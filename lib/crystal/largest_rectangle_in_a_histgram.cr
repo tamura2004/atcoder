@@ -15,18 +15,18 @@ class LargestRectanbleInAHistgram
     ans = 0_i64
 
     a.each_with_index do |v, i|
-      # 候補より高いなら閉じないで積む
+      # 左端候補より高いなら新たな左端候補として積む
       if q.empty? || q[-1][0] < v
         q << {v, i}
 
-      # 高い候補は取り除いて面積を計算
+      # 左端候補より低いならその候補を確定
       else
         while q.size > 0 && q[-1][0] > v
           pv, pi = q.pop
           ans = Math.max ans, pv * (i - pi)
         end
         
-        # 一つでも取り除いているならそれを候補にして積む
+        # 確定した一番左の候補を残す
         q << {v, pi} if pi
       end
     end

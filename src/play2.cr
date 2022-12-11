@@ -1,13 +1,8 @@
-h = 35
-w = 22
-y = 3
-x = 5
+want = 7 ** 3
 
-a = Array.new(h) { Array.new(w, '.') }
-h.times do |i|
-  w.times do |j|
-    a[i][j] = '#' if ((i//y) + (j//x)).odd?
+100.times do |i|
+  got = i ** 0 + i ** 1 + i ** 2
+  if got == want
+    quit i
   end
 end
-
-puts a.map(&.join).join("\n")

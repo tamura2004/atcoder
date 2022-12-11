@@ -10,7 +10,7 @@ module BalancedTree
 
       getter key : K
       property val : V
-      # getter acc : V
+      getter acc : V
       getter pri : Int64
       getter size : Int32
       property left : Node(K, V)?
@@ -19,7 +19,7 @@ module BalancedTree
       def initialize(@key, @val)
         @pri = Xorshift.get
         @size = 1
-        # @acc = @val
+        @acc = @val
       end
 
       # キーが`k`のノードを含むなら真
@@ -138,8 +138,17 @@ module BalancedTree
         right.try &.values || [] of V
       end
 
+      def left_acc
+        left.try &.acc || V.zero
+      end
+
+      def right_acc
+        right.try &.acc || V.zero
+      end
+
       def update
         @size = left_size + right_size + 1
+        @acc = left_acc + right_acc + val
         self
       end
 
