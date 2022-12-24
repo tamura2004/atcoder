@@ -1,8 +1,11 @@
-want = 7 ** 3
+# module Indexable(T)
+#   def hoge
+#     case self
+#     when Array(U) forall U
+#       pp! U
+#     end
+#   end
+# end
 
-100.times do |i|
-  got = i ** 0 + i ** 1 + i ** 2
-  if got == want
-    quit i
-  end
-end
+a = [[1,2],[3]]
+pp Refrect(a)

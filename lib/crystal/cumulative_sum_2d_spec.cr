@@ -2,6 +2,20 @@ require "spec"
 require "crystal/cumulative_sum_2d"
 
 describe CumulativeSum2D do
+  it "usage" do
+    a = [
+      [1,2,3,4,5],
+      [2,3,4,5,6],
+      [3,4,5,6,7],
+      [4,5,6,7,8],
+    ]
+    cs = CS2D.new(a)
+    # cs = a.to_cs_2d
+    # 3,4,5
+    # 4,5,6
+    cs[1..2,1..3].should eq 27
+  end
+
   it "solve arc025b case 1" do
     h = 3
     w = 4

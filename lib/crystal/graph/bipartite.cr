@@ -2,8 +2,8 @@ require "crystal/graph/i_graph"
 
 # 2部グラフ判定
 #
-# 2部グラフでなければfalse
-# 2部グラフであれば、二色の色の塗分け方を返す
+# 2部グラフでなければ例外
+# 2部グラフであれば、連結成分ごとの二色の色の塗分け方を返す
 #
 # Example:
 # ```
@@ -11,42 +11,49 @@ require "crystal/graph/i_graph"
 # g.add 1, 2
 # g.add 2, 3
 # g.add 3, 1
-# Bipartite.new(g).solve # => nil
+# begin
+#  Bipartite.new(g).solve # => nil
+# rescue
+#  doit!
+# end
 #
-# g = Graph.new(4)
+# g = Graph.new(8)
 # g.add 1, 2
 # g.add 2, 3
 # g.add 3, 4
-# Bipartite.new(g).solve # => [0, 1, 0, 1]
+# g.add 1, 4
+# g.add 5, 6
+# g.add 8, 7
+# g.add 6, 7
+# g.add 5, 8
+# Bipartite.new(g).solve.should eq [0, 1, 0, 1, 2, 3, 2, 3]
 # ```
 struct Bipartite
-  BLACK = 0
-  WHITE = 1
-
-  getter n : Int32
   getter g : IGraph
-  getter color : Array(Int32)
+  delegate n, to: g
+  getter colors : Array(Int32)
 
   def initialize(@g)
-    @n = g.n
-    @color = Array.new(n, -1)
+    @colors = Array.new(n, -1)
   end
 
-  def solve : Array(Int32) | Nil
-    g.each do |root|
-      next true if color[root] != -1
-      dfs(root, BLACK) || return nil
+  def solve
+    color = 0
+    g.each do |v|
+      next if colors[v] != -1
+      dfs(v, color)
+      color += 2
     end
-    color
+    colors
   end
 
-  def dfs(v, c)
-    color[v] = c
-    ret = true
+  def dfs(v, color)
+    colors[v] = color
     g.each(v) do |nv|
-      next if color[nv] == -1 ? dfs(nv, 1 - c) : color[nv] != color[v]
-      ret = false
+      raise "not a bipartite" if colors[nv] == color
+      next if colors[nv] == color ^ 1
+      dfs(nv, color ^ 1)
     end
-    ret
+    true
   end
 end

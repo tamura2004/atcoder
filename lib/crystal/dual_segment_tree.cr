@@ -58,7 +58,7 @@ class DualSegmentTree(T)
     end
   end
 
-  # １点参照
+  # １点参照（範囲外参照で例外）
   def [](i)
     i += n
     push_down(i)
@@ -95,7 +95,7 @@ class DualSegmentTree(T)
     self[lo, hi] = v
   end
 
-  def []=(i : Int32, v)
+  def []=(i : Int, v)
     self[i, i + 1] = v
   end
 end

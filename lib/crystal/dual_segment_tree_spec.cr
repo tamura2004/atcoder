@@ -50,6 +50,9 @@ describe DualSegmentTree do
     st[1].should eq 20
     st[2].should eq 20
     st[3].should eq 10
+    st[3] += 100
+    st[3].should eq 110
+
 
     st = DualSegmentTree(Int32).range_assign([1,2,3,4])
     st[1...3] = 20
