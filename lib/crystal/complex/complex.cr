@@ -11,9 +11,17 @@ struct Complex(T)
   def y : T
     imag
   end
-  
+
   def x : T
     real
+  end
+
+  def x=(v : T)
+    @real = v
+  end
+
+  def y=(v : T)
+    @imag = v
   end
 
   def flip
@@ -21,12 +29,16 @@ struct Complex(T)
   end
 
   def self.read
-    real, imag = gets.to_s.split.map(&.to_i64)
+    imag, real = gets.to_s.split.map(&.to_i64)
     new(real, imag)
   end
 
   def self.zero
     Complex(T).new(0, 0)
+  end
+
+  def self.unit(e = 1)
+    Complex(T).new(e, e)
   end
 
   # 平面幾何で利用する場合を想定した辞書順ソート
@@ -107,10 +119,19 @@ struct Complex(T)
     Math.max real.abs, imag.abs
   end
 
+  # 原点となす長方形の面積
+  def rect
+    cross(y.y)
+  end
+
   # 偏角ソート用、有理数角度
   def phase
     area = (real < 0).to_unsafe
     {area, R.new(imag, real)}
+  end
+
+  def includes?(b : self)
+    b.y < y && b.x < x
   end
 
   def deg
@@ -140,11 +161,75 @@ struct Complex(T)
   end
 
   def inspect
-    "#{real}+#{imag}i"
+    "#{y}.y+#{x}.x"
   end
 
   def to_s
-    "#{real}+#{imag}i"
+    "#{y}.y+#{x}.x"
+  end
+
+  def pred
+    x.pred.x + y.pred.y
+  end
+
+  def pred_x
+    x.pred.x + y.y
+  end
+
+  def pred_y
+    x.x + y.pred.y
+  end
+
+  def succ
+    x.succ.x + y.succ.y
+  end
+
+  def succ_x
+    x.succ.x + y.y
+  end
+
+  def succ_y
+    x.x + y.succ.y
+  end
+
+  def transpose
+    x.y + y.x
+  end
+
+  def times(&block : self ->) : Nil
+    x.times do |xx|
+      y.times do |yy|
+        yield xx.x + yy.y
+      end
+    end
+  end
+
+  def times
+    TimesIterator(typeof(self)).new(self)
+  end
+
+  private class TimesIterator(T)
+    include Iterator(T)
+
+    @n : T
+    @index : T
+
+    def initialize(@n : T, @index = T.zero)
+    end
+
+    def next
+      if @index.y < @n.y && @index.x < @n.x
+        value = @index
+        @index.x += 1
+        if @n.x <= @index.x
+          @index.x = 0
+          @index.y += 1
+        end
+        value
+      else
+        stop
+      end
+    end
   end
 end
 
@@ -158,7 +243,7 @@ struct Int
   def y
     C.new(0_i64, to_i64)
   end
-  
+
   def x
     C.new(to_i64, 0_i64)
   end
@@ -174,6 +259,6 @@ end
 
 class Array
   def to_c
-    C.new self[0].not_nil!,self[1].not_nil!
+    C.new self[0].not_nil!, self[1].not_nil!
   end
 end

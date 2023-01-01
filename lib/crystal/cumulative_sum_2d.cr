@@ -1,37 +1,23 @@
-require "crystal/range_to_tuple"
+require "crystal/complex"
 
 # 2次元累積和
 class CumulativeSum2D(T)
-  getter h : Int32
-  getter w : Int32
-  getter cs : Array(Array(T))
+  getter m : Matrix(T)
+  getter cs : Matrix(T)
 
-  def initialize(a : Array(Array(T)))
-    @h = a.size
-    @w = a[0].size
-    @cs = Array.new(h + 1) { Array.new(w + 1, T.zero) }
-
-    h.times do |i|
-      w.times do |j|
-        cs[i + 1][j + 1] += cs[i + 1][j] + cs[i][j + 1] - cs[i][j] + a[i][j]
-      end
+  def initialize(@m : Matrix(T))
+    @cs = Matrix(T).zero(@m.z.succ)
+    m.z.times do |w|
+      cs[w.succ] += cs[w.succ_x] + cs[w.succ_y] - cs[w] + m[w]
     end
   end
 
-  # 半開区間[x1,x2)[y1,y2)の範囲の合計
-  def sum(y1, x1, y2, x2)
-    y1 = Math.max(0, y1)
-    y2 = Math.min(h, y2)
-    x1 = Math.max(0, x1)
-    x2 = Math.min(w, x2)
-    cs[y2][x2] - cs[y2][x1] - cs[y1][x2] + cs[y1][x1]
-  end
-
-  # 区間指定
-  def [](yr : Range(B, E), xr : Range(B, E)) forall B, E
-    y1, y2 = RangeToTuple(Int32).from(yr)
-    x1, x2 = RangeToTuple(Int32).from(xr)
-    sum(y1, x1, y2, x2)
+  def [](zr : Range(C?, C?))
+    z1 = zr.begin || C.zero
+    z2 = (zr.excludes_end? ? zr.end : zr.end.try(&.succ)) || m.z
+    z3 = z1.y.y + z2.x.x
+    z4 = z2.y.y + z1.x.x
+    cs[z1] + cs[z2] - cs[z3] - cs[z4]
   end
 end
 

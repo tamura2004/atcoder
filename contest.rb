@@ -29,7 +29,7 @@ range = case name
   when /^typical90/
     "001".."090"
   else
-    "a".."h"
+    "a".."z"
   end
 
 range.each do |c|

@@ -6,7 +6,7 @@ struct Matrix(T)
   getter h : Int32           # 行数
   getter w : Int32           # 列数
   getter a : Array(Array(T)) # 要素
-  delegate "[]", "[]=", to: a
+  # delegate "[]", "[]=", to: a
 
   class DimensionMismatch < Exception
   end
@@ -14,6 +14,45 @@ struct Matrix(T)
   def initialize(@a)
     @h = a.size
     @w = a.first.size
+  end
+
+  def initialize(z : C, v : T)
+    @h = z.y.to_i
+    @w = z.x.to_i
+    @a = Array.new(h) do
+      Array.new(w, v)
+    end
+  end
+  
+  # 空のマトリクス
+  def initialize(z : C)
+    @h = z.y.to_i
+    @w = z.x.to_i
+    @a = [] of Array(T)
+  end
+  
+  def initialize(z : C, &block : -> Array(T))
+    @h = z.y.to_i
+    @w = z.x.to_i
+    @a = [] of Array(T)
+    h.times do
+      @a << block.call()
+    end
+  end
+
+  # 標準入力から値を読み込む
+  def read
+    h.times do |y|
+      @a << gets.to_s.split.map { |v| T.new(v) }
+    end
+  end
+
+  def map(&block : T -> U) forall U
+    b = Matrix(U).new(z)
+    h.times do |y|
+      b << @a[y].map(&block)
+    end
+    b
   end
 
   def self.parse(s : String)
@@ -33,6 +72,12 @@ struct Matrix(T)
   # ゼロ行列を生成する
   def self.zero(h, w = h)
     a = Array.new(h) { Array.new(w, T.zero) }
+    new(a)
+  end
+
+  # :ditto:
+  def self.zero(z : C)
+    a = Array.new(z.y) { Array.new(z.x, T.zero) }
     new(a)
   end
 
@@ -56,6 +101,14 @@ struct Matrix(T)
   # rows[i]を第i行とする行列を生成する
   def self.[](*rows)
     new(rows.to_a)
+  end
+
+  # ブロックの返り値をaとして行列を生成する
+  def self.from_rows(z : C)
+    a = Array.new(z.y) do |y|
+      yield y
+    end
+    new(a)
   end
 
   # ブロックの返り値から行列を生成する
@@ -126,6 +179,24 @@ struct Matrix(T)
     a.transpose
   end
 
+  # 行ベクトルを返す
+  def rows
+    a
+  end
+
+  # 行ベクトルを追加
+  def <<(row : Array(T))
+    @a << row
+  end
+
+  def max
+    a.max_of(&.max)
+  end
+
+  def min
+    a.min_of(&.min)
+  end
+
   # rowsを行ベクトルの列とする行列を生成
   # 引数copyがfalseならrowsの複製を行わない
   def self.rows(rows, copy = true)
@@ -170,9 +241,18 @@ struct Matrix(T)
     self.class.new(a.transpose.reverse)
   end
 
+  def z
+    h.y + w.x
+  end
+
   @[AlwaysInline]
   def [](i, j)
     a[i][j]
+  end
+
+  @[AlwaysInline]
+  def [](i)
+    a[i][i]
   end
 
   @[AlwaysInline]
@@ -193,14 +273,14 @@ struct Matrix(T)
   def ==(b : self) : Bool
     h.times.all? do |i|
       w.times.all? do |j|
-        a[i][j] == b[i][j]
+        self[i, j] == b[i, j]
       end
     end
   end
 
   def inspect
-    # w = a.flatten.map(&.to_s.size).max
-    # a.map(&.map { |v| "%#{w}s" % v }.join(" ")).join("\n")
-    # a.map(&.map.(&.join(" "))).join("\n")
+    w = a.flatten.map(&.to_s.size).max
+    z.to_s + "\n" + a.map(&.map { |v| "%#{w}s" % v }.join(" ")).join("\n")
+  #   a.map(&.map.(&.join(" "))).join("\n")
   end
 end

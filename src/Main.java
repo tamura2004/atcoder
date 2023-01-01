@@ -3,98 +3,17 @@ import java.util.ArrayList;
 import java.util.Map;
 import java.util.HashMap;
 import java.util.function.Consumer;
-
-class Graph {
-  int n;
-  List<List<Integer>> g;
-  int[] colors;
-
-  Graph(int n) {
-    this.n = n;
-    this.g = new ArrayList<>();
-    for (int i = 0; i < n; i++) {
-      g.add(new ArrayList<>());
-    }
-    this.colors = new int[n];
-    for (int i = 0; i < n; i++) {
-      colors[i] = -1;
-    }
-  }
-
-  public void add(int v, int nv) {
-    v--;
-    nv--;
-    g.get(v).add(nv);
-    g.get(nv).add(v);
-  }
-
-  public void each(Consumer<Integer> func) {
-    for (int v = 0; v < n; v++) {
-      func.accept(v);
-    }
-  }
-
-  public void each(int v, Consumer<Integer> func) {
-    for (int nv : g.get(v)) {
-      func.accept(nv);
-    }
-  }
-}
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.text.NumberFormat;
 
 
 class Main {
-  public static Graph g;
-  public static int[] colors;
-  public static int color;
-
+  
   private static void execute(final IO io) throws Exception {
-    int n = io.nextInt();
-    int m = io.nextInt();
-    g = new Graph(n);
-    colors = new int[n];
-
-    for (int i = 0; i < n; i++) {
-      colors[i] = -1;
-    }
-
-    for (int i = 0; i < m; i++) {
-      int v = io.nextInt();
-      int nv = io.nextInt();
-      g.add(v, nv);
-    }
-
-    color = 0;
-    g.each(v -> {
-      if (colors[v] != -1)
-        return;
-      dfs(v, color);
-      color += 2;
-    });
-
-    Long ans = (long) n * n;
-    Map<Integer, Long> cnt = new HashMap<>();
-    for (int c : colors) {
-      cnt.put(c, cnt.getOrDefault(c, 0L) + 1);
-    }
-    for (long v : cnt.values()) {
-      ans -= v * v;
-    }
-    ans /= 2;
-    ans -= m;
-    io.println(ans);
-  }
-
-  public static void dfs(int v, int color) {
-    colors[v] = color;
-    g.each(v, nv -> {
-      if (colors[nv] == color) {
-        System.out.println(0);
-        System.exit(0);
-      }
-      if (colors[nv] == (color ^ 1))
-        return;
-      dfs(nv, color ^ 1);
-    });
+    Long n = null;
+    String lblN = NumberFormat.getNumberInstance().format(n);
+    io.println(lblN);
   }
 
   // これ以降入出力テンプレートにて修正不要

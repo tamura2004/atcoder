@@ -108,4 +108,11 @@ describe Matrix do
     m[z] = 5
     m[z].should eq 5
   end
+  
+  it "map" do
+    m = M.parse("1 2;3 4")
+    k = m.map(&.* 2)
+    k.a.should eq [[2,4],[6,8]]
+  end
+
 end

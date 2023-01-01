@@ -15,8 +15,15 @@ class Grid
     3.times { dir << dir[-1] * (1.i + 1) }
   end
 
+  def initialize(z : C)
+    @h = z.y.to_i
+    @w = z.x.to_i
+    initialize(@h,@w)
+  end
+
   def read
     @a = Array.new(h) { gets.to_s }
+    self
   end
 
   def each
