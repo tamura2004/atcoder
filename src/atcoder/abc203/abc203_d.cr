@@ -9,7 +9,6 @@
 
 require "crystal/matrix"
 require "crystal/cs2d"
-require "crystal/range"
 
 n, k = gets.to_s.split.map(&.to_i64)
 nz = C.unit(n)
@@ -20,12 +19,12 @@ end
 
 lo = m.min
 hi = m.max
-ceil = k * k // 2 + 1
+ceil = (k * k + 1) // 2
 
-ans = (lo..hi).reverse_bsearch do |mid|
-  cs = CS2D.new(m.map(&.>=(mid).to_unsafe))
-  (nz - kz).succ.times.all? do |w|
-    cs[w..w+kz.pred] >= ceil
+ans = (lo..hi).bsearch do |mid|
+  cs = CS2D.new(m.map(&.<=(mid).to_unsafe))
+  (nz - kz).succ.times.any? do |w|
+    ceil <= cs[w, kz]
   end
 end
 

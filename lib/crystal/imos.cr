@@ -1,3 +1,5 @@
+require "crystal/range_to_tuple"
+
 # イモス法
 class IMOS(T)
   getter n : Int32
@@ -8,15 +10,20 @@ class IMOS(T)
     @a = Array.new(n, T.zero)
   end
 
-  def add(lo, hi, v)
-    a[Math.max(lo, 0)] += v
-    a[hi + 1] -= v if hi + 1 < n
+  def []=(r : Range(B, E), v : T) forall B, E
+    lo, hi = RangeToTuple(Int32).from(r)
+    return unless lo < hi
+    return unless lo < n
+    return unless 0 <= hi
+    lo = Math.max(lo, 0)
+    a[lo] += v
+    return if n <= hi
+    a[hi] -= v
   end
 
-  def to_a
+  def update!
     (n - 1).times do |i|
       a[i + 1] += a[i]
     end
-    return a
   end
 end

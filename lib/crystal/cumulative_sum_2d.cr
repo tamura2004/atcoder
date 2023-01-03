@@ -19,6 +19,10 @@ class CumulativeSum2D(T)
     z4 = z2.y.y + z1.x.x
     cs[z1] + cs[z2] - cs[z3] - cs[z4]
   end
+
+  def [](z : C, w : C)
+    self[z..z+w.pred]
+  end
 end
 
 alias CS2D = CumulativeSum2D
