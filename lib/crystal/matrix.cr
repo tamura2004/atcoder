@@ -8,6 +8,17 @@ struct Matrix(T)
   getter a : Array(Array(T)) # 要素
   # delegate "[]", "[]=", to: a
 
+  include Indexable(T)
+
+  def size
+    h * w
+  end
+
+  def unsafe_fetch(index : Int)
+    y, x = index.divmod(w)
+    a[y][x]
+  end
+
   class DimensionMismatch < Exception
   end
 

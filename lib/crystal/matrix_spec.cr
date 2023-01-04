@@ -115,4 +115,14 @@ describe Matrix do
     k.a.should eq [[2,4],[6,8]]
   end
 
+  it "select" do
+    m = M.parse("1 2;3 4")
+    m.select(&.odd?).should eq [1,3]
+  end
+  
+  it "select and sum" do
+    m = M.parse("1 2;3 4")
+    m.sum.should eq 10
+  end
+
 end
