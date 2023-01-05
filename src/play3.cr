@@ -1,8 +1,21 @@
-require "crystal/lagrange_polynomial"
+require "crystal/static_mod_int"
+require "crystal/matrix"
+
+MOD = 1000000000
+alias Modint = StaticModInt(MOD)
+
+struct Int
+  def to_m
+    Modint.new(to_i64)
+  end
+end
+
+m = Matrix(Int32).new([
+  [0,1],
+  [1,1]
+]).map(&.to_m)
 
 n = gets.to_s.to_i64
-y = gets.to_s.split.map(&.to_i64)
-t = gets.to_s.to_i64
 
-ans = LagrangePolynomial.new(y, t).solve
+ans = (m ** n)[0,1]
 pp ans

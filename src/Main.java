@@ -1,19 +1,25 @@
 import java.util.List;
 import java.util.ArrayList;
-import java.util.Map;
-import java.util.HashMap;
-import java.util.function.Consumer;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import java.text.NumberFormat;
-
+import java.util.Optional;
+import java.util.stream.Stream;
+import java.util.stream.Collectors;
+import java.util.Collection;
 
 class Main {
-  
   private static void execute(final IO io) throws Exception {
-    Long n = null;
-    String lblN = NumberFormat.getNumberInstance().format(n);
-    io.println(lblN);
+    List<Integer> a = new ArrayList<>();
+    a.add(19);
+
+    Integer ans = solve(a);
+    if (null != ans) {
+      io.println(ans);
+    }
+  }
+
+  private static Integer solve(List<Integer> a) {
+    if (null == a) return null;
+    if (a.size() == 0) return null;
+    return a.get(0);
   }
 
   // これ以降入出力テンプレートにて修正不要
@@ -123,7 +129,7 @@ class Main {
       out.write(a.toString().getBytes());
     }
 
-    private static final byte[] SP = new byte[] {0x20};
+    private static final byte[] SP = new byte[] { 0x20 };
 
     public void printsp(final Object a) throws java.io.IOException {
       out.write(a.toString().getBytes());
