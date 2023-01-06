@@ -9,6 +9,11 @@ describe FPS do
     Parser.new(s).expr.to_a.should eq want
   end
 
+  it "usage" do
+    s = "x^3"
+    Parser.new(s).expr.to_a.should eq [0,0,0,1]
+  end
+
   it "rat_expr" do
     s = "(x^2-1)/(-x^3+2*x+1)"
     Parser.new(s).rat_expr.to_pair.should eq ({[-1, 0, 1], [1, 2, 0, -1]})

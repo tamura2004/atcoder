@@ -11,7 +11,7 @@ class Lca
   getter depth : Array(Int64)
   getter pa : Parent
 
-  def initialize(@g, @root)
+  def initialize(@g, @root = 0)
     g.tree!
 
     @depth = Depth.new(g).solve(root)

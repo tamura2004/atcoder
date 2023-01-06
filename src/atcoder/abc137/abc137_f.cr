@@ -1,13 +1,39 @@
-require "crystal/segment_tree"
-require "crystal/modint9"
+require "crystal/dynamic_mod_int"
 
-values = [1,2,3,4,5,6,7,8,9,10].map(&.to_m)
-unit = ModInt.zero + 1
+struct Problem
+  getter mod : Int64
+  getter a : Array(Int32)
+  getter mint : DynamicModInt
 
-st = SegmentTree(ModInt).new(
-  values: values,
-  unit: unit,
-  fx: -> (x : ModInt, y : ModInt) { x * y }
-)
+  def initialize
+    @mod = gets.to_s.to_i64
+    @a = gets.to_s.split.map(&.to_i)
+    @mint = DynamicModInt.new(mod)
+  end
 
-pp st[..9]
+  def polypow(a, k)
+  end
+  
+  def solve
+    n = mod - 1
+    ans = Array.new(mod, 0_i64)
+    mod.times do |i|
+      if a[i] == 1
+        # (x - i) ^ n
+        # == Σk=0..n, c(n,k) * x^k * (-i) * (n - k)
+        (0..n).each do |k|
+          cnt = mint.c(n, k)
+          cnt *= mint.pow(-i, n - k)
+          cnt %= mod
+          ans[k] -= cnt
+          ans[k] %= mod
+        end
+        ans[0] += 1
+        ans[0] %= mod
+      end
+    end
+    puts ans.join(" ")
+  end
+end
+
+Problem.new.solve
