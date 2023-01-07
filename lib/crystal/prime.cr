@@ -3,7 +3,7 @@
 # エラストテレスの篩で、自身を割る最小の素数をクラス変数として持つ
 # 素数判定と、高速な素因数分解に利用
 class Prime
-  MAX = 20_000_001
+  MAX = 3_000_001
   extend Enumerable(Int32)
   class_getter div : Array(Int32) = sieve(MAX)
   class_getter each : PrimeIterator = PrimeIterator.new(div)
