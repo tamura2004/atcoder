@@ -13,4 +13,22 @@ describe Backtrack do
       Backtrack::Game::Draw,
     ]
   end
+
+  it "usage" do
+    g = Graph.new(3)
+    g.add 1, 2, both: false
+    g.add 2, 3, both: false
+    Backtrack.new(g).solve.should eq [
+      Backtrack::Game::Win,
+      Backtrack::Game::Lose,
+      Backtrack::Game::Win,
+    ]
+  end
+
+  it "abst graph" do
+    g = BaseGraph(Tuple(Int32,Int32)).new
+    g.add ({1,0}), ({3,1}), both: false
+    g.add ({3,1}), ({7,2}), both: false
+    pp Backtrack.new(g).solve
+  end
 end
