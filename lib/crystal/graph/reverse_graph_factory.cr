@@ -6,7 +6,7 @@ struct ReverseGraphFactory
   delegate n, to: g
 
   def initialize(@g)
-    raise "有向グラフではありません" if g.both
+    # raise "有向グラフではありません" if g.both
   end
 
   def solve

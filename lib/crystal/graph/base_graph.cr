@@ -161,11 +161,11 @@ class BaseGraph(V)
     g.flatten.any?(&.[1].> 1)
   end
 
-  private def add_vertex(i : Int)
+  def add_vertex(i : Int)
     i.to_i - origin
   end
 
-  private def add_vertex(v : V)
+  def add_vertex(v : V)
     if i = ix[v]?
       return i
     end

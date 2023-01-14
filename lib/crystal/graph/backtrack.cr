@@ -1,7 +1,8 @@
 require "crystal/graph/i_graph"
 require "crystal/graph/in_deg"
+require "crystal/graph/reverse_graph_factory"
 
-# 後退解析によりゲーム木のノードごとの勝敗・引き分けを求める
+# 後退解析によりゲーム木のノードで手番を開始した場合の勝敗・引き分けを求める
 #
 # Example:
 # ```
@@ -25,8 +26,9 @@ class Backtrack
   getter g : IGraph
   delegate n, to: g
 
-  def initialize(@g)
-    # 遷移先 -> 遷移元のDAG（直感とは逆）
+  def initialize(g)
+    # 遷移先 -> 遷移元のDAG（直感とは逆）に変換
+    @g = ReverseGraphFactory.new(g).solve
   end
 
   def solve
