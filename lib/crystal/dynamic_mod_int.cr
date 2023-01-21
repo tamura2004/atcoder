@@ -50,6 +50,10 @@ struct ModInt
     end
   {% end %}
 
+  def //(b)
+    self * b.to_m.inv
+  end
+
   # 累乗
   def pow(b)
     a = self
@@ -78,6 +82,10 @@ struct ModInt
       a, b = b, a % b
     end
     ModInt.new(x)
+  end
+
+  def ==(b)
+    b.try &.to_i64.==(v)
   end
 end
 
