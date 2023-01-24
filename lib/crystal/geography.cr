@@ -1,9 +1,15 @@
 require "complex"
 
 alias Point = Complex
+alias Dot = Complex
 EPS = 0.000_000_01_f64
 
 struct Complex
+  def self.read
+    real, imag = gets.to_s.split.map(&.to_f64)
+    new(real, imag)
+  end
+
   def dot(b : self)
     (conj * b).real
   end
@@ -43,6 +49,30 @@ struct Complex
     (a*x*(y + z - x) + b*y*(z + x - y) + c*z*(x + y - z))/s
   end
 end
+
+# 凸包
+def convex_hull(dots : Array(Point))
+  dots.sort_by!{|z| {z.real, z.imag}}
+  up = [] of Point
+  dots.each do |dot|
+    while up.size >= 2 && (up[-1] - up[-2]).cross(up[-1] - dot) <= 0
+      up.pop
+    end
+    up << dot
+  end
+  
+  dn = [] of Point
+  dots.each do |dot|
+    while dn.size >= 2 && (dn[-1] - dn[-2]).cross(dn[-1] - dot) >= 0
+      dn.pop
+    end
+    dn << dot
+  end
+
+  ans = up + dn[1..-2].reverse
+  return {ans, up, dn}
+end
+
 
 # 線分
 struct Segment

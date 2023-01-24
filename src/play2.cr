@@ -1,3 +1,3 @@
-require "crystal/modint9"
-require "crystal/fact_table"
-pp 10000.c(5000)
+a = [1,2,3,4,5,6]
+a[2..4] = a[2..4].rotate
+pp a
