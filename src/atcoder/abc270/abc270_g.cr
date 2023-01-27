@@ -1,3 +1,16 @@
+# xi+1 = axi + b
+# xi+1 - y = a(xi - y)
+# y = b + ay
+# y = b / (1 - a)
+# zi = xi - b / (1 - a)は
+# 初項s-b(1-a)公比aの等比数列
+# 一般項は
+# zi = (s - b/(1-a)) * a^i
+# xi = (s - b/(1-a)) * a^i + b/(1-a)
+# xk = Gを解く
+# G = (s - b/(1-a)) * a^k + b/(1-a)
+# (G - b/(1-a)) // (ss - b/(1-a)) = a^k
+
 require "crystal/number_theory/ext_gcd"
 require "crystal/number_theory/baby_step_giant_step"
 include NumberTheory
@@ -50,16 +63,24 @@ end
 t = gets.to_s.to_i
 t.times do
   p, a, b, s, g = gets.to_s.split.map(&.to_i64)
+  pp! [p,a,b,s,g]
   ModInt.m = p
-  a,b,s,g = {a,b,s,g}.map{|v| ModInt.new(v) }
 
   if a == 1
-    ans = (g - s) // b
-    pp ans
+    if b == 0
+      if s == g
+        pp 0
+      else
+        pp -1
+      end
+    else
+      ans = (g - s) // b
+      pp ans
+    end
   else
-    x = a
-    al = b // (ModInt.new(1) - a)
-    y = (g - al) // (s - al)
+    x = ModInt.new(a)
+    al = ModInt.new(b) // (ModInt.new(1) - a)
+    y = (ModInt.new(g) - al) // (ModInt.new(s) - al)
     pp BabyStepGiantStep.solve(x, y, p)
   end
 end
