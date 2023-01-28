@@ -1,5 +1,13 @@
-3
-13 0 0 1 2
-2 1 0 1 0
-2 1 0 1 1
-2 1 0 1 0
+Tokyo Institute of Technology
+Tokyo Medical and Dental University
+10
+The University
+Tokyo University
+kyoto University
+Tokyo Tech
+TMDU
+Kyoto University
+The University of Tokyo
+Tokyo Technology and Medical and Dental University
+   Tehnoooorsty
+Tokyo

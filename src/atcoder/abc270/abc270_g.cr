@@ -1,86 +1,38 @@
-# xi+1 = axi + b
-# xi+1 - y = a(xi - y)
-# y = b + ay
-# y = b / (1 - a)
-# zi = xi - b / (1 - a)は
-# 初項s-b(1-a)公比aの等比数列
-# 一般項は
-# zi = (s - b/(1-a)) * a^i
-# xi = (s - b/(1-a)) * a^i + b/(1-a)
-# xk = Gを解く
-# G = (s - b/(1-a)) * a^k + b/(1-a)
-# (G - b/(1-a)) // (ss - b/(1-a)) = a^k
-
-require "crystal/number_theory/ext_gcd"
+require "crystal/dynamic_mod_int"
 require "crystal/number_theory/baby_step_giant_step"
+
 include NumberTheory
-# 自動でMODを取る構造体
-
-struct ModInt
-  @@m = 100_i64
-  class_property m : Int64
-  getter v : Int64
-  delegate to_i64, to_s, to_m, inspect, to: v
-
-  def initialize(v)
-    @v = v.to_i64 % @@m
-  end
-
-  {% for op in %w(+ - *) %}
-    def {{op.id}}(b)
-      self.class.new v {{op.id}} (b.to_i64 % @@m)
-    end
-  {% end %}
-
-  def **(b)
-    a = self
-    ans = self.class.new(1)
-    while b > 0
-      ans *= a if b.odd?
-      b >>= 1
-      a *= a
-    end
-    return ans
-  end
-
-  def inv
-    self ** (@@m - 2)
-  end
-
-  def //(b)
-    self * self.class.new(b).inv
-  end
-
-  def self.zero
-    new(0)
-  end
-
-  def ==(b)
-    b.try &.to_i64.==(v)
-  end
-end
 
 t = gets.to_s.to_i
 t.times do
   p, a, b, s, g = gets.to_s.split.map(&.to_i64)
-  pp! [p,a,b,s,g]
-  ModInt.m = p
+  p.to_mod
 
-  if a == 1
-    if b == 0
-      if s == g
-        pp 0
-      else
-        pp -1
-      end
-    else
-      ans = (g - s) // b
-      pp ans
-    end
+  case
+  when g == s
+    pp! "a"
+    pp 0
+  when a == 0 # s b b b b b
+    pp! "b"
+    pp g == b ? 1 : -1
+  when a == 1 && b == 0 # s s s s s
+    pp! "c"
+    pp -1
+  when a == 1 # s s+b s+2b
+    pp! "d"
+    pp (g.to_m - s) // b
   else
-    x = ModInt.new(a)
-    al = ModInt.new(b) // (ModInt.new(1) - a)
-    y = (ModInt.new(g) - al) // (ModInt.new(s) - al)
-    pp BabyStepGiantStep.solve(x, y, p)
+    pp! "e"
+    # xi+1 = a xi + b
+    # yi = xi - b/(1-a)
+    # yi+1 = xi+1 - b/(1-a) = axi+b - b/(1-a)
+    # a xi + b(1-a)/(1-a) - b/(1-a)
+    # a xi + -ba/(1-a)
+    # a (xi - b/(1-a)) = a yi
+    # yi = s a^i
+    # xi = s a^i + b/(1-a) == g
+    # a^i == (g - b/(1-a))//s
+    y = (g.to_m - b.to_m // (1.to_m - a)) // s
+    pp BabyStepGiantStep.solve(a, y, p)
   end
 end

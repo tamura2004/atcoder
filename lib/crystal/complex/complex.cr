@@ -29,7 +29,7 @@ struct Complex(T)
   end
 
   def self.read
-    imag, real = gets.to_s.split.map(&.to_i64)
+    imag, real = gets.to_s.split.map{|v| T.new(v.to_i64)}
     new(real, imag)
   end
 
