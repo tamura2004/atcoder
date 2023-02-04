@@ -3,62 +3,52 @@
 # dp[i][k] += dp[i-k][j] * (2 ** j - 1) ** k * (2 ** ((k-1)*k//2)) * c(n-i+k-1,k)
 # k < i - j
 
+require "crystal/dynamic_mod_int"
+require "crystal/recursive_sequence"
+
 n, m = gets.to_s.split.map(&.to_i64)
+m.to_mod
 
 # combination
-c = Array.new(n) { Array.new(n, 0_i64) }
-c[0][0] = 1_i64
-n.times{|i|c[i][0] = 1_i64}
+c = Array.new(n) { Array.new(n, 0.to_m) }
+n.times { |i| c[i][0] = 1.to_m }
 (1...n).each do |y|
-  (1...n).each do |x|
-    c[y][x] = (c[y-1][x-1] + c[y-1][x]) % m
+  (1..y).each do |x|
+    c[y][x] = c[y - 1][x - 1] + c[y - 1][x]
   end
 end
 
 # pw2
-pw2 = Array.new(n**2, 0_i64)
-pw2[0] = 1_i64
-(1...n**2).each do |i|
-  pw2[i] = (pw2[i-1] * 2_i64) % m
+pw2 = RecursiveSequence.new(n, [1.to_m]) do |a|
+  a[-1] * 2
 end
 
-# pw
-# (2 ** j - 1) ** k % mod
+# f = 2 ** (k * (k - 1) // 2)
+f = RecursiveSequence.new(n, [1.to_m]) do |a|
+  a[-1] * pw2[a.size - 1]
+end
+
+# g = (2 ** j - 1) ** k % mod
 # j, k <= n
-pw = Array.new(n+1) { Array.new(n+1,0_i64)}
-n.times do |j|
-  pw[j][0] = 1_i64
-  (1..n).each do |k|
-    pw[j][k] = pw[j][k-1] * (pw2[j] - 1)
-    pw[j][k] %= m
+pw = Array.new(n + 1) do |j|
+  RecursiveSequence.new(n+1,[1.to_m]) do |a|
+    a[-1] * (pw2[j] - 1)
   end
 end
 
-dp = make_array(0_i64, n, n+1)
-dp[1][1] = 1_i64
+dp = make_array(0.to_m, n, n + 1)
+dp[1][1] = 1.to_m
 
 (2i64...n).each do |i|
   (1i64...i).each do |k|
-    (1i64..i-k).each do |j|
-      cnt = dp[i - k][j] * pw[j][k]
-      cnt %= m
-      cnt *= pw2[k * (k - 1) // 2]
-      cnt %= m
-      cnt *= c[n - i + k - 1][k]
-      cnt %= m
-
-      dp[i][k] += cnt
-      dp[i][k] %= m
+    (1i64..i - k).each do |j|
+      dp[i][k] += dp[i - k][j] * pw[j][k] * f[k] * c[n - i + k - 1][k]
     end
   end
 end
 
-ans = 0_i64
+ans = 0.to_m
 (1..n).each do |j|
-  cnt = dp[n - 1][j]
-  ans += (pw2[j] - 1) * cnt
-  ans %= m
+  ans += (pw2[j] - 1) * dp[n - 1][j]
 end
 pp ans
-
-

@@ -1,3 +1,11 @@
+<<<<<<< HEAD
+# 動的modint
+struct ModInt
+  class_property mod : Int64 = 998_244_353_i64
+  getter v : Int64
+  delegate to_i64, to_s, inspect, to: v
+
+=======
 # 動的ModInt
 # modは素数
 struct ModInt
@@ -39,17 +47,39 @@ struct ModInt
   end
 
   # コンストラクタ
+>>>>>>> 873fa613a7e6408c9c146c2da926009e40dcff6b
   def initialize(v)
     @v = v.to_i64 % @@mod
   end
 
+<<<<<<< HEAD
+=======
   # 加減乗
+>>>>>>> 873fa613a7e6408c9c146c2da926009e40dcff6b
   {% for op in %w(+ - *) %}
     def {{op.id}}(b)
       ModInt.new v {{op.id}} (b.to_i64 % @@mod)
     end
   {% end %}
 
+<<<<<<< HEAD
+  def self.zero
+    new(0)
+  end
+
+  def to_m
+    self
+  end
+end
+
+struct Int
+  def to_m
+    ModInt.new(to_i64)
+  end
+
+  def to_mod
+    ModInt.mod = to_i64
+=======
   def //(b)
     self * b.to_m.inv
   end
@@ -120,5 +150,6 @@ struct Int
     return 0.to_m if self < k
     return 0.to_m if k < 0
     fact * (self - k).finv * k.finv
+>>>>>>> 873fa613a7e6408c9c146c2da926009e40dcff6b
   end
 end
