@@ -67,7 +67,7 @@ struct SparseTable(T)
   end
 
   def solve(r)
-    lo, hi = RangeToTuple.from(r, min: 0, max: n)
+    lo, hi = RangeToTuple(T).from(r, min: 0, max: n)
     i = Math.ilogb(hi - lo)
     f.call(dp[i][lo], dp[i][hi - 2**i])
   end
@@ -80,5 +80,21 @@ struct SparseTable(T)
   def next_change(s, t) : T
     v = self[s..t]
     (t...n).bsearch { |k| self[s..k] < v } || T.new(n)
+  end
+end
+
+alias SP = SparseTable
+
+module Indexable(T)
+  def to_sp_sum
+    SP(T).sum(self)
+  end
+
+  def to_sp_min
+    SP(T).min(self)
+  end
+
+  def to_sp_max
+    SP(T).max(self)
   end
 end
