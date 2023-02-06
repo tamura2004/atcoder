@@ -5,7 +5,7 @@ require "crystal/sparse_table"
 
 n, m = gets.to_s.split.map(&.to_i)
 a = gets.to_s.split.map(&.to_i64)
-c = gets.to_s.split.map(&.to_i64).to_sp_min
+c = SparseTable(Int64).min gets.to_s.split.map(&.to_i64)
 x = gets.to_s.split.map(&.to_i.pred).to_set
 
 dp = make_array(Int64::MAX//4, n + 1, n + 1)
