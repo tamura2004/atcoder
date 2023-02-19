@@ -122,6 +122,13 @@ class BaseGraph(V)
     end
   end
 
+  # def each(v : V)
+  #   return unless ix.has_key?(v)
+  #   g[ix[v]].each do |j, _, _|
+  #     yield vs[j]
+  #   end
+  # end
+
   def each_with_cost(i : Int32)
     g[i].each do |j, cost, _|
       yield j, cost
