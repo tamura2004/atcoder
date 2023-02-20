@@ -1,5 +1,6 @@
 # 事前計算によりO(1)で二項係数を求める
 #
+MAX = 4_000_000
 class FactTable
   getter m : Int32
   getter f : Array(ModInt)
@@ -58,7 +59,6 @@ class Pw2Table
 end
 
 struct Int
-  MAX = 1_000_000
   class_getter ft : FactTable = FactTable.new(MAX)
   class_getter pw2 : Pw2Table = Pw2Table.new(MAX)
 

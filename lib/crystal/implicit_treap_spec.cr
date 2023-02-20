@@ -5,7 +5,7 @@ alias Tree = ImplicitTreap
 
 describe ImplicitTreap do
   it "usage" do
-    node = Tree{40, 10, 30, 20}
+    node = Tree.new([40, 10, 30, 20])
     node.to_a.should eq [40, 10, 30, 20]
   end
 

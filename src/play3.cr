@@ -1,21 +1,10 @@
-require "crystal/static_mod_int"
-require "crystal/matrix"
+require "crystal/modint9"
+require "crystal/fact_table"
 
-MOD = 1000000000
-alias Modint = StaticModInt(MOD)
-
-struct Int
-  def to_m
-    Modint.new(to_i64)
-  end
+def solve(n)
+  (n * 2 - 4).f * (n - 1) * (n * n - 3) * (n - 1).finv * (n-1).finv
 end
 
-m = Matrix(Int32).new([
-  [0,1],
-  [1,1]
-]).map(&.to_m)
-
-n = gets.to_s.to_i64
-
-ans = (m ** n)[0,1]
-pp ans
+(1..8).each do |n|
+  pp solve(n)
+end

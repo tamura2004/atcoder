@@ -148,7 +148,7 @@ class ImplicitTreap(T)
     @root = nil_node
     a.each do |v|
       node = Node(T).new(v)
-      @root = @root.try &.merge node || node
+      @root = @root.try &.merge(node) || node
     end
   end
 
