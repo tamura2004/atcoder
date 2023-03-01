@@ -31,15 +31,15 @@ class SegmentTree(T)
 
   # 一点更新、区間最大、要素数で初期化
   def self.max(n : Int)
-    values = Array.new(n) { T.zero }
-    new(values, unit: T.zero) do |x, y|
+    values = Array.new(n) { T::MIN }
+    new(values, unit: T::MIN) do |x, y|
       Math.max(x, y)
     end
   end
 
   # 一点更新、区間最大、要素で初期化
   def self.max(values : Array(T))
-    new(values, unit: T.zero) do |x, y|
+    new(values, unit: T::MIN) do |x, y|
       Math.max(x, y)
     end
   end

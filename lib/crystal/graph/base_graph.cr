@@ -59,6 +59,17 @@ class BaseGraph(V)
     end
   end
 
+  # 親の頂点リストを出力
+  def to_plist(origin = 1)
+    ans = Array.new(n, -1)
+    n.times do |v|
+      each(v) do |nv|
+        ans[nv] = v + origin
+      end
+    end
+    ans
+  end
+
   # s式で木を初期化
   def parse_sexp(s)
     return s if s.is_a?(Int32)
