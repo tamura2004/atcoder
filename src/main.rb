@@ -1,14 +1,8 @@
-ans = []
-19.times do |a|
-  19.times do |b|
-    19.times do |c|
-      19.times do |d|
-        cnt = 2 ** a * 3 ** b * 5 ** c * 7 ** d
-        next if 1e18 < cnt
-        ans << cnt
-      end
-    end
-  end
+# p = k * 2**m + 1
+def k_red(c)
+  return k * (c % 2 ** m) - c / 2 ** m
 end
 
-pp ans.size
+def k_red_2x(c)
+  return k ** 2 * (c % 2 ** m) - k * ((c / 2 ** m) % 2 ** m) + c / 2 ** (2 * m)
+end

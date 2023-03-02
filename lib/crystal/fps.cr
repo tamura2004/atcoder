@@ -1,110 +1,48 @@
-require "string_scanner"
+require "crystal/modint9"
+require "crystal/ntt"
 
-# 形式的べき級数のライブラリ
-module FPS
-  # 単項式
-  struct Term
-    getter index : Int32 # 指数
-    getter coeff : Int32 # 係数
+struct FPS
+  getter a : Array(ModInt)
+  delegate size, "[]", to: a
 
-    def initialize(sign, @coeff, @index)
-      @coeff *= sign
-    end
+  def initialize(a)
+    @a = a.map(&.to_m)
   end
 
-  # 多項式
-  struct Expr
-    getter terms : Array(Term)
-    delegate "<<", to: terms
-
-    def initialize
-      @terms = [] of Term
-    end
-
-    def to_a
-      max_index = terms.map(&.index).max
-      Array.new(max_index + 1, 0_i64).tap do |ans|
-        terms.each do |term|
-          ans[term.index] += term.coeff
-        end
-      end
-    end
+  def *(b : self)
+    FPS.new NTT.conv(a, b.a)
   end
 
-  # 有理式
-  struct RatExpr
-    getter numerator : Expr
-    getter denominator : Expr
-
-    def initialize(@numerator, @denominator)
+  {% for op in %w(+ -) %}
+    def {{op.id}}(b : self)
+      deg = Math.max(a.size, b.size)
+      ans = a.dup
+      while ans.size < deg
+        ans << 0.to_m
+      end
+      b.a.each_with_index do |v, i|
+        ans[i] {{op.id}}= v
+      end
+      FPS.new ans
     end
+  {% end %}
 
-    def to_pair
-      {numerator.to_a, denominator.to_a}
-    end
+  def *(b : Int | ModInt)
+    FPS.new a.map(&.*(b))
   end
 
-  # 多項式のパーサ
-  #
-  # <rat_expr> ::= <expr>/<expr>
-  # <expr> ::= <term>[<term>]*
-  # <term> ::= <sign><coeff><index>
-  # <sign> ::= [('+'|'-')]
-  # <coeff> ::= [<number>'*']
-  # <index> ::= ['x']['^'][<number>]
-  struct Parser
-    getter s : StringScanner
-    delegate scan, eos?, to: s
+  def inv
+    raise "定数項が０です（未定義エラー）" if @a[0].to_i64.zero?
+    # (g - Gi) ^ 2 = 0 (mod x ^ (2 ** (i + 1)))
+    # g^2 - 2gGi + Gi^2 = 0 (mod x ^ (2 ** (i + 1)))
+    # g - 2Gi + fGi^2 = 0 (mod x ^ (2 ** (i + 1)))
+    # Gi+1 = 2Gi - fGi^2 (mod x ^ (2 ** (i + 1)))
 
-    def initialize(s)
-      @s = StringScanner.new(s.gsub(/[\s\(\)]/, ""))
+    deg = Math.ilogb(Math.pw2ceil(a.size))
+    g = FPS.new([a[0].inv])
+    deg.times do
+      g = g * 2 - g * g * self
     end
-
-    # <rat_expr> ::= <expr>/<expr>
-    def rat_expr
-      RatExpr.new expr, expr
-    end
-
-    # <expr> ::= <term>[<term>]*
-    def expr
-      ans = Expr.new
-      while !eos? && !scan(/\//)
-        ans << term
-      end
-      ans
-    end
-
-    # <term> ::= <sign><coeff><index>
-    def term
-      Term.new sign, coeff, index
-    end
-
-    # <sign> ::= [('+'|'-')]
-    def sign
-      case
-      when scan(/\+/) then 1
-      when scan(/\-/) then -1
-      else                 1
-      end
-    end
-
-    # <coeff> ::= [<number>'*']
-    def coeff
-      number.tap { scan(/\*/) } || 1
-    end
-
-    # <index> ::= ['x']['^'][<number>]
-    def index
-      case
-      when scan(/x\^/) then number.not_nil!
-      when scan(/x/)   then 1
-      else                  0
-      end
-    end
-
-    # <number> ::= [0-9]+
-    def number
-      scan(/\d+/).try &.to_i
-    end
+    FPS.new g.a.first(size)
   end
 end
