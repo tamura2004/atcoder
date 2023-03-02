@@ -1,8 +1,41 @@
-# p = k * 2**m + 1
-def k_red(c)
-  return k * (c % 2 ** m) - c / 2 ** m
+def lcs(x, y)
+  m = x.length
+  n = y.length
+
+  # LCSの長さを保存するテーブルを初期化する
+  lcs_table = Array.new(m + 1) { Array.new(n + 1, 0) }
+
+  # 動的計画法によりLCSの長さを計算する
+  (1..m).each do |i|
+    (1..n).each do |j|
+      if x[i - 1] == y[j - 1]
+        lcs_table[i][j] = lcs_table[i - 1][j - 1] + 1
+      else
+        lcs_table[i][j] = [lcs_table[i - 1][j], lcs_table[i][j - 1]].max
+      end
+    end
+  end
+
+  # LCSの文字列を構築する
+  lcs_str = ""
+  i = m
+  j = n
+  while i > 0 && j > 0
+    if x[i - 1] == y[j - 1]
+      lcs_str = x[i - 1] + lcs_str
+      i -= 1
+      j -= 1
+    elsif lcs_table[i - 1][j] > lcs_table[i][j - 1]
+      i -= 1
+    else
+      j -= 1
+    end
+  end
+
+  return lcs_str
 end
 
-def k_red_2x(c)
-  return k ** 2 * (c % 2 ** m) - k * ((c / 2 ** m) % 2 ** m) + c / 2 ** (2 * m)
-end
+# サンプル実行
+x = "ABCBDAB"
+y = "BDCABA"
+puts lcs(x, y)  # => "BCBA"

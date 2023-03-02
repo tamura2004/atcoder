@@ -1,17 +1,7 @@
 require "crystal/graph"
-require "crystal/graph/i_graph"
 
 # 木の重心分解
 class CentroidDecomposition
-  class CentroidTree
-    include IGraph
-    getter g : IGraph
-    delegate n, m, both, origin, each_with_cost, to: g
-
-    def initialize(@g)
-    end
-  end
-
   getter g : IGraph
   delegate n, to: g
   getter enter : Array(Int32) # 重心の訪問順
@@ -117,7 +107,3 @@ class CentroidDecomposition
   end
 end
 
-g = Graph.new([-1, 1, 2, 3, 4, 5, 6, 7, 8])
-cd = CentroidDecomposition.new(g)
-cd.build!
-pp cd.centroid_tree
