@@ -6,7 +6,11 @@ struct FPS
   delegate size, "[]", to: a
 
   def initialize(a)
-    @a = a.map(&.to_m)
+    if a.is_a?(Array(ModInt))
+      @a = a
+    else
+      @a = a.map(&.to_m)
+    end
   end
 
   def *(b : self)
@@ -31,6 +35,10 @@ struct FPS
     FPS.new a.map(&.*(b))
   end
 
+  def first(n)
+    FPS.new a.first(n)
+  end
+
   def inv
     raise "定数項が０です（未定義エラー）" if @a[0].to_i64.zero?
     # (g - Gi) ^ 2 = 0 (mod x ^ (2 ** (i + 1)))
@@ -40,9 +48,10 @@ struct FPS
 
     deg = Math.ilogb(Math.pw2ceil(a.size))
     g = FPS.new([a[0].inv])
-    deg.times do
+    deg.times do |i|
       g = g * 2 - g * g * self
+      g = g.first(1 << (i + 1))
     end
-    FPS.new g.a.first(size)
+    g.first(size)
   end
 end

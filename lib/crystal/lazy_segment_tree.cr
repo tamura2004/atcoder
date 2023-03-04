@@ -3,7 +3,7 @@ require "crystal/i_segment_tree"
 # 遅延評価セグメント木
 class LazySegmentTree(X, A)
   alias I = Int::Signed
-  include ISegmentTree(X)
+  # include ISegmentTree(X)
 
   getter fxx : Proc(X, X, X)
   getter fxa : Proc(X, A, X)
