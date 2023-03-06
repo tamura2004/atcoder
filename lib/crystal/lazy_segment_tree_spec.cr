@@ -33,4 +33,25 @@ describe LazySegmentTree do
     st[1..] = 3_i64 # [2, 3, 3, 3]
     st[0..].should eq Tuple(Int64,Int64).new(11_i64, 6_i64)
   end
+
+  it "range add range max" do
+    st = LazySegmentTree(Int32,Int32).new(
+      values: [-1,-3,2,-5],
+      fxx: -> (x : Int32, y : Int32) {
+        Math.max(x, y)
+      },
+      fxa: -> (x : Int32, a : Int32) {
+        x + a
+      },
+      faa: -> (a : Int32, b : Int32) {
+        a + b
+      },
+      x_unit: Int32::MIN,
+      a_unit: 0
+    )
+
+    st[0..].should eq 2
+    st[1..] = -3
+    st[0..].should eq -1
+  end
 end
