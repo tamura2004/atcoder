@@ -55,3 +55,9 @@ struct FPS
     g.first(size)
   end
 end
+
+class Array(T)
+  def to_fps
+    FPS.new map(&.to_m)
+  end
+end
