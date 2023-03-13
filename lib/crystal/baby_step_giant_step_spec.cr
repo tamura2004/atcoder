@@ -1,8 +1,7 @@
 require "spec"
-require "crystal/number_theory/baby_step_giant_step"
-include NumberTheory
+require "crystal/baby_step_giant_step"
 
-describe NumberTheory::BabyStepGiantStep do
+describe BabyStepGiantStep do
   it "usage" do
     x = 3_i64
     y = 193_i64

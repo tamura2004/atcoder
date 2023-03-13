@@ -1,8 +1,7 @@
 require "spec"
 require "crystal/number_theory/partition_number"
-include NumberTheory
 
-describe NumberTheory::PartitionNumber do
+describe PartitionNumber do
   it "usage" do
     ans = [] of Array(Int64)
     PartitionNumber.each(4) do |a|

@@ -1,6 +1,5 @@
 require "spec"
-require "crystal/number_theory/prime_pythagorean_triple_iterator"
-include NumberTheory
+require "crystal/prime_pythagorean_triple_iterator"
 
 describe PrimePythagoreanTripleIterator do
   it "原始ピタゴラス数を列挙する" do

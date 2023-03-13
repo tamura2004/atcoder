@@ -1,4 +1,4 @@
-require "crystal/ntt_convolution"
+# require "crystal/ntt_convolution"
 require "crystal/fps"
 
 # n = gets.to_s.to_i64

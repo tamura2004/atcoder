@@ -50,6 +50,14 @@ struct ModInt
     end
   {% end %}
 
+  def succ
+    ModInt.new(self + 1)
+  end
+  
+  def pred
+    ModInt.new(self - 1)
+  end
+
   def //(b)
     self * b.to_m.inv
   end

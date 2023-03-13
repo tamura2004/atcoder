@@ -370,6 +370,11 @@ module Indexable(T)
       end
     end
   end
+
+  def to_avl
+    to_ordered_set
+  end
 end
 
+alias AVL = AVLTree
 alias OrderedSet = AVLTree

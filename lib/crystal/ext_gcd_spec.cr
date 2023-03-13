@@ -1,5 +1,5 @@
 require "spec"
-require "crystal/number_theory/ext_gcd"
+require "crystal/ext_gcd"
 
 describe "ext_gcd" do
   it "usage" do
