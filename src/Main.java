@@ -1,25 +1,12 @@
-import java.util.List;
-import java.util.ArrayList;
-import java.util.Optional;
-import java.util.stream.Stream;
-import java.util.stream.Collectors;
-import java.util.Collection;
-
 class Main {
   private static void execute(final IO io) throws Exception {
-    List<Integer> a = new ArrayList<>();
-    a.add(19);
-
-    Integer ans = solve(a);
-    if (null != ans) {
-      io.println(ans);
+    int a = io.nextInt();
+    int b = io.nextInt();
+    if (a == b / 2) {
+      io.println("Yes");
+    } else {
+      io.println("No");
     }
-  }
-
-  private static Integer solve(List<Integer> a) {
-    if (null == a) return null;
-    if (a.size() == 0) return null;
-    return a.get(0);
   }
 
   // これ以降入出力テンプレートにて修正不要

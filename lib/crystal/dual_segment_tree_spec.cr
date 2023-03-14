@@ -33,7 +33,7 @@ describe DualSegmentTree do
     st[1].should eq 1
     st[2].should eq 1
     st[3].should eq 0
-    
+
     st[1..4] = 1
 
     st[0].should eq 0
@@ -64,4 +64,15 @@ describe DualSegmentTree do
     # pp st
   end
 
+  it "区間chmin" do
+    st = DualSegmentTree(Int32).range_min([10,10,10,10,10])
+    st[1..2] = 3
+    st[2..3] = 2
+    st[1..4] = 5
+    st[0].should eq 10
+    st[1].should eq 3
+    st[2].should eq 2
+    st[3].should eq 2
+    st[4].should eq 5
+  end
 end
