@@ -1,9 +1,7 @@
-# a, x, m = gets.split.map(&:to_i)
-# if a == 1
-#   puts x % m
-# else
-#   mm = m * (a - 1)
-#   puts a.pow(x, mm).pred % mm / a.pred
-# end
+a = [3, 2, 1, 6, 5, 4]
+b = [0]
 
-pp (2 + 4) * 100 * 12
+a.each do |v|
+  b << b[-1] + v
+end
+pp b

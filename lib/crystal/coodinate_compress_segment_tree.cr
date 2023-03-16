@@ -1,15 +1,22 @@
 # 座標圧縮付セグ木
 #
 # ```
+# key => valueペアにおいて、keyが大きく稠密でないとき
+# 内部で座標圧縮してセグ木を利用する。
+# クエリ先読みをして予めkeyを設定する。
+# 初期値が有る場合はvaluesとして与える。
+# 初期値が無ければ、ゼロ値で初期化される。
+#
 # A = 100_000_000_i64
 # B = 200_000_000_i64
 # C = 300_000_000_i64
 # D = 400_000_000_i64
 # keys = [A, B, C, D]
-# values = [10_i64 ** 9] * 4
-# st = CCST.new(keys, values)
-# st[A].get(B, D)       # => 6
-# st.get(B, Int64::MAX) # => 14
+# values = [1, 2, 3, 4]
+# st = CCST.new(keys, values, unit: 0) { |x,y| x + y }
+# st[B..C] # => 5
+# st[B] = 7
+# st[B..C] # => 10
 # ```
 class CoodinateCompressSegmentTree(K, V)
   getter n : Int32
@@ -59,6 +66,10 @@ class CoodinateCompressSegmentTree(K, V)
     &fx : Proc(V, V, V)
   )
     initialize(keys, values, unit, fx)
+  end
+
+  def initialize(hash : Hash(K,V), unit : V, &fx : Proc(V,V,V))
+    initialize(hash.keys, hash.values, unit, fx)
   end
 
   def initialize(

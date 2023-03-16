@@ -2,15 +2,41 @@ require "spec"
 require "crystal/coodinate_compress_segment_tree"
 
 describe CoodinateCompressSegmentTree do
+  it "usage" do
+    a = 100_000_000_i64
+    b = 200_000_000_i64
+    c = 300_000_000_i64
+    d = 400_000_000_i64
+    keys = [a, b, c, d]
+    values = [1, 2, 3, 4]
+    st = CCST.new(keys, values, unit: 0) { |x, y| x + y }
+    st[b..c].should eq 5
+    st[b] = 7
+    st[b..c].should eq 10
+  end
+
+  it "initialize with hash" do
+    hash = {
+      100_000_000_i64 => 1,
+      200_000_000_i64 => 2,
+      300_000_000_i64 => 3
+    }
+    st = CCST.new(hash, unit: 0) { |x, y| x + y }
+    st[200_000_000_i64..300_000_000_i64].should eq 5
+  end
+
   it "usage, default range sum" do
-    st = CCST(Int32, Int32).new([1, 100, 1000])
+    # valuesを省略した場合はゼロで初期化
+    st = CCST(Int32, Int32).new(keys: [1, 100, 1000])
     st[100] += 200
     st[1000] += 2000
     st[..1000].should eq 2200
   end
 
   it "init with values" do
-    st = CCST(Int32, Int32).new([1, 100, 1000], values: [2, 20, 200])
+    st = CCST(Int32, Int32).new(keys: [1, 100, 1000], values: [2, 20, 200], unit: 0) do |x, y|
+      x + y
+    end
     st[..1000].should eq 222
     st[1...1000].should eq 22
   end
@@ -44,7 +70,7 @@ describe CoodinateCompressSegmentTree do
     keys = [10_000_000, 20_000_000, 30_000_000]
     values = [{1, 2}, {2, 3}, {3, 4}]
     unit = {1, 0}
-    st = CCST(Int32, Tuple(Int32,Int32)).new(keys, values, unit) do |(x0, x1), (y0, y1)|
+    st = CCST(Int32, Tuple(Int32, Int32)).new(keys, values, unit) do |(x0, x1), (y0, y1)|
       {x0 * y0, x1 * y0 + y1}
     end
     st[10_000_000..30_000_000].should eq ({6, 25})
