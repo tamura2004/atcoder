@@ -1,4 +1,5 @@
 require "crystal/indexable"
+require "crystal/string/suffix_array"
 
 # 文字列アルゴリズム
 class String
