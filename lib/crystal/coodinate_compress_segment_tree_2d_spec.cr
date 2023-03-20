@@ -55,12 +55,12 @@ describe CoodinateCompressSegmentTree do
 
     st[10, 10] = 10
     st[30, 30] = 20
-    st[..5,..5].should eq 0
-    st[..10,..10].should eq 10
-    st[..30,..30].should eq 30
-    st[11...30,11...30].should eq 0
-    st[11..30,11..30].should eq 20
-    st[30..,30..].should eq 20
-    st[31..,31..].should eq 0
+    st[..5, ..5].should eq 0
+    st[..10, ..10].should eq 10
+    st[..30, ..30].should eq 30
+    st[11...30, 11...30].should eq 0
+    st[11..30, 11..30].should eq 20
+    st[30.., 30..].should eq 20
+    st[31.., 31..].should eq 0
   end
 end
