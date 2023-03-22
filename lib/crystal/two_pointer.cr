@@ -1,0 +1,2 @@
+class TwoPointer
+end
