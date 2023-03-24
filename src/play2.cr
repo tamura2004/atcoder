@@ -1,31 +1,51 @@
-class Node
-  @lo : Node
-  @hi : Node
+class Node(T)
+  property lch : Node(T) | NilNode(T).class
+  property rch : Node(T) | NilNode(T).class
+  getter val : T
 
-  def initialize
-    @lo = @hi = NilNode.instance
+  def initialize(@val : T)
+    @lch = @rch = NilNode(T)
   end
 
-  def nil_node?
-    false
+  def insert(v)
+    if v < val
+      @lch = lch.insert(v)
+    else
+      @rch = rch.insert(v)
+    end
+  end
+
+  def <<(v)
+    insert(v)
+  end
+
+  #     y          X
+  #    / \        / \
+  #   X   C  ->  A   Y
+  #  / \            / \
+  # A   B          B   C
+  def rot_r
+    lch.rch, @lch = self, lch.rch
+  end
+
+  def rot_l
+    rch.lch, @rch = self, rch.lch
   end
 end
 
-class NilNode < Node
-  def self.instance
-    @@instance ||= NilNode.new
+class NilNode(T)
+  def self.insert(v)
+    Node.new(v)
   end
 
-  def initialize
-    @lo = uninitialized Node
-    @hi = uninitialized Node
-    @lo = @hi = self
-  end
-
-  def nil_node?
-    true
-  end
+  {% for op in %w(rch lch) %}
+    def self.{{op.id}}; self; end
+    def self.{{op.id}}=(v); end
+  {% end %}
 end
 
-n = Node.new
-pp n
+root = Node.new(20)
+root << 10
+root << 30
+root.rot_r
+pp root

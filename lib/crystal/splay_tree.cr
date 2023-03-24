@@ -1,33 +1,22 @@
-class Node
-  getter lo : Node
-  getter hi : Node
-  getter up : Node
-  getter v : String
+enum St
+  Top
+  Lo
+  Hi
+end
 
-  enum St
-    Top
-    Lo
-    Hi
-  end
+class Node(K)
+  property lo : Node(K) | NilNode(K).class
+  property hi : Node(K) | NilNode(K).class
+  property up : Node(K) | NilNode(K).class
+  getter v : K
+
 
   def initialize(@v)
-    @lo = @hi = @up = NilNode.instance
+    @lo = @hi = @up = NilNode(K)
   end
 
   def nil_node?
     false
-  end
-
-  def lo=(node)
-    @lo, node.up = node, self
-  end
-
-  def hi=(node)
-    @hi, node.up = node, self
-  end
-
-  def up=(node)
-    @up = node
   end
 
   def state
@@ -50,9 +39,7 @@ class Node
   #   +--+        +--+
   #
   def zig
-    if up = @up
-      @up, up.up, hi.up, @hi, up.lo = up.up, self, up, up, hi
-    end
+    up.up, hi.up, up.lo, @hi, @up = self, up, hi, up, up.up
   end
 
   # rotate left = zag
@@ -71,9 +58,7 @@ class Node
   # +--+          +--+
   #
   def zag
-    if up = @up
-      @up, up.up, lo.up, @lo, up.hi = up.up, self, up, up, lo
-    end
+    up.up, lo.up, up.hi, @lo, @up = self, up, lo, up, up.up
   end
 
   def to_s(io)
@@ -86,37 +71,43 @@ class Node
   end
 end
 
-class NilNode < Node
-  def self.instance
-    @@instance ||= NilNode.new
+class NilNode(K)
+  def self.v
+    K.zero
   end
 
-  def initialize
-    @lo = uninitialized Node
-    @hi = uninitialized Node
-    @up = uninitialized Node
-    @v = "."
-    @lo = @hi = @up = self
+  {% for op in %w(up lo hi) %}
+    def self.{{op.id}}; self; end
+    def self.{{op.id}}=(v); end
+  {% end %}
+
+  def self.inspect
+    "."
   end
 
-  def nil_node?
+  def self.to_s(io)
+    io << inspect
+  end
+
+  def self.state
+    St::Top
+  end
+
+  def self.nil_node?
     true
-  end
-
-  def lo=(node)
-  end
-
-  def hi=(node)
-  end
-
-  def up=(node)
   end
 end
 
-class SplayTree
-  getter root : Node
+class SplayTree(K)
+  getter root : Node(K)
 
   def initialize(v)
-    @root = Node.new(v)
+    @root = Node(K).new(v)
+  end
+end
+
+class String
+  def self.zero
+    "."
   end
 end
