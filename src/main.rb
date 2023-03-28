@@ -1,62 +1,74 @@
 class Node
-  attr_accessor :rch, :lch, :val
+  EQ = 0
+  GT = 1
+  LT = -1
 
-  def initialize(v)
-    @val = v
-    @rch = nil
+  attr_accessor :lch, :rch, :val
+
+  def initialize(val)
+    @val = val
     @lch = nil
+    @rch = nil
   end
 
-  def right_rotate
-    y = x.lch
-    x.lch = y.rch
-    y.rch = x
-    y
+  def rot_r
+    return self if lch.nil?
+    piv = lch
+    @lch = piv.rch
+    piv.rch = self
+    piv
   end
 
-  def left_rotate
-    y = x.rch
-    x.rch = y.lch
-    y.lch = x
-    y
+  def rot_l
+    return self if rch.nil?
+    piv = rch
+    @rch = piv.lch
+    piv.lch = self
+    piv
   end
 
   def splay(v)
-    return self if val == v
-    if v < val
-      if lch.nil?
-        return self
-      elsif v < lch.val
-        x.lch.lch = splay(x.lch.lch, v)
-        x = right_rotate(x)
-      elsif x.lch.val < v
-        x.lch.rch = splay(x.lch.rch, v)
-        if !x.lch.rch.nil?
-          x.lch = left_rotate(x.lch)
-        end
+    case v <=> val
+    when EQ
+      self
+    when LT
+      return self if lch.nil?
+      case v <=> lch.val
+      when EQ then rot_r
+      when LT
+        lch.lch = lch.lch.splay(v)
+        rot_r.rot_r
+      when GT
+        lch.rch = lch.rch.splay(v)
+        @lch = lch.rot_l
+        rot_r
       end
-      return x.lch.nil? ? x : right_rotate(x)
-    else
-      if x.rch.nil?
-        return x
-      elsif v < x.rch.val
-        x.rch.lch = splay(x.rch.lch, v)
-        if !x.rch.lch.nil?
-          x.rch = right_rotate(x.rch)
-        end
-      else
-        x.rch.rch = splay(x.rch.rch, v)
-        x = left_rotate(x)
+    when GT
+      return self if rch.nil?
+      case v <=> rch.val
+      when EQ then rot_l
+      when GT
+        rch.rch = rch.rch.splay(v)
+        rot_l.rot_l
+      when LT
+        rch.lch = rch.lch.splay(v)
+        @rch = rch.rot_r
+        rot_l
       end
-      return x.rch.nil? ? x : left_rotate(x)
     end
+  end
+
+  def to_s
+    "(#{val} #{lch} #{rch})"
   end
 end
 
-up = Node.new(1)
-me = Node.new(2)
-hi = Node.new(3)
+y = Node.new(10)
+x = Node.new(20)
+z = Node.new(15)
+y.rch = x
+x.lch = z
+puts z
+y.splay(11)
 
-up.lch = me
-me.rch = hi
-up.splay(3)
+puts z

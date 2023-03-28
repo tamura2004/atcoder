@@ -1,51 +1,115 @@
 class Node(T)
-  property lch : Node(T) | NilNode(T).class
-  property rch : Node(T) | NilNode(T).class
+  EQ =  0
+  GT =  1
+  LT = -1
+
+  property lch : Node(T)?
+  property rch : Node(T)?
   getter val : T
 
   def initialize(@val : T)
-    @lch = @rch = NilNode(T)
+    @lch = @rch = nil.as(Node(T)?)
   end
 
-  def insert(v)
-    if v < val
-      @lch = lch.insert(v)
-    else
-      @rch = rch.insert(v)
-    end
-  end
-
-  def <<(v)
-    insert(v)
-  end
-
+  # Xを軸(pivot)として右回転
+  #
   #     y          X
   #    / \        / \
   #   X   C  ->  A   Y
   #  / \            / \
   # A   B          B   C
   def rot_r
-    lch.rch, @lch = self, lch.rch
+    if piv = lch
+      @lch = piv.rch
+      piv.rch = self
+      piv
+    else
+      self
+    end
   end
 
+  # Xを軸(pivot)として左回転
+  #
+  #   Y            X
+  #  / \          / \
+  # A   X   ->   Y   C
+  #    / \      / \
+  #   B   C    A   B
   def rot_l
-    rch.lch, @rch = self, rch.lch
+    if piv = rch
+      @rch = piv.lch
+      piv.lch = self
+      piv
+    else
+      self
+    end
+  end
+
+  def splay(v)
+    case v <=> val
+    when EQ then self
+    when LT
+      if ch = lch
+        case v <=> ch.val
+        when EQ then rot_r
+        when LT
+          if gch = ch.lch
+            ch.lch = gch.splay(v)
+            rot_r.rot_r
+          else
+            rot_r
+          end
+        else
+          if gch = ch.rch
+            ch.rch = gch.splay(v)
+            @lch = ch.rot_l
+            rot_r
+          else
+            rot_r
+          end
+        end
+      else
+        self
+      end
+    else
+      if ch = rch
+        case v <=> ch.val
+        when EQ then rot_l
+        when GT
+          if gch = ch.rch
+            ch.rch = gch.splay(v)
+            rot_l.rot_l
+          else
+            rot_l
+          end
+        else
+          if gch = ch.lch
+            ch.lch = gch.splay(v)
+            @rch = ch.rot_r
+            rot_l
+          else
+            rot_l
+          end
+        end
+      else
+        self
+      end
+    end
+  end
+
+  def to_s(io)
+    io << "(#{val} #{lch} #{rch})"
   end
 end
 
-class NilNode(T)
-  def self.insert(v)
-    Node.new(v)
-  end
+z = Node.new(30)
+y = Node.new(20)
+x = Node.new(10)
+z.lch = y
+y.lch = x
 
-  {% for op in %w(rch lch) %}
-    def self.{{op.id}}; self; end
-    def self.{{op.id}}=(v); end
-  {% end %}
-end
-
-root = Node.new(20)
-root << 10
-root << 30
-root.rot_r
-pp root
+puts z
+puts x
+z.splay(10)
+puts z
+puts x

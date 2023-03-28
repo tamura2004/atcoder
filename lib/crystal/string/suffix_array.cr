@@ -1,20 +1,39 @@
-module Indexable(T)
+# 接尾辞配列
+#
+# s = "abcba"
+# suffix_array = すべての接尾辞を昇順に並べたものまたはそのインデックス
+# 0, 5, ""
+# 1, 4, "a"
+# 2, 0, "abcba"
+# 3, 3, "ba"
+# 4, 1, "bcbaa"
+# 5, 2, "cba"
+# sa = [5,4,0,3,1,2]
+# rank = [2,4,5,3,1,0]
+# lcp = [0,1,0,1,0,0]
+#
+class SuffixArray
+  getter a : Array(Int32)
+  getter sa : Array(Int32)   # 接尾辞配列
+  getter rank : Array(Int32) # 順位
+  getter lcp : Array(Int32)  # 最長共通接頭辞の長さ
+  delegate size, to: a
 
-  # 接尾辞配列マクロ
-  macro get_rank(i)
-    rank[{{i}}]? || -1
+  def initialize(s : String)
+    @a = s.chars.map(&.ord)
+    initialize(@a)
   end
 
-  # 接尾辞配列マクロ
-  macro cost(i, k)
-    { get_rank({{i}}), get_rank({{i}}+{{k}}) }
+  def initialize(@a : Array(Int32))
+    @rank = Array.new(size.succ) do |i|
+      i == size ? -1 : a[i]
+    end
+    @sa = Array.new(size.succ, &.itself)
+    @lcp = Array.new(size.succ, 0)
   end
 
-  # 接尾辞配列と順位を返す
-  def suffix_array
-    rank = (0..size).map { |i| i == size ? -1 : self[i] }
-    tmp = [-1] * (size + 1)
-    sa = (0..size).map(&.itself)
+  def solve
+    tmp = Array.new(size.succ, -1)
 
     k = 1
     while k <= size
@@ -32,33 +51,6 @@ module Indexable(T)
       k *= 2
     end
 
-    return {sa, rank}
-  end
-
-  # 接尾辞配列を用いた検索
-  def sa_contain
-    sa, rank = suffix_array
-    ->(t : self) do
-      lo = 0
-      hi = size
-
-      while hi - lo > 1
-        mid = (lo + hi) // 2
-        if self[sa[mid], t.size] < t
-          lo = mid
-        else
-          hi = mid
-        end
-      end
-
-      self[sa[hi], t.size] == t
-    end
-  end
-
-  # 高さ配列*lcp*と接尾辞配列*sa*,*sa*内順位*rank*を求める
-  def lcp
-    sa, rank = suffix_array
-
     h = 0
     lcp = [0] * (size + 1)
 
@@ -67,13 +59,40 @@ module Indexable(T)
       h -= 1 if h > 0
 
       while j + h < size && i + h < size
-        break if self[j + h] != self[i + h]
+        break if a[j + h] != a[i + h]
         h += 1
       end
 
       lcp[rank[i] - 1] = h
     end
 
-    return {lcp, sa, rank}
+    {sa, rank, lcp}
+  end
+
+  # 接尾辞配列を用いた検索
+  def includes?(t)
+    lo = 0
+    hi = size
+
+    while hi - lo > 1
+      mid = (lo + hi) // 2
+      if a[sa[mid], t.size] < t
+        lo = mid
+      else
+        hi = mid
+      end
+    end
+
+    a[sa[hi], t.size] == t
+  end
+
+  # 接尾辞配列マクロ
+  def get_rank(i)
+    rank[i]? || -1
+  end
+
+  # 接尾辞配列マクロ
+  def cost(i, k)
+    { get_rank(i), get_rank(i+k) }
   end
 end
