@@ -22,6 +22,7 @@ class Node(T)
     return self if v == val
     i = dir(v)
     ch[i].try do |x|
+      return rot(i) if v == x.val
       j = x.dir(v)
       x.ch[j].try do |y|
         x.ch[j] = y.splay(v)
@@ -34,4 +35,8 @@ class Node(T)
       end || rot(i)
     end || self
   end
+
+  def to_s(io)
+    io << "(#{ch[0]} #{val} #{ch[1]})"
+  end    
 end

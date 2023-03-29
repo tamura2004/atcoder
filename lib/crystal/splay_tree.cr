@@ -1,87 +1,100 @@
-class Node(T)
-  EQ =  0
-  GT =  1
-  LT = -1
+class SplayTree(T)
+  getter root : Node(T)?
+  property multiset : Bool
 
-  property lch : Node(T)?
-  property rch : Node(T)?
-  getter val : T
-
-  def initialize(@val : T)
-    @lch = @rch = nil.as(Node(T)?)
+  def initialize
+    @root = nil.as(Node(T)?)
+    @multiset = false
   end
 
-  # Xを軸(pivot)として右回転
-  #
-  #     y          X
-  #    / \        / \
-  #   X   C  ->  A   Y
-  #  / \            / \
-  # A   B          B   C
-  def rot_r
-    lch.try do |piv|
-      @lch = piv.rch
-      piv.rch = self
-      piv
-    end || self
-  end
-
-  # Xを軸(pivot)として左回転
-  #
-  #   Y            X
-  #  / \          / \
-  # A   X   ->   Y   C
-  #    / \      / \
-  #   B   C    A   B
-  def rot_l
-    rch.try do |piv|
-      @rch = piv.lch
-      piv.lch = self
-      piv
-    end || self
-  end
-
-  def splay(v)
-    case v <=> val
-    when EQ then self
-    when LT
-      lch.try do |ch|
-        case v <=> ch.val
-        when EQ then rot_r
-        when LT
-          ch.lch.try do |gch|
-            ch.lch = gch.splay(v)
-            rot_r.rot_r
-          end || rot_r
-        else
-          ch.rch.try do |gch|
-            ch.rch = gch.splay(v)
-            @lch = ch.rot_l
-            rot_r
-          end || rot_r
-        end
-      end || self
-    else
-      rch.try do |ch|
-        case v <=> ch.val
-        when EQ then rot_l
-        when GT
-          ch.rch.try do |gch|
-            ch.rch = gch.splay(v)
-            rot_l.rot_l
-          end || rot_l
-        else
-          ch.lch.try do |gch|
-            ch.lch = gch.splay(v)
-            @rch = ch.rot_r
-            rot_l
-          end || rot_l
-        end
-      end || self
+  def insert(v : T)
+    node = Node(T).new(v)
+    root.try do |x|
+      y = x.splay(v)
+      i = y.dir(v)
+      node.ch[i] = y.ch[i]
+      y.ch[i] = nil
+      node.ch[i^1] = y
     end
+    @root = node
+  end
+
+  def <<(v : T)
+    insert(v)
   end
 
   def to_s(io)
-    io << "(#{val} #{lch} #{rch})"
+    io << root.to_s
   end
+end
+
+class Node(T)
+  getter ch : StaticArray(Node(T)?, 2)
+  getter val : T
+
+  def initialize(@val : T)
+    @ch = StaticArray(Node(T)?, 2).new { nil }
+  end
+
+  # b = 0 | left
+  # b = 1 | right
+  def rot(b)
+    ch[b].try do |piv|
+      ch[b] = piv.ch[b^1]
+      piv.ch[b^1] = self
+      piv
+    end || self
+  end
+
+  @[AlwaysInline]
+  def dir(v)
+    v <= val ? 0 : 1
+  end
+
+  #      N
+  #    i/ \
+  #    X
+  #  j/ \
+  #  Y
+  # / \
+  def splay(v)
+    return self if v == val
+    i = dir(v)
+    ch[i].try do |x|
+      # zig
+      return rot(i) if v == x.val
+      j = x.dir(v)
+      x.ch[j].try do |y|
+        x.ch[j] = y.splay(v)
+        if i == j
+          # zig-zig
+          rot(i).rot(i)
+        else
+          # zig-zag
+          ch[i] = x.rot(i^1)
+          rot(i)
+        end
+      end || rot(i)
+    end || self
+  end
+
+  def min
+    ch[0].try do |x|
+      x.min
+    end || self
+  end
+
+  def max
+    ch[1].try do |x|
+      x.max
+    end || self
+  end
+
+  def minmax(b)
+    b == 0 ? min : max
+  end
+
+  def to_s(io)
+    io << "(#{ch[0]} #{val} #{ch[1]})"
+  end    
 end
