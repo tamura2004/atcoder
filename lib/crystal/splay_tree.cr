@@ -7,6 +7,24 @@ class SplayTree(T)
     @multiset = false
   end
 
+  def initialize(@root : Node(T)?)
+    @multiset = false
+  end
+
+  def split(v : T, eq = true)
+    splay(v).try do |x|
+      x.rot(0) if v < x.val || (v == x.val && !eq)
+      y = x.ch[1]
+      x.ch[1] = nil
+      @root = x.update
+      SplayTree(T).new(y)
+    end || SplayTree(T).new
+  end
+
+  def |(v : T, eq = true)
+    split(v, eq)
+  end
+
   def insert(v : T)
     node = Node(T).new(v)
     root.try do |x|
@@ -14,9 +32,9 @@ class SplayTree(T)
       i = y.dir(v)
       node.ch[i] = y.ch[i]
       y.ch[i] = nil
-      node.ch[i^1] = y
+      node.ch[i ^ 1] = y.update
     end
-    @root = node
+    @root = node.update
   end
 
   def <<(v : T)
@@ -26,24 +44,47 @@ class SplayTree(T)
   def to_s(io)
     io << root.to_s
   end
+
+  def splay(v : T)
+    @root = root.try &.splay(v)
+  end
+
+  def rot(i)
+    @root = root.try &.rot(i)
+  end
+
+  def to_a
+    root.try &.to_a || [] of T
+  end
+
+  def size
+    root.try &.size || 0
+  end
 end
 
 class Node(T)
   getter ch : StaticArray(Node(T)?, 2)
   getter val : T
+  getter size : Int32
 
   def initialize(@val : T)
     @ch = StaticArray(Node(T)?, 2).new { nil }
+    @size = 1
   end
 
-  # b = 0 | left
-  # b = 1 | right
-  def rot(b)
-    ch[b].try do |piv|
-      ch[b] = piv.ch[b^1]
-      piv.ch[b^1] = self
-      piv
+  # i = 0 | left
+  # i = 1 | right
+  def rot(i)
+    ch[i].try do |x|
+      ch[i] = x.ch[i ^ 1]
+      x.ch[i ^ 1] = update
+      x.update
     end || self
+  end
+
+  def update
+    @size = ch.sum { |c| c.try(&.size) || 0 }.succ
+    self
   end
 
   @[AlwaysInline]
@@ -71,7 +112,7 @@ class Node(T)
           rot(i).rot(i)
         else
           # zig-zag
-          ch[i] = x.rot(i^1)
+          ch[i] = x.rot(i ^ 1)
           rot(i)
         end
       end || rot(i)
@@ -90,11 +131,15 @@ class Node(T)
     end || self
   end
 
-  def minmax(b)
-    b == 0 ? min : max
+  def minmax(i)
+    i == 0 ? min : max
   end
 
   def to_s(io)
     io << "(#{ch[0]} #{val} #{ch[1]})"
-  end    
+  end
+
+  def to_a
+    (ch[0].try &.to_a || [] of T) + [val] + (ch[1].try &.to_a || [] of T)
+  end
 end

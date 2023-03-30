@@ -1,3 +1,8 @@
+# 乱択を利用した平衡二分探索木
+#
+# 遅延評価
+# 区間更新、区間最小
+# 区間反転、区間ローテート
 class ImplicitTreap(T)
   alias Rng = Range(Int::Primitive?, Int::Primitive?)
 
