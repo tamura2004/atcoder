@@ -42,43 +42,27 @@ describe Node do
     x.to_s.should eq "( x (( xx ) y ))"
   end
 
-  it "insert ans size" do
-    st = SplayTree(Int32).new
-    10.times do |i|
-      st << rand(100)
-    end
-    st.size.should eq 10
+  it "split" do
+    x = Node(String).new("x")
+    y = Node(String).new("y")
+    z = Node(String).new("z")
+    x.ch[1] = y
+    y.ch[1] = z
+    lo = SplayTree(String).new(x)
+    hi = lo | "y"
+    lo.to_a.should eq ["x", "y"]
+    hi.to_a.should eq ["z"]
   end
 
   it "split" do
-    left = SplayTree(Int32).new
-    left << 10
-    left << 20
-    left << 30
-    right = left.split(20)
-    left.to_a.should eq [10, 20]
-    right.to_a.should eq [30]
+    x = Node(String).new("x")
+    y = Node(String).new("y")
+    z = Node(String).new("z")
+    x.ch[1] = y
+    y.ch[1] = z
+    lo = SplayTree(String).new(x)
+    hi = lo | "a"
+    lo.to_a.should eq [] of String
+    hi.to_a.should eq ["x", "y","z"]
   end
-
-  it "split less" do
-    left = SplayTree(Int32).new
-    left << 10
-    left << 20
-    left << 30
-    right = left.split(20, eq: false)
-    left.to_a.should eq [10]
-    right.to_a.should eq [20, 30]
-  end
-
-  it "split" do
-    left = SplayTree(Int32).new
-    left << 10
-    left << 20
-    left << 30
-    right = left | 20
-    left.to_a.should eq [10, 20]
-    right.to_a.should eq [30]
-  end
-
-
 end

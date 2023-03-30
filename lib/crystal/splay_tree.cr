@@ -14,31 +14,20 @@ class SplayTree(T)
   def split(v : T, eq = true)
     splay(v).try do |x|
       x.rot(0) if v < x.val || (v == x.val && !eq)
-      y = x.ch[1]
-      x.ch[1] = nil
-      @root = x.update
-      SplayTree(T).new(y)
+      if v < x.val || (v == x.val && !eq)
+        @root = nil
+        SplayTree(T).new(x)
+      else
+        y = x.ch[1]
+        x.ch[1] = nil
+        @root = x.update
+        SplayTree(T).new(y)
+      end
     end || SplayTree(T).new
   end
 
   def |(v : T, eq = true)
     split(v, eq)
-  end
-
-  def insert(v : T)
-    node = Node(T).new(v)
-    root.try do |x|
-      y = x.splay(v)
-      i = y.dir(v)
-      node.ch[i] = y.ch[i]
-      y.ch[i] = nil
-      node.ch[i ^ 1] = y.update
-    end
-    @root = node.update
-  end
-
-  def <<(v : T)
-    insert(v)
   end
 
   def to_s(io)
@@ -72,8 +61,7 @@ class Node(T)
     @size = 1
   end
 
-  # i = 0 | left
-  # i = 1 | right
+  # 回転
   def rot(i)
     ch[i].try do |x|
       ch[i] = x.ch[i ^ 1]
@@ -92,12 +80,7 @@ class Node(T)
     v <= val ? 0 : 1
   end
 
-  #      N
-  #    i/ \
-  #    X
-  #  j/ \
-  #  Y
-  # / \
+  # splay操作
   def splay(v)
     return self if v == val
     i = dir(v)
