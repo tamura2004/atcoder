@@ -11,23 +11,53 @@ class SplayTree(T)
     @multiset = false
   end
 
-  def split(v : T, eq = true)
-    splay(v).try do |x|
-      x.rot(0) if v < x.val || (v == x.val && !eq)
-      if v < x.val || (v == x.val && !eq)
-        @root = nil
-        SplayTree(T).new(x)
-      else
-        y = x.ch[1]
-        x.ch[1] = nil
-        @root = x.update
-        SplayTree(T).new(y)
-      end
+  def initialize(v : T)
+    @root = Node.new(v)
+    @multiset = false
+  end
+
+  # 自身を破壊的に左木に分割し右木を返す
+  def split(v : T, eq = true) : SplayTree(T)
+    root.try do |x|
+      x, y = x.split(v, eq)
+      @root = x
+      SplayTree(T).new(y)
     end || SplayTree(T).new
   end
 
-  def |(v : T, eq = true)
-    split(v, eq)
+  def |(v : T) : SplayTree(T)
+    split(v, true)
+  end
+
+  def /(v : T) : SplayTree(T)
+    split(v, false)
+  end
+
+  # 木の結合
+  def merge(b : SplayTree(T)) : SplayTree(T)
+    @root = root.try(&.merge(b.root)) || b.root
+    self
+  end
+
+  def +(b : SplayTree)
+    merge(b)
+  end
+
+  # 値の挿入
+  def insert(v : T)
+    hi = self | v
+    self + SplayTree(T).new(v) + hi
+  end
+
+  def <<(v : T)
+    insert(v)
+  end
+
+  # 値の削除
+  def delete(v : T)
+    mid = self | v
+    hi = mid / v
+    self + hi
   end
 
   def to_s(io)
@@ -70,18 +100,20 @@ class Node(T)
     end || self
   end
 
+  # 更新
   def update
     @size = ch.sum { |c| c.try(&.size) || 0 }.succ
     self
   end
 
+  # 大小判定
   @[AlwaysInline]
   def dir(v)
     v <= val ? 0 : 1
   end
 
   # splay操作
-  def splay(v)
+  def splay(v : T)
     return self if v == val
     i = dir(v)
     ch[i].try do |x|
@@ -100,6 +132,46 @@ class Node(T)
         end
       end || rot(i)
     end || self
+  end
+
+  # 分割
+  def split(v : T, eq = true)
+    x = splay(v)
+    if v < x.val || (v == x.val && eq)
+      y = x.ch[0]
+      x.ch[0] = nil
+      {y, x.update}
+    else
+      y = x.ch[1]
+      x.ch[1] = nil
+      {x.update, y}
+    end
+  end
+
+  # 以下と超えるで分割
+  def /(v : T, eq = false)
+    split(v, eq)
+  end
+
+  # 未満と以上で分割
+  def |(v : T, eq = true)
+    split(v, eq)
+  end
+
+  # 結合
+  def merge(y : Node(T)?)
+    x = splay(max.val)
+    x.ch[1] = y
+    x.update
+  end
+
+  # mergeのalias
+  def +(y : Node(T)?)
+    merge(y)
+  end
+
+  def <<(v : T)
+    insert(v)
   end
 
   def min
