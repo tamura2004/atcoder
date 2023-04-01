@@ -1,6 +1,7 @@
 require "spec"
 require "crystal/baby_step_giant_step"
 
+# あるx,y,mについて x ^ k = y (mod m)となるkを求める
 describe BabyStepGiantStep do
   it "usage" do
     x = 3_i64
