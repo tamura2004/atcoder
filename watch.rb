@@ -199,7 +199,7 @@ class Task
         next
       end
 
-      cmd = path.extname == ".cr" ? "crystal spec #{src}" : "ruby #{src}"
+      cmd = path.extname == ".cr" ? "crystal spec --error-trace #{src}" : "ruby #{src}"
       o, e, s = Open3.capture3(cmd)
       if o =~ /0 failures, 0 errors/
         success o

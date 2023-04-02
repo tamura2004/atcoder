@@ -41,7 +41,7 @@ class CC(T)
   end
 end
 
-module Indexable(T)
+class Array(T)
   def to_cc
     CC(T).new(self)
   end

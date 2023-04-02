@@ -161,11 +161,11 @@ struct Complex(T)
   end
 
   def inspect
-    "#{y}.y+#{x}.x"
+    "#{x}.x+#{y}.y"
   end
 
-  def to_s
-    "#{y}.y+#{x}.x"
+  def to_s(io)
+    io << inspect
   end
 
   def pred

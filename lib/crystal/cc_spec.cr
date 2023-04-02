@@ -15,6 +15,20 @@ describe CC do
     cc.index(25, eq: true).should eq 2
     cc.index(25, eq: false).should eq 2
   end
+  
+  it "to cc" do
+    cc = [10, 20].to_cc
+    cc.index(0, eq: true).should eq 0
+    cc.index(0, eq: false).should eq 0
+    cc.index(10, eq: true).should eq 0
+    cc.index(10, eq: false).should eq 1
+    cc.index(15, eq: true).should eq 1
+    cc.index(15, eq: false).should eq 1
+    cc.index(20, eq: true).should eq 1
+    cc.index(20, eq: false).should eq 2
+    cc.index(25, eq: true).should eq 2
+    cc.index(25, eq: false).should eq 2
+  end
 
   it "range to tuple" do
     cc = CC.new(keys: [10, 20])
