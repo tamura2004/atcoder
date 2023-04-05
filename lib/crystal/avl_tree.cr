@@ -32,6 +32,7 @@ class AVLTree(T)
   # tr.lower(4)            # => 3
   # tr.lower(5)            # => 5
   # tr.lower(5, eq: false) # => 3
+  # tr.lower(0)            # => nil
   # ```
   def lower(v, eq = true)
     @root.try &.lower(v, eq)
@@ -48,6 +49,12 @@ class AVLTree(T)
   end
 
   # v以上（より大きい）の最小値
+  # ```
+  # tr = [1, 3, 5, 7].to_ordered_set
+  # tr.upper(8)            # => nil
+  # tr.upper(5)            # => 7
+  # tr.upper(5, eq: false) # => 5
+  # ```
   def upper(v, eq = true)
     @root.try &.upper(v, eq)
   end

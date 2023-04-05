@@ -1,42 +1,18 @@
-class Node(T)
-  getter ch : StaticArray(Node(T)?, 2)
-  getter val : T
+require "crystal/segment_tree"
 
-  def initialize(@val : T)
-    @ch = StaticArray(Node(T)?, 2).new { nil }
-  end
-
-  def rot(b)
-    ch[b].try do |piv|
-      ch[b] = piv.ch[b^1]
-      piv.ch[b^1] = self
-      piv
-    end || self
-  end
-
-  def dir(v)
-    v <= val ? 0 : 1
-  end
-
-  def splay(v)
-    return self if v == val
-    i = dir(v)
-    ch[i].try do |x|
-      return rot(i) if v == x.val
-      j = x.dir(v)
-      x.ch[j].try do |y|
-        x.ch[j] = y.splay(v)
-        if i == j
-          rot(i).rot(i)
-        else
-          ch[i] = x.rot(i^1)
-          rot(i)
-        end
-      end || rot(i)
-    end || self
-  end
-
-  def to_s(io)
-    io << "(#{ch[0]} #{val} #{ch[1]})"
-  end    
+alias T = Tuple(Int64,Int64,Int64)
+fx =  -> (x : T, y : T) do
+  lo_x, hi_x, v_x = x
+  lo_y, hi_y, v_y = y
+  {lo_x, hi_y, v_x + v_y + (lo_y - hi_x) ** 2}
 end
+
+fxx = -> (x : T?, y : T?) do
+  x && y ? fx.call(x, y) : x ? x : y ? y : nil
+end
+
+st = SegmentTree(T?).new(
+  values: Array.new(n, nil),
+  unit: nil,
+  fx: fxx
+)

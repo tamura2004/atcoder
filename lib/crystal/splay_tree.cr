@@ -1,19 +1,26 @@
 class SplayTree(T)
   getter root : Node(T)?
-  property multiset : Bool
+  getter fxx : Proc(T, T, T)
 
   def initialize
     @root = nil.as(Node(T)?)
-    @multiset = false
+    @fxx = ->(x : T, y : T) { x + y }
   end
 
   def initialize(@root : Node(T)?)
-    @multiset = false
+    @fxx = ->(x : T, y : T) { x + y }
+  end
+
+  def initialize(@root : Node(T)?, &@fxx : Proc(T, T, T))
   end
 
   def initialize(v : T)
-    @root = Node.new(v)
-    @multiset = false
+    @root = Node(T).new(v, fxx)
+    @fxx = ->(x : T, y : T) { x + y }
+  end
+
+  def initialize(v : T, &@fxx : Proc(T, T, T))
+    @root = Node(T).new(v, fxx)
   end
 
   # 自身を破壊的に左木に分割し右木を返す
@@ -21,8 +28,8 @@ class SplayTree(T)
     root.try do |x|
       x, y = x.split(v, eq)
       @root = x
-      SplayTree(T).new(y)
-    end || SplayTree(T).new
+      SplayTree(T).new(y, &fxx)
+    end || SplayTree(T).new(&fxx)
   end
 
   def |(v : T) : SplayTree(T)
@@ -46,7 +53,7 @@ class SplayTree(T)
   # 値の挿入
   def insert(v : T)
     hi = self | v
-    self + SplayTree(T).new(v) + hi
+    self + SplayTree(T).new(v, &fxx) + hi
   end
 
   def <<(v : T)
@@ -85,10 +92,14 @@ class Node(T)
   getter ch : StaticArray(Node(T)?, 2)
   getter val : T
   getter size : Int32
+  getter tot : T?
+  getter fxx : Proc(T?, T?, T?)
 
-  def initialize(@val : T)
+  def initialize(@val : T, f = Proc(T, T, T).new { |x, y| x + y })
+    @fxx = ->(x : T?, y : T?) { x && y ? f.call(x, y) : x ? x : y ? y : nil }
     @ch = StaticArray(Node(T)?, 2).new { nil }
     @size = 1
+    @tot = nil.as(T?)
   end
 
   # 回転
@@ -102,7 +113,9 @@ class Node(T)
 
   # 更新
   def update
-    @size = ch.sum { |c| c.try(&.size) || 0 }.succ
+    lo, hi = ch
+    @size = lo && hi ? lo.size + hi.size : lo ? lo.size : hi ? hi.size : 0
+    @tot = fxx.call(ch[0].try(&.tot), ch[1].try(&.tot))
     self
   end
 
