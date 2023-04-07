@@ -1,12 +1,14 @@
-N = 10
-a = Array.new(N){ rand(1..100) }
+N = 7
+Q = 10
+a = Array.new(N) { rand(1..100) }
 
 open("sample.txt", "w") do |f|
-  f.puts N
-  f.puts a.join("\n")
-
-  (1...N).each do |v|
-    pv = rand(0...v)
-    f.puts "#{pv} #{v}"
+  f.puts "#{N} #{Q}"
+  (1...Q).each do |v|
+    lo = rand(1..N)
+    hi = rand(1..N)
+    d = rand(1..9)
+    lo, hi = hi, lo unless lo < hi
+    f.puts "#{lo} #{hi} #{d}"
   end
 end
