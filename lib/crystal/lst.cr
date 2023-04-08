@@ -1,3 +1,6 @@
+# 遅延評価セグメント木
+# 内部でnilを単位源としてモノイド化
+# 交換則を要しない
 class LST(X, A)
   getter n : Int32
   getter x : Array(X?)
@@ -8,24 +11,24 @@ class LST(X, A)
 
   def initialize(
     values : Array(X),
-    gxx : Proc(X, X, X),
-    gxa : Proc(X, A, X),
-    gaa : Proc(A, A, A)
+    fxx : Proc(X, X, X),
+    fxa : Proc(X, A, X),
+    faa : Proc(A, A, A)
   )
     @n = Math.pw2ceil(values.size)
     @x = Array.new(n*2, nil.as(X?))
     @a = Array.new(n*2, nil.as(A?))
 
     @fxx = Proc(X?, X?, X?).new do |x, y|
-      x && y ? gxx.call(x, y) : x ? x : y ? y : nil
+      x && y ? fxx.call(x, y) : x ? x : y ? y : nil
     end
 
     @fxa = Proc(X?, A?, X?).new do |x, a|
-      x && a ? gxa.call(x, a) : x ? x : nil
+      x && a ? fxa.call(x, a) : x ? x : nil
     end
 
     @faa = Proc(A?, A?, A?).new do |a, b|
-      a && b ? gaa.call(a, b) : a ? a : b ? b : nil
+      a && b ? faa.call(a, b) : a ? a : b ? b : nil
     end
 
     values.each_with_index do |v, i|
@@ -33,7 +36,7 @@ class LST(X, A)
     end
 
     (1..n - 1).reverse_each do |i|
-      x[i] = fxx.call(x[i*2], x[i*2 + 1])
+      x[i] = @fxx.call(x[i*2], x[i*2 + 1])
     end
   end
 
@@ -43,10 +46,10 @@ class LST(X, A)
     hi += n
 
     pa_lo = lo // (lo & -lo)
-    pa_hi = (hi - 1) // ((hi - 1) & -(hi - 1))
+    pa_hi = hi // (hi & -hi)
 
     propagate(pa_lo)
-    propagate(pa_hi)
+    propagate(pa_hi - 1)
 
     while lo < hi
       if lo.odd?
@@ -64,34 +67,55 @@ class LST(X, A)
     end
 
     update(pa_lo)
-    update(pa_hi)
+    update(pa_hi - 1)
   end
 
-  def propagate(node_id)
-    node_id >>= 1
-    i = 0
-    (0...Math.ilogb(node_id).succ).reverse_each do |h|
-      i = (i << 1) + node_id.bit(h)
-      propagate_node(i)
+  def []=(r : Range(Int::Primitive?, Int::Primitive?), v : A)
+    lo = r.begin || 0
+    hi = r.end.try(&.succ.-(r.excludes_end?.to_unsafe)) || n
+    apply(lo, hi, v)
+  end
+
+  # 1点作用
+  def put(i, v : A)
+    i += n
+    propagate(i)
+    a[i] = faa.call a[i], v
+    update(i)
+  end
+
+  def []=(i, v : A)
+    put(i, v)
+  end
+
+  def propagate(i)
+    h = Math.ilogb(i)
+    return if h.zero?
+
+    (1..h).reverse_each do |j|
+      propagate_node(i >> j)
     end
+
   end
 
   def propagate_node(i)
-    if lazy = a[i]
-      if !is_leaf?(i)
-        a[i*2] = faa.call a[i*2], lazy
-        a[i*2 + 1] = faa.call a[i*2 + 1], lazy
-      end
-      x[i] = fxa.call x[i], lazy
-      a[i] = nil
+    return if a[i].nil?
+
+    if !is_leaf?(i)
+      a[i*2] = faa.call a[i*2], a[i]
+      a[i*2 + 1] = faa.call a[i*2 + 1], a[i]
     end
+
+    x[i] = fxa.call x[i], a[i]
+    a[i] = nil
   end
 
   def update(i)
-    i >>= 1
-    while i > 0
-      update_node(i)
-      i >>= 1
+    h = Math.ilogb(i)
+    return if h.zero?
+
+    (1..h).each do |j|
+      update_node(i >> j)
     end
   end
 
@@ -104,29 +128,22 @@ class LST(X, A)
     hi += n
 
     pa_lo = lo // (lo & -lo)
-    pa_hi = (hi - 1) // ((hi - 1) & -(hi - 1))
+    pa_hi = hi // (hi & -hi)
 
     propagate(pa_lo)
-    propagate(pa_hi)
-
-    update(pa_lo)
-    update(pa_hi)
+    propagate(pa_hi - 1)
 
     left = right = nil
 
     while lo < hi
       if lo.odd?
-        x[lo] = fxa.call x[lo], a[lo]
-        a[lo] = nil
-        left = fxx.call left, x[lo]
+        left = fxx.call left, fxa.call(x[lo], a[lo])
         lo -= 1
       end
 
       if hi.odd?
         hi -= 1
-        x[hi] = fxa.call x[hi], a[hi]
-        a[hi] = nil
-        right = fxx.call x[hi], right
+        right = fxx.call fxa.call(x[hi], a[hi]), right
       end
 
       lo >>= 1
@@ -136,8 +153,23 @@ class LST(X, A)
     fxx.call left, right
   end
 
+  def [](r : Range(Int::Primitive?, Int::Primitive?))
+    lo = r.begin || 0
+    hi = r.end.try(&.succ.-(r.excludes_end?.to_unsafe)) || n
+    query(lo, hi).not_nil!
+  end
+
+  def sum
+    self[0..]
+  end
+
   def is_leaf?(i)
     n <= i
+  end
+
+  #
+  def ceil(i)
+    i // (i & -i)
   end
 
   def to_s(io)
