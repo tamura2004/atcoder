@@ -70,11 +70,18 @@ class TR(T)
 
   def [](r : Range(Int::Primitive?, Int::Primitive?))
     lo = r.begin || 0
-    hi = r.end.try(&.-(1).+(r.exclusive_end?.to_unsafe)) || n
+    hi = r.end.try(&.-(1).+(r.excludes_end?.to_unsafe)) || n
     self[lo, hi]
   end
 
   def sum
     self[0..]
+  end
+
+  def to_s(io)
+    (0..Math.ilogb(n)).each do |h|
+      io << a[(1<<h)...(1<<(h+1))].join(" ")
+      io << "\n"
+    end
   end
 end

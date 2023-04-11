@@ -22,7 +22,7 @@ struct Matrix(T)
   class DimensionMismatch < Exception
   end
 
-  def initialize(@a)
+  def initialize(@a : Array(Array(T)))
     @h = a.size
     @w = a.first.size
   end
@@ -34,14 +34,14 @@ struct Matrix(T)
       Array.new(w, v)
     end
   end
-  
+
   # 空のマトリクス
   def initialize(z : C)
     @h = z.y.to_i
     @w = z.x.to_i
     @a = [] of Array(T)
   end
-  
+
   def initialize(z : C, &block : -> Array(T))
     @h = z.y.to_i
     @w = z.x.to_i
@@ -143,16 +143,27 @@ struct Matrix(T)
 
   # 行列を右から乗じた結果の行列を返す
   def *(b : self)
-    raise DimensionMismatch.new if w != b.h
-    t = b.columns
-    self.class.new(
-      (0...h).map do |i|
-        b.columns.map do |t|
-          a[i].zip(t).sum { |i, j| i*j }
+    values = Array.new(h){ Array.new(w, T.zero)}
+    h.times do |y|
+      w.times do |x|
+        w.times do |z|
+          values[y][x] = self[y, z] * b[z, x]
         end
       end
-    )
+    end
+    self.class.new(values)
   end
+
+  #   raise DimensionMismatch.new if w != b.h
+  #   t = b.columns
+  #   self.class.new(
+  #     (0...h).map do |i|
+  #       b.columns.map do |t|
+  #         a[i].zip(t).sum { |i, j| i*j }
+  #       end
+  #     end
+  #   )
+  # end
 
   # スカラ加算・減算・乗算・整除
   {% for op in %w(+ - * //) %}
@@ -176,11 +187,11 @@ struct Matrix(T)
   def **(k : Int)
     raise DimensionMismatch.new("正方行列ではありません") unless square?
     ans = Matrix(T).unit(h)
-    m = Math.ilogb(k) + 1
     b = dup
-    m.times do |i|
-      ans *= b if k.bit(i) == 1
+    while k > 0
+      ans *= b if k.odd?
       b *= b
+      k >>= 1
     end
     ans
   end
@@ -293,5 +304,11 @@ struct Matrix(T)
     w = a.flatten.map(&.to_s.size).max
     z.to_s + "\n" + a.map(&.map { |v| "%#{w}s" % v }.join(" ")).join("\n")
   #   a.map(&.map.(&.join(" "))).join("\n")
+  end
+
+  def to_s(io)
+    io << "["
+    io << a.map(&.join(",")).join(";")
+    io << "]"
   end
 end
