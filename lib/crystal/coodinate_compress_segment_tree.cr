@@ -60,8 +60,12 @@ class CoodinateCompressSegmentTree(K, V)
     query(lo, hi)
   end
 
-  def inspect
-    cc.ref.to_s + ":" + a.join(" ")
+  def inspect(io)
+    io << cc.ref
+    5.times do |h|
+      io << a[2**h...2**(h+1)].join(" ")
+      io << "\n"
+    end
   end
 end
 

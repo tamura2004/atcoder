@@ -27,6 +27,14 @@ class SquareMatrix(T)
     @a = rows.map(&.split.map(&.to_i64).map { |v| T.new(v) }).flatten
   end
 
+  def [](y, x)
+    a[y*n+x]
+  end
+
+  def []=(y, x, v)
+    a[y*n+x] = v
+  end
+
   def *(b : self)
     ans = Array.new(n*n, T.zero)
     n.times do |i|
@@ -56,5 +64,21 @@ class SquareMatrix(T)
       k >>= 1
     end
     ans
+  end
+
+  def inspect(io)
+    io << "["
+    a.each_slice(n) do |row|
+      io << row
+    end
+    io << "]"
+  end
+
+  def to_s(io)
+    io << "["
+    a.each_slice(n) do |row|
+      io << row
+    end
+    io << "]"
   end
 end
