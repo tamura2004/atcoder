@@ -1,5 +1,5 @@
 require "spec"
-require "crystal//tr"
+require "crystal/tr"
 
 describe TR do
   it "usage" do

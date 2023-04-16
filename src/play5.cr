@@ -1,116 +1,81 @@
-require "benchmark"
+require "crystal/st"
+require "crystal/cc"
 require "crystal/mod_int"
+require "crystal/square_matrix"
 
-struct M1(T)
-  getter n : Int32
-  getter a : Array(T)
+class CCST(K, V)
+  getter st : ST(V)
+  getter cc : CC(K)
 
-  def initialize(@n : Int32)
-    @a = Array.new(n*n, T.zero)
+  def initialize(keys : Array(K), fxx : V, V -> V)
+    @cc = CC(K).new(keys)
+    values = Array.new(cc.size, nil.as(V?))
+    @st = ST(V).new(values, fxx)
   end
 
-  def initialize(@a : Array(T))
-    @n = Math.sqrt(a.size).to_i
+  def []=(i, v)
+    st[cc[i].not_nil!] = v
   end
 
-  def initialize(a : Array(Array(T)))
-    @n = a.size
-    @a = a.flatten
-  end
-
-  def initialize(a : Array(Array(Int32)))
-    @n = a.size
-    @a = a.flatten.map { |v| T.new(v) }
-  end
-
-  def initialize(s : String)
-    rows = s.split(/;/)
-    @n = rows.size
-    @a = rows.map(&.split.map(&.to_i64).map{|v|T.new(v)}).flatten
-  end
-
-  def *(b : self)
-    ans = Array.new(n*n, T.zero)
-    n.times do |i|
-      n.times do |j|
-        n.times do |k|
-          ans[i*n + j] += a[i*n + k] * b.a[k*n + j]
-        end
-      end
-    end
-    self.class.new(ans)
-  end
-
-  def unit
-    ans = Array.new(n*n, T.zero)
-    n.times do |i|
-      ans[i*n + i] += 1
-    end
-    self.class.new(ans)
-  end
-
-  def **(k : Int)
-    ans = unit
-    tot = self
-    while k > 0
-      ans *= tot if k.odd?
-      tot *= tot
-      k >>= 1
-    end
-    ans
+  def [](r)
+    lo = r.begin
+    hi = r.end
+    st[cc[lo].not_nil!...cc[hi].not_nil!]
   end
 end
 
-struct M2(T)
-  getter h : Int32
-  getter w : Int32
-  getter a : Array(T)
+A = SquareMatrix(ModInt).new("1 1;1 0")
+B = SquareMatrix(ModInt).new("0 0;1 0")
 
-  def initialize(@a : Array(T), @h : Int32, @w : Int32)
-  end
+n, q = gets.to_s.split.map(&.to_i)
+keys = [] of Int64
 
-  def *(b : self)
-    ans = Array.new(h*w, T.zero)
-    h.times do |i|
-      w.times do |j|
-        w.times do |k|
-          ans[i*w + j] += a[i*w + k] * b.a[k*w + j]
-        end
-      end
-    end
-    self.class.new(ans, h, w)
+qs = Array.new(q) do
+  cmd, x, y = gets.to_s.split.map(&.to_i64) + [0_i64]
+  case cmd
+  when 1
+    keys << x
+    keys << x + 1
+  when 2
+    keys << x + 1
+    keys << x
+    keys << y + 1
+    keys << y
+  else
+    raise "bad"
   end
-
-  def unit
-    ans = Array.new(h*w, T.zero)
-    h.times do |i|
-      ans[i*w + i] += 1
-    end
-    self.class.new(ans, h, w)
-  end
-
-  def **(k : Int)
-    ans = unit
-    tot = self
-    while k > 0
-      ans *= tot if k.odd?
-      tot *= tot
-      k >>= 1
-    end
-    ans
-  end
+  {cmd, x, y}
 end
 
-E = 1.to_m
-Z = 0.to_m
+keys.sort!.uniq!
 
-Benchmark.ips do |bm|
-  bm.report("M1") do
-    x = M1(ModInt).new([E,E,E,Z])
-    y = x ** 1000000000
-  end
-  bm.report("M2") do
-    x = M2.new([E, E, E, Z], 2, 2)
-    y = x ** 1000000000
+alias K = Int64
+alias V = SquareMatrix(ModInt)
+
+ccst = CCST(K, V).new(keys, ->(x : V, y : V) { y * x })
+keys.each_cons_pair do |lo, hi|
+  ccst[lo] = A ** (hi - lo)
+end
+
+cnt = keys.to_set
+
+qs.each do |cmd,x,y|
+  case cmd
+  when 1
+    if x.in?(cnt)
+      cnt.delete(x)
+      ccst[x] = B
+    else
+      cnt << x
+      ccst[x] = A
+    end
+  when 2
+    # pp! cnt
+    # pp! [x,y]
+    if x.in?(cnt) && y.in?(cnt)
+      pp ccst[x+1...y+1][0,0]
+    else
+      pp 0
+    end
   end
 end

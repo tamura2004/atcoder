@@ -57,4 +57,16 @@ class SquareMatrix(T)
     end
     ans
   end
+
+  def [](i, j)
+    a[i*n + j]
+  end
+
+  def inspect(io)
+    ans = [] of String
+    a.each_slice(n) do |row|
+      ans << row.join(" ")
+    end
+    io << "|" + ans.join(";") + "|"
+  end
 end
