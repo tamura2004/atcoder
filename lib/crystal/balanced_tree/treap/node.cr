@@ -148,7 +148,7 @@ module BalancedTree
 
       def update
         @size = left_size + right_size + 1
-        @acc = left_acc + right_acc + val
+        # @acc = left_acc + right_acc + val
         self
       end
 

@@ -80,5 +80,8 @@ class SquareMatrix(T)
       io << row
     end
     io << "]"
+
+  def [](i, j)
+    a[i*n + j]
   end
 end
