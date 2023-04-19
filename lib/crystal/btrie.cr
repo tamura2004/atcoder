@@ -63,9 +63,3 @@ class BTrie
   end
 
 end
-
-bt = BTrie.new(multi: true)
-bt.add 1
-bt.add 300000000
-bt.add 3
-pp bt.to_a
