@@ -1,53 +1,52 @@
-class BTrie
+struct BTrie
   class Node
-    property i : Int32
+    property ch : StaticArray(Node?, 2)
     property size : Int32
-    property ch : Array(Int32)
 
-    def initialize(@i : Int32)
+    def initialize
+      @ch = StaticArray[nil.as(Node?), nil.as(Node?)]
       @size = 0
-      @ch = [0, 0]
     end
   end
 
-  getter nodes : Array(Node)
+  getter root : Node
   getter digit : Int32
   getter multi : Bool
-  property mask : Int64
 
   def initialize(@digit = 64, @multi = false)
-    @nodes = [Node.new(digit+1), Node.new(digit)]
-    @mask = 0_i64
+    @root = Node.new
   end
 
   def add(v)
-    i = 1
-    nodes[i].size += 1
+    node = root
+    node.size += 1
 
     (0...digit).reverse_each do |h|
-      b = v.bit(h)
-      ch = nodes[i].ch
-      if ch[b].zero?
-        i = ch[b] = nodes.size
-        nodes << Node.new(h)
+      if nv = node.ch[v.bit(h)]
+        node = nv
       else
-        i = ch[b]
+        new_node = Node.new
+        node.ch[v.bit(h)] = new_node
+        node = new_node
       end
-
-      nodes[i].size += 1
+      node.size += 1
     end
+  end
+
+  def <<(v)
+    add(v)
   end
 
   def to_a
     acc = [] of Int64
-    to_a(acc, 1, 0_i64)
+    to_a(acc, root, digit, 0_i64)
     acc
   end
 
-  def to_a(acc, i, v)
-    if nodes[i].i.zero?
+  def to_a(acc, node, height, v)
+    if height.zero?
       if multi
-        nodes[i].size.times do
+        node.size.times do
           acc << v
         end
       else
@@ -55,11 +54,10 @@ class BTrie
       end
     else
       2.times do |b|
-        if nodes[i].ch[b] != 0
-          to_a(acc, nodes[i].ch[b], v | (b << nodes[i].i.pred))
+        node.ch[b].try do |nv|
+          to_a(acc, nv, height - 1, v | (b << height.pred))
         end
       end
     end
   end
-
 end

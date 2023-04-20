@@ -1,17 +1,13 @@
 require "benchmark"
-
-A = (0...100_000).to_a
-H = Hash(Int32, Int32).new
-100_000.times do |i|
-  H[i] = i
-end
+require "crystal/btrie"
+require "crystal/balanced_tree/treap/multiset"
 
 Benchmark.ips do |bm|
-  bm.report("hash") do
-    j = H[50_000]
+  bm.report("btrie") do
+    tr = BTrie.new(multi: true)
   end
 
-  bm.report("bsearch") do
-    j = A.bsearch_index(&.>= 50_000)
+  bm.report("multiset") do
+    tr = Multiset(Int32).new
   end
 end
