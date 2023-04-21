@@ -2,18 +2,16 @@ require "crystal/orderedset"
 
 n,k = gets.to_s.split.map(&.to_i64)
 a = gets.to_s.split.map(&.to_i64)
+ans = [] of Int64
 os = OrderedSet(Int64).new
+os << 0_i64
 
-(1<<10).times do |s|
-  next if s.zero?
-  tot = 0_i64
+(k+1).times do
+  v = os.shift
+  ans << v
   n.times do |i|
-    next if s.bit(i) == 0
-    tot += a[i]
+    os << (v + a[i])
   end
-  os << tot
 end
 
-pp os
-puts os.unsafe_fetch(k-1)
-
+pp ans[-1]
