@@ -3,9 +3,9 @@
 # エラストテレスの篩で、自身を割る最小の素数をクラス変数として持つ
 # 素数判定と、高速な素因数分解に利用
 class Prime
-  MAX = 300_001
-  extend Enumerable(Int32)
-  class_getter div : Array(Int32) = sieve(MAX)
+  MAX = 300_001_i64
+  extend Enumerable(Int64)
+  class_getter div : Array(Int64) = sieve(MAX)
   class_getter each : PrimeIterator = PrimeIterator.new(div)
 
   # エラストテレスの篩
@@ -13,12 +13,12 @@ class Prime
   # ```
   # seive(5) # => [-1, -1, 2, 3, 2]
   # ```
-  def self.sieve(n : Int32) : Array(Int32)
-    Array.new(n + 1, &.itself).tap do |dp|
-      dp[0] = -1
-      dp[1] = -1
-      m = Math.sqrt(n).ceil.to_i
-      2.upto(m) do |i|
+  def self.sieve(n : Int64) : Array(Int64)
+    Array.new(n + 1, &.itself.to_i64).tap do |dp|
+      dp[0] = -1_i64
+      dp[1] = -1_i64
+      m = Math.sqrt(n).ceil.to_i64
+      2_i64.upto(m) do |i|
         next if dp[i] != i
         (i*i).step(to: n, by: i) do |j|
           dp[j] = i if dp[j] == j
@@ -42,11 +42,11 @@ class Prime
   # Prime.first(4).to_a # => [2, 3, 5, 7]
   # Prime.first(4).to_a # => [13,17,19,23]
   # ```
-  def self.each(&block : Int32 -> _)
+  def self.each(&block : Int64 -> _)
     while true
       value = each.next
       break if value.is_a?(Iterator::Stop::INSTANCE)
-      yield value.as(Int32)
+      yield value.as(Int64)
     end
   end
 
@@ -92,16 +92,16 @@ class Prime
 
   # 素数列挙のイテレータ
   private class PrimeIterator
-    include Iterator(Int32)
-    getter div : Array(Int32)
-    getter i : Int32
+    include Iterator(Int64)
+    getter div : Array(Int64)
+    getter i : Int64
 
     def initialize(@div)
-      @i = 2
+      @i = 2_i64
     end
 
     def next
-      while i <= MAX && div[i] != i
+      while i <= MAX && div[i.to_i] != i
         @i += 1
       end
       if i > MAX
