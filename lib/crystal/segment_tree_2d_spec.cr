@@ -14,7 +14,7 @@ describe SegmentTree2D do
 
     3.times do |y|
       3.times do |x|
-        st.update(y, x, values[y][x])
+        st[y, x] = values[y][x]
       end
     end
     st.query(0, 3, 0, 3).should eq 45
@@ -22,6 +22,7 @@ describe SegmentTree2D do
     st.query(0, 1, 0, 3).should eq 6
     st.query(0, 1, 0, 2).should eq 3
     st.query(1, 3, 1, 3).should eq 28
+    st[1..2,1..2].should eq 28
   end
 
   it "range max" do

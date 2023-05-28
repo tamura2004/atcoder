@@ -113,8 +113,8 @@ class SegmentTree2D(T)
   end
 
   def [](r1, r2)
-    y1, y2 = RangeToTuple(Int32).from(r1, min: 0, max: h)
-    x1, x2 = RangeToTuple(Int32).from(r2, min: 0, max: w)
+    y1, y2 = RangeToTuple(Int32).from(r1, min: 0, max: h.to_i)
+    x1, x2 = RangeToTuple(Int32).from(r2, min: 0, max: w.to_i)
     query(y1, y2, x1, x2)
   end
 end
