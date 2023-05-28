@@ -1,8 +1,2 @@
-acba
-aaa
-chokudai
-abc
-aa
-
-aa
-1 1 0 1 0 1  
+5 10 2 1000000000 1
+1 100 1 1 1
