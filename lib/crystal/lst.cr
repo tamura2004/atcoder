@@ -9,6 +9,16 @@ class LST(X, A)
   getter fxa : Proc(X?, A?, X?)
   getter faa : Proc(A?, A?, A?)
 
+  # モノイドクラスで初期化
+  def self.from_monoid(n : Int32)
+    new(
+      values: Array.new(n) { X.zero },
+      fxx: ->(x : X, y : X) { x + y },
+      fxa: ->(x : X, a : A) { x * a },
+      faa: ->(a : A, b : A) { a + b }
+    )
+  end
+
   def initialize(
     values : Array(X),
     fxx : Proc(X, X, X),

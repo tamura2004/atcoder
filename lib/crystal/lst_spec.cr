@@ -1,5 +1,54 @@
 require "spec"
+require "crystal/modint9"
 require "crystal/lst"
+
+PW10 = [] of ModInt
+x = 1.to_m
+200_001.times do
+  PW10 << x
+  x *= 10
+end
+
+PW11 = [] of ModInt
+x = 0.to_m
+200_001.times do
+  PW11 << x
+  x *= 10
+  x += 1
+end
+
+# 作用付きモノイド
+class X
+  getter val : ModInt
+  getter len : Int32
+  delegate to_s, inspect, to: val
+
+  def initialize(@val, @len)
+  end
+
+  def self.zero
+    new(1.to_m, 1)
+  end
+
+  def +(y : self)
+    self.class.new(val * PW10[y.len] + y.val, len + y.len)
+  end
+
+  def *(a : A)
+    self.class.new(PW11[len] * a.val, len)
+  end
+end
+
+class A
+  getter val : Int32
+
+  def initialize(@val)
+  end
+
+  def +(b : self)
+    b
+  end
+end
 
 # 遅延評価セグメント木
 describe LST do
@@ -28,5 +77,12 @@ describe LST do
     st.sum.should eq "a y y y y y y z"
     st[4] = "b"
     st.sum.should eq "a y y y b y y z"
+  end
+
+  it "with monoid class" do
+    st = LST(X, A).from_monoid(7)
+    st.sum.to_s.should eq "1111111"
+    st[1..5] = A.new(2)
+    st.sum.to_s.should eq "1222221"
   end
 end

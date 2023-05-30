@@ -1,71 +1,54 @@
-class BTrie
-  class Node
-    property i : Int32
-    property size : Int32
-    property ch : Array(Int32)
+require "crystal/modint9"
+require "crystal/lst"
 
-    def initialize(@i : Int32)
-      @size = 0
-      @ch = [0, 0]
-    end
-  end
-
-  getter nodes : Array(Node)
-  getter digit : Int32
-  getter multi : Bool
-  property mask : Int64
-
-  def initialize(@digit = 64, @multi = false)
-    @nodes = [Node.new(digit+1), Node.new(digit)]
-    @mask = 0_i64
-  end
-
-  def add(v)
-    i = 1
-    nodes[i].size += 1
-
-    (0...digit).reverse_each do |h|
-      b = v.bit(h)
-      ch = nodes[i].ch
-      if ch[b].zero?
-        i = ch[b] = nodes.size
-        nodes << Node.new(h)
-      else
-        i = ch[b]
-      end
-
-      nodes[i].size += 1
-    end
-  end
-
-  def to_a
-    acc = [] of Int64
-    to_a(acc, 1, 0_i64)
-    acc
-  end
-
-  def to_a(acc, i, v)
-    if nodes[i].i.zero?
-      if multi
-        nodes[i].size.times do
-          acc << v
-        end
-      else
-        acc << v
-      end
-    else
-      2.times do |b|
-        if nodes[i].ch[b] != 0
-          to_a(acc, nodes[i].ch[b], v | (b << nodes[i].i.pred))
-        end
-      end
-    end
-  end
-
+PW10 = [] of ModInt
+x = 1.to_m
+200_001.times do
+  PW10 << x
+  x *= 10
 end
 
-bt = BTrie.new(multi: true)
-bt.add 1
-bt.add 300000000
-bt.add 3
-pp bt.to_a
+PW11 = [] of ModInt
+x = 0.to_m
+200_001.times do
+  PW11 << x
+  x *= 10
+  x += 1
+end
+
+class Node
+  getter val : ModInt
+  getter len : Int32
+  delegate to_s, inspect, to: val
+
+  def initialize(@val, @len)
+  end
+
+  def self.zero
+    new(1.to_m, 1)
+  end
+
+  def +(y : self)
+    Node.new(val * PW10[y.len] + y.val, len + y.len)
+  end
+
+  def *(a : Int32)
+    Node.new(PW11[len] * a, len)
+  end
+end
+
+n, q = gets.to_s.split.map(&.to_i)
+st = LST(Node, Int32).new(
+  values: Array.new(n) { Node.zero },
+  fxx: ->(x : Node, y : Node) { x + y },
+  fxa: ->(x : Node, a : Int32) { x * a },
+  faa: ->(a : Int32, b : Int32) { b }
+)
+
+q.times do
+  l, r, d = gets.to_s.split.map(&.to_i)
+  l -= 1
+  r -= 1
+  st[l..r] = d
+  pp st.sum
+end
