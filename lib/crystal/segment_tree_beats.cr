@@ -38,19 +38,13 @@ class SegmentTreeBeats(Node)
     r += n
     (1..log).reverse_each do |i|
       push(l >> i) if (((l >> i) << i) != l)
-      push((r - 1) >> i) if (((l >> i) << i) != l)
+      push((r - 1) >> i) if (((r >> i) << i) != l)
     end
     l2 = l
     r2 = r
     while l < r
-      if l.odd?
-        apply_node(l, x)
-        l += 1
-      end
-      if r.odd?
-        r -= 1
-        apply_node(r, x)
-      end
+      (apply_node(l, x); l += 1) if l.odd?
+      (r -= 1; apply_node(r, x)) if r.odd?
       l >>= 1
       r >>= 1
     end
@@ -117,7 +111,7 @@ class Node
     @sum = fst
     @cnt = 1
     @snd = -100
-    @lasy = nil.as(Int32?)
+    @lazy = nil.as(Int32?)
   end
 
   def update(l, r)
@@ -157,8 +151,9 @@ class Node
     if fst <= a
       true
     elsif snd < a
-      @fst = a
       @sum -= (fst - a) * cnt
+      @fst = a
+      true
     else
       false
     end
@@ -166,11 +161,10 @@ class Node
 end
 
 a = [3, 1, 4, 1, 5, 9, 2, 6]
-# stb.apply(2,6,4)
-# a = [3, 1, 4, 1, 4, 4, 2, 6]
 values = a.map { |i| Node.new(i) }
 stb = SegmentTreeBeats(Node).new(values)
 stb.apply(2, 6, 4)
+# a = [3, 1, 4, 1, 4, 4, 2, 6]
 pp! stb
 
 ans = 0
