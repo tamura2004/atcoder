@@ -6,11 +6,12 @@
 
 # Node():　デフォルトコンストラクタ。
 # Node(T): コンストラクタ。
-# void update(Node& l, Node& r): 子の情報を元に更新する関数。
-# void push(Node& l, Node& r):　子に親の情報を遅延して伝える関数。
-# bool apply(U x):　作用素を作用させて、更新に成功したらtrue、失敗したらfalseを返す関数。
+# initialize(v : T) Node構造体を型Tの値で初期化
+# update(l : Node, r : Node) : Nil 子の情報を元に更新する関数。
+# push(l : Node, r : Node) : Nil　子に親の情報を遅延して伝える関数。
+# apply(x : U) : Bool　作用素を作用させて、更新に成功したらtrue、失敗したらfalseを返す関数。
 # Beats構造体の持つ関数は以下の通り。
-# Beats(vector<T> &v):　Node構造体を初期化できる型Tの列を初期値として初期化する。
+# initialize(v : Array(T)):　Node構造体を初期化できる型Tの列を初期値として初期化する。
 # apply(int l, int r, U x): Uを区間 [ l , r ) # に作用させる。
 # query(int l, int r, const F& f): 各区間に対してf(Node &n)を行う関数。
 # クエリの取得に利用する。
@@ -99,77 +100,3 @@ class SegmentTreeBeats(Node)
     end
   end
 end
-
-class Node
-  getter fst : Int32
-  getter cnt : Int32
-  getter snd : Int32
-  getter lazy : Int32?
-  getter sum : Int32
-
-  def initialize(@fst)
-    @sum = fst
-    @cnt = 1
-    @snd = -100
-    @lazy = nil.as(Int32?)
-  end
-
-  def update(l, r)
-    if l.fst == r.fst
-      @fst = l.fst
-      @cnt = l.cnt + r.cnt
-      @snd = Math.max(l.snd, r.snd)
-    elsif l.fst < r.fst
-      @fst = r.fst
-      @cnt = r.cnt
-      @snd = l.fst
-    else
-      @fst = l.fst
-      @cnt = l.cnt
-      @snd = r.fst
-    end
-    @sum = l.sum + r.sum
-  end
-
-  def push(l, r)
-    if x = lazy
-      l.add(x)
-      r.add(x)
-      @lazy = nil.as(Int32?)
-    end
-  end
-
-  def add(b)
-    if a = lazy
-      @lazy = Math.min(a, b)
-    else
-      @lazy = b
-    end
-  end
-
-  def apply(a)
-    if fst <= a
-      true
-    elsif snd < a
-      @sum -= (fst - a) * cnt
-      @fst = a
-      true
-    else
-      false
-    end
-  end
-end
-
-a = [3, 1, 4, 1, 5, 9, 2, 6]
-values = a.map { |i| Node.new(i) }
-stb = SegmentTreeBeats(Node).new(values)
-stb.apply(2, 6, 4)
-# a = [3, 1, 4, 1, 4, 4, 2, 6]
-pp! stb
-
-ans = 0
-stb.query(0, 8) do |node|
-  ans += node.sum
-end
-
-pp ans
