@@ -24,7 +24,7 @@ class SegmentTreeBeats(Node)
   def initialize(vc : Array(Node))
     @n = Math.pw2ceil(vc.size)
     @log = Math.ilogb(n)
-    @v = Array.new(n*2) { Node.new(0) }
+    @v = Array.new(n*2) { Node.zero }
     vc.each_with_index do |val, i|
       v[i + n] = val
     end

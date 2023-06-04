@@ -1,6 +1,12 @@
 require "spec"
 require "crystal/segment_tree_beats"
 
+# Node():　デフォルトコンストラクタ。
+# Node(T): コンストラクタ。
+# initialize(v : T) Node構造体を型Tの値で初期化
+# update(l : Node, r : Node) : Nil 子の情報を元に更新する関数。
+# push(l : Node, r : Node) : Nil　子に親の情報を遅延して伝える関数。
+# apply(x : U) : Bool　作用素を作用させて、更新に成功したらtrue、失敗したらfalseを返す関数。
 class Node(T)
   getter fst : T
   getter cnt : Int32
