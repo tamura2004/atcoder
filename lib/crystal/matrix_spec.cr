@@ -108,7 +108,7 @@ describe Matrix do
     m[z] = 5
     m[z].should eq 5
   end
-  
+
   it "map" do
     m = M.parse("1 2;3 4")
     k = m.map(&.* 2)
@@ -119,7 +119,7 @@ describe Matrix do
     m = M.parse("1 2;3 4")
     m.select(&.odd?).should eq [1,3]
   end
-  
+
   it "select and sum" do
     m = M.parse("1 2;3 4")
     m.sum.should eq 10
