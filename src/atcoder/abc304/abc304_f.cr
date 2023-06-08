@@ -1,73 +1,58 @@
 require "crystal/modint9"
 
-MAX = 500_000i64
+# f[n] = yield n かつ
+# f[n] = Σ d|n, F[d] の時
+# F[n] = Σ d|n, u(d/n) f[n]を利用してF[n]を求める
+# n < 1_000_000
+class Moebius(T)
+  getter n : Int64
+  getter f : Array(T)
 
-class Seive
-  getter min_factor : Array(Int64)
-  getter moebius : Array(Int64)
-  getter is_prime : Array(Bool)
+  # nの約数のみ、約数とメビウス関数を求める
+  getter divisors : Array(Array(Int64))
+  getter moebius : Array(Int32)
 
-  def initialize
-    @min_factor = Array.new(MAX+1, &.itself.to_i64)
-    @moebius = Array.new(MAX+1, 1_i64)
-    @is_prime = Array.new(MAX+1, true)
+  def initialize(@n)
+    @divisors = Array.new(n + 1) { [] of Int64 }
+    @moebius = Array.new(n + 1, 1)
 
-    min_factor[1] = 1
-    moebius[1] = 1
-    is_prime[1] = false
-
-    (2_i64..MAX).each do |i|
-      next unless is_prime[i]
-      moebius[i] = -1_i64
-      (i * 2).step(by: i, to: MAX) do |j|
-        is_prime[j] = false
-        min_factor[j] = i
-        moebius[j] *= (j // i).divisible_by?(i) ? 0_i64 : -1_i64
+    (1_i64..n).each do |i|
+      next unless n.divisible_by?(i)
+      i.step(by: i, to: n) do |j|
+        next unless n.divisible_by?(j)
+        divisors[j] << i
+        next unless divisors[i].size == 2
+        moebius[j] *= j.divisible_by?(i*i) ? 0 : -1
       end
     end
-  end
-end
 
-def factors(n)
-  m = 1_i64
-  ans = [] of Int64
-  while m * m <= n
-    if n.divisible_by?(m)
-      ans << m
-      ans << n // m unless m * m == n
+    @f = Array.new(n + 1, T.zero)
+    divisors[n].each do |d|
+      f[d] = yield d
     end
-    m += 1
   end
-  ans
-end
 
-sv = Seive.new
+  def solve(n)
+    divisors[n].sum do |d|
+      f[d] * moebius[n//d]
+    end
+  end
+end
 
 n = gets.to_s.to_i64
-s = gets.to_s.chars.map(&.==('#').to_unsafe)
+s = gets.to_s
 
-query = -> (m : Int64) do
-  cnt = Array.new(m, 1_i64)
-  s.each_with_index do |v, i|
-    cnt[i % m] *= v
+mo = Moebius(ModInt).new(n) do |m|
+  cnt = Array.new(m, 1)
+  n.times do |i|
+    cnt[i % m] *= (s[i] == '#').to_unsafe
   end
   2.to_m ** cnt.sum
 end
 
-a = Hash(Int64,ModInt).new
-factors(n).each do |d|
-  next if n == d
-  a[d] = query.call(d)
+ans = mo.divisors[n].sum do |d|
+  next 0.to_m if d == n
+  mo.solve(d)
 end
 
-b = Hash(Int64,ModInt).new
-factors(n).each do |m|
-  next if n == m
-  ans = 0.to_m
-  factors(m).each do |d|
-    ans += a[d] * sv.moebius[m//d]
-  end
-  b[m] = ans
-end
-
-puts b.values.sum
+pp ans
