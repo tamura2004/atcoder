@@ -1,6 +1,5 @@
 require "crystal/modint9"
 
-# f[n] = yield n かつ
 # f[n] = Σ d|n, F[d] の時
 # F[n] = Σ d|n, u(d/n) f[n]を利用してF[n]を求める
 # n < 1_000_000
@@ -12,7 +11,8 @@ class Moebius(T)
   getter divisors : Array(Array(Int64))
   getter moebius : Array(Int32)
 
-  def initialize(@n)
+  def initialize(@f)
+    @n = f.size
     @divisors = Array.new(n + 1) { [] of Int64 }
     @moebius = Array.new(n + 1, 1)
 
@@ -25,11 +25,6 @@ class Moebius(T)
         moebius[j] *= j.divisible_by?(i*i) ? 0 : -1
       end
     end
-
-    @f = Array.new(n + 1, T.zero)
-    divisors[n].each do |d|
-      f[d] = yield d
-    end
   end
 
   def solve(n)
@@ -41,6 +36,8 @@ end
 
 n = gets.to_s.to_i64
 s = gets.to_s
+
+f = Array.new()
 
 mo = Moebius(ModInt).new(n) do |m|
   cnt = Array.new(m, 1)
