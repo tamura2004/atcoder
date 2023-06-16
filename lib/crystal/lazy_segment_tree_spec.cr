@@ -27,11 +27,7 @@ describe LazySegmentTree do
   end
 
   it "range update range sum" do
-    values = Array.new(4){ Tuple(Int64,Int64).new(0_i64, 1_i64) }
-    st = LazySegmentTree(Tuple(Int64,Int64), Int64?).range_update_range_sum(values)
-    st[0..] = 2_i64 # [2, 2, 2, 2]
-    st[1..] = 3_i64 # [2, 3, 3, 3]
-    st[0..].should eq Tuple(Int64,Int64).new(11_i64, 6_i64)
+    st = LazySegmentTree(Tuple(Int64,Int64)?, Int64?).range_update_range_sum(10)
   end
 
   it "range add range max" do

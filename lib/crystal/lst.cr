@@ -20,7 +20,7 @@ class LST(X, A)
   end
 
   def initialize(
-    values : Array(X),
+    values : Array(X?),
     fxx : Proc(X, X, X),
     fxa : Proc(X, A, X),
     faa : Proc(A, A, A)
@@ -86,15 +86,16 @@ class LST(X, A)
     apply(lo, hi, v)
   end
 
-  # 1点作用
-  def put(i, v : A)
+  # 1点更新
+  def put(i, v : X)
     i += n
     propagate(i)
-    a[i] = faa.call a[i], v
+    x[i] = v
+    a[i] = nil
     update(i)
   end
 
-  def []=(i, v : A)
+  def []=(i, v : X)
     put(i, v)
   end
 
@@ -148,7 +149,7 @@ class LST(X, A)
     while lo < hi
       if lo.odd?
         left = fxx.call left, fxa.call(x[lo], a[lo])
-        lo -= 1
+        lo += 1
       end
 
       if hi.odd?

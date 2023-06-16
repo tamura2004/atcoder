@@ -85,4 +85,20 @@ describe LST do
     st[1..5] = A.new(2)
     st.sum.to_s.should eq "1222221"
   end
+
+  it "range_update_range_sum" do
+    st = LST(Tuple(Int64, Int64), Int64).new(
+      Array.new(8) { nil.as(Tuple(Int64,Int64)?) },
+      fxx: ->(x : Tuple(Int64, Int64), y : Tuple(Int64, Int64)) {
+        {x[0] + y[0], x[1] + y[1]}
+      },
+      fxa: ->(x : Tuple(Int64, Int64), a : Int64) {
+        {a * x[1], x[1]}
+      },
+      faa: ->(a : Int64, b : Int64) { b }
+    )
+
+    st[2] = {100_i64, 1_i64}
+    st[0..7].should eq ({100, 1})
+  end
 end
