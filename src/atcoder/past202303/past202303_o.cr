@@ -23,9 +23,9 @@ class Problem
     l = lo
     (0_i64..10_i64).each do |i|
       c = cnt[i][lo...hi]
-      cnt[i][lo...hi] = 0_i64
-      cnt[i][l...(l + c)] = 1_i64
-      sum[l...(l + c)] = i
+      cnt[i][lo, hi] = 0_i64
+      cnt[i][l, l + c] = 1_i64
+      sum[l, l + c] = i
       l += c
     end
   end
@@ -33,10 +33,10 @@ class Problem
   def reverse_sort(lo, hi)
     r = hi
     (0_i64..10_i64).each do |i|
-      c = cnt[i][lo...hi]
-      cnt[i][lo...hi] = 0_i64
-      cnt[i][(r - c)...r] = 1_i64
-      sum[(r - c)...r] = i
+      c = cnt[i][lo, hi]
+      cnt[i][lo, hi] = 0_i64
+      cnt[i][r - c, r] = 1_i64
+      sum[r - c, r] = i
       r -= c
     end
   end
@@ -56,6 +56,6 @@ q.times do
   when 2
     pr.reverse_sort(l, r)
   when 3
-    pp pr.sum[l...r]
+    pp pr.sum[l, r]
   end
 end

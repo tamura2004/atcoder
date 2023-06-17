@@ -37,12 +37,20 @@ class RangeUpdateRangeSum
     st[r][0]
   end
 
+  def [](lo, hi)
+    st[lo...hi][0]
+  end
+
   def []=(i : Int, v)
     st[i] = {v, 1_i64}
   end
 
   def []=(r : Range, v)
     st[r] = v
+  end
+
+  def []=(lo, hi, v)
+    st[lo...hi] = v
   end
 end
 
