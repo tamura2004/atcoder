@@ -1,6 +1,6 @@
 # 事前計算によりO(1)で二項係数を求める
 #
-MAX = 20_000_002
+MAX = 500_000
 class FactTable
   getter m : Int32
   getter f : Array(ModInt)
