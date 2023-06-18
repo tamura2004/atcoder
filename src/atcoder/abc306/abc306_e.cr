@@ -1,4 +1,4 @@
-require "crystal/segment_tree"
+require "crystal/st"
 require "crystal/cc"
 require "crystal/range"
 

@@ -1,34 +1,73 @@
-require "crystal/lst"
+require "crystal/graph"
 
-struct Tuple
-  def +(other : Tuple)
-    {% begin %}
-      Tuple.new(
-        {% for i in 0...@type.size %}
-          self[{{i}}] + other[{{i}}],
-        {% end %}
-      )
-    {% end %}
+class SCC
+  getter g : Graph
+  getter rg : Graph
+  delegate n, to: g
+  getter seen : Array(Bool)
+  getter seen_rev : Array(Bool)
+
+  def initialize(@g,@rg)
+    @seen = Array.new(n, false)
+    @seen_rev = Array.new(n, false)
   end
 
-  def *(a : Int)
-    Tuple.new(self[1] * a, self[1])
+  def solve
+    ans = n.to_g
+
+    # 頂点0から正順で辿り着ける頂点をマーク
+    seen[0] = true
+    q = Deque.new([0])
+    while q.size > 0
+      v = q.shift
+      g.each(v) do |nv|
+        next if seen[nv]
+        seen[nv] = true
+        q << nv
+      end
+    end
+
+    # 逆順
+    q << 0
+    seen_rev[0] = true
+    while q.size > 0
+      v = q.shift
+      rg.each(v) do |nv|
+        if seen[nv]
+          ans.add nv, v, both: false, origin: 0
+        end
+
+        next if seen_rev[nv]
+        seen_rev[nv] = true
+        q << nv
+      end
+    end
+    ans
   end
 end
 
-alias X = Tuple(Int64, Int64)
-alias A = Int64
+g = 6.to_g
+rg = 6.to_g
 
-st = LST(X, A).new(
-  values: Array.new(10) { {0_i64, 1_i64} },
-  fxx: ->(x : X, y : X) { x + y },
-  fxa: ->(x : X, a : A) { x * a },
-  faa: ->(a : A, b : A) { b }
-)
+g.add 0, 1, both: false, origin: 0
+g.add 1, 2, both: false, origin: 0
+g.add 2, 0, both: false, origin: 0
+g.add 1, 3, both: false, origin: 0
+g.add 3, 4, both: false, origin: 0
+g.add 4, 5, both: false, origin: 0
+g.add 5, 3, both: false, origin: 0
 
-st[1] = {10i64, 1i64}
-st[3] = {20i64, 1i64}
-st[5] = {40i64, 1i64}
+rg.add 1, 0, both: false, origin: 0
+rg.add 2, 1, both: false, origin: 0
+rg.add 0, 2, both: false, origin: 0
+rg.add 3, 1, both: false, origin: 0
+rg.add 4, 3, both: false, origin: 0
+rg.add 5, 4, both: false, origin: 0
+rg.add 3, 5, both: false, origin: 0
 
-pp st.x.zip(0..)
-pp st.query(2,4)
+ans = SCC.new(g,rg).solve
+ans.each do |v|
+  ans.each(v) do |nv|
+    puts "#{v}, #{nv}"
+  end
+end

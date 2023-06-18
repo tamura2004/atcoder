@@ -1,7 +1,7 @@
 # 数え上げの問題
 # 主客転倒
 require "crystal/cc"
-require "crystal/segment_tree"
+require "crystal/st"
 
 n, m = gets.to_s.split.map(&.to_i64)
 a = Array.new(n) { gets.to_s.split.map(&.to_i64).sort }
