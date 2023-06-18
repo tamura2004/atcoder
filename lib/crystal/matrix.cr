@@ -147,7 +147,7 @@ struct Matrix(T)
     h.times do |y|
       w.times do |x|
         w.times do |z|
-          values[y][x] = self[y, z] * b[z, x]
+          values[y][x] += a[y][z] * b[z, x]
         end
       end
     end

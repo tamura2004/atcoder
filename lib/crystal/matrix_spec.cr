@@ -13,6 +13,12 @@ describe Matrix do
       [8, 5],
       [5, 3],
     ])
+    c = Matrix(Int32).new([
+      [2, 1],
+      [1, 1],
+    ])
+
+    (a*a).should eq c
     (a*a*a*a*a).should eq b
     (a**5).should eq b
   end
