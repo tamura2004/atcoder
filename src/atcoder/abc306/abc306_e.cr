@@ -20,7 +20,7 @@ cnt[cc[0]] = n
 queries.each do |x, y|
   pre = a[x]
   a[x] = y
-  
+
   cnt[cc[-pre]] -= 1
   cnt[cc[-y]] += 1
   sum[cc[-pre]] -= pre
@@ -42,6 +42,3 @@ queries.each do |x, y|
   ans = sum[..j] - sum[j] // cnt[j] * jj
   pp ans
 end
-
-
-

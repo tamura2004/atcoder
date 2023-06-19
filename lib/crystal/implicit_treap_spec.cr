@@ -84,6 +84,11 @@ describe ImplicitTreap do
     node[-2].should eq 10
     node[-1].should eq 20
     node.to_a.should eq [40, 30, 10, 20]
+    node.reverse(0..3)
+    node[0].should eq 20
+    node[1].should eq 10
+    node[2].should eq 30
+    node[3].should eq 40
   end
 
   it "rotate" do
@@ -94,8 +99,8 @@ describe ImplicitTreap do
   end
 
   it "update" do
-    node = Tree{1,2,3}
-    node[0],node[2] = node[2], node[0]
-    node.to_a.should eq [3,2,1]
+    node = Tree{1, 2, 3}
+    node[0], node[2] = node[2], node[0]
+    node.to_a.should eq [3, 2, 1]
   end
 end

@@ -16,6 +16,7 @@ class ST(T)
   def initialize(values : Array(T?), fxx : Proc(T, T, T))
     @fxx = ->(x : T?, y : T?) do
       x && y ? fxx.call(x, y) : x ? x : y ? y : nil
+      # x ? y ? fxx.call(x, y) : x : y
     end
 
     @n = Math.pw2ceil(values.size)
