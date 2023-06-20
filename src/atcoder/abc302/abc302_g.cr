@@ -1,21 +1,57 @@
-require "crystal/graph"
-require "crystal/graph/dijkstra"
+class Graph
+  getter n : Int32
+  getter g : Array(Array(Int64))
+  delegate "[]", to: g
 
-# siを超頂点m..m+nとする
+  def initialize(@n)
+    @g = Array.new(n){Array.new(n, 0_i64)}
+  end
 
-n, m = gets.to_s.split.map(&.to_i64)
-g = Graph.new(n+m)
-n.times do |i|
-  v = m + i
+  def add(v, nv)
+    g[v][nv] += 1
+  end
 
-  a = gets.to_s.to_i64
-  s = gets.to_s.split.map(&.to_i64)
-  s.each do |nv|
-    nv -= 1
-    g.add v, nv, 1_i64, origin: 0, both: false
-    g.add nv, v, 0_i64, origin: 0, both: false
+  def has_cycle?(a)
+    n = a.size
+    n.times.all? do |i|
+      g[a[i-1]][a[i]] > 0
+    end
+  end
+
+  def delete_cycle!(a)
+    n = a.size
+    n.times do |i|
+      g[a[i-1]][a[i]] -= 1
+    end
   end
 end
 
-ans = Dijkstra.new(g).solve
-puts ans[m-1] == Dijkstra::INF ? -1 : ans[m-1].pred
+# g = Graph.new(4)
+# g.add 0, 1
+# g.add 1, 2
+# g.add 2, 0
+
+# pp! g
+# pp! g.has_cycle?([0,1,2])
+# pp! g.delete_cycle!([0,1,2])
+# pp! g
+
+n = gets.to_s.to_i64
+a = gets.to_s.split.map(&.to_i.pred)
+g = Graph.new(4)
+
+a.zip(a.sort).each do |y, x|
+  g[y][x] += 1
+end
+
+ans = 0_i64
+(2..4).each do |len|
+  [0,1,2,3].each_permutation(len) do |p|
+    if g.has_cycle?(p)
+      pp! [len, p]
+      g.delete_cycle!(p)
+      ans += len - 1
+    end
+  end
+end
+pp ans
