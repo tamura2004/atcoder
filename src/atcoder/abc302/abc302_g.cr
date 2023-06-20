@@ -4,7 +4,7 @@ class Graph
   delegate "[]", to: g
 
   def initialize(@n)
-    @g = Array.new(n){Array.new(n, 0_i64)}
+    @g = Array.new(n) { Array.new(n, 0_i64) }
   end
 
   def add(v, nv)
@@ -14,27 +14,17 @@ class Graph
   def has_cycle?(a)
     n = a.size
     n.times.all? do |i|
-      g[a[i-1]][a[i]] > 0
+      g[a[i - 1]][a[i]] > 0
     end
   end
 
   def delete_cycle!(a)
     n = a.size
     n.times do |i|
-      g[a[i-1]][a[i]] -= 1
+      g[a[i - 1]][a[i]] -= 1
     end
   end
 end
-
-# g = Graph.new(4)
-# g.add 0, 1
-# g.add 1, 2
-# g.add 2, 0
-
-# pp! g
-# pp! g.has_cycle?([0,1,2])
-# pp! g.delete_cycle!([0,1,2])
-# pp! g
 
 n = gets.to_s.to_i64
 a = gets.to_s.split.map(&.to_i.pred)
@@ -46,12 +36,12 @@ end
 
 ans = 0_i64
 (2..4).each do |len|
-  [0,1,2,3].each_permutation(len) do |p|
-    if g.has_cycle?(p)
-      pp! [len, p]
+  [0, 1, 2, 3].each_permutation(len) do |p|
+    while g.has_cycle?(p)
       g.delete_cycle!(p)
       ans += len - 1
     end
   end
 end
+
 pp ans
