@@ -50,6 +50,10 @@ class ST(T)
     get(i).not_nil!
   end
 
+  def []?(i : Int)
+    get(i)
+  end
+
   def query(lo, hi)
     lo += n
     hi += n
@@ -78,10 +82,20 @@ class ST(T)
     query(lo, hi).not_nil!
   end
 
+  def []?(lo, hi)
+    query(lo, hi)
+  end
+
   def [](r : Range(Int::Primitive?, Int::Primitive?))
     lo = r.begin || 0
     hi = r.end.try(&.+(1).-(r.excludes_end?.to_unsafe)) || n
     self[lo, hi]
+  end
+
+  def []?(r : Range(Int::Primitive?, Int::Primitive?))
+    lo = r.begin || 0
+    hi = r.end.try(&.+(1).-(r.excludes_end?.to_unsafe)) || n
+    self[lo, hi]?
   end
 
   def sum
