@@ -121,4 +121,8 @@ module Indexable(T)
   def to_st_sum
     ST(T).new(self, ->(x : T, y : T) { x + y })
   end
+
+  def to_st_min
+    ST(T).new(self, ->(x : T, y : T) { x < y ? x : y })
+  end
 end
