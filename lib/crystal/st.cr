@@ -102,6 +102,12 @@ class ST(T)
     self[0..]
   end
 
+  def bsearch(lo)
+    (lo...n-1).bsearch do |i|
+      yield self[lo..i]
+    end
+  end
+
   def to_s(io)
     (0..Math.ilogb(n)).each do |h|
       io << a[(1 << h)...(1 << (h + 1))].join(" ")
@@ -112,8 +118,18 @@ end
 
 struct Int
   def to_st_sum
-    values = Array.new(self, 0_i64)
+    values = Array.new(self, nil.as(Int64?))
     ST(Int64).new(values, ->(x : Int64, y : Int64) { x + y })
+  end
+
+  def to_st_min
+    values = Array.new(self, nil.as(Int64?))
+    ST(Int64).new(values, ->(x : Int64, y : Int64) { x < y ? x : y })
+  end
+
+  def to_st_max
+    values = Array.new(self, nil.as(Int64?))
+    ST(Int64).new(values, ->(x : Int64, y : Int64) { x > y ? x : y })
   end
 end
 
@@ -124,5 +140,9 @@ module Indexable(T)
 
   def to_st_min
     ST(T).new(self, ->(x : T, y : T) { x < y ? x : y })
+  end
+
+  def to_st_max
+    ST(T).new(self, ->(x : T, y : T) { x > y ? x : y })
   end
 end
