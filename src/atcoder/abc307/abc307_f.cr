@@ -17,7 +17,7 @@ a = gets.to_s.split.map(&.to_i)
 a.each do |v|
   g.add 0, v, 0_i64, origin: 0
 end
-
+pp g
 d = gets.to_s.to_i64
 x = [0_i64] + gets.to_s.split.map(&.to_i64)
 st = x.to_st_max
