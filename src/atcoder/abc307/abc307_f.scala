@@ -16,7 +16,7 @@ class Graph(val n: Int) {
     if (both) g(nv - origin) += (((v - origin), cost))
   }
 
-  def foreach(v: Int, f: ((Int, Long)) => Unit): Unit = {
+  def foreach(v: Int)(f: ((Int, Long)) => Unit): Unit = {
     g(v).foreach(f)
   }
 }
@@ -28,9 +28,9 @@ class SegmentTree[A](values: ArrayBuffer[A], _f: (A, A) => A) {
   val f = (x: Option[A], y: Option[A]) => {
     (x, y) match {
       case (Some(x), Some(y)) => Some(_f(x, y))
-      case (Some(x), None) => Some(x)
-      case (None, Some(y)) => Some(y)
-      case (None, None) => None
+      case (Some(x), None)    => Some(x)
+      case (None, Some(y))    => Some(y)
+      case (None, None)       => None
     }
   }
   for (i <- 0 until values.size) x(i + n) = Some(values(i))
@@ -52,8 +52,8 @@ class SegmentTree[A](values: ArrayBuffer[A], _f: (A, A) => A) {
   def apply(r: Range): A = {
     var lo = r.head + n
     var hi = r.last + n + 1
-    var left : Option[A] = None
-    var right : Option[A] = None
+    var left: Option[A] = None
+    var right: Option[A] = None
 
     while (lo < hi) {
       if ((lo & 1) == 1) {
@@ -72,17 +72,16 @@ class SegmentTree[A](values: ArrayBuffer[A], _f: (A, A) => A) {
     f(left, right).get
   }
 
-  def bsearch_index(_lo: Int, g: A => Boolean): Option[Int] = {
+  def bsearch(_lo: Int)(f: A => Boolean): Option[Int] = {
     var lo = _lo
     var hi = n - 1
-    if (!g(this(_lo to hi))) return None
-    while ((hi - lo) > 1) {
-      val mid = (lo + hi) / 2
-      if (g(this(_lo to mid))) {
-        hi = mid
-      } else {
-        lo = mid
-      }
+
+    if (f(this(lo to lo))) return Some(lo)
+    if (!f(this(lo to hi))) return None
+
+    while (hi - lo > 1) {
+      val mid = (lo + hi) >> 1
+      if (f(this(_lo to mid))) hi = mid else lo = mid
     }
     Some(hi)
   }
@@ -110,30 +109,38 @@ object Main extends App {
   val d = sc.nextInt
   val values = ArrayBuffer.fill(d + 1) { 0L }
   for (i <- 1 to d) { values(i) = sc.nextLong }
-  val st = new SegmentTree(values,
-    (x: Long, y: Long) => if (x < y) y else x
-  )
+  val st = new SegmentTree(values, (x: Long, y: Long) => if (x < y) y else x)
 
   val ans = ArrayBuffer.fill(n + 1) { None: Option[Long] }
   val q = PriorityQueue[(Int, Long, Int)]().reverse
   q.enqueue((0, 0L, 0))
+
+  println(s"values= $values")
+
   while (q.size > 0) {
     val (i, cost, v) = q.dequeue
-
     if (ans(v) == None) {
       ans(v) = Some(i)
 
-      g.foreach(v, ((nv, ncost)) => {
-        if (ans(nv) == None) {
-          if (cost + ncost <= values(i)) {
-            q.enqueue((i, cost + ncost, nv))
-          } else {
-            val j = st.bsearch( i, cost => { ncost <= cost } )
-            j.map(j => q.enqueue((jj-1, ncost, nv)))
+      g.foreach(v) { (nv, ncost) =>
+        {
+          if (ans(nv) == None) {
+            if (cost + ncost <= values(i)) {
+              q.enqueue((i, cost + ncost, nv))
+            } else {
+              st.bsearch(i + 1) { _ >= ncost } match {
+                case Some(j) => q.enqueue((j, ncost, nv))
+                case None => {}
+              }
+k            }
           }
         }
-      })
+      }
     }
   }
-  // println(ans)
+
+  for (v <- ans.tail) {
+    v.map(v => println(v))
+  }
+
 }
