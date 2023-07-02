@@ -1,6 +1,7 @@
 require "fileutils"
 
 name = ARGV[0]
+ext = ARGV[1] || "cr"
 FileUtils.mkdir_p("src/atcoder/#{name}")
 
 num = name[-3, 3].to_i
@@ -33,5 +34,5 @@ range = case name
   end
 
 range.each do |c|
-  FileUtils.touch("src/atcoder/#{name}/#{name}_#{c}.cr")
+  FileUtils.touch("src/atcoder/#{name}/#{name}_#{c}.#{ext}")
 end
