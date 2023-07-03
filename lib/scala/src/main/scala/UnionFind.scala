@@ -1,4 +1,5 @@
 import scala.collection.mutable.ArrayBuffer
+import scala.language.postfixOps
 
 class UnionFind(var n: Int) {
   var parent = 0 until n toArray

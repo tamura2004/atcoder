@@ -9,11 +9,7 @@ class Graph(n: Int) {
     g(nv) += v
   }
 
-  def each(v: Int)(f: Int => Unit) = {
-    for (nv <- g(v)) {
-      f(nv)
-    }
-  }
+  def apply(v: Int) = g(v)
 }
 
 object Main extends App {
@@ -21,10 +17,7 @@ object Main extends App {
   val g = new Graph(6)
   g.add(1, 2)
   g.add(2, 3)
-  println(g.g)
-  g.each(2) { nv =>
-    {
-      println((2, nv))
-    }
+  g(2).foreach { nv =>
+    println((2, nv))
   }
 }

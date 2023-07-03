@@ -1,6 +1,7 @@
 require "listen"
 require "open3"
 require "time"
+require "fileutils"
 require "colorize"
 
 $last_exec_time = Time.new - 10
@@ -175,7 +176,7 @@ class Task
       $last_exec_time = Time.now
 
       parse_params(params)
-      next if path.extname != ".cr" && path.extname != ".rb"
+      next if path.extname != ".cr" && path.extname != ".rb" && path.extname != ".scala"
 
       src = path.relative_path_from(Pathname.pwd).to_s
 
@@ -190,23 +191,48 @@ class Task
         else
           src = Pathname(src.to_s.gsub(".cr", "_spec.cr"))
         end
+      when /lib\/scala\/src\/main\/scala/
+        src = path.basename(".scala").to_s + "Test"
+      when /lib\/scala\/src\/test\/scala/
+        src = path.basename(".scala")
       else
         src = Pathname(src.to_s.gsub("lib/ruby", "lib/ruby/test/test_").gsub(".cr", "_spec.cr"))
       end
 
-      if !src.exist?
+      if path.extname != ".scala" && !src.exist?
         error "No spec exists, #{src}."
         next
       end
 
-      cmd = path.extname == ".cr" ? "crystal spec --error-trace #{src}" : "ruby #{src}"
-      o, e, s = Open3.capture3(cmd)
-      if o =~ /0 failures, 0 errors/
-        success o
+      cmd = case path.extname
+        when ".cr" then "crystal spec --error-trace #{src}"
+        when ".rb" then "ruby #{src}"
+        when ".scala" then "sbt 'testOnly #{src}'"
+        end
+
+      # path.extname == ".cr" ? "crystal spec --error-trace #{src}" : "ruby #{src}"
+      # o = e = s = nil
+      if path.extname == ".scala"
+        # pp FileUtils.pwd
+        FileUtils.cd("/home/tamura/project/atcoder/lib/scala") do
+          o, e, s = Open3.capture3(cmd)
+          if o =~ /failed 0/
+            success o
+          else
+            error o
+          end
+          warning e
+        end
       else
-        error o
+        o, e, s = Open3.capture3(cmd)
+
+        if o =~ /0 failures, 0 errors/
+          success o
+        else
+          error o
+        end
+        warning e
       end
-      warning e
     end
 
     src_listener.start
