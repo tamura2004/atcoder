@@ -1,23 +1,17 @@
+import scala.collection.mutable.ArrayBuffer
+
 class UnionFind(var n: Int) {
-  var par = new Array[Int](n)
-  (0 until n).foreach { i =>
-    par(i) = i
-  }
+  var parent = 0 until n toArray
 
   def root(v: Int): Int = {
-    if (par(v) == v) {
+    if (parent(v) == v) {
       v
     } else {
-      par(v) = root(par(v))
-      par(v)
+      parent(v) = root(parent(v))
+      parent(v)
     }
   }
 
-  def same(v: Int, nv: Int): Boolean = {
-    root(v) == root(nv)
-  }
-
-  def unite(v: Int, nv: Int): Unit = {
-    par(root(v)) = root(nv)
-  }
+  def same(v: Int, nv: Int): Boolean = root(v) == root(nv)
+  def unite(v: Int, nv: Int): Unit = parent(root(v)) = root(nv)
 }
