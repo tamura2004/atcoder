@@ -1,7 +1,4 @@
 s = gets.to_s.split.map(&.to_i64)
-n = s.size
-if (0...n.pred).all?{|i|s[i] <= s[i+1]} && s.all?{|v|100<=v<=625} && s.all?(&.divisible_by?(25))
-  puts :Yes
-else
-  puts :No
-end
+ans = s.all? { |v| 100 <= v <= 675 && v.divisible_by? 25 } &&
+      (0...7).all? { |i| s[i] <= s[i + 1] }
+puts ans ? :Yes : :No
