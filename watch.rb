@@ -214,7 +214,7 @@ class Task
       # o = e = s = nil
       if path.extname == ".scala"
         # pp FileUtils.pwd
-        FileUtils.cd("/home/tamura/project/atcoder/lib/scala") do
+        FileUtils.cd("lib/scala") do
           o, e, s = Open3.capture3(cmd)
           if o =~ /failed 0/
             success o

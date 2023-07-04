@@ -1,6 +1,5 @@
-require "numo/narray"
-require "numo/gnuplot"
+def mex(a, b, c)
+  ((0..3).to_a - [a, b, c]).min
+end
 
-gp = Numo::Gnuplot.new
-gp.set title: "example"
-gp.plot "sin(x)", w: "lines"
+pp mex(0, 1, 2)
