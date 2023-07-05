@@ -1,5 +1,3 @@
-import java.util.Scanner
-
 class AVLTree(var root: Option[Node] = None) {
   def includes(v: Int): Boolean = {
     root match {
@@ -28,29 +26,23 @@ class AVLTree(var root: Option[Node] = None) {
   }
 
   def minNode: Option[Node] = root match {
-    case None       => None
+    case None => None
     case Some(node) => Some(node.minNode)
   }
 
   def min: Option[Int] = root match {
-    case None       => None
+    case None => None
     case Some(node) => Some(node.min)
   }
 
   def maxNode: Option[Node] = root match {
-    case None       => None
+    case None => None
     case Some(node) => Some(node.maxNode)
   }
 
   def max: Option[Int] = root match {
-    case None       => None
+    case None => None
     case Some(node) => Some(node.max)
-  }
-
-  override def toString: String = root match {
-    case None => "()"
-    case Some(node) => node.toString
-
   }
 }
 
@@ -80,6 +72,7 @@ class Node(val value: Int) {
 
   // 挿入
   def insert(v: Int): Option[Node] = v match {
+    case v if v == value => Some(this)
     case v if v < value => {
       left match {
         case None       => left = Some(new Node(v))
@@ -87,7 +80,7 @@ class Node(val value: Int) {
       }
       Some(this)
     }
-    case v if v >= value => {
+    case v if v > value => {
       right match {
         case None       => right = Some(new Node(v))
         case Some(node) => right = node.insert(v)
@@ -97,48 +90,45 @@ class Node(val value: Int) {
   }
 
   // 削除
-  def delete(v: Int): Option[Node] = {
-    if (v == value) delete_equal(v)
-    else if (v < value) delete_left(v)
-    else delete_right(v)
-  }
-
-  // 自身を削除
-  def delete_equal(v: Int): Option[Node] = left match {
-    case Some(node) => {
-      node.left = left
-      node.right = right
-      Some(node.update.reBalance)
-    }
-    case None => {
-      right match {
-        case Some(node) => right
-        case None       => None
+  def delete(v: Int): Option[Node] = v match {
+    case v if v == value => {
+      left match {
+        case Some(node) => {
+          node.left = left
+          node.right = right
+          Some(node.update.reBalance)
+        }
+        case None => {
+          right match {
+            case Some(node) => right
+            case None       => None
+          }
+        }
       }
     }
-  }
-
-  // 左ノード以下を削除
-  def delete_left(v: Int): Option[Node] = left match {
-    case Some(node) => {
-      left = node.delete(v)
-      Some(this.update.reBalance)
+    case v if v < value => {
+      left match {
+        case Some(node) => {
+          left = node.delete(v)
+          Some(this.update.reBalance)
+        }
+        case None => {
+          left = None
+          Some(this.update.reBalance)
+        }
+      }
     }
-    case None => {
-      left = None
-      Some(this.update.reBalance)
-    }
-  }
-
-  // 右ノード以下を削除
-  def delete_right(v: Int): Option[Node] = right match {
-    case Some(node) => {
-      right = node.delete(v)
-      Some(this.update.reBalance)
-    }
-    case None => {
-      right = None
-      Some(this.update.reBalance)
+    case v if v > value => {
+      right match {
+        case Some(node) => {
+          right = node.delete(v)
+          Some(this.update.reBalance)
+        }
+        case None => {
+          right = None
+          Some(this.update.reBalance)
+        }
+      }
     }
   }
 
@@ -186,7 +176,7 @@ class Node(val value: Int) {
 
   // 最小のノード
   def minNode: Node = left match {
-    case None       => this
+    case None => this
     case Some(node) => node.minNode
   }
 
@@ -195,7 +185,7 @@ class Node(val value: Int) {
 
   // 最大のノード
   def maxNode: Node = right match {
-    case None       => this
+    case None => this
     case Some(node) => node.maxNode
   }
 
@@ -283,73 +273,5 @@ class Node(val value: Int) {
   def rightSize: Int = right match {
     case Some(node) => node.size
     case None       => 0
-  }
-
-  override def toString: String = {
-    (left, right) match {
-      case (None, None) => value.toString
-      case (None, Some(node)) => value.toString ++ " " ++ node.toString
-      case (Some(node), None) => node.toString ++ " " ++ value.toString
-      case (Some(u), Some(v)) => u.toString ++ " " ++ value.toString ++ " " ++ v.toString
-    }
-  }
-}
-
-object Main extends App {
-  val sc = new Scanner(System.in)
-  val st = new AVLTree()
-  val mini = new AVLTree()
-
-  val q = sc.nextInt
-  for (i <- 1 to q) {
-    val cmd = sc.nextInt
-    cmd match {
-      case 1 => {
-        val x = sc.nextInt
-        if (st.includes(x)) {
-          mini.insert(0)
-        } else {
-          val left = st.lower(x)
-          val right = st.upper(x)
-          (left, right) match {
-            case (None,None) => () 
-            case (None, Some(v)) => mini.insert(v ^ x)  
-            case (Some(v), None) => mini.insert(v ^ x)
-            case (Some(u), Some(v)) => {
-              mini.delete(u ^ v)
-              mini.insert(u ^ x)
-              mini.insert(v ^ x)
-            }
-          }
-
-        }
-        st.insert(x)
-      } 
-      case 2 => {
-        val x = sc.nextInt
-        if (st.includes(x)) {
-          mini.delete(0)
-        } else {
-          val left = st.lower(x)
-          val right = st.upper(x)
-          (left, right) match {
-            case (None, None) => ()
-            case (None, Some(v)) => mini.delete(v ^ x)
-            case (Some(v), None) => mini.delete(v ^ x)
-            case (Some(u), Some(v)) => {
-              mini.insert(u ^ v)
-              mini.delete(u ^ x)
-              mini.delete(v ^ x)
-            }
-          }
-        }
-      }
-      case _ => {
-        println(mini.min)
-      } 
-    }
-    System.out.println("---")
-    System.out.println(st.toString)
-    System.out.println(mini.toString)
   }
 }
