@@ -48,7 +48,7 @@ class AVLTree(var root: Option[Node] = None) {
   }
 
   override def toString: String = root match {
-    case None => "()"
+    case None       => "()"
     case Some(node) => node.toString
 
   }
@@ -143,19 +143,13 @@ class Node(val value: Int) {
   }
 
   // v未満の最大値
-  def lower(v: Int): Option[Int] = v match {
-    case v if value < v => {
+  def lower(v: Int): Option[Int] = {
+    if (value < v) {
       right match {
-        case Some(node) => {
-          node.lower(v) match {
-            case Some(node) => Some(scala.math.max(v, value))
-            case None       => Some(value)
-          }
-        }
-        case None => Some(value)
+        case Some(node) => node.lower(v)
+        case None       => Some(value)
       }
-    }
-    case _ => {
+    } else {
       left match {
         case Some(node) => node.lower(v)
         case None       => None
@@ -164,19 +158,13 @@ class Node(val value: Int) {
   }
 
   // vを越える最小値
-  def upper(v: Int): Option[Int] = v match {
-    case v if v < value => {
+  def upper(v: Int): Option[Int] = {
+    if (v < value) {
       left match {
-        case Some(node) => {
-          node.upper(v) match {
-            case Some(node) => Some(scala.math.min(v, value))
-            case None       => Some(value)
-          }
-        }
-        case None => Some(value)
+        case Some(node) => node.upper(v)
+        case None       => Some(value)
       }
-    }
-    case _ => {
+    } else {
       right match {
         case Some(node) => node.upper(v)
         case None       => None
@@ -287,13 +275,15 @@ class Node(val value: Int) {
 
   override def toString: String = {
     (left, right) match {
-      case (None, None) => value.toString
+      case (None, None)       => value.toString
       case (None, Some(node)) => value.toString ++ " " ++ node.toString
       case (Some(node), None) => node.toString ++ " " ++ value.toString
-      case (Some(u), Some(v)) => u.toString ++ " " ++ value.toString ++ " " ++ v.toString
+      case (Some(u), Some(v)) =>
+        u.toString ++ " " ++ value.toString ++ " " ++ v.toString
     }
   }
 }
+
 
 object Main extends App {
   val sc = new Scanner(System.in)

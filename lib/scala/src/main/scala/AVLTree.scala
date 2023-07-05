@@ -26,23 +26,29 @@ class AVLTree(var root: Option[Node] = None) {
   }
 
   def minNode: Option[Node] = root match {
-    case None => None
+    case None       => None
     case Some(node) => Some(node.minNode)
   }
 
   def min: Option[Int] = root match {
-    case None => None
+    case None       => None
     case Some(node) => Some(node.min)
   }
 
   def maxNode: Option[Node] = root match {
-    case None => None
+    case None       => None
     case Some(node) => Some(node.maxNode)
   }
 
   def max: Option[Int] = root match {
-    case None => None
+    case None       => None
     case Some(node) => Some(node.max)
+  }
+
+  override def toString: String = root match {
+    case None       => "()"
+    case Some(node) => node.toString
+
   }
 }
 
@@ -72,7 +78,6 @@ class Node(val value: Int) {
 
   // 挿入
   def insert(v: Int): Option[Node] = v match {
-    case v if v == value => Some(this)
     case v if v < value => {
       left match {
         case None       => left = Some(new Node(v))
@@ -80,7 +85,7 @@ class Node(val value: Int) {
       }
       Some(this)
     }
-    case v if v > value => {
+    case v if v >= value => {
       right match {
         case None       => right = Some(new Node(v))
         case Some(node) => right = node.insert(v)
@@ -90,62 +95,60 @@ class Node(val value: Int) {
   }
 
   // 削除
-  def delete(v: Int): Option[Node] = v match {
-    case v if v == value => {
-      left match {
-        case Some(node) => {
-          node.left = left
-          node.right = right
-          Some(node.update.reBalance)
-        }
-        case None => {
-          right match {
-            case Some(node) => right
-            case None       => None
-          }
-        }
-      }
+  def delete(v: Int): Option[Node] = {
+    if (v == value) delete_equal(v)
+    else if (v < value) delete_left(v)
+    else delete_right(v)
+  }
+
+  // 自身を削除
+  def delete_equal(v: Int): Option[Node] = left match {
+    case Some(l) => {
+      val (x, node) = l.pop
+      node.left = left
+      node.right = right
+      Some(node.update.reBalance)
     }
-    case v if v < value => {
-      left match {
-        case Some(node) => {
-          left = node.delete(v)
-          Some(this.update.reBalance)
-        }
-        case None => {
-          left = None
-          Some(this.update.reBalance)
-        }
-      }
-    }
-    case v if v > value => {
+    case None => {
       right match {
-        case Some(node) => {
-          right = node.delete(v)
-          Some(this.update.reBalance)
-        }
-        case None => {
-          right = None
-          Some(this.update.reBalance)
-        }
+        case Some(node) => right
+        case None       => None
       }
     }
   }
 
-  // v未満の最大値
-  def lower(v: Int): Option[Int] = v match {
-    case v if value < v => {
-      right match {
-        case Some(node) => {
-          node.lower(v) match {
-            case Some(node) => Some(scala.math.max(v, value))
-            case None       => Some(value)
-          }
-        }
-        case None => Some(value)
-      }
+  // 左ノード以下を削除
+  def delete_left(v: Int): Option[Node] = left match {
+    case Some(node) => {
+      left = node.delete(v)
+      Some(this.update.reBalance)
     }
-    case _ => {
+    case None => {
+      left = None
+      Some(this.update.reBalance)
+    }
+  }
+
+  // 右ノード以下を削除
+  def delete_right(v: Int): Option[Node] = right match {
+    case Some(node) => {
+      right = node.delete(v)
+      Some(this.update.reBalance)
+    }
+    case None => {
+      right = None
+      Some(this.update.reBalance)
+    }
+  }
+
+  // v未満の最大値
+  def lower(v: Int): Option[Int] = {
+    if (value < v) {
+      right match {
+        case Some(node) => node.lower(v)
+        case None       => Some(value)
+      }
+    } else {
       left match {
         case Some(node) => node.lower(v)
         case None       => None
@@ -154,19 +157,13 @@ class Node(val value: Int) {
   }
 
   // vを越える最小値
-  def upper(v: Int): Option[Int] = v match {
-    case v if v < value => {
+  def upper(v: Int): Option[Int] = {
+    if (v < value) {
       left match {
-        case Some(node) => {
-          node.upper(v) match {
-            case Some(node) => Some(scala.math.min(v, value))
-            case None       => Some(value)
-          }
-        }
-        case None => Some(value)
+        case Some(node) => node.upper(v)
+        case None       => Some(value)
       }
-    }
-    case _ => {
+    } else {
       right match {
         case Some(node) => node.upper(v)
         case None       => None
@@ -176,7 +173,7 @@ class Node(val value: Int) {
 
   // 最小のノード
   def minNode: Node = left match {
-    case None => this
+    case None       => this
     case Some(node) => node.minNode
   }
 
@@ -185,12 +182,24 @@ class Node(val value: Int) {
 
   // 最大のノード
   def maxNode: Node = right match {
-    case None => this
+    case None       => this
     case Some(node) => node.maxNode
   }
 
   // 最大の値
   def max: Int = maxNode.value
+
+  // 最大値を削除して返す
+  def pop: (Option[Node], Option[Node]) = {
+    right match {
+      case None => (left, Some(this))
+      case Some(r) => {
+        val (x, node) = r.pop
+        right = x
+        (Some(update), node)
+      }
+    }
+  }
 
   // ノードの状態を更新
   def update: Node = {
@@ -273,5 +282,15 @@ class Node(val value: Int) {
   def rightSize: Int = right match {
     case Some(node) => node.size
     case None       => 0
+  }
+
+  override def toString: String = {
+    (left, right) match {
+      case (None, None)       => value.toString
+      case (None, Some(node)) => value.toString ++ " " ++ node.toString
+      case (Some(node), None) => node.toString ++ " " ++ value.toString
+      case (Some(u), Some(v)) =>
+        u.toString ++ " " ++ value.toString ++ " " ++ v.toString
+    }
   }
 }
