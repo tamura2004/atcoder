@@ -52,7 +52,7 @@ class AVLTree(var root: Option[Node] = None) {
   }
 }
 
-class Node(val value: Int) {
+class Node(var value: Int) {
   var balance = 0
   var size = 1
   var height = 1
@@ -102,50 +102,74 @@ class Node(val value: Int) {
   }
 
   // 自身を削除
-  def delete_equal(v: Int): Option[Node] = left match {
-    case Some(l) => {
-      val (x, node) = l.pop
-      node.left = left
-      node.right = right
-      Some(node.update.reBalance)
-    }
-    case None => {
-      right match {
-        case Some(node) => right
-        case None       => None
+  def delete_equal(v: Int): Option[Node] = (left, right) match {
+    case (None, None) => None
+    case (Some(l), None) => left
+    case (None, Some(r)) => right
+    case (Some(l), Some(r)) => {
+      // 左部分木の最大値を持つノードを削除して
+      // その値を自身にセット
+      l.pop match {
+        case (node, maxValue) => {
+          left = node
+          value = maxValue
+          Some(update.reBalance)
+        }
       }
     }
   }
+  // def delete_equal(v: Int): Option[Node] = left match {
+  //   case Some(l) => {
+  //     val (x, node) = l.pop
+  //     node.left = left
+  //     node.right = right
+  //     Some(node.update.reBalance)
+  //   }
+  //   case None => {
+  //     right match {
+  //       case Some(node) => right
+  //       case None       => None
+  //     }
+  //   }
+  // }
 
   // 左ノード以下を削除
-  def delete_left(v: Int): Option[Node] = left match {
-    case Some(node) => {
-      left = node.delete(v)
-      Some(this.update.reBalance)
-    }
-    case None => {
-      left = None
-      Some(this.update.reBalance)
-    }
+  def delete_left(v: Int): Option[Node] = {
+    left.map(node => left = node.delete(v))
+    Some(update.reBalance)
+    // case Some(node) => {
+    //   left = node.delete(v)
+    //   Some(this.update.reBalance)
+    // }
+    // case None => {
+    //   left = None
+    //   Some(this.update.reBalance)
+    // }
   }
 
   // 右ノード以下を削除
-  def delete_right(v: Int): Option[Node] = right match {
-    case Some(node) => {
-      right = node.delete(v)
-      Some(this.update.reBalance)
-    }
-    case None => {
-      right = None
-      Some(this.update.reBalance)
-    }
+  def delete_right(v: Int): Option[Node] = {
+    right.map(node => right = node.delete(v))
+    Some(update.reBalance)
+    // right
+    // case Some(node) => {
+    //   right = node.delete(v)
+    //   Some(this.update.reBalance)
+    // }
+    // case None => {
+    //   right = None
+    //   Some(this.update.reBalance)
+    // }
   }
 
   // v未満の最大値
   def lower(v: Int): Option[Int] = {
     if (value < v) {
       right match {
-        case Some(node) => node.lower(v)
+        case Some(node) => node.lower(v) match {
+          case None => Some(value)
+          case Some(v) => Some(v)
+        }
         case None       => Some(value)
       }
     } else {
@@ -160,7 +184,10 @@ class Node(val value: Int) {
   def upper(v: Int): Option[Int] = {
     if (v < value) {
       left match {
-        case Some(node) => node.upper(v)
+        case Some(node) => node.upper(v) match {
+          case None => Some(value)
+          case Some(v) => Some(v)
+        }
         case None       => Some(value)
       }
     } else {
@@ -189,15 +216,13 @@ class Node(val value: Int) {
   // 最大の値
   def max: Int = maxNode.value
 
-  // 最大値を削除して返す
-  def pop: (Option[Node], Option[Node]) = {
-    right match {
-      case None => (left, Some(this))
-      case Some(r) => {
-        val (x, node) = r.pop
-        right = x
-        (Some(update), node)
-      }
+  // 最大値を削除して親ノードに自身と値を返す
+  def pop: (Option[Node], Int) = right match {
+    case None => (None, value)
+    case Some(r) => {
+      val (node, x) = r.pop
+      right = node
+      (Some(update.reBalance), x)
     }
   }
 
