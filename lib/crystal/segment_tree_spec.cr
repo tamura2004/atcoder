@@ -4,6 +4,18 @@ require "crystal/segment_tree"
 alias Pair = Tuple(Int32, Int32)
 
 describe SegmentTree do
+  it "clear" do
+    st = 10.to_st_min
+    st[5] = 100_i64
+    st[7] = 200_i64
+    st[..5].should eq 100
+    st[7..].should eq 200
+    st[5..7].should eq 100
+    st.clear
+    st[6] = 1000_i64
+    st[5..7].should eq 1000
+  end
+
   it "init by values size" do
     st = SegmentTree(Int32).new(10)
     st[0...].should eq 0
