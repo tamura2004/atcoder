@@ -13,7 +13,7 @@ class Dijkstra
   end
 
   def solve(root = 0)
-    q = [{0_i64, root}].to_pq_lesser
+    q = [{0_i64, root.to_i}].to_pq_lesser
     seen = Array.new(n, false)
     depth = Array.new(n, INF)
 
