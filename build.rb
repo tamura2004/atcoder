@@ -3,7 +3,7 @@ macro chmax(target, other)
   {{target}} = ({{other}}) if ({{target}}) < ({{other}})
 end
 
-EOS
+EOSt
 
 CHMIN = <<EOS.lines
 macro chmin(target, other)

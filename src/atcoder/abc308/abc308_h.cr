@@ -3,13 +3,13 @@ INF = 1e8.to_i64
 class Graph
   getter g : Array(Array(Int64))
   getter n : Int32
-  getter pairs : Array(Tuple(Int32, Int32))
   delegate "[]", to: g
+  getter pairs : Array(Tuple(Int32,Int32))
 
   def initialize(@n)
     @g = Array.new(n) { Array.new(n, INF) }
     n.times { |i| g[i][i] = 0_i64 }
-    @pairs = [] of Tuple(Int32, Int32)
+    @pairs = [] of Tuple(Int32,Int32)
     n.times do |i|
       n.times do |j|
         next unless i < j
@@ -26,10 +26,9 @@ class Graph
     g[nv][v] = cost if both
   end
 
-  # rootを含む最短サイクルを求める
   def shortst_cycle(root = 0)
     root = root.to_i
-    depth = Array.new(n, INF)
+    depth = Array.new(n, INF * 2)
     parent = Array.new(n, -1)
     label = Array.new(n, -1)
     seen = Array.new(n, false)
@@ -43,7 +42,6 @@ class Graph
         depth[i]
       end
       seen[v] = true
-      
       n.times do |nv|
         if depth[v] + g[v][nv] < depth[nv]
           depth[nv] = depth[v] + g[v][nv]
@@ -53,36 +51,56 @@ class Graph
       end
     end
 
+    # mini = INF * 5
+    # n.times do |i|
+    #   (i + 1...n).each do |j|
+    #     next if parent[i] == j || parent[j] == i
+    #     next if label[i] == label[j]
+    #     chmin mini, depth[i] + depth[j] + g[i][j]
+    #   end
+    # end
+
     i, j = pairs.min_by do |i, j|
       next INF if parent[i] == j || parent[j] == i
       next INF if label[i] == label[j]
-      depth[i] + depth[j] + g[i][j]
+      Math.min depth[i] + depth[j] + g[i][j], INF
     end
 
     len = pairs.min_of do |i, j|
       next INF if parent[i] == j || parent[j] == i
       next INF if label[i] == label[j]
-      depth[i] + depth[j] + g[i][j]
+      Math.min depth[i] + depth[j] + g[i][j], INF
     end
 
-    cycle = [] of Int32
+    # n.times do |i|
+    #   (i + 1...n).each do |j|
+    #     next if parent[i] == j || parent[j] == i
+    #     next if label[i] == label[j]
+    #     next if mini != depth[i] + depth[j] + g[i][j]
+
+
+    res = [] of Int32
+
     a = i
     b = j
-
     while a != root
-      cycle << a
+      res << a
       a = parent[a]
     end
-    cycle << a
+    res << a
 
-    cycle.reverse!
+    res.reverse!
 
     while b != root
-      cycle << b
+      res << b
       b = parent[b]
     end
 
-    return {len, cycle}
+    return {len, res}
+        # return {mini, res}
+    #   end
+    # end
+    # return {mini, [] of Int32}
   end
 end
 
@@ -106,7 +124,6 @@ n.times do |v|
     next if nv == adj[1]
     chmin ans, len + g[v][nv]
   end
-
   adj.each do |nv|
     save = g[v][nv]
     g[v][nv] = g[nv][v] = INF
