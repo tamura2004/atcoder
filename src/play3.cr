@@ -1,6 +1,19 @@
-# g(i, j)が最小になる(i,j)を求める
-def g(i, j)
-  (100 - i) % 6 * (20 - j) % 7
+s = gets.to_s
+t = gets.to_s
+n = s.size
+m = t.size
+
+dp = make_array(0, n+1, m+1)
+
+n.times do |i|
+  m.times do |j|
+    if s[i] == t[j]
+      chmax dp[i+1][j+1], dp[i][j] + 1
+    else
+      chmax dp[i+1][j+1], dp[i+1][j]
+      chmax dp[i+1][j+1], dp[i][j+1]
+    end
+  end
 end
 
-pp Array.product((0..7).to_a, (0..7).to_a)
+pp dp[-1][-1]

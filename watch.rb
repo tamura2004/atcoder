@@ -3,6 +3,7 @@ require "open3"
 require "time"
 require "fileutils"
 require "colorize"
+require 'rbconfig'
 
 $last_exec_time = Time.new - 10
 
@@ -29,22 +30,20 @@ LANG_EXT = {
   ".maxima" => "maxima",
   ".lisp" => "common_lisp",
   ".zig" => "zig",
+  ".swift" => "swift"
 }
 
 # %s はソースコードの絶対パスに置き換え
 COMPILE = {
   "cpp" => "g++ %s -std=c++17",
-  # "ruby" => "cat %s | clip.exe && touch flag.txt",
-  "ruby" => "cat %s | clip.exe",
-  # "crystal" => "ruby build.rb %s target.cr",
-  "crystal" => "ruby build.rb %s target.cr && cat target.cr | grep -v pp! |  clip.exe",
+  "ruby" => "cat %s",
+  "crystal" => "ruby build_crystal.rb %s target.cr && cat target.cr | grep -v pp!",
   "java" => "javac -d dist src/Main.java",
-  "scala" => "scalac -d dist %s",
+  "scala" => "ruby build_scala.rb %s target.scala && scalac -d dist target.scala && cat target.scala",
   "kotlin" => "kotlinc src/main.kt -include-runtime -d dist/kotlin.jar",
   "csharp" => "mcs src/main.cs -out:dist/csharp.exe",
   "go" => "go build -buildmode=exe -o ./dist/go.out %s",
   "rust" => "cargo build",
-# "common_lisp" => 'sbcl --noinform -eval "(compile-file \"src/main.cl\")" --quit',
 }
 
 # %s はソースコードの絶対パスに置き換え
@@ -54,16 +53,13 @@ EXECUTE = {
   "ruby" => "ruby %s",
   "cpp" => "./a.out",
   "julia" => "julia src/main.jl",
-  # "crystal" => "dist/crystal.out",
   # "crystal" => "crystal run --release target.cr",
   "crystal" => "crystal run target.cr",
-  # "crystal" => "crystal run target.cr && cat target.cr | grep -v pp! | clip.exe",
   "python3" => "python3 src/main.py",
   "perl" => "perl src/main.pl",
   "pypy3" => "pypy3 src/main.pypy",
   "haskell" => "runghc src/main.hs",
   "clojure" => "clojure src/main.clj",
-  # "nim" => "nim c -r --hints:off src/main.nim",
   "nim" => "nim c -r --stdout:off --hints:off --warning[UnusedImport]:off src/main.nim",
   "java" => "java -classpath dist Main",
   "scala" => "scala -classpath dist Main",
@@ -75,6 +71,7 @@ EXECUTE = {
   "maxima" => "maxima -b src/main.maxima",
   "common_lisp" => "sbcl --script %s",
   "zig" => "docker run -i --rm -v \"$PWD:/app\" euantorano/zig run /app/src/main.zig",
+  "swift" => "swift %s"
 }
 
 class Task
@@ -109,7 +106,18 @@ class Task
     if cmd = COMPILE[lang]
       cmd = COMPILE[lang] % src
       info "Compled by #{cmd}"
-      `#{cmd}`
+
+      host_os = RbConfig::CONFIG['host_os']
+      case host_os
+      when /mswin|msys|mingw|cygwin|bccwin|wince|emc/
+        `#{cmd} | clip.exe`
+      when /darwin|mac os/
+        `#{cmd} | pbcopy`
+      when /linux/
+        `#{cmd}`
+      else
+        `#{cmd}`
+      end
     end
   end
 

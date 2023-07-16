@@ -3,7 +3,7 @@ macro chmax(target, other)
   {{target}} = ({{other}}) if ({{target}}) < ({{other}})
 end
 
-EOSt
+EOS
 
 CHMIN = <<EOS.lines
 macro chmin(target, other)
@@ -47,7 +47,6 @@ while flag
   flag = false
   tmp = []
   buf.each do |line|
-    # line.gsub!(/\b([0-9]+)\b/, '\1_i64')
     if line =~ /^require "crystal\/(.*)"/ && !flag
       name = $1
 

@@ -1,13 +1,6 @@
 import java.util.Scanner
 import scala.collection.mutable.ArrayBuffer
-
-case class ModInt(val v : Long) {
-  val MOD = 998244353L
-  def +(b : ModInt) = new ModInt((v + (b.v % MOD) % MOD))
-  def *(b : Long) = new ModInt((v * (b % MOD) % MOD))
-  def toLong = v
-  override def toString = v.toString
-}
+import local.ModInt
 
 object Main extends App {
   val sc = new Scanner(System.in)

@@ -1,5 +1,5 @@
-crystal 0.33.0
-ruby 2.7.1
-java adoptopenjdk-8.0.282+8
+crystal 1.2.2
+ruby 3.2.2
+java openjdk-20.0.1
 scala 2.13.1
 python 3.8.2

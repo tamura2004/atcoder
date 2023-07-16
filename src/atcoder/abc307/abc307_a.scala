@@ -1,4 +1,5 @@
 import java.util.Scanner
+import local.AVLTree
 
 object Main extends App {
   val sc = new Scanner(System.in)
