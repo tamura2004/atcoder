@@ -44,6 +44,7 @@ COMPILE = {
   "csharp" => "mcs src/main.cs -out:dist/csharp.exe",
   "go" => "go build -buildmode=exe -o ./dist/go.out %s",
   "rust" => "cargo build",
+  "swift" => "cat %s"
 }
 
 # %s はソースコードの絶対パスに置き換え

@@ -8,6 +8,8 @@ end.sort.reverse
 
 cs = ab.map(&.last).cs
 
+pp! cs
+
 
 if i = cs.bsearch_index(&.> k)
   puts ab[i-1][0] + 1
