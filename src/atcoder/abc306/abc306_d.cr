@@ -19,3 +19,4 @@ n.times do |i|
 end
 
 pp dp[-1].max
+pp dp
