@@ -3,7 +3,7 @@ require "open3"
 require "time"
 require "fileutils"
 require "colorize"
-require 'rbconfig'
+require "rbconfig"
 
 $last_exec_time = Time.new - 10
 
@@ -30,7 +30,7 @@ LANG_EXT = {
   ".maxima" => "maxima",
   ".lisp" => "common_lisp",
   ".zig" => "zig",
-  ".swift" => "swift"
+  ".swift" => "swift",
 }
 
 # %s はソースコードの絶対パスに置き換え
@@ -44,7 +44,7 @@ COMPILE = {
   "csharp" => "mcs src/main.cs -out:dist/csharp.exe",
   "go" => "go build -buildmode=exe -o ./dist/go.out %s",
   "rust" => "cargo build",
-  "swift" => "cat %s"
+  "swift" => "cat %s",
 }
 
 # %s はソースコードの絶対パスに置き換え
@@ -72,7 +72,7 @@ EXECUTE = {
   "maxima" => "maxima -b src/main.maxima",
   "common_lisp" => "sbcl --script %s",
   "zig" => "docker run -i --rm -v \"$PWD:/app\" euantorano/zig run /app/src/main.zig",
-  "swift" => "swift %s"
+  "swift" => "swift %s",
 }
 
 class Task
@@ -108,16 +108,16 @@ class Task
       cmd = COMPILE[lang] % src
       info "Compled by #{cmd}"
 
-      host_os = RbConfig::CONFIG['host_os']
+      host_os = RbConfig::CONFIG["host_os"]
       case host_os
       when /mswin|msys|mingw|cygwin|bccwin|wince|emc/
         `#{cmd} | clip.exe`
       when /darwin|mac os/
         `#{cmd} | pbcopy`
       when /linux/
-        `#{cmd}`
+        `#{cmd} | clip.exe`
       else
-        `#{cmd}`
+        `#{cmd} | clip.exe`
       end
     end
   end
