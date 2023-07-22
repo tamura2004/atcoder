@@ -10,4 +10,6 @@ src/nimcache
 .metals/
 .scalafmt.conf
 a.out
-.tool_versions
+.tool-versions
+.scala-build/
+.bsp/
