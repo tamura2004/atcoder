@@ -14,4 +14,3 @@ n.times do |i|
     quit i + 1
   end
 end
-

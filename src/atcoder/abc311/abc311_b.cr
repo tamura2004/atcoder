@@ -1,8 +1,8 @@
 n, d = gets.to_s.split.map(&.to_i64)
-s = Array.new(n){gets.to_s}
+s = Array.new(n) { gets.to_s }
 
 a = (0...d).map do |i|
-  s.all?{|row|row[i] == 'o'} # 全員暇
+  s.all? { |row| row[i] == 'o' } # 全員暇
 end
 
 ans = a.chunk(&.itself).select(&.first).to_a

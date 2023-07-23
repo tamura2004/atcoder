@@ -1,21 +1,28 @@
-# dfsをして後退辺を見つけたら、その先をrootとしてrootまで巻き戻す
-
-require "crystal/graph"
-require "crystal/graph/scc"
+# 訪問順を記録、後退辺があったら訪問順以降がcycle
 
 n = gets.to_s.to_i64
-g = n.to_g
 nex = gets.to_s.split.map(&.to_i.pred)
+ord = Array.new(n, -1)
+visit = [] of Int32
 
-nex.each_with_index do |nv, v|
-  g.add v, nv, both: false, origin: 0
+v = 0
+root = -1
+loop do
+  ord[v] = visit.size
+  visit << v
+
+  nv = nex[v]
+  if ord[nv] != -1
+    root = ord[nv]
+    break
+  else
+    v = nv
+  end
 end
 
-scc = SCC.new(g).solve
-scc.each do |cycle|
-  next if cycle.size == 1
-  puts cycle.size
-  cycle.reverse! if nex[cycle[0]] != cycle[1]
-  puts cycle.map(&.succ).join(" ")
-  exit
-end
+# pp! root
+# pp! visit
+
+cycle = visit[root..]
+puts cycle.size
+puts cycle.map(&.succ).join(" ")

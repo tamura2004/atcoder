@@ -12,11 +12,11 @@ enum D
 end
 
 h, w = gets.to_s.split.map(&.to_i64)
-g = Array.new(h){ gets.to_s }
+g = Array.new(h) { gets.to_s }
 
-q = Deque.new([{1,1,D::Stop}])
-seen = Array.new(h){
-  Array.new(w){
+q = Deque.new([{1, 1, D::Stop}])
+seen = Array.new(h) {
+  Array.new(w) {
     Set(D).new
   }
 }
@@ -24,7 +24,12 @@ seen[1][1] << D::Stop
 
 while q.size > 0
   y, x, dir = q.shift
-  [{-1,0,D::Up},{1,0,D::Down},{0,1,D::Right},{0,-1,D::Left}].each do |dy,dx,ndir|
+  [
+    {-1, 0, D::Up},
+    {1, 0, D::Down},
+    {0, 1, D::Right},
+    {0, -1, D::Left},
+  ].each do |dy, dx, ndir|
     next unless dir.stop? || dir == ndir
     ny = y + dy
     nx = x + dx
@@ -38,4 +43,4 @@ while q.size > 0
   end
 end
 
-pp seen.sum(&.count{ |s| !s.empty? })
+pp seen.sum(&.count { |s| !s.empty? })

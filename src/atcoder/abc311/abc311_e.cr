@@ -16,7 +16,7 @@ require "crystal/range"
 # pp cs[2.y + 3.x..]
 
 h, w, n = gets.to_s.split.map(&.to_i64)
-g = Array.new(h){Array.new(w, 0_i64) }
+g = Array.new(h) { Array.new(w, 0_i64) }
 n.times do
   y, x = gets.to_s.split.map(&.to_i64.pred)
   g[y][x] = 1_i64
@@ -29,9 +29,9 @@ ans = 0_i64
 h.times do |y|
   w.times do |x|
     next if g[y][x] == 1_i64
-    d = Math.min w - 1 - x, h - 1 - y 
+    d = Math.min w - 1 - x, h - 1 - y
     cnt = (0..d).reverse_bsearch do |mid|
-      cs[y.y+x.x..(y+mid).y+(x+mid).x] == 0_i64
+      cs[y.y + x.x..(y + mid).y + (x + mid).x] == 0_i64
     end.not_nil!
     ans += cnt + 1
   end
