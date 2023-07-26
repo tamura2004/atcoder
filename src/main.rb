@@ -1,67 +1,32 @@
-class Grid
-  attr_accessor :h
-  attr_accessor :w
-  attr_accessor :s
-  attr_accessor :g
+require "set"
 
-  def initialize(h, w, s)
-    @h = h
-    @w = w
-    @s = s
-    @g = Array.new(h) { Array.new(w, 0) }
-    h.times do |y|
-      w.times do |x|
-        g[y][x] = s[y * w + x]
-      end
+UP = 1
+DOWN = 2
+LEFT = 3
+RIGHT = 4
+STOP = 5
+
+h, w = gets.split.map(&:to_i)
+g = Array.new(h) { gets.chomp }
+
+q = [[1, 1, STOP]]
+seen = Array.new(h) { Array.new(w) { Set.new } }
+seen[1][1] << STOP
+
+while q.size > 0
+  y, x, dir = q.shift
+  [[-1, 0, UP], [1, 0, DOWN], [0, 1, RIGHT], [0, -1, LEFT]].each do |dy, dx, ndir|
+    next unless dir == STOP || dir == ndir
+    ny = y + dy
+    nx = x + dx
+    if g[ny][nx] == "#"
+      q << [y, x, STOP] if dir != STOP
+      next
     end
-  end
-
-  def [](y, x)
-    if 0 <= x && x < w && 0 <= y && y < h
-      g[y][x]
-    else
-      0
-    end
-  end
-
-  def white?(y, x)
-    self[y, x] == 0
-  end
-
-  def black?(y, x)
-    !white?(y, x)
-  end
-
-  def valid?
-    h.times.all? do |y|
-      w.times.all? do |x|
-        white?(y - 1, x) && white?(y - 1, x - 1) || black?(y, x)
-      end
-    end
-  end
-
-  def c(i)
-    s[i] == 1 ? "●" : "○"
-  end
-
-  def to_s
-    ans = g.map do |row|
-      row.map do |cell|
-        cell == 1 ? "●" : "○"
-      end.join(" ")
-    end.join("\n")
-
-    "===\n#{s}\n" + ans
+    next if seen[ny][nx] === ndir
+    seen[ny][nx] << ndir
+    q << [ny, nx, ndir]
   end
 end
 
-cnt = 0
-(1 << 12).times do |s|
-  g = Grid.new(3, 3, s)
-  next unless g.valid?
-  puts g
-  cnt += 1
-end
-
-pp "---"
-pp cnt
+pp h * w - seen.flatten.count(&:empty?)
