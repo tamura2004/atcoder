@@ -23,8 +23,8 @@ class Watcher
   # 監視開始
   def start
     listener.start
-    logger.warn("=" * 50)
-    logger.warn("Watching. Ready for change.")
+    logger.qqqq("=" * 50)
+    logger.qqqq("Watching. Ready for change.")
     sleep
   end
 
@@ -72,10 +72,10 @@ class Runner
   def run(type, path)
     case type
     when :src
-      logger.warn("#{path} has chaned.\n")
+      logger.qqqq("#{path} has chaned.\n")
       code_runner.run(path)
     when :input
-      logger.warn("input.txt has chaned. Use last run src: #{code_runner.last_run}\n")
+      logger.qqqq("input).txt has chaned. Use last run src: #{code_runner.last_run}\n")
       code_runner.run
     when :lib
       test_runner.run(:lib, path)
@@ -134,7 +134,7 @@ class CodeRunner
       stdout = src.readlines
     else
       stdout, stderr, _ = Open3.capture3(cmd: bundler, stdin_data: src.to_s)
-      logger.warn stderr
+      logger.qqqq(stderr)
     end
     target.open("w") do |writer|
       writer.puts stdout
@@ -149,11 +149,11 @@ class CodeRunner
   end
 
   # targetをコンパイルしてexecutableを作成
-  def compile(src)
+  def compile
   end
 
   # executableを実行
-  def exec(src)
+  def exec
     return
     start_time = Time.now
     stdout, stderr, _ = Open3.capture3(src.to_s, stdin_data: input.to_s)
@@ -212,9 +212,9 @@ class Logger
   end
 
   # 情報出力（青）
-  # def warn(msg)
-    # STDERR.puts msg.colorize(:blue)
-  # end
+  def qqqq(msg)
+    STDERR.puts msg.colorize(:blue)
+  end
 
   # 警告出力（黃）
   def warn(msg)
