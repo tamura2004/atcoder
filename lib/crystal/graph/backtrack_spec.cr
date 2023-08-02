@@ -25,7 +25,7 @@ describe Backtrack do
       Backtrack::Game::Lose,
     ]
   end
-  
+
   it "abst graph" do
     g = BaseGraph(Tuple(Int32,Int32)).new
     g.add ({1,0}), ({3,1}), both: false
