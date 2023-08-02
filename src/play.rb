@@ -5,7 +5,7 @@ require "colorize"
 
 # フォルダを監視し変更のあったソルバーかライブラリのテストを実行
 class Watcher
-  attr_reader :home, :listener, :runner, :logger
+  attr_reader :runner, :logger
 
   # ファイルタイプから変更ファイルのフルパスが満たす正規表現を得る
   TYPES = {
@@ -17,23 +17,27 @@ class Watcher
   # 初期化、およびファイル変更時の呼び出し処理を定義
   def initialize
     @logger = Logger.new
-    @home = Pathname.pwd
     @runner = Runner.new
-    @listener = Listen.to("src", "lib") do |full_path|
-      type, path = file_type(full_path)
-      runner.run(type, path)
-    end
   end
 
   # 監視開始
   def start
-    @listener.start
-    logger.info("=" * 50)
-    logger.info("Watching. Ready for change.")
+    listener.start
+    logger.warn("=" * 50)
+    logger.warn("Watching. Ready for change.")
     sleep
   end
 
-  private
+  def listener
+    Listen.to("src", "lib") do |full_path, _, _|
+      type, path = file_type(full_path&.first)
+      runner.run(type, path)
+    end
+  end
+
+  def home
+    Pathname.pwd
+  end
 
   # ファイルのフルパスを元に、[タイプ、パスオブジェクト]を返す
   #
@@ -45,7 +49,7 @@ class Watcher
   #
   # パスオブジェクト 実行フォルダから相対参照のPathnameオブジェクト
   def file_type(full_path)
-    path = Pathname(full_path&.first).relative_path_from(home)
+    path = Pathname(full_path).relative_path_from(home)
     TYPES.each do |type, regexp|
       return [type, path] if path.to_s =~ regexp
     end
@@ -68,10 +72,10 @@ class Runner
   def run(type, path)
     case type
     when :src
-      logger.info("#{path} has chaned.\n")
+      logger.warn("#{path} has chaned.\n")
       code_runner.run(path)
     when :input
-      logger.info("input.txt has chaned. Use last run src: #{code_runner.last_run}\n")
+      logger.warn("input.txt has chaned. Use last run src: #{code_runner.last_run}\n")
       code_runner.run
     when :lib
       test_runner.run(:lib, path)
@@ -83,7 +87,7 @@ end
 
 # プログラムの実行
 class CodeRunner
-  attr_reader :sec, :input, :logger
+  attr_reader :src, :input, :logger
 
   # 拡張子から言語名
   EXT_TO_LANG = {
@@ -126,7 +130,7 @@ class CodeRunner
   # モジュールバンドル処理を行いtargetを出力
   def bundle
     bundler = BUNDLER[extname]
-    if bunler.nil?
+    if bundler.nil?
       stdout = src.readlines
     else
       stdout, stderr, _ = Open3.capture3(cmd: bundler, stdin_data: src.to_s)
@@ -138,7 +142,10 @@ class CodeRunner
   end
 
   # targetをクリップボードにコピー
-  def copy_to_clipboard(bundled_src)
+  def copy_to_clipboard
+    `cat #{target} | pbcopy`
+    # Open3.capture3(cmd: "pbcopy", stdin_data: target.to_s)
+    # Open3.capture3(cmd: "pbcopy", stdin_data: target.to_s)
   end
 
   # targetをコンパイルしてexecutableを作成
@@ -147,6 +154,7 @@ class CodeRunner
 
   # executableを実行
   def exec(src)
+    return
     start_time = Time.now
     stdout, stderr, _ = Open3.capture3(src.to_s, stdin_data: input.to_s)
     puts "=" * 50
@@ -204,9 +212,9 @@ class Logger
   end
 
   # 情報出力（青）
-  def info(msg)
-    STDERR.puts msg.colorize(:blue)
-  end
+  # def warn(msg)
+    # STDERR.puts msg.colorize(:blue)
+  # end
 
   # 警告出力（黃）
   def warn(msg)
@@ -214,4 +222,6 @@ class Logger
   end
 end
 
-Watcher.new.start
+w = Watcher.new
+w.listener.start
+sleep
