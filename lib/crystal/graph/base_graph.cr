@@ -38,6 +38,19 @@ class BaseGraph(V)
     @es = [] of Tuple(Int32, Int32, Int64, Int32)
   end
 
+  # 親の頂点リストで初期化
+  #
+  # 頂点リスト: p2, p3, ... , pn
+  # 頂点1が値であり、頂点i(2<=i<=n)の親がpi
+  def self.from_plist(a : Array(Int))
+    n = a.size + 1
+    g = BaseGraph(Int32).new(n)
+    a.each_with_index do |pv, v|
+      g.add v + 1, pv - 1, origin: 0
+    end
+    g
+  end
+
   # 親の頂点リストまたはS式で木を初期化
   def initialize(a : Array(T), @origin = 1, @both = true) forall T
     if a.is_a?(Array(Int32)) && a.includes?(-1) # 親の頂点リスト
@@ -51,23 +64,22 @@ class BaseGraph(V)
     end
   end
 
-  # 親の頂点リストで木を初期化
-  def parse_plist(a)
-    a.each_with_index do |pv, v|
-      next if pv == -1
-      add v + origin, pv
-    end
-  end
-
   # 親の頂点リストを出力
-  def to_plist(origin = 1)
+  #
+  # 頂点リスト: p2, p3, ... , pn
+  # 頂点1が値であり、頂点i(2<=i<=n)の親がpi
+  def to_plist
     ans = Array.new(n, -1)
-    n.times do |v|
+    dfs = uninitialized (Int32, Int32) -> Nil
+    dfs = -> (v : Int32, pv : Int32) do
+      ans[v] = pv + 1
       each(v) do |nv|
-        ans[nv] = v + origin
+        next if nv == pv
+        dfs.call(nv, v)
       end
     end
-    ans
+    dfs.call(0, -1)
+    ans[1..]
   end
 
   # s式で木を初期化
@@ -121,7 +133,7 @@ class BaseGraph(V)
       yield i
     end
   end
-  
+
   # ブロックなしはイテレータを返す
   def each : Iterator(Int32)
     n.times

@@ -1,91 +1,89 @@
-CHMAX = <<EOS.lines
-macro chmax(target, other)
-  {{target}} = ({{other}}) if ({{target}}) < ({{other}})
-end
+require "pathname"
+require "set"
 
-EOS
+MACROS = {
+  "chmax" => <<~EOS.lines,
+    macro chmax(target, other)
+      {{target}} = ({{other}}) if ({{target}}) < ({{other}})
+    end
 
-CHMIN = <<EOS.lines
-macro chmin(target, other)
-  {{target}} = ({{other}}) if ({{target}}) > ({{other}})
-end
+  EOS
+  "chmin" => <<~EOS.lines,
+    macro chmin(target, other)
+      {{target}} = ({{other}}) if ({{target}}) > ({{other}})
+    end
 
-EOS
+  EOS
+  "make_array" => <<~EOS.lines,
+    macro make_array(value, *dims)
+      {% for dim in dims %} Array.new({{dim}}) { {% end %}
+        {{ value }}
+      {% for dim in dims %} } {% end %}
+    end
 
-MAKE_ARRAY = <<EOS.lines
-macro make_array(value, *dims)
-  {% for dim in dims %} Array.new({{dim}}) { {% end %}
-    {{ value }}
-  {% for dim in dims %} } {% end %}
-end
+  EOS
+  "quit" => <<~EOS.lines,
+    macro quit(msg)
+      puts({{msg}}) + exit
+    end
 
-EOS
+  EOS
+  "divceil" => <<~EOS.lines,
+    macro divceil(a, b)
+      ((({{a}}) + ({{b}}) - 1) // ({{b}}))
+    end
 
-QUIT = <<EOS.lines
-macro quit(msg)
-  puts({{msg}}) + exit
-end
+  EOS
+}
 
-EOS
+class Bundler
+  attr_accessor :src, :target, :buf_head, :buf_body, :lib_seen, :macro_keys, :macro_seen, :lib_base
 
-DIVCEIL = <<EOS.lines
-macro divceil(a, b)
-  ((({{a}}) + ({{b}}) - 1) // ({{b}}))
-end
+  def initialize
+    @buf_head = []
+    @buf_body = []
+    @lib_seen = Set.new
+    @macro_seen = Set.new
+    @macro_keys = MACROS.keys
+    @lib_base = Pathname("lib/crystal")
+  end
 
-EOS
+  def run
+    dfs(STDIN)
+    macro_seen.each do |key|
+      @buf_head += MACROS[key]
+    end
+    puts buf_head + buf_body
+  end
 
-src, target = ARGV
-src ||= "src/main.cr"
-target ||= "src/target.cr"
-
-seen = Hash.new(false)
-buf = File.open(src).readlines
-
-flag = true
-while flag
-  flag = false
-  tmp = []
-  buf.each do |line|
-    if line =~ /^require "crystal\/(.*)"/ && !flag
-      name = $1
-
-      next if seen[name]
-      seen[name] = true
-      tmp << "\n"
-      tmp << "# " + line
-      if File.exist?("lib/crystal/#{name}.cr")
-        tmp += File.open("lib/crystal/#{name}.cr").readlines
+  def dfs(reader)
+    reader.each_line do |line|
+      if line =~ /^require "crystal\/(.*)/
+        buf_body << "# #{line}\n"
+        new_reader = find_path(line)
+        next if lib_seen.include?(new_reader.to_s)
+        lib_seen << new_reader.to_s
+        dfs(new_reader)
       else
-        tmp += File.open("lib/crystal/#{name}/#{name}.cr").readlines
+        buf_body << line
+        macro_keys.select { line.include?(_1) }.each { macro_seen << _1 }
       end
-      tmp << "\n"
-      flag = true
-    else
-      tmp << line
     end
   end
-  buf = tmp
+
+  private
+
+  def get_lib_name(line)
+    line.scan(/^require \"crystal\/(.*)\"$/)&.first&.first
+  end
+
+  def find_path(line)
+    lib_name = get_lib_name(line)
+    return Pathname(line) if lib_name.nil?
+    path = lib_base + lib_name
+    return path.sub_ext(".cr") if path.sub_ext(".cr").exist?
+    path + path.basename.sub_ext(".cr")
+  end
 end
 
-if buf.grep(/chmax/).size > 0 && buf.grep(/macro chmax/).size == 0
-  buf = CHMAX + buf
-end
-
-if buf.grep(/chmin/).size > 0 && buf.grep(/macro chmin/).size == 0
-  buf = CHMIN + buf
-end
-
-if buf.grep(/make_array/).size > 0 && buf.grep(/macro make_array/).size == 0
-  buf = MAKE_ARRAY + buf
-end
-
-if buf.grep(/quit/).size > 0 && buf.grep(/macro quit/).size == 0
-  buf = QUIT + buf
-end
-
-if buf.grep(/divceil/).size > 0 && buf.grep(/macro divceil/).size == 0
-  buf = DIVCEIL + buf
-end
-
-File.open(target, "w").write(buf.join)
+Bundler.new.run

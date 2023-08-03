@@ -42,9 +42,8 @@ describe BaseGraph do
     #           +---+
     #           | 5 |
     #           +---+
-    plist = [1, 2, 1, 3, 3, 3]
-    g = BaseGraph(Int32).new([-1] + plist)
-    g.to_plist.should eq [-1, 1, 2, 1, 3, 3, 3]
+    g = BaseGraph(Int32).from_plist([1, 2, 1, 3, 3, 3])
+    g.to_plist.should eq [1, 2, 1, 3, 3, 3]
   end
 
   it "iterate" do

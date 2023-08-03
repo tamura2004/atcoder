@@ -1,5 +1,6 @@
-def mex(a, b, c)
-  ((0..3).to_a - [a, b, c]).min
-end
+require "pathname"
+require "listen"
+require_relative "../tool/watcher"
 
-pp mex(0, 1, 2)
+w = Watcher.new
+w.start
