@@ -39,9 +39,7 @@ MACROS = {
 class Bundler
   attr_accessor :src, :target, :buf_head, :buf_body, :lib_seen, :macro_keys, :macro_seen, :lib_base
 
-  def initialize(src, target)
-    @src = src
-    @target = target
+  def initialize
     @buf_head = []
     @buf_body = []
     @lib_seen = Set.new
@@ -51,26 +49,21 @@ class Bundler
   end
 
   def run
-    dfs(src)
+    dfs(STDIN)
     macro_seen.each do |key|
       @buf_head += MACROS[key]
     end
-
-    File.open(target, "w") do |writer|
-      writer.puts buf_head + buf_body
-    end
+    puts buf_head + buf_body
   end
 
-  def dfs(src)
-    reader = find_path(src)
-    return if lib_seen.include?(reader.to_s)
-    lib_seen << reader.to_s
-
+  def dfs(reader)
     reader.each_line do |line|
       if line =~ /^require "crystal\/(.*)/
-        buf_body << ("# " + line)
-        buf_body << "\n"
-        dfs(line)
+        buf_body << "# #{line}\n"
+        new_reader = find_path(line)
+        next if lib_seen.include?(new_reader.to_s)
+        lib_seen << new_reader.to_s
+        dfs(new_reader)
       else
         buf_body << line
         macro_keys.select { line.include?(_1) }.each { macro_seen << _1 }
@@ -93,7 +86,4 @@ class Bundler
   end
 end
 
-src, target = ARGV
-src ||= "src/main.cr"
-target ||= "src/target.cr"
-Bundler.new(src, target).run
+Bundler.new.run
