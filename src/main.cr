@@ -1,5 +1,2 @@
-require "crystal/graph"
-
-g = n.to_g
-
-chmin g, 100
+x = 10000
+pp x

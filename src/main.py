@@ -19,7 +19,7 @@ while len(q) > 0:
   for dy, dx, ndir in [(-1,0,UP),(1,0,DOWN),(0,-1,LEFT),(0,1,RIGHT)]:
     if dir != STOP and dir != ndir:
       continue
-    
+
     ny = y + dy
     nx = x + dx
 
@@ -27,13 +27,13 @@ while len(q) > 0:
       if dir != STOP:
         q.append((y,x,STOP))
       continue
-    
+
     if g[ny][nx] == "#":
       continue
-    
+
     if ndir in seen[ny][nx]:
       continue
-    
+
     seen[ny][nx].add(ndir)
     q.append((ny, nx, ndir))
 

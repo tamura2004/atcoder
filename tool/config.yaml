@@ -1,0 +1,74 @@
+# ERB仕様でファイル名の埋め込みを行う
+#
+# src: ソースコード、ビルダーが有る場合補完後のソースコード、プロジェクトルートからの相対参照
+# test: ユニットテストコード
+ext_to_lang:
+  .clj: clojure
+  .cpp: cpp
+  .cr: crystal
+  .cs: csharp
+  .dart: dart
+  .dot: dot
+  .go: go
+  .hs: haskell
+  .java: java
+  .jl: julia
+  .kt: kotlin
+  .lisp: common_lisp
+  .maxima: maxima
+  .nim: nim
+  .pl: perl
+  .py: python3
+  .pypy: pypy3
+  .rb: ruby
+  .rs: rust
+  .scala: scala
+  .scm: gauche
+  .swift: swift
+  .zig: zig
+builder:
+  crystal: ruby build_crystal.rb
+  scala: ruby build_scala.rb
+clipboard:
+  wsl: clip.exe
+  mac: pbcopy
+  linux: xsel --clipboard --input
+compiler:
+  cpp: g++ <%= src %> -std=c++17
+  csharp: mcs <%= src %> -out:dist/csharp.exe
+  go: go build -buildmode=exe -o ./dist/go.out <%= src %>
+  java: javac -d dist <%= src %>
+  kotlin: kotlinc <%= src %> -include-runtime -d dist/kotlin.jar
+  rust: cargo build
+  scala: scalac -d dist <%= src %>
+executer:
+  clojure: clojure <%= src %>
+  common_lisp: sbcl --script <%= src %>
+  cpp: ./a.out
+  crystal: crystal run <%= src %>
+  csharp: echo mono dist/csharp.exe
+  dart: dart <%= src %>
+  dot: cat <%= src %> | graph-easy --from=dot --as_ascii
+  gauche: gosh <%= src %>
+  go: ./dist/go.out
+  haskell: runghc <%= src %>
+  java: java -classpath dist Main
+  julia: julia <%= src %>
+  kotlin: kotlin dist/kotlin.jar
+  maxima: maxima -b <%= src %>
+  nim: nim c -r --stdout:off --hints:off --warning[UnusedImport]:off <%= src %>
+  perl: perl <%= src %>
+  pypy3: pypy3 <%= src %>
+  python3: python3 <%= src %>
+  ruby: ruby <%= src %>
+  rust: target/debug/main
+  scala: scala -classpath dist Main
+  swift: swift <%= src %>
+  zig: docker run -i --rm -v \"$PWD:/app\" euantorano/zig run /app/<%= src %>
+src_to_test:
+  ctystal: <%= dirname %>/<%= basename %>_spec<%= extname %>
+  scala: lib/scala/src/test/scala/<%= basename %>Test<%= extname %>
+tester:
+  crystal: crystal spec --error-trace <%= test %>
+  ruby: ruby <%= test %>
+  scala: sbt 'testOnly <%= test %>'

@@ -1,99 +1,116 @@
 require "pathname"
 require "open3"
+require "erb"
+require "yaml"
 require_relative "log"
 
 # ソルバーの実行
 class CodeRunner
-  attr_accessor :solver, :lang, :extname, :input
-
-  # 拡張子から言語名
-  EXT_TO_LANG = {
-    ".cr" => "crystal",
-    ".scala" => "scala",
-  }
-
-  # 言語名からバンドラ
-  BUNDLER = {
-    "crystal" => "ruby build_crystal.rb",
-    "scala" => "ruby build_scala.rb",
-  }
-
-  # 言語名からコンパイラ
-  COMPILER = {}
-
-  # 言語名から実行コマンド
-  EXECUTER = {
-    "crystal" => "crystal run %s",
-  }
+  attr_accessor :input
 
   # 初期化
   def initialize
-    @solver = Pathname("src/main.cr")
-    @lang = "crystal"
-    @extname = ".cr"
+    @config = YAML.load_file("tool/config.yaml")
     @input = Pathname("src/input.txt")
+    @src = nil
+    @extname = nil
+    @lang = nil
+  end
+
+  # ソースコード更新
+  def src=(path)
+    raise "bad path: #{path}" unless path.respond_to?(:extname)
+
+    @src = path
+    @extname = path.extname
+    @lang = @config["ext_to_lang"][@extname]
+
+    if @lang.nil?
+      Log.warn "Unable to decide lang type of #{path}"
+      return
+    end
+
+    build
+    copy_to_clipboard
   end
 
   # プログラムを実行、引数省略時は前回処理ソースを実行
-  def run(type, solver = nil, lang = nil, extname = nil)
-    case type
-    when :input
-      copy_to_clipboard
-      execute
-    when :src
-      @solver = solver
-      @lang = lang
-      @extname = extname
+  def run
+    raise "No src: #{src}" if @src.nil?
 
-      bundle            # src -> target
-      copy_to_clipboard # target -> clipboard
-      compile           # target -> executable
-      execute           # excecute executable
+    copy_to_clipboard
+    compile
+    execute
+  end
+
+  # ビルダーがあれば適用してtarget/target.#{extname}に保存
+  # ビルダーには標準入力から渡す（あとで変えるかも）
+  # @srcを更新
+  def build
+    builder = @config["builder"][@lang]
+    return if builder.nil?
+
+    builder_commandline = ERB.new(builder).result(binding)
+
+    Open3.popen3(builder_commandline) do |stdin, stdout, stderr, wait_thread|
+      stdin.puts @src.read
+      stdin.close
+      target = Pathname("target/target").sub_ext(@extname)
+      Log.error stderr.read
+      target.open("w") do |writer|
+        writer.puts stdout.read
+      end
+      @src = target
     end
   end
 
-  # モジュールバンドル処理を行いtargetを出力
-  def bundle(input_io = @solver, output_io = nil)
-    output_io ||= Pathname("target/target").sub_ext(extname).open("w")
-    if bundler.nil?
-      # バンドラーがないならソースをそのまま出力
-      stdout = input_io.read
-    else
-      stdout, stderr, _ = Open3.capture3(bundler, stdin_data: input_io)
-      Log.error(stderr)
-    end
-
-    output_io.puts stdout
-  end
-
-  def bundler
-    BUNDLER[lang]
-  end
-
-  # targetをクリップボードにコピー
+  # @srcをクリップボードにコピー
   def copy_to_clipboard
-    # `cat #{target} | pbcopy`
-    # Open3.capture3(cmd: "pbcopy", stdin_data: target.to_s)
-    # Open3.capture3(cmd: "pbcopy", stdin_data: target.to_s)
+    clipboard = @config["clipboard"]["linux"]
+    clipboard_commandline = ERB.new(clipboard).result(binding)
+    Open3.popen3(clipboard_commandline) do |stdin, stdout, stderr, wait_thread|
+      stdin.puts @src.read
+      stdin.close
+      Log.error stderr.read
+    end
   end
 
-  # targetをコンパイルしてexecutableを作成
+  # srcをコンパイルしてexecutableを作成
+  # executableは言語により指定方法が異なるので、直接埋め込み
   def compile
+    compiler = @config["compiler"][@lang]
+    return if compiler.nil?
+
+    src = @src
+    compiler_commandline = ERB.new(compiler).result(binding)
+    Open3.popen3(compiler_commandline) do |stdin, stdout, stderr, wait_thread|
+      stdin.close
+      Log.error stderr.read
+    end
   end
 
   # executableを実行
   def execute
-    # return
+    executer = @config["executer"][@lang]
+    raise "No executer for lang: #{@lang}. Check tool/config.yaml" if executer.nil?
+
+    src = @src
+    executer_commandline = ERB.new(executer).result(binding)
     start_time = Time.now
-    # stdout, stderr, _ = Open3.capture3(@solversrc.to_s, stdin_data: @input.to_s)
-    # puts "=" * 50
-    # puts "=== stdout ==="
-    # puts stdout
-    # puts
-    # puts "=== stderr ==="
-    # puts stderr
-    # puts
-    # puts "=== time ==="
-    printf("%.2fms\n", (Time.now - start_time) * 1000)
+    Open3.popen3(executer_commandline) do |stdin, stdout, stderr, wait_thread|
+      stdin.puts @input.read
+      stdin.close
+      puts <<~"MSG"
+             #{"=" * 48}
+             === stdout ===
+             #{stdout.read}
+
+             === stderr ===
+             #{stderr.read}
+
+             === time ===
+             #{sprintf('%.2fms\n', (Time.now - start_time) * 1000)}
+           MSG
+    end
   end
 end
