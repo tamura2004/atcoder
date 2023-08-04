@@ -36,7 +36,10 @@ class CodeRunner
 
   # プログラムを実行、引数省略時は前回処理ソースを実行
   def run
-    raise "No src: #{src}" if @src.nil?
+    if @src.nil?
+      Log.warn "No src: #{@src}"
+      return
+    end
 
     copy_to_clipboard
     compile
@@ -66,7 +69,7 @@ class CodeRunner
 
   # @srcをクリップボードにコピー
   def copy_to_clipboard
-    clipboard = @config["clipboard"]["linux"]
+    clipboard = @config["clipboard"][os]
     clipboard_commandline = ERB.new(clipboard).result(binding)
     Open3.popen3(clipboard_commandline) do |stdin, stdout, stderr, wait_thread|
       stdin.puts @src.read
@@ -104,13 +107,17 @@ class CodeRunner
              #{"=" * 48}
              === stdout ===
              #{stdout.read}
-
              === stderr ===
              #{stderr.read}
-
              === time ===
              #{sprintf('%.2fms\n', (Time.now - start_time) * 1000)}
            MSG
     end
+  end
+
+  def os
+    return "wsl" if `which clip.exe` != ""
+    return "mac" if `which pbcopy` != ""
+    "linux"
   end
 end
