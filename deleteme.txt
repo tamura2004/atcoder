@@ -1,0 +1,18 @@
+..F.
+
+Failures:
+
+  1) ST(T) to_st_min
+     Failure/Error: st[1..2].should eq 10
+
+       Expected: 10
+            got: 1
+
+     # lib/crystal/st_spec.cr:34
+
+Finished in 227 microseconds
+4 examples, 1 failures, 0 errors, 0 pending
+
+Failed examples:
+
+crystal spec lib/crystal/st_spec.cr:29 # ST(T) to_st_min

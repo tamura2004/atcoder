@@ -103,7 +103,7 @@ class ST(T)
   end
 
   def bsearch(lo)
-    (lo...n-1).bsearch do |i|
+    (lo...n - 1).bsearch do |i|
       yield self[lo..i]
     end
   end

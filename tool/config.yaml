@@ -66,8 +66,8 @@ executer:
   swift: swift <%= src %>
   zig: docker run -i --rm -v \"$PWD:/app\" euantorano/zig run /app/<%= src %>
 src_to_test:
-  ctystal: <%= dirname %>/<%= basename %>_spec<%= extname %>
-  scala: lib/scala/src/test/scala/<%= basename %>Test<%= extname %>
+  crystal: <%= src.sub_ext("") %>_spec<%= src.extname %>
+  scala: <%= src.sub("main/scala", "test/scala").sub_ext("") %>Test<%= src.extname %>
 tester:
   crystal: crystal spec --error-trace <%= test %>
   ruby: ruby <%= test %>

@@ -6,7 +6,7 @@ require_relative "log"
 
 # ソルバーの実行
 class CodeRunner
-  attr_accessor :input
+  attr_reader :src
 
   # 初期化
   def initialize
@@ -30,6 +30,7 @@ class CodeRunner
       return
     end
 
+    start_time = Time.now
     build
     copy_to_clipboard
   end
@@ -41,6 +42,7 @@ class CodeRunner
       return
     end
 
+    start_time = Time.now
     copy_to_clipboard
     compile
     execute
@@ -54,6 +56,7 @@ class CodeRunner
     return if builder.nil?
 
     builder_commandline = ERB.new(builder).result(binding)
+    Log.info builder_commandline
 
     Open3.popen3(builder_commandline) do |stdin, stdout, stderr, wait_thread|
       stdin.puts @src.read
@@ -84,8 +87,8 @@ class CodeRunner
     compiler = @config["compiler"][@lang]
     return if compiler.nil?
 
-    src = @src
     compiler_commandline = ERB.new(compiler).result(binding)
+    Log.info compiler_commandline
     Open3.popen3(compiler_commandline) do |stdin, stdout, stderr, wait_thread|
       stdin.close
       Log.error stderr.read
@@ -97,8 +100,8 @@ class CodeRunner
     executer = @config["executer"][@lang]
     raise "No executer for lang: #{@lang}. Check tool/config.yaml" if executer.nil?
 
-    src = @src
     executer_commandline = ERB.new(executer).result(binding)
+    Log.info executer_commandline
     start_time = Time.now
     Open3.popen3(executer_commandline) do |stdin, stdout, stderr, wait_thread|
       stdin.puts @input.read
@@ -111,6 +114,9 @@ class CodeRunner
              #{stderr.read}
              === time ===
              #{sprintf('%.2fms\n', (Time.now - start_time) * 1000)}
+
+
+
            MSG
     end
   end

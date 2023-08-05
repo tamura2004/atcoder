@@ -12,10 +12,15 @@ class Watcher
   def initialize
     @runner = Runner.new
     root = Pathname.pwd
-    @listener = Listen.to("src", "lib", wait_for_delay: 1) do |changed_full_paths|
+    @timestamp = Time.now - 3
+
+    @listener = Listen.to("src", "lib") do |changed_full_paths|
+      next if (Time.now - @timestamp) < 3.0
+      @timestamp = Time.now
+
       changed_full_paths.each do |changed_full_path|
         path = Pathname(changed_full_path).relative_path_from(root)
-        Log.info "#{path} has just been changed."
+        Log.info "#{path} has been changed."
         @runner.run(path)
       end
     end

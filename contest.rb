@@ -1,8 +1,16 @@
 require "fileutils"
+require "yaml"
 
+config = YAML.load_file("tool/config.yaml")
 name = ARGV[0]
-ext = ARGV[1] || "cr"
-FileUtils.mkdir_p("src/atcoder/#{name}")
+ext = "." + (ARGV[1] || "cr")
+lang = config["ext_to_lang"][ext]
+
+if lang == "crystal"
+  FileUtils.mkdir_p("src/atcoder/#{name}")
+else
+  FileUtils.mkdir_p("src/atcoder/#{name}/#{lang}")
+end
 
 num = name[-3, 3].to_i
 
@@ -34,5 +42,9 @@ range = case name
   end
 
 range.each do |c|
-  FileUtils.touch("src/atcoder/#{name}/#{name}_#{c}.#{ext}")
+  if ext == ".cr"
+    FileUtils.touch("src/atcoder/#{name}/#{name}_#{c}#{ext}")
+  else
+    FileUtils.touch("src/atcoder/#{name}/#{lang}/#{name}_#{c}#{ext}")
+  end
 end

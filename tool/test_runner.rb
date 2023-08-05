@@ -4,6 +4,8 @@ require_relative "log"
 
 # ライブラリテストの実行
 class TestRunner
+  attr_reader :src, :test
+
   # 初期化
   def initialize
     @config = YAML.load_file("tool/config.yaml")
@@ -15,37 +17,35 @@ class TestRunner
 
   def test=(path)
     @test = path
+    update_lang(path)
   end
 
   def src=(path)
-    @target = path
-    raise "bad path: #{pash}" unless path.respond_to?(:extname)
+    @src = path
+    update_lang(path)
 
-    @extname = path.extname
-    @lang = @config["ext_to_lang"][@extname]
-
-    dirname = path.dirname
-    basename = path.basename
-    extname = path.extname
     @test = ERB.new(@config["src_to_test"][@lang]).result(binding)
   end
 
   def run
     tester = @config["tester"][@lang]
-
-    test = @test
-    tester_commandline = ERB.new(tester).result(binding)
-
-    Open3.popen3(tester_commandline) do |stdin, stdout, stderr, wait_thread|
-      stdin.close
-      puts <<~"MSG"
-             #{"=" * 48}
-             === stdout ===
-             #{stdout.read}
-
-             === stderr ===
-             #{stderr.read}
-           MSG
+    if tester.nil?
+      pp @lang
+      pp @config["tester"]
+      exit
     end
+    Log.info tester
+    tester_commandline = ERB.new(tester).result(binding)
+    Log.info tester_commandline
+
+    system tester_commandline
+  end
+
+  private
+
+  def update_lang(path)
+    raise "bad path: #{pash}" unless path.respond_to?(:extname)
+    @extname = path.extname
+    @lang = @config["ext_to_lang"][@extname]
   end
 end

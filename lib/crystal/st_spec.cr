@@ -31,7 +31,7 @@ describe ST do
     5.times do |i|
       st[i] = i.to_i64
     end
-    st[1..2].should eq 1
+    st[1..2].should eq 10
     st[1...2].should eq 1
     st[...2].should eq 0
     st[..2].should eq 0
@@ -42,7 +42,7 @@ describe ST do
 
   it "bsearch" do
     #     0,1,2,3,4,5,6,7,8
-    st = [3,1,4,1,5,9,2,6,5].to_st_max
+    st = [3, 1, 4, 1, 5, 9, 2, 6, 5].to_st_max
     st.bsearch(3, &.>= 9).should eq 5
     st.bsearch(5, &.>= 9).should eq 5
     st.bsearch(6, &.>= 9).should eq nil
