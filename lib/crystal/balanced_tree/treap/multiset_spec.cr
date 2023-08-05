@@ -3,6 +3,21 @@ require "crystal/balanced_tree/treap/multiset"
 include BalancedTree::Treap
 
 describe BalancedTree::Treap::Multiset do
+  it "大きい方からk個の合計" do
+    s = Multiset(Int32).sum
+    10.step(by: 10, to: 60) do |v|
+      s << v
+    end
+    # s => [10, 20, 30, 40, 50, 60]
+    s.with_lower(2) do |lower|
+      lower.acc.should eq 30 
+    end
+    s.with_upper(2) do |upper|
+      upper.acc.should eq 110
+    end
+    s.acc.should eq 210
+  end
+
   it "usage" do
     t = Multiset{4, 5, 3, 1, 2}
     t.to_a.should eq [1, 2, 3, 4, 5]

@@ -6,17 +6,28 @@ module BalancedTree
   module Treap
     class Multiset(T)
       getter root : Node(T, T)?
+      getter fxx : Proc(T?, T?, T?)
       delegate inspect, to_s, to: root
 
-      def initialize
+      # range sum
+      def self.sum
+        new(->(x : T, y : T) { x + y })
+      end
+
+      def initialize(fxx : Proc(T, T, T) = ->(x : T, y : T) { y })
+        @fxx = ->(x : T?, y : T?) { x && y ? fxx.call(x, y) : x ? x : y }
         @root = nil
       end
 
-      def initialize(k)
-        @root = Node(T, T).new(k, k)
+      def initialize(@fxx)
+        @root = nil
       end
 
-      def initialize(@root : Node(T, T)?)
+      def initialize(k : T, @fxx)
+        @root = Node(T, T).new(k, k, @fxx)
+      end
+
+      def initialize(@root : Node(T, T)?, @fxx)
       end
 
       def empty?
@@ -36,7 +47,7 @@ module BalancedTree
       # ```
       def split(k) : self
         @root, node = root.try &.split(k) || nil_node_pair
-        self.class.new(node)
+        self.class.new(node, @fxx)
       end
 
       # `split`の別名
@@ -58,7 +69,7 @@ module BalancedTree
       def split_at(i : Int) : self
         i += size if i < 0
         @root, node = root.try &.split_at(i) || nil_node_pair
-        self.class.new(node)
+        self.class.new(node, @fxx)
       end
 
       # `split_at`の別名
@@ -111,7 +122,7 @@ module BalancedTree
       # 順序を保って`k`をキーに持つノードを追加する
       def insert(k) : self
         tail = self | k
-        node = self.class.new(k)
+        node = self.class.new(k, @fxx)
         self + node + tail
       end
 
@@ -210,12 +221,17 @@ module BalancedTree
       def count_range(lo, hi)
         tail = self | hi
         mid = self | lo
-        mid.size.tap { self + mid + tail}
+        mid.size.tap { self + mid + tail }
       end
 
       # 根のキーを返す
       def key : T?
         root.try &.key
+      end
+
+      # 集約値を返す
+      def acc : T?
+        root.try &.acc
       end
 
       # i番目のノードのキーを返す
@@ -239,6 +255,20 @@ module BalancedTree
 
       def nil_node_pair
         {nil_node, nil_node}
+      end
+
+      # 小さい方からk個を処理
+      def with_lower(k)
+        upper = self ^ k
+        yield self
+        self + upper
+      end
+
+      # 大きい方からk個を処理
+      def with_upper(k)
+        upper = self ^ (size - k)
+        yield upper
+        self + upper
       end
     end
   end

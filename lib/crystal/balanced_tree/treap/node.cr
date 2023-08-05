@@ -10,13 +10,18 @@ module BalancedTree
 
       getter key : K
       property val : V
-      getter acc : V
+      getter acc : V?
       getter pri : Int64
       getter size : Int32
       property left : Node(K, V)?
       property right : Node(K, V)?
+      getter fxx : Proc(V?, V?, V?)
 
-      def initialize(@key, @val)
+      def initialize(
+        @key,
+        @val,
+        @fxx : Proc(V?, V?, V?) = ->(x : V?, y : V?) { y }
+      )
         @pri = Xorshift.get
         @size = 1
         @acc = @val
@@ -139,16 +144,16 @@ module BalancedTree
       end
 
       def left_acc
-        left.try &.acc || V.zero
+        left.try &.acc || nil.as(V?)
       end
 
       def right_acc
-        right.try &.acc || V.zero
+        right.try &.acc || nil.as(V?)
       end
 
       def update
         @size = left_size + right_size + 1
-        # @acc = left_acc + right_acc + val
+        @acc = fxx.call(fxx.call(left_acc, val), right_acc)
         self
       end
 
@@ -160,8 +165,8 @@ module BalancedTree
         {nil_node, nil_node}
       end
 
-      def inspect
-        "(#{left.inspect} #{key} #{right.inspect})".gsub(/nil/, "")
+      def to_s
+        "(#{left.to_s} #{key} #{right.to_s})".gsub(/nil/, "")
       end
 
       def to_a
