@@ -34,7 +34,6 @@ class TestRunner
       pp @config["tester"]
       exit
     end
-    Log.info tester
     tester_commandline = ERB.new(tester).result(binding)
     Log.info tester_commandline
 

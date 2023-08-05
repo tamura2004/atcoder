@@ -31,7 +31,7 @@ describe ST do
     5.times do |i|
       st[i] = i.to_i64
     end
-    st[1..2].should eq 10
+    st[1..2].should eq 1
     st[1...2].should eq 1
     st[...2].should eq 0
     st[..2].should eq 0

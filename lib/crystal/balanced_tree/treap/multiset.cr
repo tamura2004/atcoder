@@ -266,7 +266,7 @@ module BalancedTree
 
       # 大きい方からk個を処理
       def with_upper(k)
-        upper = self ^ (size - k)
+        upper = self ^ (Math.max 0, size - k)
         yield upper
         self + upper
       end
@@ -277,6 +277,14 @@ end
 module Indexable(T)
   def to_multiset
     Multiset(T).new.tap do |ms|
+      each do |v|
+        ms << v
+      end
+    end
+  end
+
+  def to_multiset_sum
+    Multiset(T).sum.tap do |ms|
       each do |v|
         ms << v
       end
