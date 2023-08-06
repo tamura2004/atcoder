@@ -1,14 +1,13 @@
-require "crystal/multiset"
+require "crystal/balanced_tree/treap/ordered_set"
 
-s = Multiset(Int32).sum
-s << 3
-s << 3
-s << 5
-s << 7
-s << 9
-s << 11
+t = [4, 5, 3, 3, 1, 1, 2].to_orderedset_sum
+pp t.acc_upper(2)
+pp t.acc_lower(2)
 
-s.with_lower(2) do |upper|
-  pp upper.acc
-end
-puts s.acc
+pp! t.size
+pp! t.to_a
+s = t ^ 3
+pp! s
+pp! s.acc
+
+pp! t

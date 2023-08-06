@@ -11,6 +11,12 @@ describe BalancedTree::Treap::OrderedSet do
     t.includes?(3).should eq true
     t.includes?(6).should eq false
   end
+  
+  it "can accumurate" do
+    t = [4, 5, 3, 3, 1, 1, 2].to_orderedset_sum
+    t.acc_upper(2).should eq 9
+    t.acc_lower(2).should eq 3
+  end
 
   it "insert" do
     t = OrderedSet{1, 3}

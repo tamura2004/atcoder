@@ -15,9 +15,7 @@ close_cans.sort!
 openers.sort!
 
 ans = 0_i64
-open_cans.with_upper(m) do |upper|
-  chmax ans, upper.try &.acc || 0
-end
+chmax ans, open_cans.acc_upper(m) || 0
 
 while openers.size > 0
   opener = openers.pop
@@ -25,11 +23,9 @@ while openers.size > 0
     open_cans << close_cans.pop
     opener -= 1
   end
-
+  
   m -= 1
-  open_cans.with_upper(m) do |upper|
-    chmax ans, upper.try &.acc || 0
-  end
+  chmax ans, open_cans.acc_upper(m) || 0
 end
 
 pp ans

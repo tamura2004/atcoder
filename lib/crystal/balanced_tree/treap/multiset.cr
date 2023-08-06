@@ -57,7 +57,6 @@ module BalancedTree
 
       # `index`番目以降のノードを別の木として分割する
       #
-      # 負の引数は後ろからのindexに読み替える
       # 自身を破壊的にi未満とし、i以上の木を返す
       #
       # ```
@@ -67,7 +66,6 @@ module BalancedTree
       # t2 # => Tree{2,3}
       # ```
       def split_at(i : Int) : self
-        i += size if i < 0
         @root, node = root.try &.split_at(i) || nil_node_pair
         self.class.new(node, @fxx)
       end
@@ -158,7 +156,7 @@ module BalancedTree
       #
       # 空の木の場合、`NilAssertion`例外
       def pop : T
-        tail = self ^ -1
+        tail = self ^ (size - 1)
         tail.key.not_nil!
       end
 
@@ -179,7 +177,7 @@ module BalancedTree
       #
       # 空の木の場合、nilを返す
       def last : T?
-        tail = self ^ -1
+        tail = self ^ (size - 1)
         tail.root.try(&.key).tap { self + tail }
       end
 
@@ -257,18 +255,22 @@ module BalancedTree
         {nil_node, nil_node}
       end
 
-      # 小さい方からk個を処理
-      def with_lower(k)
-        upper = self ^ k
-        yield self
-        self + upper
+      # 小さい方からk個のacc
+      def acc_lower(k) : T?
+        (self ^ k).try do |upper|
+          ans = acc
+          self + upper
+          ans
+        end
       end
 
-      # 大きい方からk個を処理
-      def with_upper(k)
-        upper = self ^ (Math.max 0, size - k)
-        yield upper
-        self + upper
+      # 大きい方からk個のacc
+      def acc_upper(k) : T?
+        (self ^ Math.max(0, size - k)).try do |upper|
+          ans = upper.acc
+          self + upper
+          ans
+        end
       end
     end
   end

@@ -5,17 +5,28 @@ module BalancedTree
   module Treap
     class OrderedSet(T)
       getter root : Node(T, T)?
+      getter fxx : Proc(T?, T?, T?)
       delegate inspect, to_s, to: root
 
-      def initialize
+      # range sum
+      def self.sum
+        new(->(x : T, y : T) { x + y })
+      end
+
+      def initialize(fxx : Proc(T, T, T) = ->(x : T, y : T) { y })
+        @fxx = ->(x : T?, y : T?) { x && y ? fxx.call(x, y) : x ? x : y }
         @root = nil
       end
 
-      def initialize(k)
-        @root = Node(T, T).new(k, k)
+      def initialize(@fxx)
+        @root = nil
       end
 
-      def initialize(@root : Node(T, T)?)
+      def initialize(k : T, @fxx)
+        @root = Node(T, T).new(k, k, @fxx)
+      end
+
+      def initialize(@root : Node(T, T)?, @fxx)
       end
 
       def empty?
@@ -35,7 +46,7 @@ module BalancedTree
       # ```
       def split(k) : self
         @root, node = root.try &.split(k) || nil_node_pair
-        self.class.new(node)
+        self.class.new(node, @fxx)
       end
 
       # `split`の別名
@@ -45,7 +56,6 @@ module BalancedTree
 
       # `index`番目以降のノードを別の木として分割する
       #
-      # 負の引数は後ろからのindexに読み替える
       # 自身を破壊的にi未満とし、i以上の木を返す
       #
       # ```
@@ -55,9 +65,8 @@ module BalancedTree
       # t2 # => Tree{2,3}
       # ```
       def split_at(i : Int) : self
-        i += size if i < 0
         @root, node = root.try &.split_at(i) || nil_node_pair
-        self.class.new(node)
+        self.class.new(node, @fxx)
       end
 
       # `split_at`の別名
@@ -112,7 +121,7 @@ module BalancedTree
         return self if includes?(k)
 
         tail = self | k
-        node = self.class.new(k)
+        node = self.class.new(k, @fxx)
         self + node + tail
       end
 
@@ -140,7 +149,7 @@ module BalancedTree
       #
       # 空の木の場合、`NilAssertion`例外
       def pop : T
-        tail = self ^ -1
+        tail = self ^ (size - 1)
         tail.key.not_nil!
       end
 
@@ -161,7 +170,7 @@ module BalancedTree
       #
       # 空の木の場合、nilを返す
       def last : T?
-        tail = self ^ -1
+        tail = self ^ (size - 1)
         tail.root.try(&.key).tap { self + tail }
       end
 
@@ -204,11 +213,20 @@ module BalancedTree
         root.try &.key
       end
 
+      # 集約値を返す
+      def acc : T?
+        root.try &.acc
+      end
+
       # i番目のノードのキーを返す
       def unsafe_fetch(i : Int) : T?
         t2 = self ^ i + 1
         t1 = self ^ i
         t1.root.try(&.key).tap { self + t1 + t2 }
+      end
+
+      def [](i)
+        unsafe_fetch(i)
       end
 
       def each(&block : T -> Nil)
@@ -222,8 +240,45 @@ module BalancedTree
       def nil_node_pair
         {nil_node, nil_node}
       end
+
+      # 小さい方からk個のacc
+      def acc_lower(k) : T?
+        (self ^ k).try do |upper|
+          ans = acc
+          self + upper
+          ans
+        end
+      end
+
+      # 大きい方からk個のacc
+      def acc_upper(k) : T?
+        (self ^ Math.max(0, size - k)).try do |upper|
+          ans = upper.acc
+          self + upper
+          ans
+        end
+      end
     end
   end
 end
 
 alias OrderedSet = BalancedTree::Treap::OrderedSet
+
+module Indexable(T)
+  def to_orderedset
+    OrderedSet(T).new.tap do |ms|
+      each do |v|
+        ms << v
+      end
+    end
+  end
+
+  def to_orderedset_sum
+    OrderedSet(T).sum.tap do |ms|
+      each do |v|
+        ms << v
+      end
+    end
+  end
+end
+

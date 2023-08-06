@@ -2,7 +2,7 @@
 module Printable
   abstract def each(&b : Int32 -> _)
   abstract def each : Iterator(Int32) #(&b : Int32 -> _)
-  abstract def each(v : Int32, &b : Int32 -> _)
+  abstract def each(i : Int32, &b : Int32 -> _)
   abstract def origin : Int32
   abstract def both : Bool
 

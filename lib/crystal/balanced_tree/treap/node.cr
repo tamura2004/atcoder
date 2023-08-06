@@ -165,8 +165,8 @@ module BalancedTree
         {nil_node, nil_node}
       end
 
-      def to_s
-        "(#{left.to_s} #{key} #{right.to_s})".gsub(/nil/, "")
+      def inspect
+        "(#{left.inspect} #{key} #{right.inspect})".gsub(/nil/, "")
       end
 
       def to_a

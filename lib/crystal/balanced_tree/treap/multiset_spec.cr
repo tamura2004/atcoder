@@ -9,12 +9,8 @@ describe BalancedTree::Treap::Multiset do
       s << v
     end
     # s => [10, 20, 30, 40, 50, 60]
-    s.with_lower(2) do |lower|
-      lower.acc.should eq 30 
-    end
-    s.with_upper(2) do |upper|
-      upper.acc.should eq 110
-    end
+    s.acc_lower(2).should eq 30 
+    s.acc_upper(2).should eq 110
     s.acc.should eq 210
   end
 
