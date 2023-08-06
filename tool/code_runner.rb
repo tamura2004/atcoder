@@ -26,7 +26,7 @@ class CodeRunner
     @lang = @config["ext_to_lang"][@extname]
 
     if @lang.nil?
-      Log.warn "Unable to decide lang type of #{path}"
+      Log.warn "Unable to decide lang type of #{path} #{@extname}"
       return
     end
 
@@ -98,7 +98,10 @@ class CodeRunner
   # executableを実行
   def execute
     executer = @config["executer"][@lang]
-    raise "No executer for lang: #{@lang}. Check tool/config.yaml" if executer.nil?
+    if executer.nil?
+      Log.warn "No executer for lang: #{@lang}. Check tool/config.yaml"
+      return
+    end
 
     executer_commandline = ERB.new(executer).result(binding)
     Log.info executer_commandline
