@@ -1,8 +1,35 @@
 # dp!右下!
 require "crystal/modint9"
 
+# 範囲外参照でデフォルト値を返す
+class Grid(T)
+  getter h : Int32
+  getter w : Int32
+  getter g : Array(Array(T))
+  getter init : T
+  getter default : T
+
+  def initialize(@h, @w, @init, @default)
+    @g = Array.new(h) { Array.new(w, @init) }
+  end
+
+  def [](y, x)
+    if 0 <= y < h && 0 <= x < w
+      g[y][x]
+    else
+      default
+    end
+  end
+
+  def []=(x,y,v)
+    if 0 <= y < h && 0 <= x < w
+      g[y][x] = v
+    end
+  end
+end
+
 h, w = gets.to_s.split.map(&.to_i64)
-g = Array.new(h) { gets.to_s }
+g = Grid(ModInt).new(h, w, 1.to_m, 1.to_m)
 dp = make_array(0.to_m, h, w, 2)
 dp[0][0][0] = 1.to_m if g[0][0] == '.'
 dp[0][0][1] = 1.to_m
