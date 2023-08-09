@@ -1,0 +1,1 @@
+(println (apply sorted-set (range 10)))
