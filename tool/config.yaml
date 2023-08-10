@@ -25,6 +25,7 @@ ext_to_lang:
   .scala: scala
   .scm: gauche
   .swift: swift
+  .v: v
   .zig: zig
 builder:
   crystal: ruby build_crystal.rb
@@ -64,7 +65,8 @@ executer:
   rust: target/debug/main
   scala: scala -classpath dist Main
   swift: swift <%= src %>
-  zig: docker run -i --rm -v \"$PWD:/app\" euantorano/zig run /app/<%= src %>
+  v: v run <%= src %>
+  zig: zig run <%= src %>
 src_to_test:
   crystal: <%= src.sub_ext("") %>_spec<%= src.extname %>
   scala: <%= src.sub("main/scala", "test/scala").sub_ext("") %>Test<%= src.extname %>
