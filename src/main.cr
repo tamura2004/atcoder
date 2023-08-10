@@ -7,7 +7,7 @@ m.times do
   uf.unite v, nv
 end
 
-good = Set({Int32,Int32}).new
+good = Set({Int32, Int32}).new
 k = gets.to_s.to_i
 k.times do
   v, nv = gets.to_s.split.map(&.to_i.pred)

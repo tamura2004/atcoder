@@ -7,6 +7,7 @@ ext_to_lang:
   .cpp: cpp
   .cr: crystal
   .cs: csharp
+  .cy: cyber
   .dart: dart
   .dot: dot
   .go: go
@@ -29,7 +30,6 @@ ext_to_lang:
   .zig: zig
 builder:
   crystal: ruby build_crystal.rb
-  scala: ruby build_scala.rb
 clipboard:
   wsl: clip.exe
   mac: pbcopy
@@ -48,6 +48,7 @@ executer:
   cpp: ./a.out
   crystal: crystal run <%= src %>
   csharp: echo mono dist/csharp.exe
+  cyber: cyber <%= src %>
   dart: dart <%= src %>
   dot: cat <%= src %> | graph-easy --from=dot --as_ascii
   gauche: gosh <%= src %>

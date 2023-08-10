@@ -1,17 +1,7 @@
-class Watcher
-  def initialize
-    @src = "one"
-  end
-
-  def run(src = @src)
-    @src = src
-    pp @src
+(1..7).each do |l|
+  (1..7).each do |r|
+    next unless l <= r
+    puts "case {\"#{l} #{r}\"}:"
+    puts "  print(\"#{"atcoder"[l - 1..r - 1]}\")"
   end
 end
-
-w = Watcher.new
-
-w.run("hoge")
-w.run
-w.run("fuga")
-w.run
