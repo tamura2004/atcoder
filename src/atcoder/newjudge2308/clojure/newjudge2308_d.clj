@@ -1,1 +1,3 @@
-(println (apply sorted-set (range 10)))
+(println [1 2 3])
+(-> [1 2 3] println)
+(->> [1 2 3] println)

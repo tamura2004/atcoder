@@ -1,3 +1,3 @@
-(def l (read))
+(def l (dec (read)))
 (def r (read))
-(println (.substring "atcoder" (- l 1) r))
+(println (.substring "atcoder" l r))
