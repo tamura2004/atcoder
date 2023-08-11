@@ -200,7 +200,7 @@ module BalancedTree
 
       # キーが`k`以上または越えるノード数を返す
       def count_upper(k, eq = true) : Int32
-        tail = self | k + (1 - eq.to_unsafe)
+        tail = self | k + eq.!.to_unsafe
         tail.size.tap { self + tail }
       end
 
@@ -232,6 +232,42 @@ module BalancedTree
         root.try &.acc
       end
 
+      # キーが`k`以下または未満のノードの集約値を返す
+      def acc_lower(k, eq = false) : T?
+        tail = self | k + eq.to_unsafe
+        acc.tap { self + tail }
+      end
+
+      # キーが`k`以上または越えるノードの集約値を返す
+      def acc_upper(k, eq = true) : T?
+        tail = self | k + eq.!.to_unsafe
+        tail.acc.tap { self + tail }
+      end
+
+      # i番目未満の集約値を返す
+      # == 小さい方からi個の集約値を返す
+      def acc_lower_at(i)
+        tail = self ^ i
+        acc.tap { self + tail }
+      end
+
+      # 小さい方からi個の集約値を返す
+      # ==i番目未満の集約値を返す
+      def acc_lower_count(i)
+        acc_lower_at(i)
+      end
+
+      # i番目以上の集約値を返す
+      def acc_upper_at(i)
+        tail = self ^ i
+        tail.acc.tap { self + tail }
+      end
+
+      # 大きい方からi個の集約値を返す
+      def acc_upper_count(i)
+        acc_upper_at(size - i)
+      end
+
       # i番目のノードのキーを返す
       def unsafe_fetch(i : Int) : T?
         t2 = self ^ i + 1
@@ -253,24 +289,6 @@ module BalancedTree
 
       def nil_node_pair
         {nil_node, nil_node}
-      end
-
-      # 小さい方からk個のacc
-      def acc_lower(k) : T?
-        (self ^ k).try do |upper|
-          ans = acc
-          self + upper
-          ans
-        end
-      end
-
-      # 大きい方からk個のacc
-      def acc_upper(k) : T?
-        (self ^ Math.max(0, size - k)).try do |upper|
-          ans = upper.acc
-          self + upper
-          ans
-        end
       end
     end
   end

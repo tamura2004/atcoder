@@ -13,19 +13,25 @@ module BalancedTree
       # include List
 
       getter root : Node(V, V)?
+      getter fxx : Proc(V?, V?, V?)
 
       # 空の木で初期化
-      def initialize
+      def initialize(fxx : Proc(V, V, V) = ->(x : V, y : V) { y })
+        @fxx = ->(x : V?, y : V?) { x && y ? fxx.call(x, y) : x ? x : y }
+        @root = nil
+      end
+
+      def initialize(@fxx)
         @root = nil
       end
 
       # 値`v`を一つ持つ木を初期化
-      def initialize(v : V)
-        @root = Node(V, V).new(v, v)
+      def initialize(v : V, @fxx)
+        @root = Node(V, V).new(v, v, @fxx)
       end
 
       # `root`を指定して初期化
-      def initialize(@root : Node(V, V)?)
+      def initialize(@root : Node(V, V)?, @fxx)
       end
 
       def nil_node
@@ -50,7 +56,7 @@ module BalancedTree
       def split_at(i : Int) : self
         i += size if i < 0
         @root, node = root.try &.split_at(i) || nil_node_pair
-        self.class.new(node)
+        self.class.new(node, @fxx)
       end
 
       # `split_at`の別名
@@ -92,7 +98,7 @@ module BalancedTree
 
       # 末尾に値を追加
       def push(v : V)
-        self + self.class.new(v)
+        self + self.class.new(v, @fxx)
       end
 
       # `push`の別名
