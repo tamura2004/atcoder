@@ -3,6 +3,16 @@ require "crystal/balanced_tree/treap/tree_list"
 include BalancedTree::Treap
 
 describe BalancedTree::Treap::TreeList do
+  it "range sum" do
+    t = TreeList.new(-> (x : Int32, y : Int32) { x + y})
+    [6,5,4,3,2,1].each{|v| t << v }
+    t.size.should eq 6
+    t.acc.should eq 21
+    t.acc_lower(2).should eq 11
+    t.acc_upper(2).should eq 3
+    t.acc.should eq 21
+  end
+
   it "usage" do
     t = TreeList{1, 5, 2, 4, 3}
     t.values.should eq [1, 5, 2, 4, 3]

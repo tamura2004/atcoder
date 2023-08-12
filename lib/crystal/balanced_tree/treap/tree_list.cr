@@ -91,6 +91,10 @@ module BalancedTree
         root.try &.size || 0
       end
 
+      def acc : V?
+        root.try &.acc
+      end
+
       # ノードを持たないなら真を返す
       def empty? : Bool
         size.zero?
@@ -157,6 +161,18 @@ module BalancedTree
       # `i`番目と`j`番目の値を交換する
       def swap(i : Int, j : Int)
         self[i], self[j] = self[j], self[i]
+      end
+
+      # 前からi個の集約値
+      def acc_lower(i)
+        tail = self ^ i
+        acc.tap { self + tail }
+      end
+
+      # 後ろからi個の集約値
+      def acc_upper(i)
+        tail = self ^ (size - i)
+        tail.acc.tap { self + tail }
       end
 
       def to_a

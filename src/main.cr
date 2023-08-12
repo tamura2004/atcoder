@@ -5,4 +5,4 @@ def hoge(T)(params) : [] of T
   end
 end
 
-pp hoge(Ibt32)([1,2,3,4])
+pp hoge(Int32)([1,2,3,4])
