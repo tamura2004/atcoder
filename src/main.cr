@@ -1,8 +1,8 @@
-def hoge(T)(params) : [] of T
-  ans = [] of T
-  params.each do |v|
-    ans << v
-  end
+n = 1000
+h = Hash(Int32, Int32).new
+n.times do
+  h[rand(Int32::MAX)] = rand(Int32::MAX)
 end
 
-pp hoge(Int32)([1,2,3,4])
+pp h.keys.sort.first
+pp h.first_key
