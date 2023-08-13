@@ -75,6 +75,19 @@ module BalancedTree
         end
       end
 
+      # キーが`k`のノードがあれば値を更新
+      # なければ新しいノードを追加
+      def upsert(k : K, v : V) : self
+        if k == key
+          @val = v
+        elsif k < key
+          @left = left.try &.upsert(k, v) || self.class.new(k, v, @fxx)
+        else
+          @right = right.try &.upsert(k, v) || self.class.new(k, v, @fxx)
+        end
+        update
+      end
+
       # k未満と、k以上で分割
       def split(k : K) : {Node(K, V)?, Node(K, V)?}
         if key < k

@@ -21,36 +21,24 @@ class TreeMap(K, T)
       @hi = key
     end
 
-    # 挿入
-    def insert(k, v)
+    # 値の更新または新規ノードの追加
+    def upsert(k, v) : self
       if k == key
         @val = v
       elsif k < key
-        @left = left.try &.insert(k, v) || new_node_left(k, v)
+        @left = left.try &.upsert(k, v) || self.class.new(k, v)
       else
-        @right = right.try &.insert(k, v) || new_node_right(k, v)
+        @right = right.try &.upsert(k, v) || self.class.new(k, v)
       end
       update.re_balance
     end
 
-    def new_node_left(k, v)
-      @left = Node(K, T).new(k,v)
-      @right = Node(K, T).new(key, val)
-      update
-    end
-
-    def new_node_right(k, v)
-      @right = Node(K, T).new(k,v)
-      @right = Node(K, T).new(key, val)
-      update
-    end
-
-    def []=(k, v)
-      insert(k, v)
+    def []=(k, v) : self
+      upsert(k, v)
     end
 
     # 削除
-    def delete(k)
+    def delete(k) : self
       if k == key
         left.try do |l|
           @left, node = l.pop
@@ -68,36 +56,36 @@ class TreeMap(K, T)
       end
     end
 
-    # keyがk以下（未満）の最大値
-    def lower(k, eq = true)
-      if key < k || (eq && k == key)
-        right.try(&.lower(k, eq)).try { |v| Math.max(v, val) } || val
+    # k以下（未満）の最大のキー
+    def lower_key(k, eq = false) : K?
+      if k < key || (eq && k == key)
+        left.try &.lower_key(k, eq)
       else
-        left.try &.lower(k, eq)
+        right.try &.lower_key(k, eq) || key
       end
     end
 
-    # v以上（超える）の最小値
-    def upper(k, eq = true)
+    # v以上（超える）の最小のキー
+    def upper_key(k, eq = true) : K?
       if k < key || (eq && k == key)
-        left.try(&.upper(k, eq)).try { |v| Math.min(v, val) } || val
+        left.try &.upper_key(k, eq) || key
       else
-        right.try &.upper(k, eq)
+        right.try &.upper_key(k, eq)
       end
     end
 
     # ノードの状態を更新
-    def update
+    def update : self
       @height = Math.max(left_height, right_height) + 1
       @balance = left_height - right_height
       @size = left_size + right_size + 1
-      # @lo = left.try &.lo || lo
-      # @hi = right.try &.hi || hi
+      @lo = left.try &.lo || key
+      @hi = right.try &.hi || key
       self
     end
 
     # 回転によりバランスを保つ
-    def re_balance
+    def re_balance : self
       case balance
       when 2..
         if left_balance < 0
@@ -115,7 +103,7 @@ class TreeMap(K, T)
     end
 
     # 左回転
-    def rotate_left
+    def rotate_left : self
       right.try do |root|
         root.tap do
           @right, root.left = root.left, self
@@ -126,7 +114,7 @@ class TreeMap(K, T)
     end
 
     # 右回転
-    def rotate_right
+    def rotate_right : self
       left.try do |root|
         root.tap do
           @left, root.right = root.right, self
@@ -142,50 +130,50 @@ class TreeMap(K, T)
     end
 
     @[AlwaysInline]
-    private def left_size
+    private def left_size : Int32
       left.try &.size || 0
     end
 
     @[AlwaysInline]
-    private def right_size
+    private def right_size : Int32
       right.try &.size || 0
     end
 
     @[AlwaysInline]
-    private def left_height
+    private def left_height : Int32
       left.try &.height || 0
     end
 
     @[AlwaysInline]
-    private def right_height
+    private def right_height : Int32
       right.try &.height || 0
     end
 
     @[AlwaysInline]
-    private def left_balance
+    private def left_balance : Int32
       left.try &.balance || 0
     end
 
     @[AlwaysInline]
-    private def right_balance
+    private def right_balance : Int32
       right.try &.balance || 0
     end
 
     @[AlwaysInline]
-    private def left_to_a
+    private def left_to_a : Array(T)
       left.try &.to_a || [] of T
     end
 
     @[AlwaysInline]
-    private def right_to_a
+    private def right_to_a : Array(T)
       right.try &.to_a || [] of T
     end
 
-    def inspect
-      "(#{left.inspect} #{val} #{right.inspect})".gsub(/nil/, ".")
+    def inspect : String
+      "(#{left.inspect} #{[key, lo, hi]} #{right.inspect})".gsub(/nil/, ".")
     end
 
-    def to_a
+    def to_a : Array(T)
       left_to_a + [val] + right_to_a
     end
   end
@@ -195,12 +183,12 @@ class TreeMap(K, T)
   def initialize(@root : Node(K, T)? = nil)
   end
 
-  def insert(k, v)
-    @root = root.try &.insert(k, v) || Node(K, T).new(k, v)
+  def upsert(k, v)
+    @root = root.try &.upsert(k, v) || Node(K, T).new(k, v)
   end
 
   def []=(k, v)
-    insert(k, v)
+    upsert(k, v)
   end
 
   # def find(k)
@@ -211,13 +199,14 @@ class TreeMap(K, T)
     @root = root.try &.delete(k)
   end
 
-  def lower(k, eq = true)
-    @root.try &.lower(k, eq)
+  # `k`以下（未満）の最大のキー
+  def lower_key(k, eq = true) : K?
+    @root.try &.lower_key(k, eq)
   end
 
-  # v以上（より大きい）の最小値
-  def upper(v, eq = true)
-    @root.try &.upper(v, eq)
+  # `k`以上（越える）最小のキー
+  def upper_key(k, eq = true) : K?
+    @root.try &.upper_key(k, eq)
   end
 
   def size
