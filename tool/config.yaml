@@ -72,6 +72,6 @@ src_to_test:
   crystal: <%= src.sub_ext("") %>_spec<%= src.extname %>
   scala: <%= src.sub("main/scala", "test/scala").sub_ext("") %>Test<%= src.extname %>
 tester:
-  crystal: crystal spec --error-trace <%= test %>
+  crystal: crystal spec <%= test %>
   ruby: ruby <%= test %>
   scala: sbt 'testOnly <%= test %>'

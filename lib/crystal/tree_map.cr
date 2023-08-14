@@ -56,16 +56,17 @@ class TreeMap(K, V)
 
     # 削除
     def delete(k : K) : self?
+      left, right = @left, @right
       if k == key
         case {left, right}
         when {Nil, Nil} then nil
         when {_, Nil}   then left
         when {Nil, _}   then right
         else
-          node = left.not_nil!.max_node
-          @left = left.not_nil!.delete(node.key)
-          node.left = @left
-          node.right = @right
+          node = left.max_node
+          @left = left.delete(node.key)
+          node.left = left
+          node.right = right
           node.update.re_balance
         end
       elsif k < key
@@ -80,6 +81,11 @@ class TreeMap(K, V)
     # 最大のキーを持つノード
     def max_node : self
       right.try &.max_node || self
+    end
+
+    # 最小のキーを持つノード
+    def min_node : self
+      left.try &.min_node || self
     end
 
     # k以下（未満）の最大のキー
