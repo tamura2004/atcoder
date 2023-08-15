@@ -43,7 +43,7 @@ compiler:
   rust: cargo build
   scala: scalac -d dist <%= src %>
 executer:
-  clojure: clojure <%= src %>
+  clojure: bb <%= src %>
   common_lisp: sbcl --script <%= src %>
   cpp: ./a.out
   crystal: crystal run <%= src %>
