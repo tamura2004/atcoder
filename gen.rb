@@ -1,15 +1,18 @@
-N = 1000000000
-Q = 100
-a = Array.new(N) { rand(1..100) }
+n = 500000
+q = 500000
+s = Array.new(n) { [*?a..?z,*?A..?Z].sample }.join
 
 open("sample.txt", "w") do |f|
-  f.puts "#{N} #{Q}"
-  (1...Q).each do |v|
-    lo = rand(1..N)
-    hi = rand(1..N)
-    lo, hi = hi, lo unless lo < hi
-    if rand < 0.5
-      f.puts "2 #{lo} #{hi}"
+  f.puts n
+  f.puts s
+  f.puts q
+  q.times do
+    t = rand(1..3)
+    x = rand(1..n)
+    if t != 1
+      x = 0
     end
+    c = [*?a..?z,*?A..?Z].sample
+    f.puts "#{t} #{x} #{c}"
   end
 end

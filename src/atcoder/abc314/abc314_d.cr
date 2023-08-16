@@ -1,3 +1,5 @@
+require "crystal/indexable"
+
 n = gets.to_s.to_i
 s = gets.to_s.chars
 q = gets.to_s.to_i

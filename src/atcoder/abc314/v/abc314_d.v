@@ -1,46 +1,50 @@
-// // s := "AtCoder"
-// // println(s.to_lower())
-// // println(s.to_upper())
+println("hello")
+// import lemoncmd.proconio { input }
 
-import lemoncmd.proconio { input }
-
-pub struct Query {
-	t int
-	x int
-	c string
-}
-
-_ := input[int]()
-// mut s := input[string]().split("")
-_ := input[string]()
-
-mut s := ["a"].repeat(500_000)
-q := input[int]()
-qs := input[[]Query](len: [q])
-
-// mut qs := []Query{}
-// mut used := false
-// for query in input[[]Query](len: [q]).reverse() {
-// 	if query.t == 1 {
-// 		qs << query
-// 	} else if !used {
-// 		used = true
-// 		qs << query
-// 	} 
+// pub struct Query {
+// 	t int
+// 	x int
+// 	c string
 // }
 
-for query in qs {
-	match query.t {
-		1 {
-			s[query.x - 1] = query.c
-		}
-		2 {
-			s = s.join("").to_lower().split("")
-		}
-		else {
-			s = s.join("").to_upper().split("")
-		}
-	}
-}
+// _ := input[int]()
+// mut s := input[string]().split("")
+// q := input[int]()
+// queries := []Query()
+// // for i := 0; i < q; i ++ {
+// // 	t := input[int]()
+// // 	x := input[int]()
+// // 	c := input[string]()
+// // 	queries << Query(t, x, c)
+// // }
 
-println(s.join(""))
+// // input[[]Query](len: [q])
+
+// // mut used := false
+// // filtered := queries.reverse().filter(
+// // 	if it.t == 1 {
+// // 		true
+// // 	} else if used {
+// // 		false
+// // 	} else {
+// // 		used = true
+// // 		true
+// // 	}
+// // ).reverse()
+
+// // for query in filtered {
+// // 	match query.t {
+// // 		1 {
+// // 			s[query.x - 1] = query.c
+// // 		}
+// // 		2 {
+// // 			s = s.join("").to_lower().split("")
+// // 		}
+// // 		else {
+// // 			s = s.join("").to_upper().split("")
+// // 		}
+// // 	}
+// // }
+// println(q)
+// println(queries)
+// println(s.join(""))
