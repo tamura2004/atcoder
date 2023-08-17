@@ -13,3 +13,4 @@ a.out
 .tool-versions
 .scala-build/
 .bsp/
+.DS_Store
