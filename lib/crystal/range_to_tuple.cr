@@ -1,7 +1,9 @@
+alias R = Range(Int::Primitive?, Int::Primitive?)
+
 class RangeToTuple(T)
   # `Range`を半開区間の[lo,hi)にして返す
   def self.from(
-    r : Range(Int::Primitive?, Int::Primitive?),
+    r : R,
     min = T::MIN,
     max = T::MAX
   )

@@ -146,3 +146,5 @@ module Indexable(T)
     ST(T).new(self, ->(x : T, y : T) { x > y ? x : y })
   end
 end
+
+alias SegmentTree = ST

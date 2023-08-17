@@ -2,18 +2,29 @@ require "spec"
 require "crystal/coodinate_compress_segment_tree"
 
 describe CoodinateCompressSegmentTree do
-  # it "usage" do
-  #   a = 100_000_000_i64
-  #   b = 200_000_000_i64
-  #   c = 300_000_000_i64
-  #   d = 400_000_000_i64
-  #   keys = [a, b, c, d]
-  #   values = [1, 2, 3, 4]
-  #   st = CCST.new(keys, values, unit: 0) { |x, y| x + y }
-  #   st[b..c].should eq 5
-  #   st[b] = 7
-  #   st[b..c].should eq 10
-  # end
+  it "usage" do
+    a = 100_000_000_i64
+    b = 200_000_000_i64
+    c = 300_000_000_i64
+    d = 400_000_000_i64
+    keys = [a, b, c, d]
+    st = CCST(Int64, Int32).new(keys, ->(x : Int32, y : Int32) { x + y })
+    st[a] = 1
+    st[b] = 2
+    st[c] = 3
+    st[d] = 4
+    st[b..c].should eq 5
+    st[..c].should eq 6
+    st[...c].should eq 3
+    st[b] = 7
+    st[b..c].should eq 10
+  end
+
+  it "usage range max" do
+    st = CCST(Int64, Int64).new([1e9.to_i64, 2e9.to_i64], ->(x : Int64, y : Int64) { Math.max x, y })
+    st[1e9.to_i64] = 10
+    st[1e9.to_i64..].should eq 10
+  end
 
   # it "initialize with hash" do
   #   hash = {
