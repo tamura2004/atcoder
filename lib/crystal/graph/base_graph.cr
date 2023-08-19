@@ -71,7 +71,7 @@ class BaseGraph(V)
   def to_plist
     ans = Array.new(n, -1)
     dfs = uninitialized (Int32, Int32) -> Nil
-    dfs = -> (v : Int32, pv : Int32) do
+    dfs = ->(v : Int32, pv : Int32) do
       ans[v] = pv + 1
       each(v) do |nv|
         next if nv == pv
