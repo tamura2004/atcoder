@@ -1,4 +1,9 @@
-require "crystal/coodinate_compress_segment_tree"
+# require "crystal/balanced_tree/treap/tree_map"
+# include BalancedTree::Treap
+
+require "crystal/cc"
+
+# require "crystal/coodinate_compress_segment_tree"
 
 n, m, q = gets.to_s.split.map(&.to_i)
 buildings = Array.new(n) { [] of Tuple(Int64, Int64) }
@@ -57,8 +62,9 @@ events.sort!
 
 # 座標圧縮付き区間最大セグ木を作る
 # ソート圧縮済のkeysを含む座標圧縮オブジェクトは取り出しておく
-st = CCST(Int64, Int64).new(keys, ->Math.max(Int64, Int64))
-cc = st.cc
+# st = CCST(Int64, Int64).new(keys, ->Math.max(Int64, Int64))
+# st = TreeMap(Int64, Int64).new(->Math.max(Int64, Int64))
+cc = CC.new(keys)
 
 # dpテーブルを埋める
 # dp[keyのi番目にいるとき][あと2^j回で] := たどり着けるkeyのindex
@@ -66,22 +72,35 @@ cc = st.cc
 
 # (1)
 dp = make_array(0, cc.size, 20)
+# dp = Hash(Int64, Array(Int64)).new do |h, k|
+#   h[k] = Array.new(20, 0i64)
+# end
+
+maxi = 0
 events.each do |floor, side, hi|
   case side
   when .lo?
-    st[hi] = hi
-    dp[cc[floor]][0] = cc[st[floor..]]
+    chmax maxi, hi
+    # st[hi] = hi
+    # dp[cc[floor]][0] = cc[st[floor..]]
   when .hi?
-    dp[cc[floor]][0] = cc[st[floor..]]
+    # dp[cc[floor]][0] = cc[st[floor..]]
   when .mid?
-    st[floor] = floor
-    dp[cc[floor]][0] = cc[st[floor..]]
+    chmax maxi, floor
+    # st[floor] = floor
+    # dp[cc[floor]][0] = cc[st[floor..]]
+  end
+  if floor <= maxi
+    dp[cc[floor]][0] = cc[maxi]
+  else
+    dp[cc[floor]][0] = cc[floor]
   end
 end
 
 # (2)
 (1...20).each do |j|
   cc.size.times do |i|
+    # dp.keys.each do |i|
     dp[i][j] = dp[dp[i][j - 1]][j - 1]
   end
 end
