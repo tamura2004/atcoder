@@ -1,19 +1,17 @@
 # AVL木によるOrderedMap
-class TreeMap(K, V)
-  class Node(K, V)
+class TreeMap(K, T)
+  class Node(K, T)
     getter key : K
     getter lo : K
     getter hi : K
-    getter val : V
-    getter acc : V?
-    getter fxx : Proc(V?, V?, V?)
+    getter val : T
     getter balance : Int32
     getter height : Int32
     getter size : Int32
-    property left : Node(K, V)?
-    property right : Node(K, V)?
+    property left : Node(K, T)?
+    property right : Node(K, T)?
 
-    def initialize(@key, @val, @fxx)
+    def initialize(@key, @val)
       @balance = 0
       @size = 1
       @height = 1
@@ -21,17 +19,16 @@ class TreeMap(K, V)
       @right = nil
       @lo = key
       @hi = key
-      @acc = val
     end
 
     # 値の更新または新規ノードの追加
-    def upsert(k : K, v : V) : self
+    def upsert(k, v) : self
       if k == key
         @val = v
       elsif k < key
-        @left = left.try &.upsert(k, v) || self.class.new(k, v, @fxx)
+        @left = left.try &.upsert(k, v) || self.class.new(k, v)
       else
-        @right = right.try &.upsert(k, v) || self.class.new(k, v, @fxx)
+        @right = right.try &.upsert(k, v) || self.class.new(k, v)
       end
       update.re_balance
     end
@@ -40,35 +37,16 @@ class TreeMap(K, V)
       upsert(k, v)
     end
 
-    def []?(k : K) : V?
-      if k == key
-        val
-      elsif k < key
-        left.try &.[k]?
-      else
-        right.try &.[k]?
-      end
-    end
-
-    def [](k : K) : V
-      self[k]?.not_nil!
-    end
-
     # 削除
-    def delete(k : K) : self?
-      left, right = @left, @right
+    def delete(k) : self
       if k == key
-        case {left, right}
-        when {Nil, Nil} then nil
-        when {_, Nil}   then left
-        when {Nil, _}   then right
-        else
-          node = left.max_node
-          @left = left.delete(node.key)
-          node.left = left
-          node.right = right
+        left.try do |l|
+          @left, node = l.pop
+          node.left, node.right = left, right
           node.update.re_balance
-        end
+        end || right.try do |r|
+          right
+        end || nil
       elsif k < key
         @left = left.try &.delete(k)
         update.re_balance
@@ -78,27 +56,17 @@ class TreeMap(K, V)
       end
     end
 
-    # 最大のキーを持つノード
-    def max_node : self
-      right.try &.max_node || self
-    end
-
-    # 最小のキーを持つノード
-    def min_node : self
-      left.try &.min_node || self
-    end
-
     # k以下（未満）の最大のキー
-    def lower_key(k : K, eq = false) : K?
-      if key < k || (eq && key == k)
-        right.try &.lower_key(k, eq) || key
-      else
+    def lower_key(k, eq = false) : K?
+      if k < key || (eq && k == key)
         left.try &.lower_key(k, eq)
+      else
+        right.try &.lower_key(k, eq) || key
       end
     end
 
-    # v以上（超える）の最小のキー
-    def upper_key(k : K, eq = true) : K?
+    # k以上（超える）の最小のキー
+    def upper_key(k, eq = true) : K?
       if k < key || (eq && k == key)
         left.try &.upper_key(k, eq) || key
       else
@@ -113,7 +81,6 @@ class TreeMap(K, V)
       @size = left_size + right_size + 1
       @lo = left.try &.lo || key
       @hi = right.try &.hi || key
-      @acc = fxx.call(fxx.call(left_val, val), right_val)
       self
     end
 
@@ -158,6 +125,11 @@ class TreeMap(K, V)
     end
 
     @[AlwaysInline]
+    def [](k)
+      at(k)
+    end
+
+    @[AlwaysInline]
     private def left_size : Int32
       left.try &.size || 0
     end
@@ -188,76 +160,56 @@ class TreeMap(K, V)
     end
 
     @[AlwaysInline]
-    private def left_val : V?
-      left.try &.val
+    private def left_to_a : Array(T)
+      left.try &.to_a || [] of T
     end
 
     @[AlwaysInline]
-    private def right_val : V?
-      right.try &.val
-    end
-
-    @[AlwaysInline]
-    private def left_to_a : Array({K, V})
-      left.try &.to_a || [] of Tuple(K, V)
-    end
-
-    @[AlwaysInline]
-    private def right_to_a : Array({K, V})
-      right.try &.to_a || [] of Tuple(K, V)
+    private def right_to_a : Array(T)
+      right.try &.to_a || [] of T
     end
 
     def inspect : String
-      "(#{key} #{left.inspect} #{right.inspect})".gsub(/nil/, ".")
+      "(#{left.inspect} #{[key, lo, hi]} #{right.inspect})".gsub(/nil/, ".")
     end
 
-    def to_a : Array({K, V})
-      left_to_a + [{key, val}] + right_to_a
+    def to_a : Array(T)
+      left_to_a + [val] + right_to_a
     end
   end
 
-  getter root : Node(K, V)?
-  getter fxx : Proc(V?, V?, V?)
+  getter root : Node(K, T)?
 
-  def initialize(@root : Node(K, V)? = nil, fxx : Proc(V, V, V) = ->(x : V, y : V) { y })
-    @fxx = ->(x : V?, y : V?) { x && y ? fxx.call(x, y) : x ? x : y }
+  def initialize(@root : Node(K, T)? = nil)
   end
 
-  def upsert(k : K, v : V)
-    @root = root.try &.upsert(k, v) || Node(K, V).new(k, v, fxx)
+  def upsert(k, v)
+    @root = root.try &.upsert(k, v) || Node(K, T).new(k, v)
   end
 
-  # `k`をキーとする値をセット（なければノード追加）
-  def []=(k : K, v : V)
+  def []=(k, v)
     upsert(k, v)
   end
 
-  # `k`をキーに持つ値を返す（無ければnil）
-  def []?(k : K) : V?
-    root.try &.[k]?
-  end
+  # def find(k)
+  #   @root = root.try &.find(k)
+  # end
 
-  # `k`をキーに持つ値を返す（無ければ例外）
-  def [](k : K) : V
-    root.not_nil![k]
-  end
-
-  # `k`をキーに持つ値を削除
-  def delete(k : K)
+  def delete(k)
     @root = root.try &.delete(k)
   end
 
-  # `k`未満（以下）の最大のキー
-  def lower_key(k : K, eq = false) : K?
+  # `k`以下（未満）の最大のキー
+  def lower_key(k, eq = true) : K?
     @root.try &.lower_key(k, eq)
   end
 
   # `k`以上（越える）最小のキー
-  def upper_key(k : K, eq = true) : K?
+  def upper_key(k, eq = true) : K?
     @root.try &.upper_key(k, eq)
   end
 
-  def size : Int32
+  def size
     @root.try &.size || 0
   end
 
@@ -265,11 +217,11 @@ class TreeMap(K, V)
     @root = nil
   end
 
-  def inspect : String
+  def inspect
     @root.inspect
   end
 
-  def to_a : Array({K, V})
-    @root.try &.to_a || [] of Tuple(K, V)
+  def to_a
+    @root.try &.to_a || [] of T
   end
 end
