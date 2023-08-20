@@ -1,33 +1,19 @@
-require "crystal/st"
+n = gets.to_s.to_i
+ices = Array.new(n) do |i|
+  f, s = gets.to_s.split.map(&.to_i64)
+  {s, f, i}
+end.sort
 
-n = gets.to_s.to_i64
-st = n.to_st_max
-
-n.times do |i|
-  st[i] = 0_i64
-end
+best_ice = ices.max
 
 ans = 0_i64
-n.times do |i|
-  f, s = gets.to_s.split.map(&.to_i64)
-  f -= 1
-
-  # 取る
-  same = st[f]
-  st[f] = 0_i64
-
-  # 違う味
-  chmax ans, st[0..] + s
-
-  # 同じ味
-  if same > s
-    chmax ans, same + s // 2
+ices.each do |ice|
+  next if ice[2] == best_ice[2]
+  if ice[1] == best_ice[1]
+    chmax ans, best_ice[0] + ice[0] // 2
   else
-    chmax ans, same // 2 + s
+    chmax ans, best_ice[0] + ice[0]
   end
-
-  # 戻す
-  st[f] = Math.max(s, same)
 end
 
 pp ans
