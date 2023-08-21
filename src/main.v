@@ -1,4 +1,4 @@
-import lemoncmd.proconio { input }
+import os { get_line }
 import math.vec { Vec2 }
 import arrays { max }
 
@@ -77,19 +77,17 @@ fn (g Graph) depth(root int) []int {
   return ans
 }
 
-struct Input {
-  n1 int
-  n2 int
-  m int
-  edges []Vec2[int] [m]
-}
+mut line := get_line().split(" ").map(it.int())
+n1, n2, m := line[0], line[1], line[2]
 
-dd := input[Input]()
-n := dd.n1 + dd.n2
+n := n1 + n2
 mut g := new_graph(n)
 
-for v in dd.edges {
-  g.add(v.x, v.y)
+for i := 0; i < m; i++ {
+  line = get_line().split(" ").map(it.int())
+  v := line[0]
+  nv := line[1]
+  g.add(v, nv)
 }
 
 depth1 := g.depth(0)
