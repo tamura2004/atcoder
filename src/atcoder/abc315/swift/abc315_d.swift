@@ -37,6 +37,20 @@ struct MukiArray<T> {
   }
 }
 
+struct HashCount<K> {
+  var h: [Int] = [Int](repeating: 0, count: 26)
+  var sum: Int = 0
+
+  subscript(k: K) -> Int {
+    get {
+
+    }
+  }
+
+
+
+}
+
 var dic: [Muki: Int] = [.Yoko: 10, .Tate: 20]
 var mukiArray = MukiArray(from: [[1,2,3],[4,5,6]])
 
