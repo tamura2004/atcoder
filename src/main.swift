@@ -1,39 +1,46 @@
-//
-// let a = readLine()!.split(separator: " ").map { Int($0)! }
-// print(a.reduce(0, +) / n)
+import Foundation
 
-// 座標圧縮
-struct CC {
-  var keys: [Int]
-  var refs: [Int]
+enum Muki {
+  case Yoko
+  case Tate
 
-  init(keys: [Int]) {
-    self.keys = keys
-    refs = [Int]()
-    for key in keys.sorted() {
-      if refs.isEmpty || refs.last != key {
-        refs.append(key)
-      }
-    }
-  }
-
-  func index(_ key: Int) -> Int {
-    var lo = 0
-    var hi = refs.count
-    while hi - lo > 1 {
-      let mid = (lo + hi) / 2
-      if refs[mid] <= key {
-        lo = mid
-      } else {
-        hi = mid
-      }
-    }
-    return lo
+  var gyaku: Muki {
+    return self == .Yoko ? .Tate : .Yoko
   }
 }
 
-let cc = CC(keys: [3,1,4,1,5])
-print(cc.index(1))
-print(cc.index(3))
-print(cc.index(4))
-print(cc.index(5))
+struct MukiArray<T> {
+  var a: [[T]]
+
+  init(from: [[T]]) {
+    self.a = from
+  }
+
+  subscript(d: Muki, i:Int, j:Int) -> T {
+    get {
+      switch d {
+        case .Tate:
+          return a[i][j]
+        case .Yoko:
+          return a[j][i]
+      }
+    }
+
+    set(value) {
+      switch d {
+        case .Tate:
+          self.a[i][j] = value
+        case .Yoko:
+          self.a[j][i] = value
+      }
+    }
+  }
+}
+
+var dic: [Muki: Int] = [.Yoko: 10, .Tate: 20]
+var mukiArray = MukiArray(from: [[1,2,3],[4,5,6]])
+
+print(dic[.Yoko.gyaku]!)
+print(dic[.Tate.gyaku]!)
+print(mukiArray[.Yoko, 0, 1])
+// print(mukiArray[.Tate, 0, 1])

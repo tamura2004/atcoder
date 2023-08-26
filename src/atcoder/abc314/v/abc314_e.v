@@ -43,11 +43,11 @@ fn (mut problem Problem) dfs(x int) f64 {
 		cnt := (sum + p * c) / (p - z)
 		if ans > cnt {
 			ans = cnt
-		}	
+		}
 	}
 	problem.memo[x] = ans
 	return ans
-} 
+}
 
 n, m := get2()
 mut memo := []?f64 { len: m, init: none }
