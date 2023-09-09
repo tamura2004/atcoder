@@ -17,10 +17,10 @@ describe FlowGraph::Dinic do
 
   it "not overflow" do
     g = Graph.new(2)
-    g.add 0,1,Int64::MAX - 1
-    g.add 0,1,Int64::MAX - 1
-    g.add 0,1,Int64::MAX
-    g.add 0,1,Int64::MAX
+    g.add 0, 1, Int64::MAX - 1
+    g.add 0, 1, Int64::MAX - 1
+    g.add 0, 1, Int64::MAX
+    g.add 0, 1, Int64::MAX
     Dinic.new(g).solve.should eq Int64::MAX
   end
 end

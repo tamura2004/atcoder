@@ -5,6 +5,8 @@ require "crystal/graph/backtrack"
 # 後退解析によりゲーム木のノードごとの勝敗・引き分けを求める
 describe Backtrack do
   it "usage" do
+    # ループがあるなら引き分けもある
+    # それ以上進めなければ負け
     g = Graph.new(3)
     g.add 3, 3, both: false
     g.add 2, 1, both: false
@@ -27,9 +29,9 @@ describe Backtrack do
   end
 
   it "abst graph" do
-    g = BaseGraph(Tuple(Int32,Int32)).new
-    g.add ({1,0}), ({3,1}), both: false
-    g.add ({3,1}), ({7,2}), both: false
+    g = BaseGraph(Tuple(Int32, Int32)).new
+    g.add ({1, 0}), ({3, 1}), both: false
+    g.add ({3, 1}), ({7, 2}), both: false
     Backtrack.new(g).solve.should eq [
       Backtrack::Game::Lose,
       Backtrack::Game::Win,

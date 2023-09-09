@@ -18,7 +18,7 @@ describe MaxFlow do
     g.add 6, 7, 1
     MaxFlow.new(g).solve(0, 7).should eq 2
   end
-  
+
   it "usage 2" do
     g = Graph.new(8)
     g.add 0, 1, 1

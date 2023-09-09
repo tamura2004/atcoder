@@ -1,5 +1,29 @@
 fun main() {
-  println("hello world".substring(0 until 4))
+  // val a = readLine()!!.toInt()
+  // val (b, c) = readLine()!!.split(" ").map { it.toInt() }
+  var x = 10
+  x += 10
+
+  println(x)
+
+  // 長さ10の配列
+  val a = Array(10) { 0 }
+  println(a.toList())
+
+  // String -> Intのマップ
+  val dic = HashMap<String, Int>()
+  dic["hoge"] = 10
+  println(dic["hoge"])
+  println(dic.containsKey("hoge"))
+
+  // 空の配列と要素の追加
+  var arr = emptyArray<Int>()
+  arr += 10
+  arr += 20
+  arr += 30
+  println(arr.toList())
+
+
 }
 
 // class UnionFind(n : Int) {
