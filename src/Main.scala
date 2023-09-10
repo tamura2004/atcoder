@@ -1,30 +1,31 @@
-class CoodinateCompress(val arr: Array[Long]) {
-  val src = arr.sorted.distinct
-
-  def apply(v: Long): Int = {
+class Bsearch[T: Ordering](val a: IndexedSeq[T]):
+  def solve(query: T => Boolean): Option[T] =
+    if a.isEmpty then return None
+    if query(a(0)) then return Some(a(0))
+    if !query(a.last) then return None
     var lo = 0
-    var hi = src.length
+    var hi = a.length
+    while (hi - lo) > 1 do
+      val mid = (lo + hi) / 2
+      if query(a(mid)) then hi = mid else lo = mid
+    return Some(a(hi))
 
-    while ((hi - lo) > 1) {
-      var mid = (hi + lo) / 2
-      if (v < src(mid)) {
-        hi = mid
-      } else {
-        lo = mid
-      }
-    }
-    return lo
-  }
-}
+// エレベータクラス
+case class Elevator(lo: Long, hi: Long) extends Ordered[Elevator]:
+  override def compare(that: Elevator): Int =
+    if this.lo == that.lo then
+      (this.hi - that.hi).toInt
+    else
+      (this.lo - that.lo).toInt
 
-import scala.collection.mutable.TreeSet
+object Main extends App:
 
-object Main extends App {
-  val a = Array(1000L,3000L,2000L,-1000L)
-  val cc = CoodinateCompress(a)
-  println(cc)
-  println(cc(-1000L))
-  println(cc(1000L))
-  println(cc(2000L))
-  println(cc(3000L))
-}
+  // ソートされた配列
+  val sortedArray = Array(
+    Elevator(20L,10L),
+    Elevator(77L,15L),
+    Elevator(10L,20L)
+  )
+
+  val ans = Bsearch[Elevator](sortedArray).solve(x => x.hi > 11)
+  println(ans)

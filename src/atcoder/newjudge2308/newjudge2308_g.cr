@@ -97,6 +97,8 @@ events.each do |floor, side, hi|
   end
 end
 
+pp! events
+
 # (2)
 (1...20).each do |j|
   cc.size.times do |i|
