@@ -1,46 +1,22 @@
 package main
 
 import (
-	"bufio"
 	"fmt"
-	"log"
-	"os"
-	"path/filepath"
-	"regexp"
-	"strings"
+	"encoding/json"
 )
 
-func fileterFile(path string, info os.FileInfo, err error) error {
-	if err != nil {
-		log.Print(err)
-		return nil
-	}
-	if !strings.HasSuffix(path, ".txt") {
-		return nil
-	}
-	fh, err := os.Open(path)
-	if err != nil {
-		log.Print(err)
-		return nil
-	}
-	defer fh.Close()
-
-	ip := regexp.MustCompile(`\d+(\.\d+){3}`)
-	scanner := bufio.NewScanner(fh)
-	line_number := 0
-	for scanner.Scan() {
-		line := scanner.Text()
-		line_number++
-		if ip.MatchString(line) {
-			fmt.Printf("%s:%d %s\n", path, line_number, line)
-		}
-	}
-	return nil
+type Race struct {
+	Name string `json:"name"`
+	Str int `json:"str"`
+	Dex int `json:"dex"`
+	Con int `json:"con"`
 }
 
 func main() {
-	err := filepath.Walk(".", fileterFile)
-	if err != nil {
-		log.Fatal(err)
+	jsonBytes := []byte(`{"name":"human","str":8,"dex":8,"con":8}`)
+	var r Race
+	if err := json.Unmarshal(jsonBytes, &r); err != nil {
+		panic(err)
 	}
+	fmt.Printf("%+v\n", r)
 }
