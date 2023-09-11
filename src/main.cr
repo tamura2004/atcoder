@@ -9,5 +9,11 @@
 
 # d="0x2c8adcb1bef3323ff642".to_i128(16)
 # pp d
+d=`dd`
+pp d.lines
+pp d.split
 
-pp [0,0,1,0,2].join
+x = 10
+(~-x).times do |i|
+  pp i
+end
