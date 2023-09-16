@@ -56,7 +56,7 @@ class BaseGraph(V)
     if a.is_a?(Array(Int32)) && a.includes?(-1) # 親の頂点リスト
       n = a.size
       initialize(n, origin: origin, both: both)
-      parse_plist(a)
+      self.class.from_plist(a)
     else # s式
       n = a.flatten.size
       initialize(n, origin: origin, both: both)

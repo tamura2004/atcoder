@@ -183,13 +183,13 @@ permutationsSaneOrder as = do
 isSym c = isPunctuation c || isSymbol c
 toHex = sToA . flip showHex ""
 
-progSource = "\192F"
+progSource = "\185\&0\ACK"
 main=do
  hSetEncoding stdin char8
  hSetEncoding stdout char8
  args <- getArgs 
  when (length args /= 0) $ errorWithoutStackTrace $ "Error: 0 args found at compile time, but "++show (length args)++" args found at runtime (pass them in at compile time too!)";let ()=()
- interact ((\input->let output=(let intMatrix_=filter (not . null) (map (asInts.sToA) (lines $ aToS input));strLines=map sToA $ lines $ aToS input;intList=concat intMatrix_;datOverride=False;dat=0;autoMapList=[];in let autoMapList = (listOr [[]] (chunksOf 1 strLines)) in concat $ map finishLn $ flip map autoMapList $ \strLines -> let (firstSep,secondSep)=if length autoMapList > 1 then ([],[space]) else ([space],[newli]) in (let (_,fstInt,fstLine,ints,sndInt,allLines,allInput,intMatrix,sndLine)=(undefined,if datOverride then dat else fromMaybe 100 $ at intList 0,fromMaybe printables $ at strLines 0,intList,fromMaybe 1000 $ at intList 1,strLines,input,intMatrix_,fromMaybe [] $ at strLines 1) in ( id  ((tail) ((fstLine) ::[Integer])))))
+ interact ((\input->let output=(let intMatrix_=filter (not . null) (map (asInts.sToA) (lines $ aToS input));strLines=map sToA $ lines $ aToS input;intList=concat intMatrix_;datOverride=False;dat=0;autoMapList=[];in let autoMapList = (listOr [[]] (chunksOf 1 intList)) in concat $ map finishLn $ flip map autoMapList $ \intList -> let (firstSep,secondSep)=if length autoMapList > 1 then ([],[space]) else ([space],[newli]) in (let (_,fstInt,fstLine,ints,sndInt,allLines,allInput,intMatrix,sndLine)=(undefined,if datOverride then dat else fromMaybe 100 $ at intList 0,fromMaybe printables $ at strLines 0,intList,fromMaybe 1000 $ at intList 1,strLines,input,intMatrix_,fromMaybe [] $ at strLines 1) in ((sToA.show.confirmInt) (((safeDiv) (((((-) ((fstInt) ::Integer)) (((1)) ::Integer))) ::Integer)) (((2)) ::Integer)))))
   -- don't print a newline to a quine! 
   in aToS $ if output == sToA progSource
     then output else finishLn output).sToA)

@@ -16,25 +16,25 @@ struct Rerooting(T)
 
   getter unit : T # mergeの単位元
 
-  def initialize(@g, @f1, @merge, @unit, @f2)
-    # # 子からの状態遷移関数で、子の頂点番号、辺番号を省略可能にする
-    # @f1 = ->(a : T, i : Int32, j : Int32) do
-    #   case f1
-    #   when Proc(T, V, E, T) then f1.call(a, i, j)
-    #   when Proc(T, V, T)    then f1.call(a, i)
-    #   when Proc(T, T)       then f1.call(a)
-    #   else                       a
-    #   end
-    # end
+  def initialize(@g, f1, @merge, @unit, f2)
+    # 子からの状態遷移関数で、子の頂点番号、辺番号を省略可能にする
+    @f1 = ->(a : T, i : Int32, j : Int32) do
+      case f1
+      when Proc(T, V, E, T) then f1.call(a, i, j)
+      when Proc(T, V, T)    then f1.call(a, i)
+      when Proc(T, T)       then f1.call(a)
+      else                       a
+      end
+    end
 
-    # # 子の状態のマージから親の状態遷移関数で、親の頂点番号省略可能に
-    # @f2 = ->(a : T, i : Int32) do
-    #   case f2
-    #   when Proc(T, V, T) then f2.call(a, i)
-    #   when Proc(T, T)    then f2.call(a)
-    #   else                    a
-    #   end
-    # end
+    # 子の状態のマージから親の状態遷移関数で、親の頂点番号省略可能に
+    @f2 = ->(a : T, i : Int32) do
+      case f2
+      when Proc(T, V, T) then f2.call(a, i)
+      when Proc(T, T)    then f2.call(a)
+      else                    a
+      end
+    end
 
     @dp = Array.new(n) do |v|
       Array.new(g.edges(v).size, unit)
