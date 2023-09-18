@@ -16,13 +16,14 @@ class CC(T)
   delegate size, to: ref
 
   def initialize(keys : Array(T))
-    @ref = keys.map { |v| T.new(v) }.sort.uniq
+    # @ref = keys.map { |v| T.new(v) }.sort.uniq
+    @ref = keys.sort.uniq
   end
 
   # eq: true key以上の最小のインデックス
   # eq: false keyを越える最小のインデックス
   def index(key, eq = true)
-    ref.bsearch_index(&.>(key - eq.to_unsafe)) || size
+    ref.bsearch_index { |e| eq && e == key || e > key } || size
   end
 
   def [](key)

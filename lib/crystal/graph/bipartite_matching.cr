@@ -1,4 +1,5 @@
 require "crystal/graph/i_graph"
+require "crystal/cc"
 
 # 二部グラフの最大マッチングを求める
 #
@@ -23,6 +24,37 @@ struct BipartiteMatching
     @seen = Array.new(n, false)
   end
 
+  def initialize(pairs : Array(Tuple(Int, Int)))
+    cc_from = CC.new(pairs.map &.[0])
+    cc_to = CC.new(pairs.map &.[1])
+    n = cc_from.size
+    m = cc_to.size
+
+    root = 0
+    goal = n + m + 1
+    @g = Graph.new(n + m + 2)
+
+    # 始点から左ペアへのパス
+    n.times do |i|
+      g.add root, i + 1, origin: 0, both: false
+    end
+
+    # 右ペアから終点へのパス
+    m.times do |i|
+      g.add i + n + 1, goal, origin: 0, both: false
+    end
+
+    # 左ペアから右ペアへのパス
+    pairs.each do |from, to|
+      g.add cc_from[from] + 1, cc_to[to] + n + 1, origin: 0, both: false
+    end
+
+    pp! @g
+
+    @match = Array.new(n + m + 2, -1)
+    @seen = Array.new(n + m + 2, false)
+  end
+
   def solve
     ans = 0
     match.fill(-1)
@@ -34,7 +66,7 @@ struct BipartiteMatching
       end
     end
 
-    { ans, match }
+    {ans, match}
   end
 
   def dfs(v)
