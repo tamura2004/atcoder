@@ -37,6 +37,8 @@ range = case name
     "a".."o"
   when /^typical90/
     "001".."090"
+  when /^math/
+    "001".."104"
   else
     "a".."z"
   end

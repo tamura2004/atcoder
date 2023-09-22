@@ -69,7 +69,7 @@ executer:
   swift: swift <%= src %>
   v: v run <%= src %>
   zig: zig run <%= src %>
-  nibble: ~/src/nibbles/nibbles <%= src %>
+  nibble: nibbles <%= src %>
 src_to_test:
   crystal: <%= src.sub_ext("") %>_spec<%= src.extname %>
   scala: <%= src.sub("main/scala", "test/scala").sub_ext("") %>Test<%= src.extname %>
