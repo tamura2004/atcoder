@@ -4,6 +4,21 @@ require "crystal/matrix"
 alias M = Matrix(Int32)
 
 describe Matrix do
+  it "ヒアドキュメントから初期化" do
+    got = <<-M.to_mat
+    1 1
+    1 0
+    M
+    want = Matrix(Int64).new([[1i64, 1i64], [1i64, 0i64]])
+    got.should eq want
+  end
+
+  it "文字列から初期化" do
+    got = "1 1;1 0".to_mat
+    want = Matrix(Int64).new([[1i64, 1i64], [1i64, 0i64]])
+    got.should eq want
+  end
+
   it "usage" do
     a = Matrix(Int32).new([
       [1, 1],
@@ -118,17 +133,16 @@ describe Matrix do
   it "map" do
     m = M.parse("1 2;3 4")
     k = m.map(&.* 2)
-    k.a.should eq [[2,4],[6,8]]
+    k.a.should eq [[2, 4], [6, 8]]
   end
 
   it "select" do
     m = M.parse("1 2;3 4")
-    m.select(&.odd?).should eq [1,3]
+    m.select(&.odd?).should eq [1, 3]
   end
 
   it "select and sum" do
     m = M.parse("1 2;3 4")
     m.sum.should eq 10
   end
-
 end

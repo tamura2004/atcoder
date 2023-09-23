@@ -87,7 +87,7 @@ describe HLDecomposition do
     st = values.to_st_sum
 
     ans = 0
-    hld.subtree_query(5) do |lo,hi|
+    hld.subtree_query(5) do |lo, hi|
       ans += st[lo..hi]
     end
     ans.should eq 200
@@ -104,7 +104,7 @@ describe HLDecomposition do
     st = values.to_st_sum
 
     ans = 0
-    hld.subtree_query(5, edge: false) do |lo,hi|
+    hld.subtree_query(5, edge: false) do |lo, hi|
       ans += st[lo..hi]
     end
     ans.should eq 260

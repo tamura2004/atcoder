@@ -1,14 +1,31 @@
 require "spec"
 require "crystal/dual_segment_tree"
 
-alias T = Tuple(Int32,Int32)
+alias T = Tuple(Int32, Int32)
 
+# 区間作用、1点照会型SegmentTree
 describe DualSegmentTree do
-  it "usage" do
+  it "区間加算" do
+    st = DualSegmentTree(Int32).range_add(10)
+    st[1..7] = 10
+    st[5...10] = 20
+    st[0].should eq 0
+    st[1].should eq 10
+    st[2].should eq 10
+    st[3].should eq 10
+    st[4].should eq 10
+    st[5].should eq 30
+    st[6].should eq 30
+    st[7].should eq 30
+    st[8].should eq 20
+    st[9].should eq 20
+  end
+
+  it "区間最大" do
     st = DualSegmentTree(Int32).new(
-      values: [1,2,3,4],
-      unit: 0, # default
-      f: -> (x : Int32, y : Int32) { Math.max(x, y) } # default
+      values: [1, 2, 3, 4],
+      unit: 0,                                       # default
+      f: ->(x : Int32, y : Int32) { Math.max(x, y) } # default
     )
     st[0].should eq 1
     st[1].should eq 2
@@ -24,9 +41,9 @@ describe DualSegmentTree do
   # 区間xor
   it "initialize with proc" do
     st = DualSegmentTree.new(
-      values: [0,1,1,0,1,1],
+      values: [0, 1, 1, 0, 1, 1],
       unit: 0,
-      f: -> (x : Int32, y : Int32) { x ^ y}
+      f: ->(x : Int32, y : Int32) { x ^ y }
     )
 
     st[0].should eq 0
@@ -43,7 +60,7 @@ describe DualSegmentTree do
   end
 
   it "区間代入" do
-    st = DualSegmentTree(Int32).range_assign([1,2,3,4])
+    st = DualSegmentTree(Int32).range_assign([1, 2, 3, 4])
     st[0...4] = 10
     st[1...3] = 20
     st[0].should eq 10
@@ -53,8 +70,7 @@ describe DualSegmentTree do
     st[3] += 100
     st[3].should eq 110
 
-
-    st = DualSegmentTree(Int32).range_assign([1,2,3,4])
+    st = DualSegmentTree(Int32).range_assign([1, 2, 3, 4])
     st[1...3] = 20
     st[0...4] = 10
     st[0].should eq 10
@@ -65,7 +81,7 @@ describe DualSegmentTree do
   end
 
   it "区間chmin" do
-    st = DualSegmentTree(Int32).range_min([10,10,10,10,10])
+    st = DualSegmentTree(Int32).range_min([10, 10, 10, 10, 10])
     st[1..2] = 3
     st[2..3] = 2
     st[1..4] = 5

@@ -4,10 +4,16 @@ require "crystal/range_to_tuple"
 class IMOS(T)
   getter n : Int32
   getter a : Array(T)
-  delegate "[]", "[]=", to: a
+  private getter updated : Bool
 
   def initialize(@n)
     @a = Array.new(n, T.zero)
+    @updated = false
+  end
+
+  def [](i : Int)
+    raise "参照前にupdate!メソッドの呼び出しが必要です" unless @updated
+    a[i]
   end
 
   def []=(r : Range(B, E), v : T) forall B, E
@@ -21,7 +27,9 @@ class IMOS(T)
     a[hi] -= v
   end
 
+  # 参照前に必須
   def update!
+    @updated = true
     (n - 1).times do |i|
       a[i + 1] += a[i]
     end

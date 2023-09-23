@@ -1,93 +1,82 @@
-require "crystal/complex"
-
-# 文字列によるグリッド
-# 利便性のため、参照に複素数を利用
+# 文字列によるグリッド表現
 class Grid
-  getter h : Int32
-  getter w : Int32
-  getter a : Array(String)
-  getter dir : Array(C)
-  delegate "[]", to: a
+  DIR = [{1, 0}, {-1, 0}, {0, 1}, {0, -1}, {1, 1}, {1, -1}, {-1, 1}, {-1, -1}]
+  private getter h : Int32
+  private getter w : Int32
+  private getter g : Array(String)
 
-  def initialize(@h, @w, @a = [] of String)
-    @dir = [1.i]
-    3.times { dir << dir[-1] * 1.i }
-    3.times { dir << dir[-1] * (1.i + 1) }
+  def initialize(@g)
+    raise "文字列の幅が異なります: #{g}" if @g.map(&.size).uniq.size != 1
+
+    @h = @g.size
+    @w = @g.first.size
   end
 
-  def initialize(z : C)
-    @h = z.y.to_i
-    @w = z.x.to_i
-    initialize(@h,@w)
+  def [](y : Int, x : Int) : Char
+    g[y][x]
   end
 
-  def read
-    @a = Array.new(h) { gets.to_s }
-    self
+  # タプルで座標指定可能
+  def [](v : Tuple(Int32, Int32)) : Char
+    self[*v]
   end
 
-  def each
-    h.times do |y|
-      w.times do |x|
-        yield C.new(x,y)
+  def each(y : Int, x : Int, dir = 4, &)
+    DIR[...dir].each do |dy, dx|
+      ny = y + dy
+      nx = x + dx
+      next if outside?(ny, nx)
+      yield ({ny, nx})
+    end
+  end
+
+  def each(v : Tuple(Int32, Int32), dir = 4, &)
+    each(*v, dir) do |nv|
+      yield nv
+    end
+  end
+
+  def each_with_index(v : Tuple(Int32, Int32), dir = 4, &)
+    each(*v, dir) do |nv|
+      yield self[nv], nv
+    end
+  end
+
+  def each_with_index(v : Tuple(Int32, Int32), dir = 4) : Iterator(Tuple(Char, Int32, Int32))
+    y, x = v
+
+    DIR[...dir].compact_map do |dy, dx|
+      ny = y + dy
+      nx = x + dx
+      if outside?(ny, nx)
+        nil
+      else
+        {self[ny, nx], ny, nx}
       end
-    end
+    end.each
   end
 
-  def each_dir
-    dir[0,4].each do |dz|
-      yield dz
-    end
+  def each(y : Int, x : Int, dir = 4) : Iterator(Tuple(Int32, Int32))
+    DIR[...dir].compact_map do |dy, dx|
+      ny = y + dy
+      nx = x + dx
+      if outside?(ny, nx)
+        nil
+      else
+        {ny, nx}
+      end
+    end.each
   end
 
-  def each_dir8
-    dir.each do |dz|
-      yield dz
-    end
+  def each(v : Tuple(Int32, Int32), dir = 4) : Iterator(Tuple(Int32, Int32))
+    each(*v)
   end
 
-  def each(z : C, wall = true)
-    each_dir do |dz|
-      nz = z + dz
-      next if outside?(nz)
-      next if wall && wall?(nz)
-      yield nz
-    end
+  private def outside?(y, x) : Bool
+    !inside?(y, x)
   end
 
-  def each8(z : C, wall = true)
-    dir.each do |dz|
-      nz = z + dz
-      next if outside?(nz)
-      next if wall && wall?(nz)
-      yield nz
-    end
-  end
-
-  def index(c : Char)
-    each do |z|
-      return z if self[z] == c
-    end
-    raise "no #{c}"
-  end
-
-  def [](z : C) : Char
-    a[z.y][z.x]
-  end
-
-  def outside?(y : Int, x : Int) : Bool
-    y < 0 || h <= y || x < 0 || w <= x
-  end
-
-  def outside?(z : C) : Bool
-    outside?(z.y, z.x)
-  end
-
-  def wall?(y : Int, x : Int) : Bool
-    a[y][x] == '#'
-  end
-
-  def wall?(z : C) : Bool
-    wall?(z.y, z.x)
+  private def inside?(y, x) : Bool
+    0 <= y < h && 0 <= x < w
   end
 end

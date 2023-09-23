@@ -52,7 +52,7 @@ end
 
 # 凸包
 def convex_hull(dots : Array(Point))
-  dots.sort_by!{|z| {z.real, z.imag}}
+  dots.sort_by! { |z| {z.real, z.imag} }
   up = [] of Point
   dots.each do |dot|
     while up.size >= 2 && (up[-1] - up[-2]).cross(up[-1] - dot) <= 0
@@ -60,7 +60,7 @@ def convex_hull(dots : Array(Point))
     end
     up << dot
   end
-  
+
   dn = [] of Point
   dots.each do |dot|
     while dn.size >= 2 && (dn[-1] - dn[-2]).cross(dn[-1] - dot) >= 0
@@ -72,7 +72,6 @@ def convex_hull(dots : Array(Point))
   ans = up + dn[1..-2].reverse
   return {ans, up, dn}
 end
-
 
 # 線分
 struct Segment
@@ -179,7 +178,7 @@ struct Circle
     d = (c - t.c).abs
     return 4 if r + t.r + EPS < d             # 離れている
     return 3 if ((r + t.r).abs - d).abs < EPS # 外接している
-    return 1 if ((r - t.r).abs - d).abs < EPS # 外接している
+    return 1 if ((r - t.r).abs - d).abs < EPS # 内接している
     return 0 if d < (r - t.r).abs - EPS       # 内包している
     return 2                                  # 交差している
   end
@@ -188,7 +187,7 @@ struct Circle
     ans = [] of Point
     d = (c - t.c).abs
     case intersect?(t)
-    when 0,4
+    when 0, 4
     when 3
       ans << (c * t.r + t.c * r) / (r * t.r)
     when 1

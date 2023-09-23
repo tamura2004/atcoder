@@ -29,7 +29,7 @@ struct Complex(T)
   end
 
   def self.read
-    real, imag = gets.to_s.split.map{|v| T.new(v.to_i64)}
+    real, imag = gets.to_s.split.map { |v| T.new(v.to_i64) }
     new(real, imag)
   end
 
@@ -39,6 +39,14 @@ struct Complex(T)
 
   def self.unit(e = 1)
     Complex(T).new(e, e)
+  end
+
+  # 極座標から生成
+  def self.from_poler(phase, r)
+    new(
+      r * Math.cos(phase),
+      r * Math.sin(phase),
+    )
   end
 
   # 平面幾何で利用する場合を想定した辞書順ソート
@@ -65,41 +73,48 @@ struct Complex(T)
   end
 
   def conj
-    Complex(T).new(real, -imag)
+    typeof(self).new(real, -imag)
   end
 
   def +(b : self)
-    Complex(T).new(real + b.real, imag + b.imag)
+    typeof(self).new(real + b.real, imag + b.imag)
   end
 
   {% for op in %w(+ -) %}
     def {{op.id}}(b : Int)
-      Complex(T).new(real {{op.id}} b, imag)
+      typeof(self).new(real {{op.id}} b, imag)
     end
   {% end %}
 
   def -(b : self)
-    Complex(T).new(real - b.real, imag - b.imag)
+    typeof(self).new(real - b.real, imag - b.imag)
   end
 
   def *(b : self)
-    Complex(T).new(
+    typeof(self).new(
       real * b.real - imag * b.imag,
       real * b.imag + imag * b.real
     )
   end
 
   def *(i : Int)
-    Complex(T).new(
+    typeof(self).new(
       real * i,
       imag * i
     )
   end
 
   def //(i : Int)
-    Complex(T).new(
+    typeof(self).new(
       real // i,
       imag // i
+    )
+  end
+
+  def /(i)
+    typeof(self).new(
+      real / i,
+      imag/i
     )
   end
 

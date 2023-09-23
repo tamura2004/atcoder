@@ -13,28 +13,35 @@ class DualSegmentTree(T)
   # 区間代入
   def self.range_assign(values : Array(T))
     unit = nil.as(T?)
-    f = -> (x : T?, y : T?) { y || x }
+    f = ->(x : T?, y : T?) { y || x }
     DualSegmentTree(T?).new(values, unit, f)
   end
 
   # 区間加算
   def self.range_add(values : Array(T))
     unit = T.zero
-    f = -> (x : T, y : T) { x + y }
+    f = ->(x : T, y : T) { x + y }
     DualSegmentTree(T).new(values, unit, f)
+  end
+
+  def self.range_add(n : Int)
+    unit = T.additive_identity
+    values = Array(T).new(n, unit)
+    f = ->(x : T, y : T) { x + y }
+    new(values, unit, f)
   end
 
   # 区間chmin
   def self.range_min(values : Array(T))
     unit = T::MAX
-    f = -> (x : T, y : T) { Math.min x, y }
+    f = ->(x : T, y : T) { Math.min x, y }
     DualSegmentTree(T).new(values, unit, f)
   end
 
   def initialize(
     values : Array(T),
     @unit = T::MIN,
-    @f = -> (x : T, y : T) { Math.max x, y }
+    @f = ->(x : T, y : T) { Math.max x, y }
   )
     @n = Math.pw2ceil(values.size)
     @r = Math.ilogb(n)
@@ -107,5 +114,15 @@ class Array(T)
 
   def to_dual_st_assign
     DualSegmentTree(T).range_assign(self)
+  end
+end
+
+struct Int
+  def to_st_sum
+    DualSegmentTree(Int64).range_add(self)
+  end
+
+  def to_st_add
+    to_st_sum
   end
 end

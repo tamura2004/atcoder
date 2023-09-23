@@ -47,7 +47,7 @@ struct Matrix(T)
     @w = z.x.to_i
     @a = [] of Array(T)
     h.times do
-      @a << block.call()
+      @a << block.call
     end
   end
 
@@ -67,7 +67,7 @@ struct Matrix(T)
   end
 
   def self.parse(s : String)
-    a = s.split(/;/).map(&.split.map { |v| T.new(v.to_i64) })
+    a = s.split(/\n|;/).map(&.split.map { |v| T.new(v.to_i64) })
     new(a)
   end
 
@@ -143,7 +143,7 @@ struct Matrix(T)
 
   # 行列を右から乗じた結果の行列を返す
   def *(b : self)
-    values = Array.new(h){ Array.new(w, T.zero)}
+    values = Array.new(h) { Array.new(w, T.zero) }
     h.times do |y|
       w.times do |x|
         w.times do |z|
@@ -303,12 +303,22 @@ struct Matrix(T)
   def inspect
     w = a.flatten.map(&.to_s.size).max
     z.to_s + "\n" + a.map(&.map { |v| "%#{w}s" % v }.join(" ")).join("\n")
-  #   a.map(&.map.(&.join(" "))).join("\n")
+    #   a.map(&.map.(&.join(" "))).join("\n")
   end
 
   def to_s(io)
     io << "["
     io << a.map(&.join(",")).join(";")
     io << "]"
+  end
+end
+
+class String
+  def to_matrix
+    Matrix(Int64).parse(self)
+  end
+
+  def to_mat
+    to_matrix
   end
 end

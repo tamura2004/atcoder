@@ -114,7 +114,7 @@ class CodeRunner
              === stdout ===
              #{stdout.read}
              === stderr ===
-             #{stderr.read[..200]}
+             #{stderr.read[..1000]}
              === time ===
              #{sprintf('%.2fms\n', (Time.now - start_time) * 1000)}
 
