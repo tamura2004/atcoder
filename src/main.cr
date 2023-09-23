@@ -1,1 +1,3 @@
-puts `factor #{gets.to_s.to_i}`[4..]
+require "crystal/indexable"
+
+pp typeof([1, 2, 3, 4].count_less(3))
