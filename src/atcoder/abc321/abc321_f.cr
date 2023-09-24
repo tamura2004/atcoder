@@ -1,48 +1,31 @@
-require "crystal/st"
-require "crystal/modint9"
-require "crystal/ntt"
+# dpの遷移をちゃんと立式する
+# 戻せないと決めつけない、式変形で考察すれば糸口がつかめた
+# インラインDPと同じ考え方で処理できる
+# 追加：dp[i+1][j] = dp[i][j] + dp[i][j-k]
+# 戻す：dp[i][j] = dp[i+1][j] - dp[i][j-k] : 下から更新する
 
-alias T = Array(ModInt)
+require "crystal/modint9"
 
 q, k = gets.to_s.split.map(&.to_i64)
+dp = make_array(0.to_m, q + 1, k + 1)
+dp[0][0] = 1.to_m
 
-st = ST(T).new(
-  values: Array.new(5000, nil.as(T?)),
-  fxx: ->(x : T, y : T) {
-    NTT.conv(x, y)
-  }
-)
-
-cnt = Array.new(5001) { [] of Int32 }
-id = 0
-
-q.times do
+q.times do |i|
   cmd, x = gets.to_s.split
+  x = x.to_i
+
   case cmd
   when "+"
-    x = x.to_i
-    cnt[x] << id
-
-    dp = Array.new(x + 1, 0.to_m)
-    dp[0] = 1.to_m
-    dp[-1] = 1.to_m
-    st[id] = dp
-    id += 1
-
-    if ans = st[0..][k]?
-      pp ans
-    else
-      pp 0
+    (0..k).each do |j|
+      dp[i + 1][j] = dp[i][j]
+      dp[i + 1][j] += dp[i][j - x] unless j - x < 0
     end
   when "-"
-    x = x.to_i
-    i = cnt[x].pop
-    st[i] = nil
-
-    if ans = st[0..][k]?
-      pp ans
-    else
-      pp 0
+    (0..k).each do |j|
+      dp[i + 1][j] = dp[i][j]
+      dp[i + 1][j] -= dp[i + 1][j - x] unless j - x < 0
     end
   end
 end
+
+puts dp.map(&.last)[1..].join("\n")
