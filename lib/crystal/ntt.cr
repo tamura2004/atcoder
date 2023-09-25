@@ -1,3 +1,5 @@
+require "crystal/modint9"
+
 struct NTT
   class_getter se : Array(ModInt) = butterfly_init(ROOT)
   class_getter sie : Array(ModInt) = butterfly_inv_init(ROOT)

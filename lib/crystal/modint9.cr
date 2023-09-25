@@ -1,6 +1,6 @@
 require "crystal/static_mod_int"
-MOD = 998_244_353_i64
-ROOT = 3
+MOD  = 998_244_353_i64
+ROOT =           3_i64
 alias ModInt = StaticModInt(MOD)
 
 struct Int
@@ -16,6 +16,3 @@ struct Int
     ModInt.new(self) ** b
   end
 end
-
-# MOD = 2013265921_i64
-# ROOT = 31

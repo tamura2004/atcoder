@@ -1,3 +1,5 @@
 require "crystal/indexable"
 
-pp typeof([1, 2, 3, 4].count_less(3))
+lo = hi = 100i64
+hi += 100
+pp (lo..hi).size.class.new(100)

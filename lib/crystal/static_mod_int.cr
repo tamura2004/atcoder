@@ -9,13 +9,13 @@ struct StaticModInt(M)
 
   {% for op in %w(+ - *) %}
     def {{op.id}}(b)
-      self.class.new v {{op.id}} (b.to_i64 % M)
+      typeof(self).new v {{op.id}} (b.to_i64 % M)
     end
   {% end %}
 
   def **(b)
     a = self
-    ans = self.class.new(1)
+    ans = typeof(self).new(1)
     while b > 0
       ans *= a if b.odd?
       b >>= 1
@@ -29,7 +29,7 @@ struct StaticModInt(M)
   end
 
   def //(b)
-    self * self.class.new(b).inv
+    self * typeof(self).new(b).inv
   end
 
   def self.zero
