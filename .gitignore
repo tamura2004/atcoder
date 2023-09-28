@@ -14,3 +14,4 @@ a.out
 .scala-build/
 .bsp/
 .DS_Store
+out*

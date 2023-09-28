@@ -1,5 +1,2 @@
-require "crystal/indexable"
-
-lo = hi = 100i64
-hi += 100
-pp (lo..hi).size.class.new(100)
+a = Array.new(3) { gets.to_s.to_i64 }.sort
+puts a.sum == a.last * 2 ? 1 : 0
