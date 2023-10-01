@@ -12,8 +12,8 @@ class InversionNumber(T)
     st = a.to_ccst_sum
     ans = 0_i64
     a.each do |v|
-      ans += st[v..]
-      st[v] += 1
+      ans += st[v..]? || 0_i64
+      st[v] += 1_i64
     end
     ans
   end

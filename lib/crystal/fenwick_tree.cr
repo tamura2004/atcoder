@@ -43,7 +43,7 @@ class FenwickTree(T)
   end
 
   # 範囲の累積和
-  def [](r : Range(Int32?,Int32?)) : T
+  def [](r : Range(Int32?, Int32?)) : T
     lo = r.begin || 0
     hi = r.end || n
     lo -= 1 if lo > 0
@@ -82,9 +82,9 @@ end
 # 非負整数の配列aの転倒数
 def inversion_number(a)
   n = a.max.to_i
-  ft = FenwickTree(Int64).new(n+1)
-  a.sum do |i|
-    ft[i] = 1
+  ft = FenwickTree(Int64).new(n + 1)
+  a.map(&.to_i).sum do |i|
+    ft[i] = 1_i64
     ft[n] - ft[i]
   end
 end

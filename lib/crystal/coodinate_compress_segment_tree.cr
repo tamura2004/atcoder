@@ -32,3 +32,12 @@ class CoodinateCompressSegmentTree(K, V)
 end
 
 alias CCST = CoodinateCompressSegmentTree
+
+class Array(T)
+  def to_ccst_sum
+    CCST(T, Int64).new(
+      keys: self,
+      fxx: ->(x : Int64, y : Int64) { x + y }
+    )
+  end
+end

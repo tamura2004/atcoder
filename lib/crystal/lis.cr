@@ -15,11 +15,17 @@ class LIS(T)
   end
 
   def solve
-    dp = Array(T).new(n+1, T::MAX)
-    n.times do |i|
-      j = dp.bsearch_index{|v| a[i] <= v} || 0
-      dp[j] = a[i]
+    dp = Array(T).new(n + 1, T::MAX)
+    a.each do |v|
+      j = dp.bsearch_index(&.>= v) || 0
+      dp[j] = v
     end
-    dp.index(&.== T::MAX)
+    dp.index(&.== T::MAX) || n
+  end
+end
+
+class Array(T)
+  def lis
+    LIS(T).new(self).solve
   end
 end
