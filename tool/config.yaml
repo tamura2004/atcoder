@@ -29,6 +29,7 @@ ext_to_lang:
   .v: v
   .zig: zig
   .nbl: nibble
+  .ts: typescript
 builder:
   crystal: ruby build_crystal.rb
 clipboard:
@@ -70,6 +71,7 @@ executer:
   v: v run <%= src %>
   zig: zig run <%= src %>
   nibble: nibbles <%= src %>
+  typescript: npx ts-node <%= src %>
 src_to_test:
   crystal: <%= src.sub_ext("") %>_spec<%= src.extname %>
   scala: <%= src.sub("main/scala", "test/scala").sub_ext("") %>Test<%= src.extname %>

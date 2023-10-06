@@ -1,9 +1,23 @@
-import scala.collection.mutable.ArrayBuffer
-import scala.collection.mutable.HashMap
+import scala.concurrent.Future
+import scala.concurrent.ExecutionContext.Implicits.global
 
 object Main extends App {
-  val a = ArrayBuffer(1,2,3)
-  val b = ArrayBuffer(1,2,3)
-  val h = HashMap(a -> 123)
-  println(a.zip(b).map((a : Int, b : Int) => a + b))
+  val s = "Hello"
+  val n = 10
+
+  val futureList = Seq.tabulate(n) { i =>
+    Future {
+      Thread.sleep((n + 1 - i) * 1)
+      s + " future" + i + "!"
+    }
+  }
+
+  for {
+    future <- futureList
+    s <- future
+  } {
+    println(s)
+  }
+
+  Thread.sleep(3000)
 }
