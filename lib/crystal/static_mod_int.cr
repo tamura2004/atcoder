@@ -2,6 +2,7 @@
 struct StaticModInt(M)
   getter v : Int64
   delegate to_i64, to_s, to_m, inspect, to: v
+  @@memo = Hash(Int64,Int64).new
 
   def initialize(v)
     @v = v.to_i64 % M
@@ -28,8 +29,15 @@ struct StaticModInt(M)
     self ** (M - 2)
   end
 
+  # メモ化
   def //(b)
-    self * typeof(self).new(b).inv
+    if rev = @@memo[b]?
+      return self * typeof(self).new(rev)
+    end
+
+    rev = typeof(self).new(b).inv
+    @@memo[b] = rev.to_i64
+    self * rev
   end
 
   def self.zero
