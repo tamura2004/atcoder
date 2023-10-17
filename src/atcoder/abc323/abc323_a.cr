@@ -1,9 +1,3 @@
-s = gets.to_s
-n = s.size // 2
-ans = true
-n.times do |i|
-  if s[i*2 + 1] == '1'
-    ans = false
-  end
-end
+s = gets.to_s.chars.each_slice(2)
+ans = s.all?(&.[1].== '0')
 puts ans ? "Yes" : "No"
