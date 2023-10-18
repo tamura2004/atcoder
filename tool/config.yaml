@@ -48,7 +48,7 @@ executer:
   clojure: bb <%= src %>
   common_lisp: sbcl --script <%= src %>
   cpp: ./a.out
-  crystal: crystal run <%= src %>
+  crystal: crystal run <%= src %> --link-flags=-Wl,-ld_classic
   csharp: echo mono dist/csharp.exe
   cyber: cyber <%= src %>
   dart: dart <%= src %>
