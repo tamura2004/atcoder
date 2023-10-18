@@ -1,8 +1,8 @@
-a = [1, 2, 3, 4]
-b = [1, 2, 3, 4]
+n = gets.to_s.to_i64
+a = gets.to_s.split.map(&.to_i64).sort
 
-h = {a => 199}
-pp h[b]
+b = a.each_cons_pair.map do |i, j|
+    j - i
+end.to_a.sort
 
-pp a.hash
-pp b.hash
+pp b

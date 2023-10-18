@@ -1,16 +1,7 @@
-interface Todo {
-    title: string
-    description: string
-}
+const names = [
+    "alice",
+    "bob",
+    "chris"
+]
 
-type MyReadOnly<T> = {
-    readonly [K in keyof T]: T[K]
-}
-
-const todo: MyReadOnly<Todo> = {
-    title: "Hey",
-    description: "foobar"
-}
-
-// todo.title = "Hello"
-// todo.description = "barFoo"
+console.log(names.map(name => name + "-san"));
