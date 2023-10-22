@@ -118,7 +118,7 @@ end
 
 struct Int
   def to_st_sum
-    values = Array.new(self, nil.as(Int64?))
+    values = Array.new(self, 0_i64)
     ST(Int64).new(values, ->(x : Int64, y : Int64) { x + y })
   end
 

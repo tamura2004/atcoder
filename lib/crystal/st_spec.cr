@@ -23,7 +23,7 @@ describe ST do
     st[..2].should eq 3
     st[3..].should eq 7
     st[3...].should eq 7
-    st[5..]?.should eq nil
+    st[5..].should eq 0
   end
 
   it "to_st_min" do
