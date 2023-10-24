@@ -38,10 +38,62 @@ class Want
   end
 end
 
-n = gets.to_s.to_i64
-td = Array.new(n) do
-  t, d = gets.to_s.split.map(&.to_i64)
-  { t, t + d }
+class Got
+  getter n : Int64
+  getter a : Hash(Int64,Array(Tuple(Int64,Int64)))
+
+  def initialize(@n, td)
+    @a = td.map do |t, d|
+      {t, t+d}
+    end.group_by(&.[0])
+    a[Int64::MAX] = [] of Tuple(Int64,Int64)
+  end
+
+  def solve
+    ans = 0_i64
+    cur = 1_i64
+
+    pq = PQ(Tuple(Int64,Int64)).lesser
+
+    a.keys.sort.each do |key|
+      arr = a[key]
+      while pq.size > 0 && cur < key
+        hi, lo = pq.pop
+        if cur <= hi
+          cur += 1
+          ans += 1
+        end
+      end
+      cur = key
+
+      arr.each do |lo, hi|
+        pq << {hi, lo}
+      end
+    end
+
+    return ans
+  end
 end
 
-pp Want.new(n, td).solve
+n = gets.to_s.to_i64
+td = Array.new(n) do
+  Tuple(Int64,Int64).from gets.to_s.split.map(&.to_i64)
+end
+
+# pp! Want.new(n, td).solve
+pp Got.new(n, td).solve
+
+# 100.times do
+#   n = 100
+#   td = (0...n).map do
+#     t = rand(1_i64..10_i64)
+#     d = rand(1_i64..10_i64)
+#     { t, d }
+#   end
+
+#   want = Want.new(n, td).solve
+#   got = Got.new(n, td).solve
+#   if want != got
+#     pp! [want, got, n, td]
+#   end
+# end
