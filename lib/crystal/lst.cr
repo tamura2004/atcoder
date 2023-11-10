@@ -20,6 +20,15 @@ class LST(X, A)
   end
 
   def initialize(
+    n : Int32 | Int64,
+    fxx : Proc(X, X, X),
+    fxa : Proc(X, A, X),
+    faa : Proc(A, A, A)
+  )
+    initialize(Array.new(n, nil.as(X?)), fxx, fxa, faa)
+  end
+
+  def initialize(
     values : Array(X?),
     fxx : Proc(X, X, X),
     fxa : Proc(X, A, X),
@@ -134,7 +143,7 @@ class LST(X, A)
     x[i] = fxx.call fxa.call(x[i*2], a[i*2]), fxa.call(x[i*2 + 1], a[i*2 + 1])
   end
 
-  def query(lo, hi)
+  def query(lo, hi) : X?
     lo += n
     hi += n
 
@@ -165,8 +174,8 @@ class LST(X, A)
   end
 
   def [](r : Range(Int::Primitive?, Int::Primitive?))
-    lo = r.begin || 0
-    hi = r.end.try(&.succ.-(r.excludes_end?.to_unsafe)) || n
+    lo = (r.begin || 0).clamp(0..n-1)
+    hi = (r.end.try(&.succ.-(r.excludes_end?.to_unsafe)) || n).clamp(0..n)
     query(lo, hi).not_nil!
   end
 

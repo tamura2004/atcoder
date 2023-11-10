@@ -1,9 +1,9 @@
-require "crystal/lazy_segment_tree"
+require "crystal/lst"
 
 n, d, w = gets.to_s.split.map(&.to_i)
 ts = [] of Int32
 tx = Array.new(n) do
-  t, x = gets.to_s.split.map(&.to_i)
+  t, x = gets.to_s.split.map(&.to_i.pred)
   ts << t
   { t, x }
 end.sort
@@ -11,8 +11,13 @@ tx = Deque.new(tx)
 work = Deque(Tuple(Int32,Int32)).new
 ts = ts.uniq.sort
 
-values = Array.new(400_001,0)
-st = LazySegmentTree(Int32,Int32).range_add_range_max(values)
+values = Array.new(200_001,0)
+st = LST(Int32,Int32).new(
+  values: values,
+  fxx: ->Math.max(Int32,Int32),
+  fxa: -> (x : Int32, a : Int32) { x + a },
+  faa: -> (a : Int32, b : Int32) { a + b },
+)
 
 ans = 0
 

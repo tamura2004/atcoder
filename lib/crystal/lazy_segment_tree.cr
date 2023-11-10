@@ -1,3 +1,6 @@
+# deprecated!
+# lib/crystal/lst.crを使用すること
+
 require "crystal/i_segment_tree"
 
 # 遅延評価セグメント木

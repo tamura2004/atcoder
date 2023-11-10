@@ -1,10 +1,15 @@
-require "set"
+x = 2 ** 122
+y = x - 1000
 
-a = [1, 2, 3, 4]
-b = [1, 2, 3, 4]
+pp x
+pp y
 
-h = { a => 199 }
-pp h[b]
+ans = 1.0
+1000.times do
+    ans *= x
+    ans /= y
+    x -= 1
+    y -= 1
+end
 
-pp a.hash
-pp b.hash
+pp ans

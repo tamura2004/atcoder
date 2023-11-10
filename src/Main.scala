@@ -1,23 +1,11 @@
 import scala.concurrent.Future
 import scala.concurrent.ExecutionContext.Implicits.global
 
+
 object Main extends App {
-  val s = "Hello"
-  val n = 10
-
-  val futureList = Seq.tabulate(n) { i =>
-    Future {
-      Thread.sleep((n + 1 - i) * 1)
-      s + " future" + i + "!"
-    }
+  def yesno(f: (Int,Int) => Boolean) = {
+    if (f(10,20)) "Yes" else "No"
   }
 
-  for {
-    future <- futureList
-    s <- future
-  } {
-    println(s)
-  }
-
-  Thread.sleep(3000)
+  println(yesno(_ < _))
 }
