@@ -178,6 +178,13 @@ module Indexable(T)
     end.map(&.+ origin)
   end
 
+  # コピーを作らない部分一致確認
+  def match(other : self, offset : Int32 | Int64)
+    other.each_with_index.all? do |element, i|
+      self[i + offset] == element
+    end
+  end
+
   # 範囲外エラー時にインデックスを出力
   @[AlwaysInline]
   def [](index : Int)
