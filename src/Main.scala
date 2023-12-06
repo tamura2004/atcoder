@@ -3,9 +3,10 @@ import scala.concurrent.ExecutionContext.Implicits.global
 
 
 object Main extends App {
-  def yesno(f: (Int,Int) => Boolean) = {
-    if (f(10,20)) "Yes" else "No"
+  val f = Future { Thread.sleep(10000); 21 + 21 }
+  for {
+    ff <- f
+  } {
+    println(ff)
   }
-
-  println(yesno(_ < _))
 }
