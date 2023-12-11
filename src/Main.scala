@@ -1,11 +1,22 @@
-import scala.concurrent.Future
-import scala.concurrent.ExecutionContext.Implicits.global
+case class Hoge(a: Int, b: Int) {
+  def encode: String = {
+    Seq(a, b).map(_.toString).mkString("@")
+  }
+}
 
+object Hoge {
+  def unapply(hoge: String): Option[Hoge] = {
+    val Reg = """^(.*)@(.*)$""".r
+    hoge match {
+      case Reg(a, b) => Some(Hoge(a.toInt, b.toInt))
+      case _ => None
+    }
+  }
+}
 
 object Main extends App {
-  def yesno(f: (Int,Int) => Boolean) = {
-    if (f(10,20)) "Yes" else "No"
+  "3@4" match {
+    case Hoge(hoge) => println(hoge)
+    case _ => println("NO")
   }
-
-  println(yesno(_ < _))
 }

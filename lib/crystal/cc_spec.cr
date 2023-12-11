@@ -16,6 +16,11 @@ describe CC do
     cc.index(25, eq: false).should eq 2
   end
 
+  it "Int64 array to Int32 Seq" do
+    keys = [Int64::MAX, -100_i64, 200_i64, Int64::MIN]
+    keys.compress.should eq [3, 1, 2, 0]
+  end
+
   it "to cc" do
     cc = [10, 20].to_cc
     cc.index(0, eq: true).should eq 0

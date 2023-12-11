@@ -65,6 +65,13 @@ class Array(T)
     CC(T).new(self)
   end
 
+  def compress
+    cc = CC(T).new(self)
+    map do |v|
+      cc[v]
+    end
+  end
+
   def reverse_bsearch(&block)
     lo = 0
     hi = size
