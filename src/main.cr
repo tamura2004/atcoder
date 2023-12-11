@@ -1,7 +1,6 @@
-require "big"
+require "crystal/complex"
 
-x = 2.to_big_i ** 122
-y = x - 1000
+z = 1.x + 2.y
+w = 3.x + 4.y
 
-pp x
-pp y
+pp z.x + w.y

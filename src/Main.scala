@@ -15,8 +15,10 @@ object Hoge {
 }
 
 object Main extends App {
-  "3@4" match {
-    case Hoge(hoge) => println(hoge)
-    case _ => println("NO")
+  val f = Future { Thread.sleep(10000); 21 + 21 }
+  for {
+    ff <- f
+  } {
+    println(ff)
   }
 }
