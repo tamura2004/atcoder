@@ -1,15 +1,12 @@
-n = gets.to_i
-m = 0
-while 2 ** m < n
-    m += 1
-end
+n = gets.to_s.to_i64
+m = Math.ilogb(Math.pw2ceil(7))
 puts m
 STDOUT.flush
 
 m.times do |i|
-  ju = []
+  ju = [] of Int32 | Int64
   n.times do |j|
-    if j[i] == 1
+    if j.bit(i) == 1
       ju << j + 1
     end
   end
@@ -19,6 +16,6 @@ m.times do |i|
 end  
 
 s = gets.to_s.reverse.to_i(2)
-puts s + 1
+puts s
 STDOUT.flush
 

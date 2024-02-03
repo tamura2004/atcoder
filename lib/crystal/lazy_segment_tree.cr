@@ -157,22 +157,22 @@ class LazySegmentTree(X, A)
   # |0 1|   |0 1|   |0 1|
   #
   # 更新は単位元を持たないため、nilを加えて単位元としている
-  def self.range_update_range_sum(n : Int)
-    new(
-      values: Array.new(n) { nil.as(X) },
-      fxx: -> (x : X, y : X) {
-        x && y ? X.new(x[0] + y[0], x[1] + y[1]) : x ? x : y ? y : nil
-      },
-      fxa: -> (x : X, a : A) {
-        x && a ? X.new(a * x[1], x[1]) : x ? x : nil
-      },
-      faa: -> (a : A, b : A) {
-        b ? b : a
-      },
-      x_unit: nil.as(X),
-      a_unit: nil.as(A)
-    )
-  end
+  # def self.range_update_range_sum(n : Int)
+  #   new(
+  #     values: Array.new(n) { nil.as(X) },
+  #     fxx: -> (x : X, y : X) {
+  #       x && y ? X.new(x[0] + y[0], x[1] + y[1]) : x ? x : y ? y : nil
+  #     },
+  #     fxa: -> (x : X, a : A) {
+  #       x && a ? X.new(a * x[1], x[1]) : x ? x : nil
+  #     },
+  #     faa: -> (a : A, b : A) {
+  #       b ? b : a
+  #     },
+  #     x_unit: nil.as(X),
+  #     a_unit: nil.as(A)
+  #   )
+  # end
 
   def set(i : I, y : X)
     i += n

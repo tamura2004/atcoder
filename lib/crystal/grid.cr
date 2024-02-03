@@ -5,11 +5,20 @@ class Grid
   private getter w : Int32
   private getter g : Array(String)
 
+  def self.read(h)
+    g = Array.new(h) { gets.to_s }
+    new(g)
+  end
+
   def initialize(@g)
     raise "文字列の幅が異なります: #{g}" if @g.map(&.size).uniq.size != 1
 
     @h = @g.size
     @w = @g.first.size
+  end
+
+  def [](y : Int32 | Int64) : String
+    g[y]
   end
 
   def [](y : Int, x : Int) : Char
@@ -30,6 +39,15 @@ class Grid
     end
   end
 
+  def each_with_char(y : Int, x : Int, dir = 4, &)
+    DIR[...dir].each do |dy, dx|
+      ny = y + dy
+      nx = x + dx
+      next if outside?(ny, nx)
+      yield ({ny, nx, g[ny][nx]})
+    end
+  end
+
   def each(v : Tuple(Int32, Int32), dir = 4, &)
     each(*v, dir) do |nv|
       yield nv
@@ -41,7 +59,7 @@ class Grid
       yield self[nv], nv
     end
   end
-
+  
   def each_with_index(v : Tuple(Int32, Int32), dir = 4) : Iterator(Tuple(Char, Int32, Int32))
     y, x = v
 
