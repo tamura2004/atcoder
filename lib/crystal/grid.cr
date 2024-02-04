@@ -90,11 +90,11 @@ class Grid
     each(*v)
   end
 
-  private def outside?(y, x) : Bool
+  def outside?(y, x) : Bool
     !inside?(y, x)
   end
 
-  private def inside?(y, x) : Bool
+  def inside?(y, x) : Bool
     0 <= y < h && 0 <= x < w
   end
 end

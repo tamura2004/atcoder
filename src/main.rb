@@ -1,24 +1,21 @@
 n = gets.to_i
-m = 0
-while 2 ** m < n
-    m += 1
-end
-puts m
-STDOUT.flush
+a = Array.new(n) { gets.to_i }
 
-m.times do |i|
-  ju = []
+cnt = Hash.new(0)
+n.times do |i|
+  cnt[a[i]] += 1
+end
+
+ans = 0
+n.times do |i|
   n.times do |j|
-    if j[i] == 1
-      ju << j + 1
+    next if i > j
+    if i == j
+      ans += cnt[a[i] * a[j]]
+    else
+      ans += cnt[a[i] * a[j]] * 2
     end
   end
-  ans = [ju.size] + ju
-  puts ans.join(" ")
-  STDOUT.flush
-end  
+end
 
-s = gets.to_s.reverse.to_i(2)
-puts s + 1
-STDOUT.flush
-
+pp ans

@@ -4,19 +4,9 @@ class ST(T)
   getter a : Array(T?)
   getter fxx : Proc(T?, T?, T?)
 
-  # def initialize(_n, fxx : Proc(T, T, T))
-  #   @fxx = ->(x : T?, y : T?) do
-  #     x && y ? fxx.call(x, y) : x ? x : y ? y : nil
-  #   end
-
-  #   @n = Math.pw2ceil(_n)
-  #   @a = Array.new(n*2) { nil.as(T?) }
-  # end
-
-  def initialize(values : Array(T?), fxx : Proc(T, T, T))
+  def initialize(values : Array(T), &fxx : (T, T) -> T)
     @fxx = ->(x : T?, y : T?) do
-      x && y ? fxx.call(x, y) : x ? x : y ? y : nil
-      # x ? y ? fxx.call(x, y) : x : y
+      x && y ? fxx.call(x, y) : x ? x : y
     end
 
     @n = Math.pw2ceil(values.size)
@@ -47,7 +37,7 @@ class ST(T)
   end
 
   def [](i : Int)
-    get(i).not_nil!
+    get(i)
   end
 
   def []?(i : Int)
@@ -87,14 +77,14 @@ class ST(T)
   end
 
   def [](r : Range(Int::Primitive?, Int::Primitive?))
-    lo = r.begin || 0
-    hi = r.end.try(&.+(1).-(r.excludes_end?.to_unsafe)) || n
+    lo = (r.begin || 0).clamp(0..n-1)
+    hi = (r.end.try(&.+(1).-(r.excludes_end?.to_unsafe)) || n).clamp(0..n)
     self[lo, hi]
   end
 
   def []?(r : Range(Int::Primitive?, Int::Primitive?))
-    lo = r.begin || 0
-    hi = r.end.try(&.+(1).-(r.excludes_end?.to_unsafe)) || n
+    lo = (r.begin || 0).clamp(0..n-1)
+    hi = (r.end.try(&.+(1).-(r.excludes_end?.to_unsafe)) || n).clamp(0..n)
     self[lo, hi]?
   end
 
@@ -119,31 +109,43 @@ end
 struct Int
   def to_st_sum
     values = Array.new(self, 0_i64)
-    ST(Int64).new(values, ->(x : Int64, y : Int64) { x + y })
+    ST.new(values) do |x, y|
+      x + y
+    end
   end
 
   def to_st_min
-    values = Array.new(self, nil.as(Int64?))
-    ST(Int64).new(values, ->(x : Int64, y : Int64) { x < y ? x : y })
+    values = Array.new(self, Int64::MAX)
+    ST.new(values) do |x, y|
+      x < y ? x : y
+    end
   end
 
   def to_st_max
-    values = Array.new(self, nil.as(Int64?))
-    ST(Int64).new(values, ->(x : Int64, y : Int64) { x > y ? x : y })
+    values = Array.new(self, Int64::MIN)
+    ST.new(values) do |x, y|
+      x > y ? x : y
+    end
   end
 end
 
 module Indexable(T)
   def to_st_sum
-    ST(T).new(self, ->(x : T, y : T) { x + y })
+    ST.new(self) do |x, y|
+      x + y
+    end
   end
 
   def to_st_min
-    ST(T).new(self, ->(x : T, y : T) { x < y ? x : y })
+    ST.new(self) do |x, y|
+      x < y ? x : y
+    end
   end
 
   def to_st_max
-    ST(T).new(self, ->(x : T, y : T) { x > y ? x : y })
+    ST.new(self) do |x, y|
+      x > y ? x : y
+    end
   end
 end
 

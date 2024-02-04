@@ -1,6 +1,4 @@
-require "crystal/complex"
-
-z = 1.x + 2.y
-w = 3.x + 4.y
-
-pp z.x + w.y
+n = gets.to_s.to_i64
+a = gets.to_s.split.map(&.to_i64)
+pp a.sum / n
+pp! "debug"

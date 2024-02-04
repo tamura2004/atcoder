@@ -75,7 +75,7 @@ class CodeRunner
     clipboard = @config["clipboard"][os]
     clipboard_commandline = ERB.new(clipboard).result(binding)
     Open3.popen3(clipboard_commandline) do |stdin, stdout, stderr, wait_thread|
-      stdin.puts @src.read
+      stdin.puts @src.readlines.grep_v(/pp!/).join # crystalのデバッグコメント pp!を含む行を除外
       stdin.close
       Log.error stderr.read
     end

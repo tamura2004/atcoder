@@ -19,6 +19,8 @@ describe DualSegmentTree do
     st[7].should eq 30
     st[8].should eq 20
     st[9].should eq 20
+    st[...0] = 20
+    st[-10].should eq 0
   end
 
   it "区間最大" do
