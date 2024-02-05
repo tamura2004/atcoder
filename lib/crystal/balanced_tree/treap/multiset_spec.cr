@@ -3,6 +3,30 @@ require "crystal/balanced_tree/treap/multiset"
 include BalancedTree::Treap
 
 describe BalancedTree::Treap::Multiset do
+  it "圧縮した区間和セグ木としての利用" do
+    s = Multiset(Int64).sum
+    s << 10_000_000_000_i64
+    s << 20_000_000_000_i64
+    s.acc_lower(20_000_000_000_i64, eq = true).should eq 30_000_000_000_i64
+    s.acc_lower(20_000_000_000_i64).should eq 10_000_000_000_i64
+    s.acc_lower(10_000_000_000_i64, eq = true).should eq 10_000_000_000_i64
+    s.acc_lower(10_000_000_000_i64).should eq nil
+  end
+
+  it "圧縮した区間和セグ木としての利用2" do
+    s = Multiset(Int32).sum
+    s << 1
+    s << 1
+    s << 1
+    s << 2
+    s << 2
+    s << 2
+    s.acc_lower(2, eq = true).should eq 9
+    s.acc_lower(2, eq = false).should eq 3
+    s.acc_lower(1, eq = true).should eq 3
+    s.acc_lower(1, eq = false).should eq nil
+  end
+
   it "大きい方からk個の合計" do
     s = Multiset(Int32).sum
     10.step(by: 10, to: 60) do |v|
