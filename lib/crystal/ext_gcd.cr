@@ -20,7 +20,7 @@ def ext_gcd(a, b)
     y, v = v, y
     a, b = b, a % b
   end
-  return x, y, a
+  return x, y, a.abs 
 end
 
 # 中国剰余定理

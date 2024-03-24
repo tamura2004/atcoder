@@ -2,13 +2,13 @@ require "crystal/graph/i_graph"
 require "crystal/graph/i_matrix_graph"
 require "crystal/graph/printable"
 
+INF = Int64::MAX//4
+
 # 隣接行列によるグラフ
 class MatrixGraph
   include IGraph
   include IMatrixGraph
   include Printable
-
-  INF = Int64::MAX//4
 
   getter n : Int32
   getter m : Int32
@@ -78,5 +78,11 @@ class MatrixGraph
 
   def weighted?
     g.flatten.max > 1
+  end
+end
+
+struct Int
+  def to_g
+    MatrixGraph.new(self)
   end
 end
