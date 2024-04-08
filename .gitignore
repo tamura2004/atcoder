@@ -15,3 +15,5 @@ a.out
 .bsp/
 .DS_Store
 out*
+.swp
+
