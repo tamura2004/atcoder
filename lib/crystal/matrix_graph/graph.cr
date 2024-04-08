@@ -40,3 +40,10 @@ module MatrixGraph
     end
   end
 end
+
+struct Int
+  def to_g
+    MatrixGraph::Graph.new(self)
+  end
+end
+

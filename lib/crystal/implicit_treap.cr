@@ -92,7 +92,7 @@ class ImplicitTreap(T)
       end
     end
 
-    def delete(k : T)
+    def delete(k : Int32)
       t1, t2 = split(k + 1)
       t1, t3 = t1.try &.split(k) || nil_node_pair
       t1.try &.merge(t2) || t2
@@ -157,7 +157,7 @@ class ImplicitTreap(T)
     end
   end
 
-  def split(i : T)
+  def split(i : Int32)
     fst, snd = root.try &.split(i) || nil_node_pair
     {self.class.new(fst), self.class.new(snd)}
   end
@@ -181,7 +181,7 @@ class ImplicitTreap(T)
     @root = root.try &.merge(b.root) || b.root
   end
 
-  def delete(k : T)
+  def delete(k : Int32)
     @root = root.try &.delete(k)
   end
 

@@ -1,81 +1,86 @@
-require "crystal/st"
-require "crystal/cc"
-require "crystal/mod_int"
-require "crystal/square_matrix"
+require "crystal/indexable"
+require "crystal/bitset"
 
-class CCST(K, V)
-  getter st : ST(V)
-  getter cc : CC(K)
 
-  def initialize(keys : Array(K), fxx : V, V -> V)
-    @cc = CC(K).new(keys)
-    values = Array.new(cc.size, nil.as(V?))
-    @st = ST(V).new(values, fxx)
+class Problem
+  getter n : Int64
+  getter m : Int64
+  getter a : Array(Array(Int64))
+
+  def initialize(@n, @m, @a)
   end
 
-  def []=(i, v)
-    st[cc[i].not_nil!] = v
+  def self.read
+    n, m = gets.to_s.split.map(&.to_i64)
+    a = Array.new(n) { gets.to_s.split.map(&.to_i64) }
+    new(n, m, a)
   end
 
-  def [](r)
-    lo = r.begin
-    hi = r.end
-    st[cc[lo].not_nil!...cc[hi].not_nil!]
-  end
-end
-
-A = SquareMatrix(ModInt).new("1 1;1 0")
-B = SquareMatrix(ModInt).new("0 0;1 0")
-
-n, q = gets.to_s.split.map(&.to_i)
-keys = [] of Int64
-
-qs = Array.new(q) do
-  cmd, x, y = gets.to_s.split.map(&.to_i64) + [0_i64]
-  case cmd
-  when 1
-    keys << x
-    keys << x + 1
-  when 2
-    keys << x + 1
-    keys << x
-    keys << y + 1
-    keys << y
-  else
-    raise "bad"
-  end
-  {cmd, x, y}
-end
-
-keys.sort!.uniq!
-
-alias K = Int64
-alias V = SquareMatrix(ModInt)
-
-ccst = CCST(K, V).new(keys, ->(x : V, y : V) { y * x })
-keys.each_cons_pair do |lo, hi|
-  ccst[lo] = A ** (hi - lo)
-end
-
-cnt = keys.to_set
-
-qs.each do |cmd,x,y|
-  case cmd
-  when 1
-    if x.in?(cnt)
-      cnt.delete(x)
-      ccst[x] = B
-    else
-      cnt << x
-      ccst[x] = A
+  def solve
+    tate = Array.new(n) { n.to_bitset }
+    ix = (0...n).to_a
+    
+    m.times do |j|
+      ix.group_by { |i| a[i][j] }.values.each do |arr|
+        wk = n.to_bitset.set_at(arr)
+        arr.each do |k|
+          tate[k].xor! wk
+        end
+      end
     end
-  when 2
-    # pp! cnt
-    # pp! [x,y]
-    if x.in?(cnt) && y.in?(cnt)
-      pp ccst[x+1...y+1][0,0]
-    else
-      pp 0
-    end
+    
+    ans = tate.sum(&.popcount.to_i64)
+    ans -= n if m.odd?
+    ans //= 2
+    ans
   end
 end
+
+class Bad
+  getter n : Int64
+  getter m : Int64
+  getter a : Array(Array(Int64))
+
+  def initialize(@n, @m, @a)
+  end
+
+  def solve
+    tate = Array.new(n) { n.to_bitset }
+    ix = (0...n).to_a
+    
+    m.times do |j|
+      ix.group_by { |i| a[i][j] }.values.each do |arr|
+        wk = n.to_bitset
+        arr.each do |k|
+          wk.set(k)
+        end
+        arr.each do |k|
+          tate[k].xor! wk
+        end
+      end
+    end
+    
+    ans = tate.sum(&.popcount)
+    ans -= n if m.odd?
+    ans //= 2
+    ans
+  end
+end
+
+# n, m = gets.to_s.split.map(&.to_i64)
+# a = Array.new(n) { gets.to_s.split.map(&.to_i64) }
+
+10.times do
+  n = 210_i64
+  m = 229_i64
+  a = Array.new(n) { Array.new(m) { rand(1000_i64) }}
+
+  got = Bad.new(n, m, a).solve
+  want = Problem.new(n, m, a).solve
+
+  if got != want
+    pp! [n, m, a, got, want]
+  end
+end
+
+pp! 1 << 60

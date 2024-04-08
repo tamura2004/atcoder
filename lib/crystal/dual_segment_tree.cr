@@ -105,6 +105,11 @@ class DualSegmentTree(T)
   def []=(i : Int, v)
     self[i, i + 1] = v
   end
+
+  # for debug
+  def to_a
+    n.times.map{ |i| self[i] }.to_a
+  end
 end
 
 class Array(T)
