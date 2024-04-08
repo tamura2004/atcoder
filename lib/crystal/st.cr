@@ -127,6 +127,13 @@ struct Int
       x > y ? x : y
     end
   end
+
+  def to_st_xor
+    values = Array.new(self, UInt64.zero)
+    ST.new(values) do |x, y|
+      x ^ y
+    end
+  end
 end
 
 module Indexable(T)
