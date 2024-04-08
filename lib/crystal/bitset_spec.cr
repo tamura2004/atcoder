@@ -12,6 +12,15 @@ describe Bitset do
     bs.to_s.should eq "1" + "0" * 198 + "1"
   end
 
+  it "get" do
+    bs = [0, 1000, 2000].to_bitset(3000)
+    bs.get(0).should eq 1
+    bs.get(1).should eq 0
+    bs.get(999).should eq 0
+    bs.get(1000).should eq 1
+    bs.get(2000).should eq 1
+  end
+
   it "shift or" do
     bs = [0].to_bitset(10)
     bs.shift_or!(2)
@@ -19,16 +28,16 @@ describe Bitset do
     bs.to_s.should eq "0001010101"
   end
 
-  it "shift" do
-    bs = [0,2].to_bitset(10)
-    bs.shift!(3)
-    bs.to_s.should eq "0000101000"
+  it "shift_left!" do
+    bs = [0, 3].to_bitset(1000)
+    bs.shift_left!(996)
+    bs.to_s.should eq "1001" + "0" * 996
   end
 
-  it "shift!" do
-    bs = [0, 3].to_bitset(1000)
-    bs.shift!(996)
-    bs.to_s.should eq "1001" + "0" * 996
+  it "shift_right!" do
+    bs = [999, 996].to_bitset(1000)
+    bs.shift_right!(996)
+    bs.to_s.should eq "0" * 996 + "1001"
   end
 
   it "or" do
