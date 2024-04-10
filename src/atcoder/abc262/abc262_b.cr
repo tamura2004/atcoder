@@ -1,15 +1,18 @@
-require "crystal/matrix"
+require "crystal/bitset"
 
-# 全探索
 n, m = gets.to_s.split.map(&.to_i64)
-g = Matrix(Int64).zero(n)
+g = Array.new(n){ n.to_bitset }
 
 m.times do
   v, nv = gets.to_s.split.map(&.to_i.pred)
-  g[v][nv] = 1_i64
-  g[nv][v] = 1_i64
+  g[v].set(nv)
+  g[nv].set(v)
 end
 
-ans = (g ** 3).tr // 6
-pp ans
-  
+ans = (0...n).sum do |a|
+  (a.succ...n).sum do |b|
+    (g[a] & g[b]).popcount * g[a].get(b)
+  end
+end
+
+pp ans // 3

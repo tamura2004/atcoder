@@ -263,6 +263,10 @@ struct Int
     C.new(to_i64, 0_i64)
   end
 
+  def to_c
+    C.new(to_i64, 0_i64)
+  end
+
   def +(b : C)
     C.new(b.real + to_i64, b.imag)
   end

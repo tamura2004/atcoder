@@ -192,6 +192,10 @@ class LST(X, A)
     i // (i & -i)
   end
 
+  def to_a
+    (0...n).map { |i| self[i..i] }
+  end
+
   def to_s(io)
     Math.ilogb(n).succ.times do |h|
       (2**h...2**(h + 1)).each do |i|
