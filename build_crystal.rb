@@ -34,6 +34,12 @@ MACROS = {
     end
 
   EOS
+  "yesno" => <<~EOS.lines,
+    def yesno(ans)
+      puts ans ? :Yes : :No
+    end
+
+  EOS
 }
 
 class Bundler

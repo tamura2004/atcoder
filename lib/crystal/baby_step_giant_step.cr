@@ -6,7 +6,7 @@ class BabyStepGiantStep
     m = m.to_i64
 
     d = {1_i64 => 0_i64}
-    sq = Math.sqrt(m).to_i64 + 1
+    sq = Math.isqrt(m)
     z = 1_i64
 
     sq.times do |i|

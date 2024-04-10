@@ -6,7 +6,7 @@ struct Bitset
   getter a : Array(UInt128)
 
   def initialize(size)
-    @size = size.to_i
+    @size = size.to_i + 1
     @n = (@size + DIGIT - 1) // DIGIT
     @a = Array.new(n, 0_u128)
   end
@@ -15,17 +15,17 @@ struct Bitset
   end
 
   def dup
-    Bitset.new(@size, @n, @a)
+    Bitset.new(@size, @n, @a.dup)
   end
 
-  def set(i)
-    j, k = i.divmod(DIGIT)
+  def set(i, offset = 0)
+    j, k = (i + offset).divmod(DIGIT)
     a[j] |= (1_u128 << k)
     self
   end
 
-  def get(i)
-    j, k = i.divmod(DIGIT)
+  def get(i, offset = 0)
+    j, k = (i + offset).divmod(DIGIT)
     a[j].bit(k)
   end
 
@@ -73,8 +73,8 @@ struct Bitset
 
   # self = self | other
   def or!(other)
-    (0...n).each do |j|
-      a[j] |= other.a[j]
+    (0...Math.min(n, other.n)).each do |j|
+      a[j] |= other.at(j)
     end
     self
   end
@@ -85,8 +85,8 @@ struct Bitset
 
   # self = self & other
   def and!(other)
-    (0...n).each do |j|
-      a[j] &= other.a[j]
+    (0...Math.max(n, other.n)).each do |j|
+      a[j] &= other.at(j)
     end
     self
   end
@@ -97,8 +97,8 @@ struct Bitset
 
   # self = self ^ other
   def xor!(other)
-    (0...n).each do |j|
-      a[j] ^= other.a[j]
+    (0...Math.min(n, other.n)).each do |j|
+      a[j] ^= other.at(j)
     end
     self
   end
@@ -107,8 +107,19 @@ struct Bitset
     dup.xor!(other)
   end
 
+  def not!
+    (0...n).each do |j|
+      a[j] = ~a[j]
+    end
+    self
+  end
+
+  def ~ : self
+    dup.not!
+  end
+
   def at(i)
-    a[i]? || 0_u128
+    i.in?(0...n) ? a[i] : 0_u128
   end
 
   def popcount
@@ -116,22 +127,36 @@ struct Bitset
   end
 
   def to_s
-    a.reverse.map{|b| "%0#{DIGIT}b" % b}.join[-size,size]
+    a.reverse.map { |b| "%0#{DIGIT}b" % b }.join[-size, size]
+  end
+
+  def to_a(offset = 0)
+    (0...size).to_a.select { |i| get(i) == 1 }.map(&.- offset)
   end
 end
 
 struct Int
   def to_bitset
-    Bitset.new(self)
+    Bitset.new(to_i)
   end
 end
 
 module Enumerable(T)
-  def to_bitset(maxi : T)
-    bs = maxi.to_bitset
-    each do |i|
-      bs.set(i)
+  def to_bitset
+    to_bitset(max)
+  end
+
+  def to_bitset(maxi : Int, offset = 0)
+    maxi.to_bitset.tap do |bs|
+      each do |i|
+        bs.set(i, offset)
+      end
     end
-    bs
+  end
+end
+
+class String
+  def to_bitset
+    (0...size).select { |i| self[i] == '1' }.to_bitset(size)
   end
 end

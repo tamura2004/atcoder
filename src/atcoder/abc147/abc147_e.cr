@@ -1,8 +1,6 @@
 require "crystal/bitset"
 
-# OFFSET = 80 * 80 * 80
-# SIZE = OFFSET * 2 + 1
-OFFSET = 3
+OFFSET = (80 + 80 - 1) * 80
 SIZE = OFFSET * 2 + 1
 
 class Problem
@@ -30,28 +28,22 @@ class Problem
         wk.or! dp[y-1][x] if y > 0
         wk.or! dp[y][x-1] if x > 0
         abs = (a[y][x] - b[y][x]).abs
-        puts abs
-        puts wk
-        puts wk << abs
-        puts wk >> abs
         dp[y][x] = (wk << abs) | (wk >> abs)
       end
     end
 
-    pp dp.map(&.map(&.to_s).join(" ")).join("\n")
-
     ans = SIZE
     result = dp[-1][-1]
+
     SIZE.times do |i|
       if result.get(i) == 1
-        chmin ans, i - OFFSET
+        chmin ans, (i - OFFSET).abs
       end
     end
     ans
   end
 
   def run
-    pp! self
     puts solve
   end
 end
