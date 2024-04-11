@@ -2,6 +2,8 @@
 # 内部でnilを単位源としてモノイド化
 # 交換則を要しない
 class LST(X, A)
+  alias R = Range(Int::Primitive?, Int::Primitive?)
+
   getter n : Int32
   getter x : Array(X?)
   getter a : Array(A?)
@@ -9,14 +11,33 @@ class LST(X, A)
   getter fxa : Proc(X?, A?, X?)
   getter faa : Proc(A?, A?, A?)
 
-  # モノイドクラスで初期化
-  def self.from_monoid(n : Int32)
-    new(
-      values: Array.new(n) { X.zero },
-      fxx: ->(x : X, y : X) { x + y },
-      fxa: ->(x : X, a : A) { x * a },
-      faa: ->(a : A, b : A) { a + b }
-    )
+  # 範囲更新、範囲加算
+  def self.range_update_range_sum(values : Array(Int64))
+    RangeUpdateRangeSum.new(values)
+  end
+
+  class RangeUpdateRangeSum
+    record X, sum : Int64, num : Int64
+    alias A = Int64
+    getter lst : LST(X, A)
+    delegate "[]=", to: lst
+
+    def initialize(values)
+      @lst = LST(X, A).new(
+        values: values.map { |sum| X.new(sum, 1_i64) },
+        fxx: -> (x : X, y : X) { X.new(x.sum + y.sum, x.num + y.num) },
+        fxa: -> (x : X, a : A) { X.new(a * x.num, x.num) },
+        faa: -> (a : A, b : A) { b },
+      )
+    end
+
+    def [](r)
+      lst[r].sum
+    end
+
+    def to_a
+      lst.to_a.map(&.sum)
+    end
   end
 
   def initialize(
@@ -89,7 +110,7 @@ class LST(X, A)
     update(pa_hi - 1)
   end
 
-  def []=(r : Range(Int::Primitive?, Int::Primitive?), v : A)
+  def []=(r : R, v : A)
     lo = r.begin || 0
     hi = r.end.try(&.succ.-(r.excludes_end?.to_unsafe)) || n
     apply(lo, hi, v)
@@ -115,7 +136,6 @@ class LST(X, A)
     (1..h).reverse_each do |j|
       propagate_node(i >> j)
     end
-
   end
 
   def propagate_node(i)
@@ -173,10 +193,15 @@ class LST(X, A)
     fxx.call left, right
   end
 
-  def [](r : Range(Int::Primitive?, Int::Primitive?))
-    lo = (r.begin || 0).clamp(0..n-1)
-    hi = (r.end.try(&.succ.-(r.excludes_end?.to_unsafe)) || n).clamp(0..n)
+  def [](r : R)
+    lo, hi = range_to_tuple(r)
     query(lo, hi).not_nil!
+  end
+
+  def range_to_tuple(r : R)
+    lo = (r.begin || 0).clamp(0..n - 1)
+    hi = (r.end.try(&.succ.-(r.excludes_end?.to_unsafe)) || n).clamp(0..n)
+    { lo, hi }
   end
 
   def sum
