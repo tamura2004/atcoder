@@ -1,3 +1,35 @@
+# Bitsetを利用した行列表現
+# グラフの隣接表現を想定（加算=or, 乗算=and)
+class BitMatrix
+  getter g : Array(Bitset)
+  getter n : Int32
+  delegate "[]", "[]=", "to_a", to: g
+
+  def initialize(@n : Int32)
+    @g = Array.new(n) { n.pred.to_bitset }
+  end
+
+  def initialize(@g : Array(Bitset))
+    @n = g.size
+  end
+
+  def initialize(s : Array(String))
+    @g = s.map(&.to_bitset)
+    @n = s.size
+  end
+
+  def *(other : self)
+    self.class.new(n).tap do |ans|
+      n.times do |i|
+        n.times do |j|
+          next if g[i][j] == 0
+          ans[i].or! other[j]
+        end
+      end
+    end
+  end
+end
+
 struct Bitset
   DIGIT = 128
 
@@ -27,6 +59,10 @@ struct Bitset
   def get(i, offset = 0)
     j, k = (i + offset).divmod(DIGIT)
     a[j].bit(k)
+  end
+
+  def [](i)
+    get(i)
   end
 
   def set_at(arr)
@@ -127,7 +163,7 @@ struct Bitset
   end
 
   def to_s
-    a.reverse.map { |b| "%0#{DIGIT}b" % b }.join[-size, size]
+    (0...size).map { |i| get(i) }.join
   end
 
   def to_a(offset = 0)

@@ -2,6 +2,24 @@ require "spec"
 require "crystal/bitset"
 
 describe Bitset do
+  it "BitMatrix" do
+    a = BitMatrix.new([
+      "011",
+      "001",
+      "000",
+    ])
+    b = BitMatrix.new([
+      "000",
+      "100",
+      "110",
+    ])
+    (a * b).to_a.map(&.to_s).should eq [
+      "110",
+      "110",
+      "000",
+    ]
+  end
+
   it "usage" do
     bs = [0, 1000].to_bitset
     bs.set(500)
