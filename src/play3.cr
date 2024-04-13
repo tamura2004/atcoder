@@ -1,1 +1,1 @@
-pp 10.times.map { |i| i**2 }
+pp 10.bit_length
