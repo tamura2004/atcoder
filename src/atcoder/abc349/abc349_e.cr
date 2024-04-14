@@ -1,19 +1,8 @@
-# min-max法
-# 局面の勝ち=Inf、t-a、
-# 状態でDP 3 ** 9 == 19683
-# T - A 勝ち負けはINF
-# 手番の偶数奇数で最大か最小を選ぶ
-# 逆順
+# DFS
 
-a = Array.new(3) { gets.to_s.split.map(&.to_i64) }.flatten
+INF = Int64::MAX
 
-score = ->(s : Int32) {
-  a.zip(0..).sum do |v, i|
-    v * s.bit(i)
-  end
-}
-
-masks = [
+THREES = [
   0b111000000,
   0b000111000,
   0b000000111,
@@ -24,57 +13,38 @@ masks = [
   0b001010100,
 ]
 
-win = ->(s : Int32) {
-  masks.any? do |mask|
-    (mask & s).popcount == 3
+struct Int32
+  def win?
+    THREES.any? do |three|
+      (self & three).popcount == 3
+    end
   end
-}
 
-dp = Array.new(1 << 9) do |taka|
-  Array.new(1 << 9) do |aoki|
-    if (taka.popcount + aoki.popcount).odd?
-      Int64::MAX
-    else
-      Int64::MIN
+  def score(a : Array(Int64)) : Int64
+    (0...9).sum do |i|
+      a[i] * bit(i)
     end
   end
 end
 
-hands = (1 << 9).times.to_a
+a = Array.new(3){ gets.to_s.split.map(&.to_i64) }.flatten
 
-hands.reverse_each do |taka|
-  hands.reverse_each do |aoki|
-    next unless taka & aoki == 0
+dfs = uninitialized Proc(Int32, Int32, Int32, Int64)
+dfs = -> (my : Int32, your : Int32, turn : Int32) do
+  sign = turn.even? ? 1_i64 : -1_i64
 
-    tc, ac = [taka, aoki].map(&.popcount)
-    next unless 0 <= tc - ac <= 1
+  # 末端処理（３並び）
+  return INF * sign if my.win?
+  return -INF * sign if your.win?
 
-    tw, aw = [taka, aoki].map { |s| win.call(s) }
-    next if tw && aw
+  # 末端処理（9手完了、未決着）
+  return (my.score(a) - your.score(a)) * sign if turn == 9
 
-    if tw
-      dp[taka][aoki] = Int64::MAX
-    elsif aw
-      dp[taka][aoki] = Int64::MIN
-    elsif tc + ac == 9
-      dp[taka][aoki] = score.call(taka) - score.call(aoki)
-    else
-      if tc == ac
-        # takahashi turn
-        9.times do |i|
-          next if taka.bit(i) == 1
-          next if aoki.bit(i) == 1
-          chmax dp[taka][aoki], dp[taka | 1 << i][aoki]
-        end
-      else
-        # aoki turn
-        9.times do |i|
-          next if taka.bit(i) == 1
-          next if aoki.bit(i) == 1
-          chmin dp[taka][aoki], dp[taka][aoki | 1 << i]
-        end
-      end
-    end
-  end
+  (0...9).max_of do |i|
+    next -INF if (my | your).bit(i) != 0
+    dfs.call(your, my | 1 << i, turn + 1) * sign
+  end * sign
 end
-puts dp[0][0] > 0 ? :Takahashi : :Aoki
+
+ans = dfs.call(0, 0, 0)
+puts ans > 0 ? "Takahashi" : "Aoki"
