@@ -35,3 +35,5 @@ if ans.size == n - 1
 else
   puts -1
 end
+
+pp dp[OFFSET] - 1
