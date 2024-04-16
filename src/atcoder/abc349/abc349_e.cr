@@ -1,4 +1,4 @@
-# DFS
+require "crystal/memo"
 
 INF = Int64::MAX
 
@@ -15,22 +15,21 @@ THREES = [
 
 struct Int32
   def win?
-    THREES.any? do |three|
-      (self & three).popcount == 3
-    end
+    THREES.any?(&.&(self).popcount.== 3)
   end
 
   def score(a : Array(Int64)) : Int64
-    (0...9).sum do |i|
-      a[i] * bit(i)
-    end
+    (0...9).sum { |i| a[i] * bit(i) }
   end
 end
 
-a = Array.new(3){ gets.to_s.split.map(&.to_i64) }.flatten
+a = Array.new(3) { gets.to_s.split.map(&.to_i64) }.flatten
+
+memo = Hash(Tuple(Int32, Int32), Int64).new
 
 dfs = uninitialized Proc(Int32, Int32, Int32, Int64)
-dfs = -> (my : Int32, your : Int32, turn : Int32) do
+dfs = ->(my : Int32, your : Int32, turn : Int32) do
+  return memo[{my, your}] if memo.has_key?({my, your})
   sign = turn.even? ? 1_i64 : -1_i64
 
   # 末端処理（３並び）
