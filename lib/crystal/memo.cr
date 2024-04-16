@@ -6,10 +6,9 @@
 # ```
 # # 例：フィボナッチ数列(1引数)
 # class Fibonacchi < Memo(Int32, Int32)
-#   def g(m, n)
-#     return n + 1 if m == 0
-#     return f(m - 1, 1) if n == 0
-#     f(m - 1, f(m, n - 1))
+#   def g(n)
+#     return 1 if n <= 2
+#     f(n - 1) + f(n - 2)
 #   end
 # end
 # Fibonacchi[6] # => 8
