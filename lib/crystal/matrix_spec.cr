@@ -32,10 +32,12 @@ describe Matrix do
       [2, 1],
       [1, 1],
     ])
+    x = [10, 1]
 
     (a*a).should eq c
     (a*a*a*a*a).should eq b
     (a**5).should eq b
+    (c * x).should eq [21,11]
   end
 
   it "zero" do

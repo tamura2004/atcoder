@@ -9,7 +9,7 @@ class CoodinateCompressSegmentTree(K, V)
     @cc = CC.new(keys)
     n = cc.size
     values = Array.new(n, nil.as(V?))
-    @st = SegmentTree(V).new(values, fxx)
+    @st = SegmentTree(V).new(values, &fxx)
   end
 
   def []=(k : K, v : V)
