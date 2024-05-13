@@ -1,24 +1,25 @@
 n, d = gets.to_s.split.map(&.to_i64)
 w = gets.to_s.split.map(&.to_i64)
-sum = w.sum
+INF = Int64::MAX//4
+dp = make_array(INF, d, 1<<n)
 
-ans = 1e100
-ave = sum / d
-
-def bunsan(cnt : Array(Int64), ave : Float64, n : Int64): Float64
-  cnt.sum do |v|
-    (v - ave) ** 2
-  end / n
-end
-
-
-(0...d).to_a.each_repeated_permutation(n) do |wake|
-  cnt = Array.new(d, 0_i64)
-  n.times do |i|
-    cnt[wake[i]] += w[i]
+d.times do |i|
+  if i == 0
+    (1<<n).times do |s|
+      cnt = n.times.sum do |j|
+        w[j] * s.bit(j)
+      end ** 2
+      dp[i][s] = cnt
+    end
+  else
+    (1<<n).times do |s|
+      t = s
+      while t > 0
+        t = (t - 1) & s
+        chmin dp[i][s], dp[0][t] + dp[i-1][s ^ t]
+      end
+    end
   end
-  next if cnt.any?(&.zero?)
-  chmin ans, bunsan(cnt, ave, d)
 end
 
-pp ans
+pp (dp[-1][-1] * d - w.sum ** 2) / d ** 2

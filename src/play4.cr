@@ -22,18 +22,15 @@ a = gets.to_s.split.map(&.to_i.pred)
 pr = Problem.new(a)
 
 ans = [] of Int32
+used = 0
 n.times do |i|
   next if pr.ix[i] == i
+  quit -1 if pr.ix[i] <= used
+  used = pr.ix[i]
   pr.ix[i].downto(i+1) do |j|
     pr.swap(j-1, j)
     ans << j
   end
 end
 
-if ans.size == n - 1
-  puts ans.join("\n")
-else
-  puts -1
-end
-
-pp dp[OFFSET] - 1
+puts ans.join("\n")

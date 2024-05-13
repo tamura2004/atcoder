@@ -1,55 +1,53 @@
-# yをCで区切って連結成分に分ける
-# 連結成分ごとのA,Bの個数を数える
-# xの対応する連結成分のA,Bの個数がyの対応する連結成分のA,Bの個数より多い場合、不可
-# それ以外の場合、辞書順で小さければYes
+class Problem
+  getter n : Int32
+  getter x : Array(Char)
+  getter y : Array(Char)
 
-y = "CAAABACCCACAB"
-x = "AACCBACCCACAB"
-
-solve = -> (n : Int64, x : String, y : String) do
-  cnt = y.chars.zip(x.chars).chunks do |yc, xc|
-    yc == 'C'
+  def initialize(@n, @x, @y)
   end
 
-  cnt.each do |(is_c, arrs)|
-    if is_c
-      if !arrs.all?(&.[1].== 'C')
-        return :No
-      end
+  def solve
+    y.zip(x).chunks(&.[0].== 'C').map(&.last.transpose).each do |(yy, xx)|
+      return false if unmatch(yy, xx)
+    end
+    true
+  end
+
+  def run
+    yesno solve
+  end
+
+  def unmatch(z, w)
+    if z.first == 'C'
+      w.any?(&.!= 'C')
     else
-      yarr, xarr = arrs.transpose
-      
-      ya = yarr.count('A')
-      yb = yarr.count('B')
-      xa = xarr.count('A')
-      xb = xarr.count('B')
+      za = z.count('A')
+      zb = z.count('B')
+      wa = w.count('A')
+      wb = w.count('B')
 
-      return :No if xa > ya || xb > yb
+      return true unless wa <= za && wb <= zb
 
-      xarr.each_index do |i|
-        next if xarr[i] != 'C'
-        if ya - xa > 0
-          xarr[i] = 'A'
-          xa += 1
+      w.each_index do |i|
+        next unless w[i] == 'C'
+        if za - wa > 0
+          w[i] = 'A'
+          wa += 1
         else
-          xarr[i] = 'B'
-          xb += 1
+          w[i] = 'B'
         end
       end
 
-      if xarr > yarr
-        return :No
-      end
+      zi = z.zip(0..).select(&.[0].== 'A').map(&.last)
+      wi = w.zip(0..).select(&.[0].== 'A').map(&.last)
+
+      !wi.zip(zi).all? { |i, j| i <= j }
     end
   end
-  :Yes
 end
-
-
 
 t = gets.to_s.to_i64
 t.times do
   n, x, y = gets.to_s.split
-  n = n.to_i64
-  puts solve.call(n, x, y)
+  Problem.new(n.to_i, x.chars, y.chars).run
 end

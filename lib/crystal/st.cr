@@ -37,7 +37,7 @@ class ST(T)
   end
 
   def [](i : Int)
-    get(i)
+    get(i).not_nil!
   end
 
   def []?(i : Int)

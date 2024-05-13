@@ -145,6 +145,13 @@ class BaseGraph(V)
     end
   end
 
+  def reverse_each(i, &)
+    g[i].reverse_each do |j, _, _|
+      yield j
+    end
+  end
+  
+
   def each(i) : Iterator(Int32)
     g[i].map(&.first).each
   end
