@@ -1,4 +1,3 @@
-require "spec"
 require "crystal/segment_tree_beats"
 
 # Node():　デフォルトコンストラクタ。
@@ -13,10 +12,6 @@ class Node(T)
   getter snd : T
   getter lazy : T?
   getter sum : T
-
-  def self.zero
-    new(0.as(T))
-  end
 
   def initialize(@fst : T)
     @sum = fst
@@ -71,31 +66,8 @@ class Node(T)
   end
 end
 
-describe SegmentTreeBeats do
-  it "usage" do
-    a = [3, 1, 4, 1, 5]
-    values = a.map { |i| Node(Int32).new(i) }
-    st = SegmentTreeBeats(Node(Int32)).new(values)
+a = [10, 10, 10, 10, 10, 10]
+values = a.map { |i| Node(Int32).new(i) }
+stb = SegmentTreeBeats(Node(Int32)).new(values)
 
-    # ans = 0
-    # st.query(0, 5) do |node|
-    #   ans += node.sum
-    # end
-    # ans.should eq 14
-
-    st.apply(0, 5, 2) # => [2, 1, 2, 1, 2]
-    pp! st.v
-
-    # ans = 0
-    # st.query(0, 5) do |node|
-    #   ans += node.sum
-    # end
-    # ans.should eq 8
-
-    ans = 0
-    st.query(2, 3) do |node|
-      ans += node.sum
-    end
-    ans.should eq 2
-  end
-end
+pp stb.query(0, 8) { |node| p node.sum }

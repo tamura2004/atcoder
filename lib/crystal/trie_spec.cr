@@ -4,25 +4,20 @@ require "crystal/trie"
 describe Trie do
   it "usage" do
     tr = Trie(Int64).new
-    tr["aa"] = 100_i64
-    tr["az"] = 100_i64
-    tr["aza"] = 100_i64
-    tr.count("az").should eq 2
-    tr.delete("az")
-    tr.count("az").should eq 1
-    tr.includes?("aza").should eq true
-    tr.includes?("a").should eq false
-    tr["b"].should eq nil
-    # tr.add("firearm")
-    # tr.add("begin")
-    # tr.add("begnum")
-    # tr.add("findjob")
-    # tr.add("fixnum")
+    tr << "a"
+    tr << "ab"
+    tr << "aba"
+    tr << "ba"
+    tr << "bac"
 
-    # tr.get("fire").should eq 1
-    # tr.find("begin").should eq true
-    # tr.find("fireman").should eq false
+    # 接頭辞が一致する文字列の数
+    tr.count("a").should eq 3
+    tr.count("ab").should eq 2
+    tr.count("aba").should eq 1
 
-    # tr.count("fi").should eq 4
+    # 共通接頭辞の文字数の合計
+    tr.sum("a").should eq 3
+    tr.sum("ab").should eq 5
+    tr.sum("aba").should eq 6
   end
 end

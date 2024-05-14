@@ -63,7 +63,7 @@ class SegmentTreeBeats(Node)
     l += n
     r += n
 
-    (1..log).reverse_each do |i|
+    (1..log).each do |i|
       update(l >> i) if (((l >> i) << i) != l)
       update((r - 1) >> i) if (((r >> i) << i) != r)
     end

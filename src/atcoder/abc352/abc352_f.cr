@@ -82,6 +82,3 @@ nn.times do |i|
 end
 
 puts a.join(" ")
-
-
-

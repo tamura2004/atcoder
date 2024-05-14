@@ -1,2 +1,2 @@
-1 999997 999998 999999
-123456789123456789
+11
+ab bb aaa bba baba babb aaaba aabbb a a b
