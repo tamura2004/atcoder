@@ -15,7 +15,11 @@ class Node(T)
   getter sum : T
 
   def self.zero
+<<<<<<< HEAD
     new(0.as(T))
+=======
+    new(T.zero)
+>>>>>>> 2557c489ee573d38de34c122e78d8d03c03b08bc
   end
 
   def initialize(@fst : T)
