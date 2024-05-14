@@ -14,6 +14,10 @@ class Node(T)
   getter lazy : T?
   getter sum : T
 
+  def self.zero
+    new(T.zero)
+  end
+
   def initialize(@fst : T)
     @sum = fst
     @cnt = 1
