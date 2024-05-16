@@ -1,11 +1,9 @@
-n, k = gets.to_s.split.map(&.to_i)
-a = gets.to_s.split.map(&.to_i64).sort.uniq.first(k).zip(0..)
+require "crystal/neko_set"
 
-a.each do |i,j|
-  if i != j
-    quit j
-  end
+n, k = gets.to_s.split.map(&.to_i64)
+a = gets.to_s.split.map(&.to_i64).sort.uniq.first(k)
+ns = NekoSet.new
+a.each do |ai|
+  ns.add(ai)
 end
-
-pp a.size
-
+puts ns.mex

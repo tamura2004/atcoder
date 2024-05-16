@@ -160,7 +160,7 @@ class AVLTree(T)
 
     # 挿入
     def insert(v)
-      # return self if v == val
+      return self if v == val
       if v < val
         @left = left.try &.insert(v) || Node(T).new(v)
       else
@@ -370,18 +370,11 @@ class AVLTree(T)
 end
 
 module Indexable(T)
-  def to_ordered_set
+  def to_avl
     AVLTree(T).new.tap do |tr|
       each do |v|
         tr << v
       end
     end
   end
-
-  def to_avl
-    to_ordered_set
-  end
 end
-
-alias AVL = AVLTree
-alias OrderedSet = AVLTree
