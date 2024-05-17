@@ -1,102 +1,91 @@
 # 抽象化Segment Tree Beats
 # Segment Tree Beatsの抽象化ライブラリ。
-
+#
 # 使い方
-# 次の関数を備えた構造体Nodeを載せて使用する。
-
-# Node():　デフォルトコンストラクタ。
-# Node(T): コンストラクタ。
-# initialize(v : T) Node構造体を型Tの値で初期化
-# update(l : Node, r : Node) : Nil 子の情報を元に更新する関数。
-# push(l : Node, r : Node) : Nil　子に親の情報を遅延して伝える関数。
-# apply(x : U) : Bool　作用素を作用させて、更新に成功したらtrue、失敗したらfalseを返す関数。
-# Beats構造体の持つ関数は以下の通り。
-# initialize(v : Array(T)):　Node構造体を初期化できる型Tの列を初期値として初期化する。
-# apply(int l, int r, U x): Uを区間 [ l , r ) # に作用させる。
-# query(int l, int r, const F& f): 各区間に対してf(Node &n)を行う関数。
-# クエリの取得に利用する。
-
-class SegmentTreeBeats(Node)
+# モノイドX, 作用Aを構造体として定義する。
+#
+# X + Y : XとYをマージしたモノイドを返す関数。
+# X.zero : Xの単位元を返す関数。
+# X.new(v : Int64) : Int64の値vで初期化されたXを返す関数。
+# X.fail : Xが失敗しているかどうかを返す関数。
+#
+# A + A : 作用の合成
+# A.zero : Aの単位元を返す関数。
+# A.new(v : Int64) : Int64の値vで初期化されたAを返す関数。
+#
+# X * A : XにAを作用させた結果を返す関数。
+class SegmentTreeBeats(X, A)
   getter n : Int32
-  getter log : Int32
-  getter v : Array(Node)
+  getter node : Array(X)
+  getter lazy : Array(A)
 
-  def initialize(vc : Array(Node))
-    @n = Math.pw2ceil(vc.size)
-    @log = Math.ilogb(n)
-    @v = Array.new(n*2) { Node.zero }
-    vc.each_with_index do |val, i|
-      v[i + n] = val
+  def initialize(values)
+    @n = Math.pw2ceil(values.size)
+    @node = Array.new(n * 2, X.zero)
+    values.each_with_index do |v, i|
+      @node[n + i] = X.new v
     end
     (1...n).reverse_each do |i|
-      update(i)
+      @node[i] = @node[i * 2] + @node[i * 2 + 1]
     end
+    @lazy = Array.new(n * 2, A.zero)
   end
 
-  def apply(l, r, x)
-    return if l == r
-    l += n
-    r += n
-    (1..log).reverse_each do |i|
-      push(l >> i) if (((l >> i) << i) != l)
-      push((r - 1) >> i) if (((r >> i) << i) != l)
-    end
-    l2 = l
-    r2 = r
-    while l < r
-      (apply_node(l, x); l += 1) if l.odd?
-      (r -= 1; apply_node(r, x)) if r.odd?
-      l >>= 1
-      r >>= 1
-    end
-    l = l2
-    r = r2
-    (1..log).each do |i|
-      update(l >> i) if (((l >> i) << i) != l)
-      update((r - 1) >> i) if (((r >> i) << i) != r)
-    end
-  end
+  # k番目のノードについて遅延評価を行う
+  def eval(k, l, r)
+    if @lazy[k] != A.zero
+      @node[k] *= @lazy[k] # X * A -> X に A を作用させる
+      # 葉ノード(r - l == 1)でなければ子に伝搬
+      if r - l > 1
+        @lazy[k * 2] += @lazy[k]
+        @lazy[k * 2 + 1] += @lazy[k]
 
-  # block付き
-  def query(l, r)
-    return if l == r
-    l += n
-    r += n
-
-    (1..log).each do |i|
-      update(l >> i) if (((l >> i) << i) != l)
-      update((r - 1) >> i) if (((r >> i) << i) != r)
-    end
-
-    while l < r
-      if l.odd?
-        yield v[l]
-        l += 1
+        # 更に実は失敗していたら子の遅延評価をしてから親を更新する
+        if @node[k].fail
+          eval(k * 2, l, (l + r) // 2)
+          eval(k * 2 + 1, (l + r) // 2, r)
+          @node[k] = @node[k * 2] + @node[k * 2 + 1]
+        end
       end
-      if r.odd?
-        r -= 1
-        yield v[r]
-      end
-      l >>= 1
-      r >>= 1
+      @lazy[k] = A.zero
     end
   end
 
-  def push(i)
-    v[i].push(v[i*2 + 1], v[i*2])
-  end
-
-  def update(i)
-    v[i].update(v[i*2 + 1], v[i*2])
-  end
-
-  def apply_node(i, x)
-    res = v[i].apply(x)
-    if i < n && res == false
-      push(i)
-      apply_node(i*2 + 1, x)
-      apply_node(i*2, x)
-      update(i)
+  # [a, b)にxを加算
+  def upply(a, b, x, k = 1, l = 0, r = n)
+    eval(k, l, r)
+    return if b <= l || r <= a
+    if a <= l && r <= b
+      @lazy[k] += x # Aでの加算
+      eval(k, l, r)
+    else
+      mid = (l + r) // 2
+      upply(a, b, x, k * 2, l, mid)
+      upply(a, b, x, k * 2 + 1, mid, r)
+      @node[k] = @node[k * 2] + @node[k * 2 + 1]
     end
+  end
+
+  def []=(r : Range(Int::Primitive?, Int::Primitive?), x : Int64)
+    lo = r.begin || 0
+    hi = r.end.try(&.+(1 - r.excludes_end?.to_unsafe)) || n
+    upply(lo, hi, A.new(x))
+  end
+
+  # [a, b)の合計を求める
+  def sum(a, b, k = 1, l = 0, r = n)
+    eval(k, l, r)
+    return X.zero if b <= l || r <= a
+    return @node[k] if a <= l && r <= b
+    mid = (l + r) // 2
+    vl = sum(a, b, k * 2, l, mid)
+    vr = sum(a, b, k * 2 + 1, mid, r)
+    return vl + vr
+  end
+
+  def [](r : Range(Int::Primitive?, Int::Primitive?)) : Int64
+    lo = r.begin || 0
+    hi = r.end.try(&.+(1 - r.excludes_end?.to_unsafe)) || n
+    sum(lo, hi).sum
   end
 end

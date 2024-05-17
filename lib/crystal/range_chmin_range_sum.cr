@@ -1,112 +1,93 @@
 require "crystal/segment_tree_beats"
 
-# 区間chmin, 区間sum
-#
-# ```
-# values = [3, 1, 4, 1, 5]
-# st = values.to_range_chmin_range_sum
-# st[0..].should eq 14
-# st[1..3] = 2 # => [3, 1, 2, 1, 5]
-# st[0..].should eq 12
-# st[0..] = 3 # => [3, 1, 2, 1, 3]
-# st[2..4].should eq 6
-# ```
-class RangeChminRangeSum(T)
-  class Node(T)
-    getter fst : T     # 区間の最大値
-    getter cnt : Int32 # 区間の最大値の要素数
-    getter snd : T     # 区間で2番目に大きい値
-    getter sum : T     # 区間の合計
-    getter lazy : T?   # 遅延評価用の値
+# 範囲chmin,範囲sum
+# 最大値と第2最大値、最大値の個数、合計、失敗フラグを持つ
+record X, fst : Int64, snd : Int64, cnt : Int64, sum : Int64, fail : Bool do
+  # 加法の単位元
+  def self.zero
+    new Int64::MIN, Int64::MIN, 0_i64, 0_i64, false
+  end
 
-    def self.zero
-      new(T.zero)
-    end
+  def initialize(@fst)
+    @snd = Int64::MIN
+    @cnt = 1_i64
+    @sum = @fst
+    @fail = false
+  end
 
-    def initialize(@fst : T)
-      @cnt = 1
-      @snd = T::MIN
-      @sum = @fst
-      @lazy = nil.as(T?)
-    end
-
-    # 子の情報を使って自分の情報を更新する
-    def update(l : self, r : self)
-      if l.fst == r.fst
-        @fst = l.fst
-        @cnt = l.cnt + r.cnt
-        @snd = Math.max l.snd, r.snd
-      elsif l.fst < r.fst
-        @fst = r.fst
-        @cnt = r.cnt
-        @snd = Math.max r.snd, l.fst
-      else
-        @fst = l.fst
-        @cnt = l.cnt
-        @snd = Math.max l.snd, r.fst
-      end
-      @sum = l.sum + r.sum
-    end
-
-    # 子に遅延評価用の値を適用する
-    def push(l : self, r : self)
-      if x = @lazy
-        l.add(x)
-        r.add(x)
-        @lazy = nil.as(T?)
-      end
-    end
-
-    def add(b : T)
-      if a = lazy
-        @lazy = Math.min a, b
-      else
-        @lazy = b
-      end
-    end
-
-    # 遅延評価用の値を適用する
-    def apply(a : T)
-      if fst <= a
-        true
-      elsif snd < a
-        @sum -= (fst - a) * cnt
-        @fst = a
-        true
-      else
-        false
-      end
+  def +(other : self) : self
+    if fst == other.fst
+      # 最大値が同じ区間のマージ
+      #
+      # fst ----   fst ----   fst ----
+      #          +          = 
+      # snd ----              snd ----
+      #            snd ----
+      #
+      X.new fst, Math.max(snd, other.snd), cnt + other.cnt, sum + other.sum, false
+    elsif fst > other.fst
+      # 自身の最大値が他の最大値より大きい場合、自身の最大値を維持
+      #
+      # fst ----              fst ----
+      #          + fst ---- = snd ----
+      # snd ----   snd ----
+      #
+      X.new fst, Math.max(snd, other.fst), cnt, sum + other.sum, false
+    else
+      # 自身の最大値が他の最大値より小さい場合、最大値を更新
+      #
+      #            fst ----   fst ----
+      # fst ---- +          = snd ----
+      # snd ----   snd ----
+      #
+      X.new other.fst, Math.max(fst, other.snd), other.cnt, sum + other.sum, false
     end
   end
 
-  getter st : SegmentTreeBeats(Node(T))
-  getter n : Int32
-
-  def initialize(values : Array(T))
-    @n = values.size
-    nodes = values.map { |v| Node.new(v) }
-    @st = SegmentTreeBeats(Node(T)).new(nodes)
-  end
-
-  def [](r : Range(Int::Primitive?, Int::Primitive?))
-    lo = r.begin || 0
-    hi = r.end.try(&.+(1 - r.excludes_end?.to_unsafe)) || n
-    ans = T.zero
-    st.query(lo, hi) do |node|
-      ans += node.sum
+  def *(other : A) : self
+    if fst <= other.val
+      # 最大値の更新の際、現在の最大値を超えれば何もしない
+      #
+      # x   ----
+      # fst ----
+      # snd ----
+      self
+    elsif snd < other.val
+      # 最大値の更新の際、第２最大値を超え、かつ最大値未満であれば、最大値の個数を利用して合計の更新を行う
+      #
+      # fst ----
+      # x   ---- -> sum -= (fst - x) * cnt
+      # snd ----
+      X.new other.val, snd, cnt, sum - cnt * (fst - other.val), false
+    else
+      # 第２最大値以下であれば、更新できないので失敗フラグを立てる
+      # このノードに対する遅延評価を行うときに、失敗フラグが立っていれば子に伝搬する
+      #
+      # fst ----
+      # snd ---- -> fail
+      # x   ----
+      X.new fst, snd, cnt, sum, true
     end
-    ans
-  end
-
-  def []=(r : Range(Int::Primitive?, Int::Primitive?), x : T)
-    lo = r.begin || 0
-    hi = r.end.try(&.+(1 - r.excludes_end?.to_unsafe)) || n
-    st.apply(lo, hi, x)
   end
 end
 
-class Array
+record A, val : Int64 do
+  # 加法の単位元
+  def self.zero
+    new Int64::MAX
+  end
+
+  def +(other : self) : self
+    if val <= other.val
+      self
+    else
+      other
+    end
+  end
+end
+
+class Array(T)
   def to_range_chmin_range_sum
-    RangeChminRangeSum.new(self)
+    SegmentTreeBeats(X, A).new(map(&.to_i64))
   end
 end
