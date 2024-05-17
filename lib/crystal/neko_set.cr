@@ -15,12 +15,23 @@ require "crystal/orderedset"
 # ```
 class NekoSet
   getter st : Orderedset(Tuple(Int64, Int64))
-  delegate to_a, to: st
+  getter cnt : Hash(Int64, Int64)
 
   def initialize
     @st = Orderedset(Tuple(Int64, Int64)).new
     st << ({Int64::MIN, Int64::MIN})
     st << ({Int64::MAX, Int64::MAX})
+    @cnt = Hash(Int64, Int64).new(0_i64)
+  end
+
+  def inc(x : Int64)
+    add(x) if cnt[x].zero?
+    cnt[x] += 1
+  end
+
+  def dec(x : Int64)
+    cnt[x] -= 1
+    delete(x) if cnt[x].zero?
   end
 
   def covered_by(x : Int64)
@@ -67,12 +78,20 @@ class NekoSet
     end
   end
 
+  def >>(x : Int64)
+    delete(x)
+  end
+
   def mex(x : Int64 = 0_i64)
     if r = covered_by(x)
       r[1] + 1
     else
       x
     end
+  end
+
+  def to_a
+    st.to_a[1..-2]
   end
 end
 

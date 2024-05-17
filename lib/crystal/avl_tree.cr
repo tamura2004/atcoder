@@ -1,4 +1,4 @@
-# AVL木によるOrderedMultiSet
+# AVL木によるOrderedSet
 class AVLTree(T)
   getter root : Node(T)?
 
