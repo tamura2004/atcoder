@@ -1,1 +1,9 @@
-require "crystal/balanced_tree/treap/ordered_set"
+require "crystal/avl_tree"
+
+alias Orderedset = AVLTree
+
+module Indexable(T)
+  def to_ordered_set
+    to_avl
+  end
+end
