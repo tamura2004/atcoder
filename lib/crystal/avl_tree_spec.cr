@@ -3,21 +3,21 @@ require "crystal/avl_tree"
 
 describe AVLTree do
   it "usage" do
-    tr = (1..100).to_a.to_ordered_set
+    tr = (1..100).to_a.to_avl
     tr.size.should eq 100
     tr.root.try(&.height).should eq 7 # log2(100)=6.6..なので平衡している
   end
 
   it "delete" do
-    tr = AVLTree{11, 29, 89}
-    tr.delete 29
-    tr.at(1).should eq 89
-    tr.delete 89
-    tr.at(0).should eq 11
+    tr = [11, 29, 89].to_avl
+    tr >> 29
+    tr[1].should eq 89
+    tr >> 89
+    tr[0].should eq 11
   end
 
   it "lower" do
-    tr = AVLTree{1, 3, 5}
+    tr = [1, 3, 5].to_avl
 
     # 以下
     [nil, 1, 1, 3, 3, 5, 5].each_with_index do |want, i|
@@ -51,7 +51,7 @@ describe AVLTree do
   end
 
   it "upper" do
-    tr = AVLTree{1, 3, 5}
+    tr = [1, 3, 5].to_avl
 
     # 以上
     [1, 1, 3, 3, 5, 5, nil].each_with_index do |want, i|
@@ -88,7 +88,7 @@ describe AVLTree do
   it "at" do
     tr = AVLTree{1, 3, 5}
     [1, 3, 5, nil].each_with_index do |want, k|
-      tr.at(k).should eq want
+      tr[k].should eq want
     end
   end
 
@@ -96,7 +96,7 @@ describe AVLTree do
   it "at" do
     tr = AVLTree{1, 3, 5}
     [1, 5, 3, 1].each_with_index do |want, k|
-      tr.at(-k).should eq want
+      tr[-k].should eq want
     end
   end
 
@@ -107,14 +107,14 @@ describe AVLTree do
   end
 
   it "insert at" do
-    tr = AVLTree{1, 1, 1, 1, 1, 1, 1, 1, 1, 1}
-    tr.insert_at(3, 3)
-    tr.insert_at(7, 7)
-    pp tr
+    tr = (0...10).to_a.to_avl
+    tr[3] = 3
+    tr[7] = 7
+    tr.to_a.should eq [0, 1, 2, 3, 3, 4, 5, 7, 6, 7, 8, 9]
   end
 
   it "count" do
-    tr = AVLTree{-1000000000_i64, 10000_i64, 1000000000_i64}
+    tr = [-1000000000_i64, 10000_i64, 1000000000_i64].to_avl
     tr.count(..20000_i64).should eq 2
     tr.count(-10000_i64..20000_i64).should eq 1
     tr.count(-10000_i64..).should eq 2

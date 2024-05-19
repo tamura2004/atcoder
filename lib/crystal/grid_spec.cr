@@ -14,4 +14,14 @@ describe Grid do
     # g.outside?(0.y+1.x).should eq false
     # g.outside?(0.y+10.x).should eq true
   end
+
+  it "each" do
+    g = Grid.new(
+      [
+        "..#",
+        "#..",
+      ]
+    )
+    g.each({0, 0}).to_a.should eq [{1, 0}, {0, 1}]
+  end
 end

@@ -12,17 +12,25 @@ class AVLTree(T)
   def insert(v : T)
     @root = root.try &.insert(v) || Node(T).new(v)
   end
+  
+  def <<(v : T)
+    insert(v)
+  end
 
   def insert_at(i : Int32, v : T)
     @root = root.try &.insert_at(i, v) || Node(T).new(v)
   end
 
-  def <<(v : T)
-    insert(v)
+  def []=(i : Int32, v : T)
+    insert_at(i, v)
   end
 
   def delete(v : T)
     @root = root.try &.delete(v)
+  end
+
+  def >>(v : T)
+    delete(v)
   end
 
   # v以下（未満）の最大値

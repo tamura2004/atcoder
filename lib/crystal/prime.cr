@@ -3,7 +3,7 @@
 # エラストテレスの篩で、自身を割る最小の素数をクラス変数として持つ
 # 素数判定と、高速な素因数分解に利用
 class Prime
-  MAX = 10_000_001_i64
+  MAX = 1_000_001_i64
   extend Enumerable(Int64)
   class_getter div : Array(Int64) = sieve(MAX)
   class_getter each : PrimeIterator = PrimeIterator.new(div)
