@@ -43,7 +43,7 @@ describe BalancedTree::Treap::Multiset do
   end
 
   it "usage" do
-    t = Multiset{4, 5, 3, 1, 2}
+    t = [4, 5, 3, 1, 2].to_multiset
     t.to_a.should eq [1, 2, 3, 4, 5]
     3.in?(t).should eq true
     6.in?(t).should eq false
