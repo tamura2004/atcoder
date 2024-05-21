@@ -1,8 +1,5 @@
-# 初期状態から、残りカードの状態をbitとして遷移グラフを作る
-# その後、TsortしてDP
-
-require "crystal/graph"
-require "crystal/graph/tsort"
+# ゲーム探索
+require "crystal/game_search"
 
 n = gets.to_s.to_i64
 ab = Array.new(n) do |i|
@@ -10,15 +7,9 @@ ab = Array.new(n) do |i|
   {a, b, i}
 end
 
-memo = Hash(Int32, Bool).new
-dfs = uninitialized Proc(Int32, Bool)
-dfs = -> (s : Int32) do
-  if memo.has_key?(s)
-    return memo[s]
-  end
-  
-  res = false # 負け
-  
+gs = GameSearch(Int32).new do |s|
+  res = Set(Int32).new
+
   sub = ab.select { |abi| s.bit(abi[2]) == 1 }
   suba = sub.group_by(&.[0]).values
   subb = sub.group_by(&.[1]).values
@@ -29,7 +20,7 @@ dfs = -> (s : Int32) do
       i1 = c1[2]
       i2 = c2[2]
       t = s ^ (1 << i1) ^ (1 << i2)
-      res ||= !dfs.call(t)
+      res << t
     end
   end
   
@@ -39,13 +30,13 @@ dfs = -> (s : Int32) do
       i1 = c1[2]
       i2 = c2[2]
       t = s ^ (1 << i1) ^ (1 << i2)
-      res ||= !dfs.call(t)
+      res << t
     end
   end
-  
-  memo[s] = res
-  res
+
+  res.to_a
 end
 
-ans = dfs.call((1 << n) - 1)
-puts ans ? :Takahashi : :Aoki
+root = (1 << n) - 1
+ans = gs.solve(root)
+puts ans.win? ? :Takahashi : :Aoki
