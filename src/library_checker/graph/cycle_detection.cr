@@ -1,69 +1,55 @@
-require "crystal/edge_labeled_graph/graph"
-include EdgeLabeledGraph
+require "crystal/graph"
 
 n, m = gets.to_s.split.map(&.to_i)
-g = Graph.new(n)
-m.times do |i|
-  v, nv = gets.to_s.split.map(&.to_i)
+g = n.to_g
+
+m.times do
+  v, nv = gets.to_s.split.map(&.to_i64)
   g.add v, nv, origin: 0, both: false
 end
-Problem.new(g).solve
 
-class Problem
-  getter g : Graph
-  delegate n, to: g
+enum Vertex
+  None
+  Enter
+  Leave
+end
 
-  getter seen : Array(Bool)
-  getter finished : Array(Bool)
-  getter hist : Array(Tuple(Int32,Int32))
-  getter pos : Int32
+seen = Array.new(n, Vertex::None)
+history = Deque(Tuple(Int32,Int32)).new
 
-  def initialize(@g)
-    @seen = Array.new(n, false)
-    @finished = Array.new(n, false)
-    @hist = [] of Tuple(Int32,Int32)
-    @pos = -1
-  end
-
-  def solve
-    n.times do |v|
-      next if finished[v]
-      dfs(v, -1)
-      next if hist.empty?
-
-      flag = false
-      ans = [] of Int32
-      hist.each do |v, e|
-        ans << e if flag
-        flag = true if v == pos
-      end
-      
-      puts ans.size
-      puts ans.join("\n")
-      exit
+dfs = uninitialized Proc(Int32, Int32, Int32)
+dfs = -> (v : Int32, i : Int32) do
+  seen[v] = Vertex::Enter
+  history << { v, i }
+  g.each_with_edge_index(v) do |nv, j|
+    next if seen[nv].leave?
+    if seen[nv].enter?
+      history << { nv, j }
+      return nv
     end
-    pp -1
+    pos = dfs.call(nv, j)
+    return pos if pos != -1
   end
+  seen[v] = Vertex::Leave
+  history.pop
+  -1
+end
 
-  def dfs(v, i)
-    seen[v] = true
-    hist << {v,i}
+pos = -1
+n.times do |v|
+  next unless seen[v].none?
+  pos = dfs.call(v, -1)
+  break if pos != -1
+end
 
-    g[v].each do |nv, j|
-      next if finished[nv]
-
-      if seen[nv] && !finished[nv]
-        hist << {nv, j}
-        @pos = nv
-        return
-      end
-
-      dfs(nv, j)
-
-      return if pos != -1
-    end
-
-    hist.pop
-    finished[v] = true
+if pos == -1
+  pp -1
+else
+  loop do
+    v, i = history.shift
+    break if v == pos
   end
+  ans = history.map(&.last)
+  puts ans.size
+  puts ans.join("\n")
 end
