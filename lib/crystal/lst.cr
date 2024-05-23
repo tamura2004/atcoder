@@ -51,9 +51,9 @@ class LST(X, A)
 
   def initialize(
     values : Array(X?),
-    fxx : Proc(X, X, X),
-    fxa : Proc(X, A, X),
-    faa : Proc(A, A, A)
+    fxx : Proc(X, X, X) = -> (x : X, y : X) { x + y },
+    fxa : Proc(X, A, X) = -> (x : X, a : A) { x * a },
+    faa : Proc(A, A, A) = -> (a : A, b : A) { a + b },
   )
     @n = Math.pw2ceil(values.size)
     @x = Array.new(n*2, nil.as(X?))

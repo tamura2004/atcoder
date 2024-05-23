@@ -58,12 +58,13 @@ class SWAG(T)
   def shift
     if left.empty?
       n = right.size
+      nn = (n + 1) // 2
       a = right.map(&.first)
       right.clear
-      (0...n//2).reverse_each do |i|
+      (0...nn).reverse_each do |i|
         unshift(a[i])
       end
-      (n//2...n).each do |i|
+      (nn...n).each do |i|
         push(a[i])
       end
     end
@@ -75,12 +76,13 @@ class SWAG(T)
   def pop
     if right.empty?
       n = left.size
+      nn = (n + 1) // 2
       a = left.map(&.first)
       left.clear
-      (0...n//2).reverse_each do |i|
+      (0...nn).reverse_each do |i|
         push(a[i])
       end
-      (n//2...n).each do |i|
+      (nn...n).each do |i|
         unshift(a[i])
       end
     end
