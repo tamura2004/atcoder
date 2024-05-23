@@ -3,6 +3,9 @@ require "crystal/range_to_tuple"
 # 双対セグ木
 #
 # 区間更新、１点参照
+# ただし、以下の制約あり
+# モノイドXに対して、作用Aを考えた時
+# XとAの型がTで同じであり、X*AとA+Aが同じ演算で実現できること
 class DualSegmentTree(T)
   getter n : Int32
   getter r : Int32

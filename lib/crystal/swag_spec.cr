@@ -10,6 +10,7 @@ describe SWAG do
     swag.sum.should eq 60 # [10, 20, 30]
     swag.shift
     swag.sum.should eq 50 # [20, 30]
+<<<<<<< HEAD
     swag.pop
     swag.sum.should eq 20 # [20]
     swag.unshift 100 # [100, 20]
@@ -18,5 +19,10 @@ describe SWAG do
     swag.pop
     swag.sum.should eq 0
 
+=======
+    swag.shift
+    swag.shift
+    swag.sum.should eq 0 # []
+>>>>>>> d17bf9ba53daf13e735742e848e7b671d5b9f7a1
   end
 end

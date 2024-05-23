@@ -61,10 +61,17 @@ class SWAG(T)
       nn = (n + 1) // 2
       a = right.map(&.first)
       right.clear
+<<<<<<< HEAD
       (0...nn).reverse_each do |i|
         unshift(a[i])
       end
       (nn...n).each do |i|
+=======
+      (0..n//2).reverse_each do |i|
+        unshift(a[i])
+      end
+      (n//2+1...n).each do |i|
+>>>>>>> d17bf9ba53daf13e735742e848e7b671d5b9f7a1
         push(a[i])
       end
     end
@@ -79,10 +86,17 @@ class SWAG(T)
       nn = (n + 1) // 2
       a = left.map(&.first)
       left.clear
+<<<<<<< HEAD
       (0...nn).reverse_each do |i|
         push(a[i])
       end
       (nn...n).each do |i|
+=======
+      (0..n//2).reverse_each do |i|
+        push(a[i])
+      end
+      (n//2+1...n).each do |i|
+>>>>>>> d17bf9ba53daf13e735742e848e7b671d5b9f7a1
         unshift(a[i])
       end
     end
