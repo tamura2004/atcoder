@@ -13,35 +13,35 @@
 # lcp = [0,1,0,1,0,0]
 #
 class SuffixArray
-  getter a : Array(Int32)
-  getter sa : Array(Int32)   # 接尾辞配列
-  getter rank : Array(Int32) # 順位
-  getter lcp : Array(Int32)  # 最長共通接頭辞の長さ
+  getter a : Array(Int64)
+  getter sa : Array(Int64)   # 接尾辞配列
+  getter rank : Array(Int64) # 順位
+  getter lcp : Array(Int64)  # 最長共通接頭辞の長さ
   delegate size, to: a
 
   def initialize(s : String)
-    @a = s.chars.map(&.ord)
+    @a = s.chars.map(&.ord.to_i64)
     initialize(@a)
   end
 
-  def initialize(@a : Array(Int32))
+  def initialize(@a : Array(Int64))
     @rank = Array.new(size.succ) do |i|
-      i == size ? -1 : a[i]
+      i == size ? -1_i64 : a[i]
     end
-    @sa = Array.new(size.succ, &.itself)
-    @lcp = Array.new(size.succ, 0)
+    @sa = Array.new(size.succ, &.itself.to_i64)
+    @lcp = Array.new(size.succ, 0_i64)
   end
 
   def solve
-    tmp = Array.new(size.succ, -1)
+    tmp = Array.new(size.succ, -1_i64)
 
-    k = 1
+    k = 1_i64
     while k <= size
       sa.sort_by! do |i|
         cost(i, k)
       end
 
-      tmp[sa[0]] = 0
+      tmp[sa[0]] = 0_i64
 
       1.upto(size) do |i|
         tmp[sa[i]] = tmp[sa[i - 1]] + (cost(sa[i - 1], k) < cost(sa[i], k)).to_unsafe
@@ -51,8 +51,8 @@ class SuffixArray
       k *= 2
     end
 
-    h = 0
-    lcp = [0] * (size + 1)
+    h = 0_i64
+    lcp = [0_i64] * (1_i64 + size)
 
     size.times do |i|
       j = sa[rank[i] - 1]
@@ -94,5 +94,11 @@ class SuffixArray
   # 接尾辞配列マクロ
   def cost(i, k)
     { get_rank(i), get_rank(i+k) }
+  end
+end
+
+class String
+  def to_suffix_array
+    SuffixArray.new(self).solve
   end
 end

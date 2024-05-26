@@ -5,14 +5,13 @@ a = Array.new(m) do
   b.to_set
 end
 
-n.times do |i|
-  n.times do |j|
-    next if i == j
-    flag = m.times.none? do |k|
+ans = n.times.all? do |i|
+  n.times.all? do |j|
+    next true if i == j
+    m.times.any? do |k|
       i.in?(a[k]) && j.in?(a[k])
     end
-    quit "No" if flag
   end
 end
 
-puts "Yes"
+yesno ans
