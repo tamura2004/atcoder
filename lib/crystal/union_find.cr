@@ -6,7 +6,7 @@
 # uf = UF.new(4)
 # uf = 4.to_uf
 # ```
-struct UnionFind
+class UnionFind
   getter n : Int32
   getter size : Int32
   getter max_size : Int64
