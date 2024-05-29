@@ -117,7 +117,7 @@ class AVLTree(T)
   end
 
   def [](k)
-    at(k)
+    at(k).not_nil!
   end
 
   def size
@@ -337,7 +337,7 @@ class AVLTree(T)
 
     @[AlwaysInline]
     def [](k)
-      at(k)
+      at(k).not_nil!
     end
 
     {% for dir in %w(left right) %}

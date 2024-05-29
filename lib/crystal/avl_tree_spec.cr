@@ -88,7 +88,7 @@ describe AVLTree do
   it "at" do
     tr = AVLTree{1, 3, 5}
     [1, 3, 5, nil].each_with_index do |want, k|
-      tr[k].should eq want
+      tr.at(k).should eq want
     end
   end
 

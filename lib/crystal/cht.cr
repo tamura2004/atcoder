@@ -1,63 +1,110 @@
-# CHTによる1次関数の集合の管理
-#
-# f(x) = ax + bとしたとき,{a,b}を追加する
-# {a,b}の降順ソート順に追加すること
-# ```
-# ```
-class CHT
-  alias T = Tuple(Int64, Int64)
-  getter q : Deque(T)
-  
-  def initialize
-    @q = Deque(T).new
-  end
-  
-  # キューの末尾に f(x) = ax + bを追加する
-  # {a,b}の降順ソート順に追加しないとbad order例外
-  def <<(line)
-    line = {line[0].to_i64, line[1].to_i64}
-    while remove_tail?(line)
-      q.pop
-    end
-    q << line
+require "crystal/orderedset"
+
+record Line, a : Int64, b : Int64 do
+  include Comparable(Line)
+
+  # 傾きの降順、y切片の昇順で比較
+  #   /     \
+  #  /   ->  \
+  # /         \
+  def <=>(other : Line) : Int32
+    { -a, b } <=> { -other.a, other.b }
   end
 
-  # 全てのf(x)についての最小値
-  # 先頭から条件を満たさないf(x)を除去。ならし計算量O(N)
-  def [](x)
-    raise "bad. q is empty." if q.size.zero?
-    while q.size > 1 && f(q[0],x) > f(q[1],x)
-      q.shift
-    end
-    f(q[0], x)
+  def cross(other : Line) : Int64
+    (other.b - b) // (a - other.a)
   end
 
-  def f(line,x)
-    a,b = line
+  def [](x : Int64)
     a * x + b
   end
+end
 
-  # q := [...,{a1,b1},{a2,b2}] の末尾に{a3,b3}追加する際、
-  # {a2,b2}が不要なら再帰的に取り除く判定。
-  def remove_tail?(line)
-    raise "bad order. #{q[-1]},#{line}" if q.size != 0 && q[-1] < line
+# 動的 Convex Hull Trick
+#  - 直線の追加: O(log N)
+#  - 最小値クエリ: O(log N)
+class CHT
+  getter lines : Orderedset(Line)
+  delegate to_a, size, to: lines
 
-    case q.size
-    when 0 then false
-    when 1
-      a2, b2 = q[-1]
-      a3, b3 = line
-      a2 == a3 && b2 >= b3
-    else
-      a1, b1 = q[-2]
-      a2, b2 = q[-1]
-      a3, b3 = line
-      over?(a1, b1, a2, b2, a3, b3)
-    end
+  def initialize
+    @lines = Orderedset(Line).new
   end
 
-  # 二直線の交点より上か
-  def over?(a1, b1, a2, b2, a3, b3)
-    (a2 - a1)*(b3 - b2) >= (b2 - b1)*(a3 - a2)
+  def add(line : Line)
+    return if lines.includes?(line)
+
+    # 傾きが同じ直線が既に存在する場合
+    # y切片が小さい方を残す
+    if left = lines.lower(line, eq: false)
+      if line.a == left.a
+        return unless line.b < left.b
+        lines.delete(left)
+        lines << line
+      end
+    else
+      lines << line
+    end
+
+    # 傾きが同じ直線が既に存在する場合
+    # y切片が小さい方を残す
+    if right = lines.upper(line, eq: false)
+      if line.a == right.a
+        return unless line.b < right.b
+        lines.delete(right)
+        lines << line
+      end
+    else
+      lines << line
+    end
+
+    # 両側に直線が存在する場合
+    # 交点より小さい場合は追加する
+    if left = lines.lower(line, eq: false)
+      if right = lines.upper(line, eq: false)
+        return unless left.cross(line) < line.cross(right)
+        lines << line
+      end
+    end
+
+    # 小さい方の直線が交点を上回る場合は削除する
+    if left_right = lines.lower(line, eq: false)
+      while left_left = lines.lower(left_right, eq: false)
+        unless left_left.cross(left_right) < left_right.cross(line)
+          lines.delete(left_right)
+          left_right = left_left
+        else
+          break
+        end
+      end
+    end
+
+    # 大きい方の直線が交点を上回る場合は削除する
+    if right_left = lines.upper(line, eq: false)
+      while right_right = lines.upper(right_left, eq: false)
+        unless line.cross(right_left) < right_left.cross(right_right)
+          lines.delete(right_left)
+          right_left = right_right
+        else
+          break
+        end
+      end
+    end 
+  end
+
+  def <<(line : Line)
+    add(line)
+  end
+
+  def min(x : Int64) : Int64
+    return Int64::MAX if lines.size == 0
+    return lines[0][x] if lines.size == 1
+    return Math.min(lines[0][x], lines[1][x]) if lines.size == 2
+
+    n = lines.size - 1
+    i = (0...n).bsearch do |i|
+      lines[i][x] < lines[i + 1][x]
+    end || n
+    lines[i][x]
   end
 end
