@@ -26,4 +26,15 @@ describe UnionFind do
     uf.group_vertex_size.should eq [3, 1]
     uf.group_edge_size.should eq [2, 0]
   end
+
+  it "連結成分の個数をsizeで返す" do
+    uf = 4.to_uf
+    uf.size.should eq 4
+    uf.unite 0, 2
+    uf.size.should eq 3
+    uf.unite 1, 3
+    uf.size.should eq 2
+    uf.unite 0, 1
+    uf.size.should eq 1
+  end
 end

@@ -4,7 +4,7 @@
 # 追加時は、lo...hiの区間を削除して、lo,hiが重複しないよう
 # マージする。
 
-require "crystal/balanced_tree/treap/ordered_set"
+require "crystal/ordered_set"
 require "crystal/range_to_tuple"
 
 enum R
