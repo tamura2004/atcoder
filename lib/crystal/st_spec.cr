@@ -13,4 +13,13 @@ describe ST do
     st.bsearch(5, &.>= 5).should eq 5
     st.bsearch(6, &.>= 5).should eq 7
   end
+
+  it "区間和について初期化を省略して高速化" do
+    st = 10.to_st_sum
+    st[0] = 10
+    st[9] = 20
+    st[0..].should eq 30
+    st[..8].should eq 10
+    st[1..9].should eq 20
+  end
 end

@@ -308,3 +308,9 @@ class ImplicitTreap(T)
     end
   end
 end
+
+class Array(T)
+  def to_treap
+    ImplicitTreap(T).new(self)
+  end
+end

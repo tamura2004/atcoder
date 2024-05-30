@@ -5,24 +5,24 @@ alias Tree = ImplicitTreap
 
 describe ImplicitTreap do
   it "usage" do
-    node = Tree.new([40, 10, 30, 20])
+    node = [40, 10, 30, 20].to_treap
     node.to_a.should eq [40, 10, 30, 20]
   end
 
   it "split" do
-    node = Tree{40, 10, 30, 20}
+    node = [40, 10, 30, 20].to_treap
     fst, snd = node.split(2)
     fst.to_a.should eq [40, 10]
     snd.to_a.should eq [30, 20]
 
-    node = Tree{40, 10, 30, 20}
+    node = [40, 10, 30, 20].to_treap
     fst, snd = node.split(0)
     fst.to_a.should eq [] of Int32
     snd.to_a.should eq [40, 10, 30, 20]
   end
 
   it "insert" do
-    node = Tree{40, 10, 30, 20}
+    node = [40, 10, 30, 20].to_treap
     node << 15
     node.to_a.should eq [40, 10, 30, 20, 15]
   end

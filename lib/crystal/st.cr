@@ -19,6 +19,14 @@ class ST(T)
     end
   end
 
+  def initialize(_n : Int32)
+    @fxx = ->(x : T?, y : T?) do
+      x && y ? x + y : x ? x : y
+    end
+    @n = Math.pw2ceil(_n)
+    @a = Array.new(@n*2) { T.zero.as(T?) }
+  end
+
   def put(i, v)
     i += n
     a[i] = v
