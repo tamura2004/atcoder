@@ -11,14 +11,12 @@ c = gets.to_s.split.map(&.to_i64).zip(0..).sort
 cht = CHT.new
 
 n.times do |i|
-  cht << {-(i+1), -(i+1)*b[i]}
+  cht << Line.new -(i + 1), -(i + 1)*b[i]
 end
 
 ans = Array.new(m, -1i64)
 c.each do |v, i|
-  ans[i] = cht[v]
+  ans[i] = cht.min(v)
 end
 
 puts ans.map(&.-).join(" ")
-
-
