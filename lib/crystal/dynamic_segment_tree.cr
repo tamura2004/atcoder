@@ -1,6 +1,6 @@
 class DynamicSegmentTree(T)
   class Node(T)
-    HI = 2_i64 ** 3
+    HI = 2_i64 ** 60
     property left : Node(T)?
     property right : Node(T)?
     getter lo : Int64
@@ -18,14 +18,12 @@ class DynamicSegmentTree(T)
         @val = val
         return self
       end
-  
       mid = (lo + hi) // 2
       if i < mid
         @left = (left || Node(T).new(val, lo, mid)).set(i, val, lo, mid)
       else
         @right = (right || Node(T).new(val, mid, hi)).set(i, val, mid, hi)
       end
-
       @val = left_value + right_value
       self
     end
@@ -39,15 +37,9 @@ class DynamicSegmentTree(T)
     end
 
     def get(lo : Int64, hi : Int64) :  T
-      pp! [lo, hi, @lo, @hi]
       return T.zero if hi <= @lo || @hi <= lo
-      return @val if lo == @lo && @hi == hi
-      if @lo <= lo && hi <= @hi
-        left_get(lo, hi) + right_get(lo, hi)
-      else
-        mid = (lo + hi) // 2
-        left_get(lo, mid) + right_get(mid, hi)
-      end
+      return @val if lo <= @lo && @hi <= hi
+      left_get(lo, hi) + right_get(lo, hi)
     end
 
     private def left_get(lo : Int64, hi : Int64)
@@ -63,11 +55,11 @@ class DynamicSegmentTree(T)
     end
 
     private def left_to_a
-      left.try &.to_a || "nil"
+      left.try &.to_a || ""
     end
 
     private def right_to_a
-      right.try &.to_a || "nil"
+      right.try &.to_a || ""
     end
   end
 
