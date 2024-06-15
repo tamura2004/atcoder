@@ -6,8 +6,9 @@ class DynamicSegmentTree(T)
     getter lo : Int64
     getter hi : Int64
     getter val : T
+    getter f : Proc(T, T, T)
 
-    def initialize(@val = T.zero, @lo = 0_i64, @hi = HI)
+    def initialize(@val = T.zero, @lo = 0_i64, @hi = HI, @f : Proc(T, T, T) = -> (x : T, y : T) { x + y })
       @val = T.zero
       @left = nil.as(Node(T)?)
       @right = nil.as(Node(T)?)
@@ -24,7 +25,7 @@ class DynamicSegmentTree(T)
       else
         @right = (right || Node(T).new(val, mid, hi)).set(i, val, mid, hi)
       end
-      @val = left_value + right_value
+      @val = f.call(left_value, right_value)
       self
     end
 
@@ -39,7 +40,7 @@ class DynamicSegmentTree(T)
     def get(lo : Int64, hi : Int64) :  T
       return T.zero if hi <= @lo || @hi <= lo
       return @val if lo <= @lo && @hi <= hi
-      left_get(lo, hi) + right_get(lo, hi)
+      f.call(left_get(lo, hi), right_get(lo, hi))
     end
 
     private def left_get(lo : Int64, hi : Int64)
@@ -64,8 +65,9 @@ class DynamicSegmentTree(T)
   end
 
   getter root : Node(T)
+  getter f : Proc(T, T, T)
 
-  def initialize
+  def initialize(@f : Proc(T, T, T) = -> (x : T, y : T) { x + y })
     @root = Node(T).new
   end
 
